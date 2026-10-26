@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maintenance - EDU TECH Hotel Management System</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <h2>EDU TECH</h2>
+            <p>Hotel Management</p>
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <a href="./index.html">🏠 Dashboard</a>
+            <a href="./rooms.html">🛏️ Rooms</a>
+            <a href="./guests.html">👤 Guests</a>
+            <a href="./reservations.html">📅 Reservations</a>
+            <a href="./checkin.html">🛎️ Check-in</a>
+            <a href="./checkout.html">🚪 Check-out</a>
+            <a href="./restaurant.html">🍽️ Restaurant</a>
+            <a href="./inventory.html">📦 Inventory</a>
+            <a href="./payments.html">💰 Payments</a>
+            <a href="./expenses.html">💸 Expenses</a>
+            <a href="./employees.html">👨‍💼 Employees</a>
+            <a href="./housekeeping.html">🧹 Housekeeping</a>
+            <a href="./maintenance.html" class="active">🔧 Maintenance</a>
+            <a href="./reports.html">📊 Reports</a>
+            <a href="./settings.html">⚙️ Settings</a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+
+            <div>
+                <h1>Maintenance</h1>
+                <p>Manage hotel maintenance requests and repairs</p>
+            </div>
+
+            <button
+                class="primary-btn"
+                onclick="openMaintenanceForm()"
+            >
+                + Add Maintenance Task
+            </button>
+
+        </header>
+
+
+        <!-- SUMMARY CARDS -->
+        <section class="summary-grid">
+
+            <div class="summary-card">
+                <h3>Total Tasks</h3>
+                <strong id="totalMaintenance">0</strong>
+            </div>
+
+            <div class="summary-card">
+                <h3>Pending</h3>
+                <strong id="pendingMaintenance">0</strong>
+            </div>
+
+            <div class="summary-card">
+                <h3>In Progress</h3>
+                <strong id="inProgressMaintenance">0</strong>
+            </div>
+
+            <div class="summary-card">
+                <h3>Completed</h3>
+                <strong id="completedMaintenance">0</strong>
+            </div>
+
+        </section>
+
+
+        <!-- SEARCH AND FILTER -->
+        <section class="content-card">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Maintenance Tasks</h2>
+                    <p>View and manage maintenance work</p>
+                </div>
+
+                <div class="filters">
+
+                    <input
+                        type="text"
+                        id="maintenanceSearch"
+                        placeholder="Search room or technician..."
+                        onkeyup="searchMaintenance()"
+                    >
+
+                    <select
+                        id="maintenanceFilter"
+                        onchange="filterMaintenance()"
+                    >
+                        <option value="all">All Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- TABLE -->
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Task ID</th>
+                            <th>Room</th>
+                            <th>Maintenance Type</th>
+                            <th>Technician</th>
+                            <th>Date</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="maintenanceTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- MAINTENANCE MODAL -->
+<div id="maintenanceModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <div>
+                <h2>Add Maintenance Task</h2>
+                <p>Create a new maintenance request</p>
+            </div>
+
+            <button
+                type="button"
+                class="close-btn"
+                onclick="closeMaintenanceForm()"
+            >
+                &times;
+            </button>
+
+        </div>
+
+
+        <form id="maintenanceForm">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="maintenanceRoom">
+                        Room Number
+                    </label>
+
+                    <input
+                        type="text"
+                        id="maintenanceRoom"
+                        placeholder="e.g. 101"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="maintenanceType">
+                        Maintenance Type
+                    </label>
+
+                    <select
+                        id="maintenanceType"
+                        required
+                    >
+
+                        <option value="">
+                            Select Maintenance Type
+                        </option>
+
+                        <option value="Electrical">
+                            Electrical
+                        </option>
+
+                        <option value="Plumbing">
+                            Plumbing
+                        </option>
+
+                        <option value="Air Conditioning">
+                            Air Conditioning
+                        </option>
+
+                        <option value="Furniture">
+                            Furniture
+                        </option>
+
+                        <option value="Television">
+                            Television
+                        </option>
+
+                        <option value="Network">
+                            Network
+                        </option>
+
+                        <option value="General Repair">
+                            General Repair
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="maintenanceTechnician">
+                        Assigned Technician
+                    </label>
+
+                    <input
+                        type="text"
+                        id="maintenanceTechnician"
+                        placeholder="Enter technician name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="maintenanceDate">
+                        Maintenance Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="maintenanceDate"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="maintenancePriority">
+                        Priority
+                    </label>
+
+                    <select
+                        id="maintenancePriority"
+                        required
+                    >
+
+                        <option value="">
+                            Select Priority
+                        </option>
+
+                        <option value="Low">
+                            Low
+                        </option>
+
+                        <option value="Medium">
+                            Medium
+                        </option>
+
+                        <option value="High">
+                            High
+                        </option>
+
+                        <option value="Urgent">
+                            Urgent
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="maintenanceStatus">
+                        Status
+                    </label>
+
+                    <select
+                        id="maintenanceStatus"
+                        required
+                    >
+
+                        <option value="Pending">
+                            Pending
+                        </option>
+
+                        <option value="In Progress">
+                            In Progress
+                        </option>
+
+                        <option value="Completed">
+                            Completed
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    onclick="closeMaintenanceForm()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                >
+                    Save Task
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let maintenanceTasks = [];
+
+
+// OPEN FORM
+function openMaintenanceForm() {
+
+    document.getElementById("maintenanceModal").style.display = "flex";
+
+    document.getElementById("maintenanceForm").reset();
+
+    const today =
+        new Date().toISOString().split("T")[0];
+
+    document.getElementById("maintenanceDate").value = today;
+
+}
+
+
+// CLOSE FORM
+function closeMaintenanceForm() {
+
+    document.getElementById("maintenanceModal").style.display = "none";
+
+}
+
+
+// GENERATE TASK ID
+function generateMaintenanceId() {
+
+    return "MT-" +
+        String(maintenanceTasks.length + 1).padStart(3, "0");
+
+}
+
+
+// ADD TASK
+document.getElementById("maintenanceForm").addEventListener(
+    "submit",
+    function(event) {
+
+        event.preventDefault();
+
+
+        const room =
+            document.getElementById("maintenanceRoom").value.trim();
+
+        const type =
+            document.getElementById("maintenanceType").value;
+
+        const technician =
+            document.getElementById("maintenanceTechnician").value.trim();
+
+        const date =
+            document.getElementById("maintenanceDate").value;
+
+        const priority =
+            document.getElementById("maintenancePriority").value;
+
+        const status =
+            document.getElementById("maintenanceStatus").value;
+
+
+        const newTask = {
+
+            id: generateMaintenanceId(),
+            room: room,
+            type: type,
+            technician: technician,
+            date: date,
+            priority: priority,
+            status: status
+
+        };
+
+
+        maintenanceTasks.push(newTask);
+
+        renderMaintenanceTasks();
+
+        updateMaintenanceCounts();
+
+        closeMaintenanceForm();
+
+    }
+);
+
+
+// DISPLAY TASKS
+function renderMaintenanceTasks() {
+
+    const table =
+        document.getElementById("maintenanceTable");
+
+    table.innerHTML = "";
+
+
+    maintenanceTasks.forEach(function(item) {
+
+        const row =
+            document.createElement("tr");
+
+
+        row.innerHTML = `
+
+            <td>${item.id}</td>
+
+            <td>${item.room}</td>
+
+            <td>${item.type}</td>
+
+            <td>${item.technician}</td>
+
+            <td>${item.date}</td>
+
+            <td>
+                <span class="status-badge ${item.priority.toLowerCase()}">
+                    ${item.priority}
+                </span>
+            </td>
+
+            <td>
+                <span class="status-badge ${item.status
+                    .toLowerCase()
+                    .replace(" ", "-")}">
+                    ${item.status}
+                </span>
+            </td>
+
+            <td>
+
+                <button
+                    class="action-btn"
+                    onclick="viewMaintenance('${item.id}')"
+                >
+                    View
+                </button>
+
+                <button
+                    class="action-btn danger"
+                    onclick="deleteMaintenance('${item.id}')"
+                >
+                    Delete
+                </button>
+
+            </td>
+
+        `;
+
+
+        table.appendChild(row);
+
+    });
+
+}
+
+
+// UPDATE COUNTS
+function updateMaintenanceCounts() {
+
+    document.getElementById("totalMaintenance").textContent =
+        maintenanceTasks.length;
+
+
+    document.getElementById("pendingMaintenance").textContent =
+        maintenanceTasks.filter(
+            item => item.status === "Pending"
+        ).length;
+
+
+    document.getElementById("inProgressMaintenance").textContent =
+        maintenanceTasks.filter(
+            item => item.status === "In Progress"
+        ).length;
+
+
+    document.getElementById("completedMaintenance").textContent =
+        maintenanceTasks.filter(
+            item => item.status === "Completed"
+        ).length;
+
+}
+
+
+// SEARCH
+function searchMaintenance() {
+
+    const search =
+        document.getElementById("maintenanceSearch")
+        .value
+        .toLowerCase();
+
+
+    const rows =
+        document.querySelectorAll("#maintenanceTable tr");
+
+
+    rows.forEach(function(row) {
+
+        row.style.display =
+            row.textContent.toLowerCase().includes(search)
+                ? ""
+                : "none";
+
+    });
+
+}
+
+
+// FILTER
+function filterMaintenance() {
+
+    const filter =
+        document.getElementById("maintenanceFilter").value;
+
+
+    const rows =
+        document.querySelectorAll("#maintenanceTable tr");
+
+
+    rows.forEach(function(row) {
+
+        if (filter === "all") {
+
+            row.style.display = "";
+
+            return;
+
+        }
+
+
+        row.style.display =
+            row.textContent.includes(filter)
+                ? ""
+                : "none";
+
+    });
+
+}
+
+
+// VIEW
+function viewMaintenance(id) {
+
+    const item =
+        maintenanceTasks.find(
+            task => task.id === id
+        );
+
+
+    if (!item) return;
+
+
+    alert(
+        "Task ID: " + item.id +
+        "\nRoom: " + item.room +
+        "\nMaintenance Type: " + item.type +
+        "\nTechnician: " + item.technician +
+        "\nDate: " + item.date +
+        "\nPriority: " + item.priority +
+        "\nStatus: " + item.status
+    );
+
+}
+
+
+// DELETE
+function deleteMaintenance(id) {
+
+    if (!confirm("Are you sure you want to delete this maintenance task?")) {
+        return;
+    }
+
+
+    maintenanceTasks =
+        maintenanceTasks.filter(
+            task => task.id !== id
+        );
+
+
+    renderMaintenanceTasks();
+
+    updateMaintenanceCounts();
+
+}
+
+
+// CLOSE MODAL WHEN CLICKING OUTSIDE
+window.addEventListener("click", function(event) {
+
+    const modal =
+        document.getElementById("maintenanceModal");
+
+
+    if (event.target === modal) {
+
+        closeMaintenanceForm();
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>

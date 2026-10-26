@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDU TECH Hotel Management System - Dashboard</title>
+    <link rel="stylesheet" href="./style.css">
+
+    <style>
+        .dashboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .dashboard-table th,
+        .dashboard-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .dashboard-table th {
+            background: #f5f5f5;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-available {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-occupied {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-maintenance {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-cleaning {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .dashboard-section {
+            margin-top: 25px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <h2>EDU TECH</h2>
+            <p>HOTEL SYSTEM</p>
+        </div>
+
+        <nav>
+            <a href="./index.html" class="active">🏠 Dashboard</a>
+            <a href="./rooms.html">🛏️ Rooms</a>
+            <a href="./guests.html">👤 Guests</a>
+            <a href="./reservations.html">📅 Reservations</a>
+            <a href="./checkin.html">🛎️ Check-in</a>
+            <a href="./checkout.html">🚪 Check-out</a>
+            <a href="./restaurant.html">🍽️ Restaurant</a>
+            <a href="./inventory.html">📦 Inventory</a>
+            <a href="./payments.html">💰 Payments</a>
+            <a href="./expenses.html">💸 Expenses</a>
+            <a href="./employees.html">👨‍💼 Employees</a>
+            <a href="./housekeeping.html">🧹 Housekeeping</a>
+            <a href="./maintenance.html">🔧 Maintenance</a>
+            <a href="./reports.html">📊 Reports</a>
+            <a href="./settings.html">⚙️ Settings</a>
+        </nav>
+
+    </aside>
+
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <h1>Dashboard</h1>
+                <p>Welcome to EDU TECH Hotel Management System</p>
+            </div>
+
+        </header>
+
+
+        <section class="cards">
+
+            <div class="card">
+                <h3>Total Rooms</h3>
+                <h2 id="dashboardTotalRooms">0</h2>
+            </div>
+
+            <div class="card">
+                <h3>Occupied Rooms</h3>
+                <h2 id="dashboardOccupiedRooms">0</h2>
+            </div>
+
+            <div class="card">
+                <h3>Available Rooms</h3>
+                <h2 id="dashboardAvailableRooms">0</h2>
+            </div>
+
+            <div class="card">
+                <h3>Maintenance</h3>
+                <h2 id="dashboardMaintenanceRooms">0</h2>
+            </div>
+
+            <div class="card">
+                <h3>Today's Revenue</h3>
+                <h2 id="dashboardRevenue">KSh 0</h2>
+            </div>
+
+            <div class="card">
+                <h3>Today's Expenses</h3>
+                <h2 id="dashboardExpenses">KSh 0</h2>
+            </div>
+
+            <div class="card">
+                <h3>Today's Profit</h3>
+                <h2 id="dashboardProfit">KSh 0</h2>
+            </div>
+
+            <div class="card">
+                <h3>Today's Bookings</h3>
+                <h2 id="dashboardBookings">0</h2>
+            </div>
+
+        </section>
+
+
+        <section class="dashboard-section">
+
+            <div class="table-container">
+
+                <div class="room-header">
+                    <h2>Room Status</h2>
+                </div>
+
+                <table class="dashboard-table">
+
+                    <thead>
+                        <tr>
+                            <th>Room</th>
+                            <th>Type</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Guest</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="dashboardRoomTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <section class="dashboard-section">
+
+            <div class="table-container">
+
+                <div class="room-header">
+                    <h2>Today's Activity</h2>
+                </div>
+
+                <p style="padding:15px;">
+                    Dashboard activity will be connected to reservations,
+                    check-ins, check-outs and other hotel records as we
+                    continue building the system.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+
+            /* =========================================
+               ROOMS
+            ========================================= */
+
+            const rooms = JSON.parse(
+                localStorage.getItem("eduTechRooms") || "[]"
+            );
+
+            let totalRooms = rooms.length;
+            let occupiedRooms = 0;
+            let availableRooms = 0;
+            let maintenanceRooms = 0;
+
+
+            rooms.forEach(function (room) {
+
+                const status =
+                    String(room.status || "").toLowerCase();
+
+                if (status === "occupied") {
+                    occupiedRooms++;
+                }
+
+                if (status === "available") {
+                    availableRooms++;
+                }
+
+                if (status === "maintenance") {
+                    maintenanceRooms++;
+                }
+
+            });
+
+
+            document.getElementById(
+                "dashboardTotalRooms"
+            ).textContent = totalRooms;
+
+
+            document.getElementById(
+                "dashboardOccupiedRooms"
+            ).textContent = occupiedRooms;
+
+
+            document.getElementById(
+                "dashboardAvailableRooms"
+            ).textContent = availableRooms;
+
+
+            document.getElementById(
+                "dashboardMaintenanceRooms"
+            ).textContent = maintenanceRooms;
+
+
+
+            /* =========================================
+               TODAY
+            ========================================= */
+
+            const today =
+                new Date().toISOString().split("T")[0];
+
+
+
+            /* =========================================
+               PAYMENTS / REVENUE
+            ========================================= */
+
+            const payments = JSON.parse(
+                localStorage.getItem("eduTechPayments") || "[]"
+            );
+
+            let todayRevenue = 0;
+
+
+            payments.forEach(function (payment) {
+
+                const paymentDate =
+                    payment.date || "";
+
+                const paymentStatus =
+                    String(payment.status || "").toLowerCase();
+
+                const amount =
+                    Number(
+                        String(payment.amount || 0)
+                            .replace(/[^0-9.-]+/g, "")
+                    );
+
+
+                if (
+                    paymentDate === today &&
+                    paymentStatus === "completed"
+                ) {
+
+                    todayRevenue += amount;
+
+                }
+
+            });
+
+
+
+            /* =========================================
+               EXPENSES
+            ========================================= */
+
+            const expenses = JSON.parse(
+                localStorage.getItem("eduTechExpenses") || "[]"
+            );
+
+            let todayExpenses = 0;
+
+
+            expenses.forEach(function (expense) {
+
+                const expenseDate =
+                    expense.date || "";
+
+                const expenseStatus =
+                    String(expense.status || "").toLowerCase();
+
+                const amount =
+                    Number(
+                        String(expense.amount || 0)
+                            .replace(/[^0-9.-]+/g, "")
+                    );
+
+
+                if (
+                    expenseDate === today &&
+                    expenseStatus === "paid"
+                ) {
+
+                    todayExpenses += amount;
+
+                }
+
+            });
+
+
+
+            /* =========================================
+               PROFIT
+            ========================================= */
+
+            const todayProfit =
+                todayRevenue - todayExpenses;
+
+
+            document.getElementById(
+                "dashboardRevenue"
+            ).textContent =
+                "KSh " +
+                todayRevenue.toLocaleString();
+
+
+            document.getElementById(
+                "dashboardExpenses"
+            ).textContent =
+                "KSh " +
+                todayExpenses.toLocaleString();
+
+
+            document.getElementById(
+                "dashboardProfit"
+            ).textContent =
+                "KSh " +
+                todayProfit.toLocaleString();
+
+
+
+            /* =========================================
+               RESERVATIONS / TODAY'S BOOKINGS
+            ========================================= */
+
+            const reservations = JSON.parse(
+                localStorage.getItem("eduTechReservations") || "[]"
+            );
+
+
+            let todayBookings = 0;
+
+
+            reservations.forEach(function (reservation) {
+
+                const reservationDate =
+                    reservation.checkin || "";
+
+                const reservationStatus =
+                    String(
+                        reservation.status || ""
+                    ).toLowerCase();
+
+
+                /*
+                   Count today's reservations except
+                   cancelled reservations.
+                */
+
+                if (
+                    reservationDate === today &&
+                    reservationStatus !== "cancelled"
+                ) {
+
+                    todayBookings++;
+
+                }
+
+            });
+
+
+            document.getElementById(
+                "dashboardBookings"
+            ).textContent =
+                todayBookings;
+
+
+
+            /* =========================================
+               ROOM STATUS TABLE
+            ========================================= */
+
+            const roomTable =
+                document.getElementById(
+                    "dashboardRoomTable"
+                );
+
+
+            roomTable.innerHTML = "";
+
+
+            if (rooms.length === 0) {
+
+                roomTable.innerHTML = `
+                    <tr>
+                        <td colspan="5">
+                            No rooms available.
+                        </td>
+                    </tr>
+                `;
+
+            } else {
+
+                rooms.forEach(function (room) {
+
+                    const status =
+                        String(
+                            room.status || "Available"
+                        );
+
+
+                    const statusLower =
+                        status.toLowerCase();
+
+
+                    let statusClass =
+                        "status-available";
+
+
+                    if (
+                        statusLower === "occupied"
+                    ) {
+
+                        statusClass =
+                            "status-occupied";
+
+                    }
+
+
+                    if (
+                        statusLower === "maintenance"
+                    ) {
+
+                        statusClass =
+                            "status-maintenance";
+
+                    }
+
+
+                    if (
+                        statusLower === "cleaning"
+                    ) {
+
+                        statusClass =
+                            "status-cleaning";
+
+                    }
+
+
+                    const guest =
+                        statusLower === "occupied"
+                            ? "Occupied Room"
+                            : "-";
+
+
+                    roomTable.innerHTML += `
+
+                        <tr>
+
+                            <td>
+                                ${room.number || "-"}
+                            </td>
+
+                            <td>
+                                ${room.type || "-"}
+                            </td>
+
+                            <td>
+                                KSh ${
+                                    Number(
+                                        room.price || 0
+                                    ).toLocaleString()
+                                }
+                            </td>
+
+                            <td>
+
+                                <span class="status ${statusClass}">
+                                    ${status}
+                                </span>
+
+                            </td>
+
+                            <td>
+                                ${guest}
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                });
+
+            }
+
+        });
+
+    </script>
+
+</body>
+</html>

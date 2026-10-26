@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - EDU TECH Hotel Management System</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <h2>EDU TECH</h2>
+            <p>Hotel Management</p>
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <a href="./index.html">🏠 Dashboard</a>
+            <a href="./rooms.html">🛏️ Rooms</a>
+            <a href="./guests.html">👤 Guests</a>
+            <a href="./reservations.html">📅 Reservations</a>
+            <a href="./checkin.html">🛎️ Check-in</a>
+            <a href="./checkout.html">🚪 Check-out</a>
+            <a href="./restaurant.html">🍽️ Restaurant</a>
+            <a href="./inventory.html">📦 Inventory</a>
+            <a href="./payments.html">💰 Payments</a>
+            <a href="./expenses.html">💸 Expenses</a>
+            <a href="./employees.html">👨‍💼 Employees</a>
+            <a href="./housekeeping.html">🧹 Housekeeping</a>
+            <a href="./maintenance.html">🔧 Maintenance</a>
+            <a href="./reports.html">📊 Reports</a>
+            <a href="./settings.html" class="active">⚙️ Settings</a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+
+            <div>
+                <h1>Settings</h1>
+                <p>Manage hotel system settings and preferences</p>
+            </div>
+
+        </header>
+
+
+        <!-- HOTEL INFORMATION -->
+        <section class="content-card">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Hotel Information</h2>
+                    <p>Update your hotel's basic information</p>
+                </div>
+
+            </div>
+
+
+            <form id="hotelSettingsForm">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label for="hotelName">
+                            Hotel Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="hotelName"
+                            value="EDU TECH Hotel"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="hotelPhone">
+                            Phone Number
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="hotelPhone"
+                            placeholder="Enter hotel phone number"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="hotelEmail">
+                            Email Address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="hotelEmail"
+                            placeholder="Enter hotel email"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="hotelLocation">
+                            Location
+                        </label>
+
+                        <input
+                            type="text"
+                            id="hotelLocation"
+                            placeholder="Enter hotel location"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <button
+                        type="submit"
+                        class="primary-btn"
+                    >
+                        Save Hotel Information
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <!-- SYSTEM PREFERENCES -->
+        <section class="content-card">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>System Preferences</h2>
+                    <p>Configure basic system preferences</p>
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="currency">
+                        Currency
+                    </label>
+
+                    <select id="currency">
+
+                        <option value="KES" selected>
+                            KSh - Kenyan Shilling
+                        </option>
+
+                        <option value="USD">
+                            $ - US Dollar
+                        </option>
+
+                        <option value="EUR">
+                            € - Euro
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="dateFormat">
+                        Date Format
+                    </label>
+
+                    <select id="dateFormat">
+
+                        <option value="DD/MM/YYYY" selected>
+                            DD/MM/YYYY
+                        </option>
+
+                        <option value="MM/DD/YYYY">
+                            MM/DD/YYYY
+                        </option>
+
+                        <option value="YYYY-MM-DD">
+                            YYYY-MM-DD
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="hotelTimezone">
+                        Time Zone
+                    </label>
+
+                    <select id="hotelTimezone">
+
+                        <option value="Africa/Nairobi" selected>
+                            Africa/Nairobi (EAT)
+                        </option>
+
+                        <option value="Africa/Kampala">
+                            Africa/Kampala (EAT)
+                        </option>
+
+                        <option value="Africa/Dar_es_Salaam">
+                            Africa/Dar es Salaam (EAT)
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="language">
+                        Language
+                    </label>
+
+                    <select id="language">
+
+                        <option value="English" selected>
+                            English
+                        </option>
+
+                        <option value="Swahili">
+                            Kiswahili
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="button"
+                    class="primary-btn"
+                    onclick="savePreferences()"
+                >
+                    Save Preferences
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- NOTIFICATION SETTINGS -->
+        <section class="content-card">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Notifications</h2>
+                    <p>Choose which system notifications you want</p>
+                </div>
+
+            </div>
+
+
+            <div class="settings-options">
+
+                <label>
+                    <input
+                        type="checkbox"
+                        id="reservationNotifications"
+                        checked
+                    >
+                    Reservation notifications
+                </label>
+
+
+                <label>
+                    <input
+                        type="checkbox"
+                        id="paymentNotifications"
+                        checked
+                    >
+                    Payment notifications
+                </label>
+
+
+                <label>
+                    <input
+                        type="checkbox"
+                        id="maintenanceNotifications"
+                        checked
+                    >
+                    Maintenance notifications
+                </label>
+
+
+                <label>
+                    <input
+                        type="checkbox"
+                        id="housekeepingNotifications"
+                        checked
+                    >
+                    Housekeeping notifications
+                </label>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="button"
+                    class="primary-btn"
+                    onclick="saveNotifications()"
+                >
+                    Save Notifications
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- SECURITY -->
+        <section class="content-card">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Security</h2>
+                    <p>Basic system security options</p>
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="sessionTimeout">
+                        Session Timeout
+                    </label>
+
+                    <select id="sessionTimeout">
+
+                        <option value="15">
+                            15 Minutes
+                        </option>
+
+                        <option value="30" selected>
+                            30 Minutes
+                        </option>
+
+                        <option value="60">
+                            1 Hour
+                        </option>
+
+                        <option value="120">
+                            2 Hours
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="loginProtection">
+                        Login Protection
+                    </label>
+
+                    <select id="loginProtection">
+
+                        <option value="enabled" selected>
+                            Enabled
+                        </option>
+
+                        <option value="disabled">
+                            Disabled
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="button"
+                    class="primary-btn"
+                    onclick="saveSecurity()"
+                >
+                    Save Security Settings
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- SYSTEM INFORMATION -->
+        <section class="content-card">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>System Information</h2>
+                    <p>Information about this hotel management system</p>
+                </div>
+
+            </div>
+
+
+            <div class="summary-grid">
+
+                <div class="summary-card">
+
+                    <h3>System</h3>
+
+                    <strong>
+                        EDU TECH HMS
+                    </strong>
+
+                    <p>
+                        Hotel Management System
+                    </p>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>Version</h3>
+
+                    <strong>
+                        1.0
+                    </strong>
+
+                    <p>
+                        Current version
+                    </p>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>Platform</h3>
+
+                    <strong>
+                        Web
+                    </strong>
+
+                    <p>
+                        Browser-based system
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+
+// HOTEL INFORMATION
+document
+    .getElementById("hotelSettingsForm")
+    .addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        alert("Hotel information saved successfully.");
+
+    });
+
+
+// SAVE PREFERENCES
+function savePreferences() {
+
+    alert("System preferences saved successfully.");
+
+}
+
+
+// SAVE NOTIFICATIONS
+function saveNotifications() {
+
+    alert("Notification settings saved successfully.");
+
+}
+
+
+// SAVE SECURITY
+function saveSecurity() {
+
+    alert("Security settings saved successfully.");
+
+}
+
+</script>
+
+</body>
+</html>

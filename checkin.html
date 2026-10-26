@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-in - EDU TECH Hotel Management System</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <h2>EDU TECH</h2>
+            <p>HOTEL SYSTEM</p>
+        </div>
+
+        <nav>
+            <a href="./index.html">🏠 Dashboard</a>
+            <a href="./rooms.html">🛏️ Rooms</a>
+            <a href="./guests.html">👤 Guests</a>
+            <a href="./reservations.html">📅 Reservations</a>
+            <a href="./checkin.html" class="active">🛎️ Check-in</a>
+            <a href="./checkout.html">🚪 Check-out</a>
+            <a href="./restaurant.html">🍽️ Restaurant</a>
+            <a href="./inventory.html">📦 Inventory</a>
+            <a href="./payments.html">💰 Payments</a>
+            <a href="./expenses.html">💸 Expenses</a>
+            <a href="./employees.html">👨‍💼 Employees</a>
+            <a href="./housekeeping.html">🧹 Housekeeping</a>
+            <a href="./maintenance.html">🔧 Maintenance</a>
+            <a href="./reports.html">📊 Reports</a>
+            <a href="./settings.html">⚙️ Settings</a>
+        </nav>
+
+    </aside>
+
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <h1>Check-in Management</h1>
+                <p>Manage hotel guest arrivals and room check-ins</p>
+            </div>
+
+            <div class="user">
+
+                <div class="user-icon">
+                    A
+                </div>
+
+                <div>
+                    <strong>Administrator</strong>
+                    <small>System Admin</small>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <section class="cards">
+
+            <div class="card">
+                <div class="card-icon">🛎️</div>
+                <div>
+                    <h3>Today's Check-ins</h3>
+                    <p id="todayCheckins">0</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🟢</div>
+                <div>
+                    <h3>Checked In</h3>
+                    <p id="checkedInCount">0</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🟡</div>
+                <div>
+                    <h3>Expected Arrivals</h3>
+                    <p id="expectedArrivals">0</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">⏳</div>
+                <div>
+                    <h3>Pending Check-ins</h3>
+                    <p id="pendingCheckins">0</p>
+                </div>
+            </div>
+
+        </section>
+
+
+        <section class="room-container">
+
+            <div class="room-header">
+
+                <div>
+                    <h2>Guest Check-ins</h2>
+                    <p>Register and manage guests arriving at the hotel</p>
+                </div>
+
+                <button
+                    class="add-room-btn"
+                    type="button"
+                    onclick="openCheckinForm()">
+                    + New Check-in
+                </button>
+
+            </div>
+
+
+            <div class="room-tools">
+
+                <input
+                    type="text"
+                    id="checkinSearch"
+                    placeholder="Search guest or room..."
+                >
+
+                <select id="checkinFilter">
+
+                    <option value="all">All Status</option>
+                    <option value="Expected">Expected</option>
+                    <option value="Checked In">Checked In</option>
+                    <option value="Cancelled">Cancelled</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="table-container">
+
+                <table id="checkinsTable">
+
+                    <thead>
+
+                        <tr>
+                            <th>Check-in ID</th>
+                            <th>Guest</th>
+                            <th>Room</th>
+                            <th>Arrival Date</th>
+                            <th>Expected Check-out</th>
+                            <th>Guests</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="checkinTable">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <div id="checkinModal" class="modal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>New Guest Check-in</h2>
+
+                <button
+                    type="button"
+                    onclick="closeCheckinForm()">
+                    ×
+                </button>
+
+            </div>
+
+
+            <form id="checkinForm">
+
+                <label>Guest Name</label>
+
+                <input
+                    type="text"
+                    id="checkinGuest"
+                    placeholder="Enter guest name"
+                    required
+                >
+
+
+                <label>Room Number</label>
+
+                <input
+                    type="text"
+                    id="checkinRoom"
+                    placeholder="e.g. 105"
+                    required
+                >
+
+
+                <label>Arrival Date</label>
+
+                <input
+                    type="date"
+                    id="arrivalDate"
+                    required
+                >
+
+
+                <label>Expected Check-out</label>
+
+                <input
+                    type="date"
+                    id="expectedCheckout"
+                    required
+                >
+
+
+                <label>Number of Guests</label>
+
+                <input
+                    type="number"
+                    id="numberOfGuests"
+                    min="1"
+                    value="1"
+                    required
+                >
+
+
+                <label>Status</label>
+
+                <select id="checkinStatus">
+
+                    <option value="Expected">Expected</option>
+                    <option value="Checked In">Checked In</option>
+                    <option value="Cancelled">Cancelled</option>
+
+                </select>
+
+
+                <button
+                    type="submit"
+                    class="save-room-btn">
+                    Save Check-in
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script src="./script.js"></script>
+
+
+    <script>
+
+        const CHECKIN_STORAGE_KEY = "eduTechCheckins";
+
+        let checkins =
+            JSON.parse(
+                localStorage.getItem(CHECKIN_STORAGE_KEY) || "[]"
+            );
+
+
+        let editingCheckinID = null;
+
+
+        const checkinForm =
+            document.getElementById("checkinForm");
+
+        const checkinTable =
+            document.getElementById("checkinTable");
+
+        const checkinSearch =
+            document.getElementById("checkinSearch");
+
+        const checkinFilter =
+            document.getElementById("checkinFilter");
+
+
+        /* =========================================
+           SAVE CHECK-INS
+        ========================================= */
+
+        function saveCheckins() {
+
+            localStorage.setItem(
+                CHECKIN_STORAGE_KEY,
+                JSON.stringify(checkins)
+            );
+
+        }
+
+
+        /* =========================================
+           OPEN FORM
+        ========================================= */
+
+        function openCheckinForm() {
+
+            document.getElementById(
+                "checkinModal"
+            ).style.display = "flex";
+
+        }
+
+
+        /* =========================================
+           CLOSE FORM
+        ========================================= */
+
+        function closeCheckinForm() {
+
+            document.getElementById(
+                "checkinModal"
+            ).style.display = "none";
+
+        }
+
+
+        /* =========================================
+           STATUS CLASS
+        ========================================= */
+
+        function getCheckinStatusClass(status) {
+
+            if (status === "Checked In") {
+                return "available-status";
+            }
+
+            if (status === "Expected") {
+                return "cleaning-status";
+            }
+
+            if (status === "Cancelled") {
+                return "maintenance-status";
+            }
+
+            return "";
+
+        }
+
+
+        /* =========================================
+           UPDATE ROOM STATUS
+        ========================================= */
+
+        function updateRoomStatus(roomNumber, status) {
+
+            const rooms =
+                JSON.parse(
+                    localStorage.getItem("eduTechRooms") || "[]"
+                );
+
+
+            const roomIndex =
+                rooms.findIndex(function(room) {
+
+                    return String(room.number).trim() ===
+                           String(roomNumber).trim();
+
+                });
+
+
+            if (roomIndex === -1) {
+                return;
+            }
+
+
+            rooms[roomIndex].status = status;
+
+
+            localStorage.setItem(
+                "eduTechRooms",
+                JSON.stringify(rooms)
+            );
+
+        }
+
+
+        /* =========================================
+           DISPLAY CHECK-INS
+        ========================================= */
+
+        function displayCheckins() {
+
+            checkinTable.innerHTML = "";
+
+
+            const searchText =
+                checkinSearch.value
+                    .toLowerCase()
+                    .trim();
+
+
+            const selectedStatus =
+                checkinFilter.value;
+
+
+            const filteredCheckins =
+                checkins.filter(function(checkin) {
+
+                    const guest =
+                        String(checkin.guest || "")
+                            .toLowerCase();
+
+                    const room =
+                        String(checkin.room || "")
+                            .toLowerCase();
+
+                    const id =
+                        String(checkin.checkinID || "")
+                            .toLowerCase();
+
+
+                    const matchesSearch =
+                        guest.includes(searchText) ||
+                        room.includes(searchText) ||
+                        id.includes(searchText);
+
+
+                    const matchesStatus =
+                        selectedStatus === "all" ||
+                        checkin.status === selectedStatus;
+
+
+                    return matchesSearch &&
+                           matchesStatus;
+
+                });
+
+
+            if (filteredCheckins.length === 0) {
+
+                checkinTable.innerHTML = `
+                    <tr>
+                        <td colspan="8"
+                            style="text-align:center; padding:25px;">
+                            No check-ins found.
+                        </td>
+                    </tr>
+                `;
+
+            }
+
+
+            filteredCheckins.forEach(function(checkin) {
+
+                const row =
+                    document.createElement("tr");
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${checkin.checkinID}
+                    </td>
+
+                    <td>
+                        ${checkin.guest}
+                    </td>
+
+                    <td>
+                        ${checkin.room}
+                    </td>
+
+                    <td>
+                        ${checkin.arrivalDate}
+                    </td>
+
+                    <td>
+                        ${checkin.expectedCheckout}
+                    </td>
+
+                    <td>
+                        ${checkin.numberOfGuests}
+                    </td>
+
+                    <td>
+
+                        <span class="room-status ${getCheckinStatusClass(checkin.status)}">
+                            ${checkin.status}
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <button
+                            class="edit-btn"
+                            type="button"
+                            onclick="editCheckinRecord('${checkin.checkinID}')">
+                            Edit
+                        </button>
+
+                        <button
+                            class="delete-btn"
+                            type="button"
+                            onclick="deleteCheckinRecord('${checkin.checkinID}')">
+                            Delete
+                        </button>
+
+                    </td>
+
+                `;
+
+
+                checkinTable.appendChild(row);
+
+            });
+
+
+            updateCheckinSummary();
+
+        }
+
+
+        /* =========================================
+           SUMMARY
+        ========================================= */
+
+        function updateCheckinSummary() {
+
+            const today =
+                new Date()
+                    .toISOString()
+                    .split("T")[0];
+
+
+            let todayCount = 0;
+            let checkedIn = 0;
+            let expected = 0;
+
+
+            checkins.forEach(function(checkin) {
+
+                if (
+                    checkin.arrivalDate === today &&
+                    checkin.status !== "Cancelled"
+                ) {
+
+                    todayCount++;
+
+                }
+
+
+                if (checkin.status === "Checked In") {
+                    checkedIn++;
+                }
+
+
+                if (checkin.status === "Expected") {
+                    expected++;
+                }
+
+            });
+
+
+            document.getElementById(
+                "todayCheckins"
+            ).textContent = todayCount;
+
+
+            document.getElementById(
+                "checkedInCount"
+            ).textContent = checkedIn;
+
+
+            document.getElementById(
+                "expectedArrivals"
+            ).textContent = expected;
+
+
+            document.getElementById(
+                "pendingCheckins"
+            ).textContent = expected;
+
+        }
+
+
+        /* =========================================
+           SAVE CHECK-IN
+        ========================================= */
+
+        checkinForm.addEventListener(
+            "submit",
+            function(event) {
+
+                event.preventDefault();
+
+
+                const guest =
+                    document.getElementById(
+                        "checkinGuest"
+                    ).value.trim();
+
+
+                const room =
+                    document.getElementById(
+                        "checkinRoom"
+                    ).value.trim();
+
+
+                const arrivalDate =
+                    document.getElementById(
+                        "arrivalDate"
+                    ).value;
+
+
+                const expectedCheckout =
+                    document.getElementById(
+                        "expectedCheckout"
+                    ).value;
+
+
+                const numberOfGuests =
+                    document.getElementById(
+                        "numberOfGuests"
+                    ).value;
+
+
+                const status =
+                    document.getElementById(
+                        "checkinStatus"
+                    ).value;
+
+
+                /* EDIT EXISTING */
+
+                if (editingCheckinID !== null) {
+
+                    const index =
+                        checkins.findIndex(
+                            function(checkin) {
+
+                                return checkin.checkinID ===
+                                       editingCheckinID;
+
+                            }
+                        );
+
+
+                    if (index !== -1) {
+
+                        const oldRoom =
+                            checkins[index].room;
+
+
+                        /*
+                           If the room was previously occupied
+                           by this check-in and the room number
+                           changed, make the old room available.
+                        */
+
+                        if (
+                            oldRoom !== room &&
+                            checkins[index].status === "Checked In"
+                        ) {
+
+                            updateRoomStatus(
+                                oldRoom,
+                                "Available"
+                            );
+
+                        }
+
+
+                        checkins[index] = {
+
+                            checkinID:
+                                editingCheckinID,
+
+                            guest:
+                                guest,
+
+                            room:
+                                room,
+
+                            arrivalDate:
+                                arrivalDate,
+
+                            expectedCheckout:
+                                expectedCheckout,
+
+                            numberOfGuests:
+                                numberOfGuests,
+
+                            status:
+                                status
+
+                        };
+
+
+                        updateRoomStatus(
+                            room,
+                            status === "Checked In"
+                                ? "Occupied"
+                                : "Available"
+                        );
+
+                    }
+
+
+                    editingCheckinID = null;
+
+                }
+
+
+                /* NEW CHECK-IN */
+
+                else {
+
+                    const checkinID =
+                        "CI-" +
+                        Date.now();
+
+
+                    const newCheckin = {
+
+                        checkinID:
+                            checkinID,
+
+                        guest:
+                            guest,
+
+                        room:
+                            room,
+
+                        arrivalDate:
+                            arrivalDate,
+
+                        expectedCheckout:
+                            expectedCheckout,
+
+                        numberOfGuests:
+                            numberOfGuests,
+
+                        status:
+                            status
+
+                    };
+
+
+                    checkins.push(
+                        newCheckin
+                    );
+
+
+                    /*
+                       Automatically update room.
+                    */
+
+                    updateRoomStatus(
+                        room,
+                        status === "Checked In"
+                            ? "Occupied"
+                            : "Available"
+                    );
+
+                }
+
+
+                saveCheckins();
+
+
+                checkinForm.reset();
+
+
+                document.getElementById(
+                    "numberOfGuests"
+                ).value = 1;
+
+
+                closeCheckinForm();
+
+
+                displayCheckins();
+
+            }
+        );
+
+
+        /* =========================================
+           EDIT CHECK-IN
+        ========================================= */
+
+        function editCheckinRecord(checkinID) {
+
+            const checkin =
+                checkins.find(
+                    function(item) {
+
+                        return item.checkinID ===
+                               checkinID;
+
+                    }
+                );
+
+
+            if (!checkin) {
+                return;
+            }
+
+
+            editingCheckinID =
+                checkinID;
+
+
+            document.getElementById(
+                "checkinGuest"
+            ).value =
+                checkin.guest;
+
+
+            document.getElementById(
+                "checkinRoom"
+            ).value =
+                checkin.room;
+
+
+            document.getElementById(
+                "arrivalDate"
+            ).value =
+                checkin.arrivalDate;
+
+
+            document.getElementById(
+                "expectedCheckout"
+            ).value =
+                checkin.expectedCheckout;
+
+
+            document.getElementById(
+                "numberOfGuests"
+            ).value =
+                checkin.numberOfGuests;
+
+
+            document.getElementById(
+                "checkinStatus"
+            ).value =
+                checkin.status;
+
+
+            openCheckinForm();
+
+        }
+
+
+        /* =========================================
+           DELETE CHECK-IN
+        ========================================= */
+
+        function deleteCheckinRecord(checkinID) {
+
+            const confirmed =
+                confirm(
+                    "Are you sure you want to delete this check-in?"
+                );
+
+
+            if (!confirmed) {
+                return;
+            }
+
+
+            const checkin =
+                checkins.find(
+                    function(item) {
+
+                        return item.checkinID ===
+                               checkinID;
+
+                    }
+                );
+
+
+            if (!checkin) {
+                return;
+            }
+
+
+            /*
+               If this check-in was occupying a room,
+               return that room to Available.
+            */
+
+            if (checkin.status === "Checked In") {
+
+                updateRoomStatus(
+                    checkin.room,
+                    "Available"
+                );
+
+            }
+
+
+            checkins =
+                checkins.filter(
+                    function(item) {
+
+                        return item.checkinID !==
+                               checkinID;
+
+                    }
+                );
+
+
+            saveCheckins();
+
+
+            displayCheckins();
+
+        }
+
+
+        /* =========================================
+           SEARCH
+        ========================================= */
+
+        checkinSearch.addEventListener(
+            "input",
+            displayCheckins
+        );
+
+
+        /* =========================================
+           FILTER
+        ========================================= */
+
+        checkinFilter.addEventListener(
+            "change",
+            displayCheckins
+        );
+
+
+        /* =========================================
+           CLOSE MODAL OUTSIDE
+        ========================================= */
+
+        document.getElementById(
+            "checkinModal"
+        ).addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    event.target ===
+                    document.getElementById(
+                        "checkinModal"
+                    )
+                ) {
+
+                    closeCheckinForm();
+
+                }
+
+            }
+        );
+
+
+        /* =========================================
+           INITIAL DISPLAY
+        ========================================= */
+
+        displayCheckins();
+
+    </script>
+
+</body>
+
+</html>

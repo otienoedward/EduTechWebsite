@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Payment Management - EDU TECH HOTEL</title>
+
+    <link rel="stylesheet" href="./style.css">
+
+    <style>
+        .sidebar {
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 250px !important;
+            height: 100vh !important;
+            z-index: 999999 !important;
+            pointer-events: auto !important;
+            overflow-y: auto !important;
+        }
+
+        .sidebar a {
+            display: block !important;
+            position: relative !important;
+            z-index: 1000000 !important;
+            pointer-events: auto !important;
+            cursor: pointer !important;
+        }
+
+        .main-content {
+            margin-left: 250px !important;
+            position: relative !important;
+            z-index: 1 !important;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <h2>EDU TECH</h2>
+            <p>HOTEL MANAGEMENT</p>
+        </div>
+
+        <nav>
+
+            <a href="./index.html">Dashboard</a>
+            <a href="./rooms.html">Rooms</a>
+            <a href="./guests.html">Guests</a>
+            <a href="./reservations.html">Reservations</a>
+            <a href="./checkin.html">Check-in</a>
+            <a href="./checkout.html">Check-out</a>
+            <a href="./restaurant.html">Restaurant</a>
+            <a href="./inventory.html">Inventory</a>
+            <a href="./payments.html" class="active">Payments</a>
+            <a href="./expenses.html">Expenses</a>
+            <a href="./employees.html">Employees</a>
+            <a href="./housekeeping.html">Housekeeping</a>
+            <a href="./maintenance.html">Maintenance</a>
+            <a href="./reports.html">Reports</a>
+            <a href="./settings.html">Settings</a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <h1>Payment Management</h1>
+                <p>Track and manage hotel payments</p>
+            </div>
+
+            <div class="user-info">
+                <strong>Administrator</strong>
+                <span>System Admin</span>
+            </div>
+
+        </header>
+
+
+        <!-- SUMMARY CARDS -->
+        <section class="summary-cards">
+
+            <div class="summary-card">
+                <h3>Total Payments</h3>
+                <p id="totalPayments">0</p>
+            </div>
+
+            <div class="summary-card">
+                <h3>Completed Payments</h3>
+                <p id="completedPayments">0</p>
+            </div>
+
+            <div class="summary-card">
+                <h3>Pending Payments</h3>
+                <p id="pendingPayments">0</p>
+            </div>
+
+            <div class="summary-card">
+                <h3>Total Revenue</h3>
+                <p id="paymentRevenue">KSh 0</p>
+            </div>
+
+        </section>
+
+
+        <!-- PAYMENT SECTION -->
+        <section class="content-section">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Hotel Payments</h2>
+                    <p>Record and manage guest payments</p>
+                </div>
+
+                <button
+                    class="primary-btn"
+                    onclick="openPaymentForm()">
+
+                    + New Payment
+
+                </button>
+
+            </div>
+
+
+            <!-- SEARCH AND FILTER -->
+            <div class="table-controls">
+
+                <input
+                    type="text"
+                    id="paymentSearch"
+                    placeholder="Search payments..."
+                    onkeyup="searchPayments()">
+
+                <select
+                    id="paymentFilter"
+                    onchange="filterPayments()">
+
+                    <option value="all">All Status</option>
+
+                    <option value="Completed">Completed</option>
+
+                    <option value="Pending">Pending</option>
+
+                    <option value="Cancelled">Cancelled</option>
+
+                </select>
+
+            </div>
+
+
+            <!-- PAYMENT TABLE -->
+            <div class="table-container">
+
+                <table id="paymentsTable">
+
+                    <thead>
+
+                        <tr>
+                            <th>Payment ID</th>
+                            <th>Guest</th>
+                            <th>Room</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Payment Method</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="paymentTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- PAYMENT MODAL -->
+<div id="paymentModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2 id="paymentModalTitle">
+                New Payment
+            </h2>
+
+            <button
+                type="button"
+                onclick="closePaymentForm()">
+
+                &times;
+
+            </button>
+
+        </div>
+
+
+        <form id="paymentForm">
+
+            <div class="form-group">
+
+                <label for="paymentGuest">
+                    Guest Name
+                </label>
+
+                <input
+                    type="text"
+                    id="paymentGuest"
+                    placeholder="Enter guest name"
+                    required>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="paymentRoom">
+                    Room Number
+                </label>
+
+                <input
+                    type="text"
+                    id="paymentRoom"
+                    placeholder="Enter room number"
+                    required>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="paymentDescription">
+                    Description
+                </label>
+
+                <input
+                    type="text"
+                    id="paymentDescription"
+                    placeholder="Enter payment description"
+                    required>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="paymentAmount">
+                    Amount (KSh)
+                </label>
+
+                <input
+                    type="number"
+                    id="paymentAmount"
+                    min="0"
+                    step="0.01"
+                    placeholder="Enter amount"
+                    required>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="paymentMethod">
+                    Payment Method
+                </label>
+
+                <select
+                    id="paymentMethod"
+                    required>
+
+                    <option value="">
+                        Select Payment Method
+                    </option>
+
+                    <option value="Cash">Cash</option>
+                    <option value="M-Pesa">M-Pesa</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="Card">Card</option>
+                    <option value="Other">Other</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="paymentDate">
+                    Payment Date
+                </label>
+
+                <input
+                    type="date"
+                    id="paymentDate"
+                    required>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="paymentStatus">
+                    Status
+                </label>
+
+                <select
+                    id="paymentStatus"
+                    required>
+
+                    <option value="Completed">Completed</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Cancelled">Cancelled</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    onclick="closePaymentForm()">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-btn">
+
+                    Save Payment
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script src="./script.js"></script>
+
+
+<script>
+
+    const PAYMENT_STORAGE_KEY = "eduTechPayments";
+
+    let editingPaymentRow = null;
+
+
+    /* ================================
+       PAYMENT STORAGE
+    ================================= */
+
+    function getStoredPayments() {
+
+        const saved =
+            localStorage.getItem(PAYMENT_STORAGE_KEY);
+
+        if (!saved) {
+            return [];
+        }
+
+        try {
+            return JSON.parse(saved);
+        } catch (error) {
+            return [];
+        }
+
+    }
+
+
+    function savePayments(payments) {
+
+        localStorage.setItem(
+            PAYMENT_STORAGE_KEY,
+            JSON.stringify(payments)
+        );
+
+    }
+
+
+    /* ================================
+       OPEN PAYMENT FORM
+    ================================= */
+
+    function openPaymentForm() {
+
+        document.getElementById("paymentModal").style.display =
+            "flex";
+
+        document.getElementById("paymentForm").reset();
+
+        editingPaymentRow = null;
+
+        document.getElementById("paymentModalTitle").textContent =
+            "New Payment";
+
+        const today =
+            new Date().toISOString().split("T")[0];
+
+        document.getElementById("paymentDate").value =
+            today;
+
+    }
+
+
+    /* ================================
+       CLOSE PAYMENT FORM
+    ================================= */
+
+    function closePaymentForm() {
+
+        document.getElementById("paymentModal").style.display =
+            "none";
+
+        document.getElementById("paymentForm").reset();
+
+        editingPaymentRow = null;
+
+    }
+
+
+    /* ================================
+       STATUS CLASS
+    ================================= */
+
+    function getPaymentStatusClass(status) {
+
+        if (status === "Completed") {
+            return "status-available";
+        }
+
+        if (status === "Pending") {
+            return "status-maintenance";
+        }
+
+        return "status-occupied";
+
+    }
+
+
+    /* ================================
+       DISPLAY PAYMENTS
+    ================================= */
+
+    function displayPayments() {
+
+        const payments =
+            getStoredPayments();
+
+        const tableBody =
+            document.getElementById("paymentTable");
+
+        tableBody.innerHTML = "";
+
+
+        payments.forEach(function(payment) {
+
+            const row =
+                document.createElement("tr");
+
+            row.dataset.id =
+                payment.id;
+
+            row.dataset.amount =
+                payment.amount;
+
+            row.dataset.status =
+                payment.status;
+
+
+            const statusClass =
+                getPaymentStatusClass(payment.status);
+
+
+            row.innerHTML = `
+
+                <td>${payment.id}</td>
+
+                <td>${payment.guest}</td>
+
+                <td>${payment.room}</td>
+
+                <td>${payment.description}</td>
+
+                <td>
+                    KSh ${Number(payment.amount).toLocaleString()}
+                </td>
+
+                <td>${payment.method}</td>
+
+                <td>${payment.date}</td>
+
+                <td>
+                    <span class="status ${statusClass}">
+                        ${payment.status}
+                    </span>
+                </td>
+
+                <td>
+
+                    <button
+                        class="action-btn view-btn"
+                        onclick="viewPaymentRecord(this)">
+                        View
+                    </button>
+
+                    <button
+                        class="action-btn edit-btn"
+                        onclick="editPaymentRecord(this)">
+                        Edit
+                    </button>
+
+                    <button
+                        class="action-btn delete-btn"
+                        onclick="deletePaymentRecord(this)">
+                        Delete
+                    </button>
+
+                </td>
+
+            `;
+
+
+            tableBody.appendChild(row);
+
+        });
+
+
+        updatePaymentSummary();
+
+        applyPaymentFilters();
+
+    }
+
+
+    /* ================================
+       PAYMENT SUMMARY
+    ================================= */
+
+    function updatePaymentSummary() {
+
+        const payments =
+            getStoredPayments();
+
+        let totalPayments =
+            payments.length;
+
+        let completedPayments =
+            0;
+
+        let pendingPayments =
+            0;
+
+        let revenue =
+            0;
+
+
+        payments.forEach(function(payment) {
+
+            if (payment.status === "Completed") {
+
+                completedPayments++;
+
+                revenue +=
+                    Number(payment.amount) || 0;
+
+            }
+
+
+            if (payment.status === "Pending") {
+
+                pendingPayments++;
+
+            }
+
+        });
+
+
+        document.getElementById("totalPayments").textContent =
+            totalPayments;
+
+        document.getElementById("completedPayments").textContent =
+            completedPayments;
+
+        document.getElementById("pendingPayments").textContent =
+            pendingPayments;
+
+        document.getElementById("paymentRevenue").textContent =
+            "KSh " +
+            revenue.toLocaleString(
+                "en-KE",
+                {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2
+                }
+            );
+
+    }
+
+
+    /* ================================
+       GENERATE PAYMENT ID
+    ================================= */
+
+    function generatePaymentID() {
+
+        const payments =
+            getStoredPayments();
+
+        return "PAY-" +
+            String(payments.length + 1).padStart(3, "0");
+
+    }
+
+
+    /* ================================
+       SAVE PAYMENT
+    ================================= */
+
+    document.getElementById("paymentForm").addEventListener(
+        "submit",
+        function(event) {
+
+            event.preventDefault();
+
+
+            const guest =
+                document.getElementById("paymentGuest").value.trim();
+
+            const room =
+                document.getElementById("paymentRoom").value.trim();
+
+            const description =
+                document.getElementById("paymentDescription").value.trim();
+
+            const amount =
+                Number(
+                    document.getElementById("paymentAmount").value
+                );
+
+            const method =
+                document.getElementById("paymentMethod").value;
+
+            const date =
+                document.getElementById("paymentDate").value;
+
+            const status =
+                document.getElementById("paymentStatus").value;
+
+
+            const payments =
+                getStoredPayments();
+
+
+            /* EDIT EXISTING PAYMENT */
+
+            if (editingPaymentRow) {
+
+                const paymentID =
+                    editingPaymentRow.dataset.id;
+
+
+                const index =
+                    payments.findIndex(function(payment) {
+
+                        return payment.id === paymentID;
+
+                    });
+
+
+                if (index !== -1) {
+
+                    payments[index] = {
+
+                        id: paymentID,
+                        guest: guest,
+                        room: room,
+                        description: description,
+                        amount: amount,
+                        method: method,
+                        date: date,
+                        status: status
+
+                    };
+
+                }
+
+
+                savePayments(payments);
+
+                displayPayments();
+
+                closePaymentForm();
+
+                return;
+
+            }
+
+
+            /* CREATE NEW PAYMENT */
+
+            const payment = {
+
+                id: generatePaymentID(),
+                guest: guest,
+                room: room,
+                description: description,
+                amount: amount,
+                method: method,
+                date: date,
+                status: status
+
+            };
+
+
+            payments.push(payment);
+
+            savePayments(payments);
+
+            displayPayments();
+
+            closePaymentForm();
+
+        }
+    );
+
+
+    /* ================================
+       VIEW PAYMENT
+    ================================= */
+
+    function viewPaymentRecord(button) {
+
+        const row =
+            button.closest("tr");
+
+        const paymentID =
+            row.cells[0].textContent;
+
+        const guest =
+            row.cells[1].textContent;
+
+        const room =
+            row.cells[2].textContent;
+
+        const description =
+            row.cells[3].textContent;
+
+        const amount =
+            row.cells[4].textContent;
+
+        const method =
+            row.cells[5].textContent;
+
+        const date =
+            row.cells[6].textContent;
+
+        const status =
+            row.dataset.status;
+
+
+        alert(
+            "Payment Details\n\n" +
+
+            "Payment ID: " +
+            paymentID + "\n" +
+
+            "Guest: " +
+            guest + "\n" +
+
+            "Room: " +
+            room + "\n" +
+
+            "Description: " +
+            description + "\n" +
+
+            "Amount: " +
+            amount + "\n" +
+
+            "Payment Method: " +
+            method + "\n" +
+
+            "Date: " +
+            date + "\n" +
+
+            "Status: " +
+            status
+        );
+
+    }
+
+
+    /* ================================
+       EDIT PAYMENT
+    ================================= */
+
+    function editPaymentRecord(button) {
+
+        editingPaymentRow =
+            button.closest("tr");
+
+
+        document.getElementById("paymentGuest").value =
+            editingPaymentRow.cells[1].textContent;
+
+        document.getElementById("paymentRoom").value =
+            editingPaymentRow.cells[2].textContent;
+
+        document.getElementById("paymentDescription").value =
+            editingPaymentRow.cells[3].textContent;
+
+        document.getElementById("paymentAmount").value =
+            editingPaymentRow.dataset.amount;
+
+        document.getElementById("paymentMethod").value =
+            editingPaymentRow.cells[5].textContent;
+
+        document.getElementById("paymentDate").value =
+            editingPaymentRow.cells[6].textContent;
+
+        document.getElementById("paymentStatus").value =
+            editingPaymentRow.dataset.status;
+
+
+        document.getElementById("paymentModalTitle").textContent =
+            "Edit Payment";
+
+
+        document.getElementById("paymentModal").style.display =
+            "flex";
+
+    }
+
+
+    /* ================================
+       DELETE PAYMENT
+    ================================= */
+
+    function deletePaymentRecord(button) {
+
+        const row =
+            button.closest("tr");
+
+        const paymentID =
+            row.dataset.id;
+
+
+        const confirmed =
+            confirm(
+                "Are you sure you want to delete payment " +
+                paymentID +
+                "?"
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        let payments =
+            getStoredPayments();
+
+
+        payments =
+            payments.filter(function(payment) {
+
+                return payment.id !== paymentID;
+
+            });
+
+
+        savePayments(payments);
+
+        displayPayments();
+
+    }
+
+
+    /* ================================
+       SEARCH
+    ================================= */
+
+    function searchPayments() {
+
+        applyPaymentFilters();
+
+    }
+
+
+    /* ================================
+       FILTER
+    ================================= */
+
+    function filterPayments() {
+
+        applyPaymentFilters();
+
+    }
+
+
+    function applyPaymentFilters() {
+
+        const search =
+            document.getElementById("paymentSearch")
+            .value
+            .toLowerCase()
+            .trim();
+
+
+        const filter =
+            document.getElementById("paymentFilter").value;
+
+
+        const rows =
+            document.querySelectorAll("#paymentTable tr");
+
+
+        rows.forEach(function(row) {
+
+            const rowText =
+                row.textContent.toLowerCase();
+
+            const status =
+                row.dataset.status || "";
+
+
+            const matchesSearch =
+                rowText.includes(search);
+
+
+            const matchesFilter =
+                filter === "all" ||
+                status === filter;
+
+
+            if (matchesSearch && matchesFilter) {
+
+                row.style.display = "";
+
+            } else {
+
+                row.style.display = "none";
+
+            }
+
+        });
+
+    }
+
+
+    /* ================================
+       CLOSE MODAL WHEN CLICKING OUTSIDE
+    ================================= */
+
+    window.addEventListener(
+        "click",
+        function(event) {
+
+            const modal =
+                document.getElementById("paymentModal");
+
+            if (event.target === modal) {
+
+                closePaymentForm();
+
+            }
+
+        }
+    );
+
+
+    /* ================================
+       START PAYMENT PAGE
+    ================================= */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            displayPayments();
+
+        }
+    );
+
+</script>
+
+</body>
+</html>

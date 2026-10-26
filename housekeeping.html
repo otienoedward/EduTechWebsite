@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Housekeeping - EDU TECH Hotel Management System</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <h2>EDU TECH</h2>
+            <p>Hotel Management</p>
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <a href="./index.html">🏠 Dashboard</a>
+            <a href="./rooms.html">🛏️ Rooms</a>
+            <a href="./guests.html">👤 Guests</a>
+            <a href="./reservations.html">📅 Reservations</a>
+            <a href="./checkin.html">🛎️ Check-in</a>
+            <a href="./checkout.html">🚪 Check-out</a>
+            <a href="./restaurant.html">🍽️ Restaurant</a>
+            <a href="./inventory.html">📦 Inventory</a>
+            <a href="./payments.html">💰 Payments</a>
+            <a href="./expenses.html">💸 Expenses</a>
+            <a href="./employees.html">👨‍💼 Employees</a>
+            <a href="./housekeeping.html" class="active">🧹 Housekeeping</a>
+            <a href="./maintenance.html">🔧 Maintenance</a>
+            <a href="./reports.html">📊 Reports</a>
+            <a href="./settings.html">⚙️ Settings</a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+
+            <div>
+                <h1>Housekeeping</h1>
+                <p>Manage room cleaning and housekeeping tasks</p>
+            </div>
+
+            <button class="primary-btn" onclick="openHousekeepingForm()">
+                + Add Housekeeping Task
+            </button>
+
+        </header>
+
+
+        <!-- SUMMARY CARDS -->
+        <section class="summary-grid">
+
+            <div class="summary-card">
+                <h3>Total Tasks</h3>
+                <strong id="totalTasks">0</strong>
+            </div>
+
+            <div class="summary-card">
+                <h3>Pending</h3>
+                <strong id="pendingTasks">0</strong>
+            </div>
+
+            <div class="summary-card">
+                <h3>In Progress</h3>
+                <strong id="inProgressTasks">0</strong>
+            </div>
+
+            <div class="summary-card">
+                <h3>Completed</h3>
+                <strong id="completedTasks">0</strong>
+            </div>
+
+        </section>
+
+
+        <!-- SEARCH AND FILTER -->
+        <section class="content-card">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Housekeeping Tasks</h2>
+                    <p>View and manage room cleaning tasks</p>
+                </div>
+
+                <div class="filters">
+
+                    <input
+                        type="text"
+                        id="housekeepingSearch"
+                        placeholder="Search room or staff..."
+                        onkeyup="searchHousekeeping()"
+                    >
+
+                    <select
+                        id="housekeepingFilter"
+                        onchange="filterHousekeeping()"
+                    >
+                        <option value="all">All Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- TABLE -->
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Room</th>
+                            <th>Task</th>
+                            <th>Staff</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="housekeepingTableBody">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- HOUSEKEEPING MODAL -->
+<div id="housekeepingModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <div>
+                <h2>Add Housekeeping Task</h2>
+                <p>Create a new room cleaning task</p>
+            </div>
+
+            <span class="close" onclick="closeHousekeepingForm()">&times;</span>
+
+        </div>
+
+
+        <form id="housekeepingForm">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label for="housekeepingRoom">
+                        Room Number
+                    </label>
+
+                    <input
+                        type="text"
+                        id="housekeepingRoom"
+                        placeholder="e.g. 101"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="housekeepingTask">
+                        Task
+                    </label>
+
+                    <select id="housekeepingTask" required>
+
+                        <option value="">
+                            Select Task
+                        </option>
+
+                        <option value="Room Cleaning">
+                            Room Cleaning
+                        </option>
+
+                        <option value="Bed Making">
+                            Bed Making
+                        </option>
+
+                        <option value="Bathroom Cleaning">
+                            Bathroom Cleaning
+                        </option>
+
+                        <option value="Deep Cleaning">
+                            Deep Cleaning
+                        </option>
+
+                        <option value="Laundry">
+                            Laundry
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="housekeepingStaff">
+                        Staff
+                    </label>
+
+                    <input
+                        type="text"
+                        id="housekeepingStaff"
+                        placeholder="Staff name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="housekeepingDate">
+                        Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="housekeepingDate"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="housekeepingStatus">
+                        Status
+                    </label>
+
+                    <select id="housekeepingStatus" required>
+
+                        <option value="Pending">
+                            Pending
+                        </option>
+
+                        <option value="In Progress">
+                            In Progress
+                        </option>
+
+                        <option value="Completed">
+                            Completed
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    onclick="closeHousekeepingForm()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                >
+                    Save Task
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let housekeepingTasks = [];
+
+let editingHousekeepingIndex = -1;
+
+
+/* OPEN FORM */
+
+function openHousekeepingForm() {
+
+    document.getElementById("housekeepingModal").style.display = "flex";
+
+    document.getElementById("housekeepingForm").reset();
+
+    editingHousekeepingIndex = -1;
+
+    document.getElementById("housekeepingDate").value =
+        new Date().toISOString().split("T")[0];
+}
+
+
+/* CLOSE FORM */
+
+function closeHousekeepingForm() {
+
+    document.getElementById("housekeepingModal").style.display = "none";
+
+    document.getElementById("housekeepingForm").reset();
+
+    editingHousekeepingIndex = -1;
+}
+
+
+/* SAVE TASK */
+
+document.getElementById("housekeepingForm").addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+    const room =
+        document.getElementById("housekeepingRoom").value.trim();
+
+    const task =
+        document.getElementById("housekeepingTask").value;
+
+    const staff =
+        document.getElementById("housekeepingStaff").value.trim();
+
+    const date =
+        document.getElementById("housekeepingDate").value;
+
+    const status =
+        document.getElementById("housekeepingStatus").value;
+
+
+    const newTask = {
+        room: room,
+        task: task,
+        staff: staff,
+        date: date,
+        status: status
+    };
+
+
+    if (editingHousekeepingIndex === -1) {
+
+        housekeepingTasks.push(newTask);
+
+    } else {
+
+        housekeepingTasks[editingHousekeepingIndex] = newTask;
+
+    }
+
+
+    displayHousekeepingTasks();
+
+    closeHousekeepingForm();
+
+    alert("Housekeeping task saved successfully.");
+
+});
+
+
+/* DISPLAY TASKS */
+
+function displayHousekeepingTasks() {
+
+    const tableBody =
+        document.getElementById("housekeepingTableBody");
+
+    tableBody.innerHTML = "";
+
+
+    housekeepingTasks.forEach(function(item, index) {
+
+        const row = document.createElement("tr");
+
+
+        let statusClass = "";
+
+        if (item.status === "Pending") {
+            statusClass = "status-pending";
+        }
+
+        if (item.status === "In Progress") {
+            statusClass = "status-progress";
+        }
+
+        if (item.status === "Completed") {
+            statusClass = "status-completed";
+        }
+
+
+        row.innerHTML = `
+
+            <td>${item.room}</td>
+
+            <td>${item.task}</td>
+
+            <td>${item.staff}</td>
+
+            <td>${item.date}</td>
+
+            <td>
+                <span class="status ${statusClass}">
+                    ${item.status}
+                </span>
+            </td>
+
+            <td>
+
+                <button
+                    class="action-btn"
+                    onclick="editHousekeeping(${index})"
+                >
+                    Edit
+                </button>
+
+                <button
+                    class="delete-btn"
+                    onclick="deleteHousekeeping(${index})"
+                >
+                    Delete
+                </button>
+
+            </td>
+
+        `;
+
+
+        tableBody.appendChild(row);
+
+    });
+
+
+    updateHousekeepingSummary();
+
+}
+
+
+/* UPDATE SUMMARY */
+
+function updateHousekeepingSummary() {
+
+    document.getElementById("totalTasks").textContent =
+        housekeepingTasks.length;
+
+
+    document.getElementById("pendingTasks").textContent =
+        housekeepingTasks.filter(function(item) {
+
+            return item.status === "Pending";
+
+        }).length;
+
+
+    document.getElementById("inProgressTasks").textContent =
+        housekeepingTasks.filter(function(item) {
+
+            return item.status === "In Progress";
+
+        }).length;
+
+
+    document.getElementById("completedTasks").textContent =
+        housekeepingTasks.filter(function(item) {
+
+            return item.status === "Completed";
+
+        }).length;
+
+}
+
+
+/* EDIT */
+
+function editHousekeeping(index) {
+
+    const item = housekeepingTasks[index];
+
+    document.getElementById("housekeepingRoom").value =
+        item.room;
+
+    document.getElementById("housekeepingTask").value =
+        item.task;
+
+    document.getElementById("housekeepingStaff").value =
+        item.staff;
+
+    document.getElementById("housekeepingDate").value =
+        item.date;
+
+    document.getElementById("housekeepingStatus").value =
+        item.status;
+
+
+    editingHousekeepingIndex = index;
+
+    document.getElementById("housekeepingModal").style.display =
+        "flex";
+
+}
+
+
+/* DELETE */
+
+function deleteHousekeeping(index) {
+
+    if (confirm("Are you sure you want to delete this task?")) {
+
+        housekeepingTasks.splice(index, 1);
+
+        displayHousekeepingTasks();
+
+    }
+
+}
+
+
+/* SEARCH */
+
+function searchHousekeeping() {
+
+    const search =
+        document.getElementById("housekeepingSearch").value
+        .toLowerCase();
+
+    const rows =
+        document.querySelectorAll("#housekeepingTableBody tr");
+
+
+    rows.forEach(function(row) {
+
+        const text =
+            row.textContent.toLowerCase();
+
+        row.style.display =
+            text.includes(search) ? "" : "none";
+
+    });
+
+}
+
+
+/* FILTER */
+
+function filterHousekeeping() {
+
+    const filter =
+        document.getElementById("housekeepingFilter").value;
+
+    const rows =
+        document.querySelectorAll("#housekeepingTableBody tr");
+
+
+    rows.forEach(function(row) {
+
+        const status =
+            row.cells[4].textContent.trim();
+
+
+        if (filter === "all" || status === filter) {
+
+            row.style.display = "";
+
+        } else {
+
+            row.style.display = "none";
+
+        }
+
+    });
+
+}
+
+
+/* CLOSE MODAL WHEN CLICKING OUTSIDE */
+
+window.addEventListener("click", function(event) {
+
+    const modal =
+        document.getElementById("housekeepingModal");
+
+    if (event.target === modal) {
+
+        closeHousekeepingForm();
+
+    }
+
+});
+
+
+/* INITIAL DISPLAY */
+
+displayHousekeepingTasks();
+
+</script>
+
+</body>
+</html>

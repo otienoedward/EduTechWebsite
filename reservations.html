@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservations - EDU TECH Hotel Management System</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <h2>EDU TECH</h2>
+            <p>HOTEL SYSTEM</p>
+        </div>
+
+        <nav>
+
+            <a href="./index.html">🏠 Dashboard</a>
+            <a href="./rooms.html">🛏️ Rooms</a>
+            <a href="./guests.html">👤 Guests</a>
+            <a href="./reservations.html" class="active">📅 Reservations</a>
+            <a href="./checkin.html">🛎️ Check-in</a>
+            <a href="./checkout.html">🚪 Check-out</a>
+            <a href="./restaurant.html">🍽️ Restaurant</a>
+            <a href="./inventory.html">📦 Inventory</a>
+            <a href="./payments.html">💰 Payments</a>
+            <a href="./expenses.html">💸 Expenses</a>
+            <a href="./employees.html">👨‍💼 Employees</a>
+            <a href="./housekeeping.html">🧹 Housekeeping</a>
+            <a href="./maintenance.html">🔧 Maintenance</a>
+            <a href="./reports.html">📊 Reports</a>
+            <a href="./settings.html">⚙️ Settings</a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+
+            <div>
+                <h1>Reservations</h1>
+                <p>Manage hotel bookings and reservations</p>
+            </div>
+
+            <div class="user">
+
+                <div class="user-icon">
+                    A
+                </div>
+
+                <div>
+                    <strong>Administrator</strong>
+                    <small>System Admin</small>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- SUMMARY CARDS -->
+        <section class="cards">
+
+            <div class="card">
+
+                <div class="card-icon">
+                    📅
+                </div>
+
+                <div>
+                    <h3>Total Reservations</h3>
+                    <p id="totalReservations">0</p>
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-icon">
+                    🟢
+                </div>
+
+                <div>
+                    <h3>Confirmed</h3>
+                    <p id="confirmedReservations">0</p>
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-icon">
+                    🟡
+                </div>
+
+                <div>
+                    <h3>Pending</h3>
+                    <p id="pendingReservations">0</p>
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-icon">
+                    ❌
+                </div>
+
+                <div>
+                    <h3>Cancelled</h3>
+                    <p id="cancelledReservations">0</p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- RESERVATIONS -->
+        <section class="room-container">
+
+            <div class="room-header">
+
+                <div>
+                    <h2>Hotel Reservations</h2>
+                    <p>View and manage guest bookings</p>
+                </div>
+
+                <button
+                    type="button"
+                    class="add-room-btn"
+                    onclick="openReservationForm()">
+                    + New Reservation
+                </button>
+
+            </div>
+
+
+            <!-- SEARCH AND FILTER -->
+            <div class="room-tools">
+
+                <input
+                    type="text"
+                    id="reservationSearch"
+                    placeholder="Search guest or room..."
+                >
+
+                <select id="reservationFilter">
+
+                    <option value="all">
+                        All Statuses
+                    </option>
+
+                    <option value="Confirmed">
+                        Confirmed
+                    </option>
+
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="Cancelled">
+                        Cancelled
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- TABLE -->
+            <div class="table-container">
+
+                <table id="reservationsTable">
+
+                    <thead>
+
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Guest</th>
+                            <th>Room</th>
+                            <th>Check-in</th>
+                            <th>Check-out</th>
+                            <th>Nights</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="reservationTable">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- RESERVATION MODAL -->
+    <div id="reservationModal" class="modal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>New Reservation</h2>
+
+                <button
+                    type="button"
+                    onclick="closeReservationForm()">
+                    ×
+                </button>
+
+            </div>
+
+
+            <form id="reservationForm">
+
+                <label for="reservationGuest">
+                    Guest Name
+                </label>
+
+                <input
+                    type="text"
+                    id="reservationGuest"
+                    placeholder="Enter guest name"
+                    required
+                >
+
+
+                <label for="reservationRoom">
+                    Room Number
+                </label>
+
+                <input
+                    type="text"
+                    id="reservationRoom"
+                    placeholder="e.g. 105"
+                    required
+                >
+
+
+                <label for="reservationPrice">
+                    Room Price Per Night
+                </label>
+
+                <input
+                    type="number"
+                    id="reservationPrice"
+                    placeholder="e.g. 6500"
+                    min="0"
+                    required
+                >
+
+
+                <label for="reservationCheckin">
+                    Check-in Date
+                </label>
+
+                <input
+                    type="date"
+                    id="reservationCheckin"
+                    required
+                >
+
+
+                <label for="reservationCheckout">
+                    Check-out Date
+                </label>
+
+                <input
+                    type="date"
+                    id="reservationCheckout"
+                    required
+                >
+
+
+                <label for="reservationStatus">
+                    Status
+                </label>
+
+                <select id="reservationStatus">
+
+                    <option value="Confirmed">
+                        Confirmed
+                    </option>
+
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="Cancelled">
+                        Cancelled
+                    </option>
+
+                </select>
+
+
+                <button
+                    type="submit"
+                    class="save-room-btn">
+                    Save Reservation
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- MAIN SYSTEM JAVASCRIPT -->
+    <script src="./script.js"></script>
+
+
+    <!-- RESERVATION JAVASCRIPT -->
+    <script>
+
+        let reservations =
+            JSON.parse(
+                localStorage.getItem("eduTechReservations")
+            ) || [];
+
+
+        const reservationForm =
+            document.getElementById("reservationForm");
+
+        const reservationTable =
+            document.getElementById("reservationTable");
+
+        const reservationSearch =
+            document.getElementById("reservationSearch");
+
+        const reservationFilter =
+            document.getElementById("reservationFilter");
+
+
+        /* OPEN FORM */
+
+        function openReservationForm() {
+
+            document.getElementById(
+                "reservationModal"
+            ).style.display = "flex";
+
+        }
+
+
+        /* CLOSE FORM */
+
+        function closeReservationForm() {
+
+            document.getElementById(
+                "reservationModal"
+            ).style.display = "none";
+
+        }
+
+
+        /* CALCULATE NIGHTS */
+
+        function calculateNights(checkin, checkout) {
+
+            const start =
+                new Date(checkin);
+
+            const end =
+                new Date(checkout);
+
+            const difference =
+                end - start;
+
+            const nights =
+                Math.ceil(
+                    difference /
+                    (1000 * 60 * 60 * 24)
+                );
+
+            return nights;
+
+        }
+
+
+        /* DISPLAY RESERVATIONS */
+
+        function displayReservations() {
+
+            reservationTable.innerHTML = "";
+
+            const searchText =
+                reservationSearch.value
+                    .toLowerCase()
+                    .trim();
+
+            const selectedStatus =
+                reservationFilter.value;
+
+
+            const filteredReservations =
+                reservations.filter(function(reservation) {
+
+                    const matchesSearch =
+                        reservation.guest
+                            .toLowerCase()
+                            .includes(searchText) ||
+
+                        reservation.room
+                            .toLowerCase()
+                            .includes(searchText) ||
+
+                        reservation.bookingId
+                            .toLowerCase()
+                            .includes(searchText);
+
+
+                    const matchesStatus =
+                        selectedStatus === "all" ||
+                        reservation.status === selectedStatus;
+
+
+                    return matchesSearch &&
+                           matchesStatus;
+
+                });
+
+
+            if (filteredReservations.length === 0) {
+
+                reservationTable.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align:center; padding:25px;">
+                            No reservations found.
+                        </td>
+                    </tr>
+                `;
+
+            }
+
+
+            filteredReservations.forEach(function(reservation) {
+
+                const row =
+                    document.createElement("tr");
+
+
+                let statusClass = "";
+
+                if (reservation.status === "Confirmed") {
+
+                    statusClass =
+                        "available-status";
+
+                } else if (reservation.status === "Pending") {
+
+                    statusClass =
+                        "cleaning-status";
+
+                } else if (reservation.status === "Cancelled") {
+
+                    statusClass =
+                        "occupied-status";
+
+                }
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${reservation.bookingId}
+                    </td>
+
+                    <td>
+                        ${reservation.guest}
+                    </td>
+
+                    <td>
+                        ${reservation.room}
+                    </td>
+
+                    <td>
+                        ${reservation.checkin}
+                    </td>
+
+                    <td>
+                        ${reservation.checkout}
+                    </td>
+
+                    <td>
+                        ${reservation.nights}
+                    </td>
+
+                    <td>
+                        KSh ${Number(
+                            reservation.total
+                        ).toLocaleString()}
+                    </td>
+
+                    <td>
+                        <span class="room-status ${statusClass}">
+                            ${reservation.status}
+                        </span>
+                    </td>
+
+                    <td>
+
+                        <button
+                            class="delete-btn"
+                            type="button"
+                            onclick="deleteReservation('${reservation.bookingId}')">
+                            Delete
+                        </button>
+
+                    </td>
+
+                `;
+
+
+                reservationTable.appendChild(row);
+
+            });
+
+
+            updateReservationSummary();
+
+        }
+
+
+        /* UPDATE SUMMARY CARDS */
+
+        function updateReservationSummary() {
+
+            document.getElementById(
+                "totalReservations"
+            ).textContent =
+                reservations.length;
+
+
+            document.getElementById(
+                "confirmedReservations"
+            ).textContent =
+                reservations.filter(function(reservation) {
+
+                    return reservation.status === "Confirmed";
+
+                }).length;
+
+
+            document.getElementById(
+                "pendingReservations"
+            ).textContent =
+                reservations.filter(function(reservation) {
+
+                    return reservation.status === "Pending";
+
+                }).length;
+
+
+            document.getElementById(
+                "cancelledReservations"
+            ).textContent =
+                reservations.filter(function(reservation) {
+
+                    return reservation.status === "Cancelled";
+
+                }).length;
+
+        }
+
+
+        /* SAVE RESERVATION */
+
+        reservationForm.addEventListener(
+            "submit",
+            function(event) {
+
+                event.preventDefault();
+
+
+                const guest =
+                    document.getElementById(
+                        "reservationGuest"
+                    ).value.trim();
+
+
+                const room =
+                    document.getElementById(
+                        "reservationRoom"
+                    ).value.trim();
+
+
+                const price =
+                    Number(
+                        document.getElementById(
+                            "reservationPrice"
+                        ).value
+                    );
+
+
+                const checkin =
+                    document.getElementById(
+                        "reservationCheckin"
+                    ).value;
+
+
+                const checkout =
+                    document.getElementById(
+                        "reservationCheckout"
+                    ).value;
+
+
+                const status =
+                    document.getElementById(
+                        "reservationStatus"
+                    ).value;
+
+
+                const nights =
+                    calculateNights(
+                        checkin,
+                        checkout
+                    );
+
+
+                if (nights <= 0) {
+
+                    alert(
+                        "Check-out date must be after the check-in date."
+                    );
+
+                    return;
+
+                }
+
+
+                const total =
+                    nights * price;
+
+
+                const bookingId =
+                    "RES-" +
+                    Date.now();
+
+
+                const reservation = {
+
+                    bookingId: bookingId,
+
+                    guest: guest,
+
+                    room: room,
+
+                    price: price,
+
+                    checkin: checkin,
+
+                    checkout: checkout,
+
+                    nights: nights,
+
+                    total: total,
+
+                    status: status
+
+                };
+
+
+                reservations.push(
+                    reservation
+                );
+
+
+                localStorage.setItem(
+                    "eduTechReservations",
+                    JSON.stringify(reservations)
+                );
+
+
+                reservationForm.reset();
+
+
+                closeReservationForm();
+
+
+                displayReservations();
+
+
+                alert(
+                    "Reservation saved successfully."
+                );
+
+            }
+        );
+
+
+        /* DELETE RESERVATION */
+
+        function deleteReservation(bookingId) {
+
+            const confirmed =
+                confirm(
+                    "Are you sure you want to delete this reservation?"
+                );
+
+
+            if (!confirmed) {
+                return;
+            }
+
+
+            reservations =
+                reservations.filter(function(reservation) {
+
+                    return reservation.bookingId !== bookingId;
+
+                });
+
+
+            localStorage.setItem(
+                "eduTechReservations",
+                JSON.stringify(reservations)
+            );
+
+
+            displayReservations();
+
+        }
+
+
+        /* SEARCH */
+
+        reservationSearch.addEventListener(
+            "input",
+            displayReservations
+        );
+
+
+        /* FILTER */
+
+        reservationFilter.addEventListener(
+            "change",
+            displayReservations
+        );
+
+
+        /* CLOSE MODAL WHEN CLICKING OUTSIDE */
+
+        document.getElementById(
+            "reservationModal"
+        ).addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    event.target ===
+                    document.getElementById(
+                        "reservationModal"
+                    )
+                ) {
+
+                    closeReservationForm();
+
+                }
+
+            }
+        );
+
+
+        /* INITIAL DISPLAY */
+
+        displayReservations();
+
+    </script>
+
+</body>
+
+</html>

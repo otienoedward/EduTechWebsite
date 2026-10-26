@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Restaurant - EDU TECH Hotel Management System</title>
+
+    <link rel="stylesheet" href="./style.css">
+
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <h2>EDU TECH</h2>
+
+            <p>HOTEL SYSTEM</p>
+
+        </div>
+
+        <nav>
+
+            <a href="./index.html">🏠 Dashboard</a>
+
+            <a href="./rooms.html">🛏️ Rooms</a>
+
+            <a href="./guests.html">👤 Guests</a>
+
+            <a href="./reservations.html">📅 Reservations</a>
+
+            <a href="./checkin.html">🛎️ Check-in</a>
+
+            <a href="./checkout.html">🚪 Check-out</a>
+
+            <a href="./restaurant.html" class="active">🍽️ Restaurant</a>
+
+            <a href="./inventory.html">📦 Inventory</a>
+
+            <a href="./payments.html">💰 Payments</a>
+
+            <a href="./expenses.html">💸 Expenses</a>
+
+            <a href="./employees.html">👨‍💼 Employees</a>
+
+            <a href="./housekeeping.html">🧹 Housekeeping</a>
+
+            <a href="./maintenance.html">🔧 Maintenance</a>
+
+            <a href="./reports.html">📊 Reports</a>
+
+            <a href="./settings.html">⚙️ Settings</a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>Restaurant Management</h1>
+
+                <p>
+                    Manage restaurant orders, food sales and guest dining
+                </p>
+
+            </div>
+
+            <div class="user">
+
+                <div class="user-icon">
+                    A
+                </div>
+
+                <div>
+
+                    <strong>Administrator</strong>
+
+                    <small>System Admin</small>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- SUMMARY CARDS -->
+
+        <section class="cards">
+
+            <div class="card">
+
+                <div class="card-icon">
+                    🍽️
+                </div>
+
+                <div>
+
+                    <h3>Today's Orders</h3>
+
+                    <p id="todayOrders">0</p>
+
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-icon">
+                    🟡
+                </div>
+
+                <div>
+
+                    <h3>Pending Orders</h3>
+
+                    <p id="pendingOrders">0</p>
+
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-icon">
+                    🟢
+                </div>
+
+                <div>
+
+                    <h3>Completed Orders</h3>
+
+                    <p id="completedOrders">0</p>
+
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-icon">
+                    💰
+                </div>
+
+                <div>
+
+                    <h3>Today's Sales</h3>
+
+                    <p id="restaurantSales">KSh 0</p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- RESTAURANT ORDERS -->
+
+        <section class="room-container">
+
+            <div class="room-header">
+
+                <div>
+
+                    <h2>Restaurant Orders</h2>
+
+                    <p>
+                        Record and manage food and drink orders
+                    </p>
+
+                </div>
+
+                <button
+                    class="add-room-btn"
+                    onclick="openRestaurantForm()">
+
+                    + New Order
+
+                </button>
+
+            </div>
+
+
+            <!-- SEARCH AND FILTER -->
+
+            <div class="room-tools">
+
+                <input
+                    type="text"
+                    id="restaurantSearch"
+                    placeholder="Search guest, room or order..."
+                    onkeyup="searchRestaurantOrders"
+                >
+
+                <select
+                    id="restaurantFilter"
+                    onchange="filterRestaurantOrders()">
+
+                    <option value="all">
+                        All Orders
+                    </option>
+
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="Preparing">
+                        Preparing
+                    </option>
+
+                    <option value="Served">
+                        Served
+                    </option>
+
+                    <option value="Paid">
+                        Paid
+                    </option>
+
+                    <option value="Cancelled">
+                        Cancelled
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- TABLE -->
+
+            <div class="table-container">
+
+                <table id="restaurantTableData">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Order ID</th>
+
+                            <th>Guest</th>
+
+                            <th>Room</th>
+
+                            <th>Order Items</th>
+
+                            <th>Total</th>
+
+                            <th>Payment</th>
+
+                            <th>Status</th>
+
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="restaurantTable">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- RESTAURANT MODAL -->
+
+    <div id="restaurantModal" class="modal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>
+                    New Restaurant Order
+                </h2>
+
+                <button
+                    type="button"
+                    onclick="closeRestaurantForm()">
+
+                    ×
+
+                </button>
+
+            </div>
+
+
+            <form id="restaurantForm">
+
+                <label>
+                    Guest Name
+                </label>
+
+                <input
+                    type="text"
+                    id="restaurantGuest"
+                    placeholder="Enter guest name"
+                    required
+                >
+
+
+                <label>
+                    Room Number
+                </label>
+
+                <input
+                    type="text"
+                    id="restaurantRoom"
+                    placeholder="Example: 105"
+                    required
+                >
+
+
+                <label>
+                    Order Items
+                </label>
+
+                <textarea
+                    id="restaurantItems"
+                    placeholder="Example: Chicken, Chips, Soda"
+                    rows="4"
+                    required
+                ></textarea>
+
+
+                <label>
+                    Total Amount (KSh)
+                </label>
+
+                <input
+                    type="number"
+                    id="restaurantAmount"
+                    placeholder="Enter total amount"
+                    min="0"
+                    required
+                >
+
+
+                <label>
+                    Payment Method
+                </label>
+
+                <select
+                    id="restaurantPayment"
+                    required>
+
+                    <option value="">
+                        Select Payment Method
+                    </option>
+
+                    <option value="Cash">
+                        Cash
+                    </option>
+
+                    <option value="M-Pesa">
+                        M-Pesa
+                    </option>
+
+                    <option value="Card">
+                        Card
+                    </option>
+
+                    <option value="Room Charge">
+                        Room Charge
+                    </option>
+
+                </select>
+
+
+                <label>
+                    Order Status
+                </label>
+
+                <select
+                    id="restaurantStatus"
+                    required>
+
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="Preparing">
+                        Preparing
+                    </option>
+
+                    <option value="Served">
+                        Served
+                    </option>
+
+                    <option value="Paid">
+                        Paid
+                    </option>
+
+                    <option value="Cancelled">
+                        Cancelled
+                    </option>
+
+                </select>
+
+
+                <button
+                    type="submit"
+                    class="save-room-btn">
+
+                    Save Order
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- MAIN JAVASCRIPT -->
+
+    <script src="./script.js"></script>
+
+
+    <!-- RESTAURANT PAGE JAVASCRIPT -->
+
+    <script>
+
+        const restaurantForm =
+            document.getElementById("restaurantForm");
+
+
+        restaurantForm.addEventListener(
+            "submit",
+            function(event) {
+
+                event.preventDefault();
+
+
+                const guest =
+                    document
+                        .getElementById("restaurantGuest")
+                        .value
+                        .trim();
+
+
+                const room =
+                    document
+                        .getElementById("restaurantRoom")
+                        .value
+                        .trim();
+
+
+                const items =
+                    document
+                        .getElementById("restaurantItems")
+                        .value
+                        .trim();
+
+
+                const amount =
+                    Number(
+                        document
+                            .getElementById("restaurantAmount")
+                            .value
+                    );
+
+
+                const payment =
+                    document
+                        .getElementById("restaurantPayment")
+                        .value;
+
+
+                const status =
+                    document
+                        .getElementById("restaurantStatus")
+                        .value;
+
+
+                const orderID =
+                    "ORD-" +
+                    Math.floor(
+                        1000 +
+                        Math.random() * 9000
+                    );
+
+
+                const table =
+                    document.getElementById(
+                        "restaurantTable"
+                    );
+
+
+                const row =
+                    document.createElement("tr");
+
+
+                row.innerHTML = `
+
+                    <td>${orderID}</td>
+
+                    <td>${guest}</td>
+
+                    <td>${room}</td>
+
+                    <td>${items}</td>
+
+                    <td>KSh ${amount.toLocaleString()}</td>
+
+                    <td>${payment}</td>
+
+                    <td>
+
+                        <span class="room-status ${getRestaurantStatusClass(status)}">
+
+                            ${status}
+
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <button
+                            class="edit-btn"
+                            onclick="editRestaurantRecord(this)">
+
+                            Edit
+
+                        </button>
+
+                        <button
+                            class="delete-btn"
+                            onclick="deleteRestaurantRecord(this)">
+
+                            Delete
+
+                        </button>
+
+                    </td>
+
+                `;
+
+
+                table.appendChild(row);
+
+
+                updateRestaurantSummary();
+
+
+                restaurantForm.reset();
+
+
+                closeRestaurantForm();
+
+            }
+        );
+
+
+        function getRestaurantStatusClass(status) {
+
+            if (status === "Paid") {
+                return "available-status";
+            }
+
+            if (status === "Served") {
+                return "available-status";
+            }
+
+            if (status === "Pending") {
+                return "cleaning-status";
+            }
+
+            if (status === "Preparing") {
+                return "cleaning-status";
+            }
+
+            if (status === "Cancelled") {
+                return "maintenance-status";
+            }
+
+            return "";
+
+        }
+
+
+        function updateRestaurantSummary() {
+
+            const rows =
+                document.querySelectorAll(
+                    "#restaurantTable tr"
+                );
+
+
+            let pending = 0;
+
+            let completed = 0;
+
+            let sales = 0;
+
+
+            const todayOrders =
+                rows.length;
+
+
+            rows.forEach(function(row) {
+
+                const cells =
+                    row.querySelectorAll("td");
+
+
+                if (cells.length < 7) {
+                    return;
+                }
+
+
+                const amountText =
+                    cells[4]
+                        .textContent
+                        .replace("KSh", "")
+                        .replace(/,/g, "")
+                        .trim();
+
+
+                const amount =
+                    Number(amountText) || 0;
+
+
+                const status =
+                    cells[6]
+                        .textContent
+                        .trim();
+
+
+                if (
+                    status === "Paid" ||
+                    status === "Served"
+                ) {
+                    completed++;
+                }
+
+
+                if (
+                    status === "Pending" ||
+                    status === "Preparing"
+                ) {
+                    pending++;
+                }
+
+
+                if (status === "Paid") {
+                    sales += amount;
+                }
+
+            });
+
+
+            document.getElementById(
+                "todayOrders"
+            ).textContent = todayOrders;
+
+
+            document.getElementById(
+                "pendingOrders"
+            ).textContent = pending;
+
+
+            document.getElementById(
+                "completedOrders"
+            ).textContent = completed;
+
+
+            document.getElementById(
+                "restaurantSales"
+            ).textContent =
+                "KSh " +
+                sales.toLocaleString();
+
+        }
+
+
+        function deleteRestaurantRecord(button) {
+
+            if (
+                confirm(
+                    "Are you sure you want to delete this restaurant order?"
+                )
+            ) {
+
+                button
+                    .closest("tr")
+                    .remove();
+
+                updateRestaurantSummary();
+
+            }
+
+        }
+
+
+        function editRestaurantRecord(button) {
+
+            const row =
+                button.closest("tr");
+
+
+            const cells =
+                row.querySelectorAll("td");
+
+
+            document.getElementById(
+                "restaurantGuest"
+            ).value =
+                cells[1]
+                    .textContent
+                    .trim();
+
+
+            document.getElementById(
+                "restaurantRoom"
+            ).value =
+                cells[2]
+                    .textContent
+                    .trim();
+
+
+            document.getElementById(
+                "restaurantItems"
+            ).value =
+                cells[3]
+                    .textContent
+                    .trim();
+
+
+            const amount =
+                cells[4]
+                    .textContent
+                    .replace("KSh", "")
+                    .replace(/,/g, "")
+                    .trim();
+
+
+            document.getElementById(
+                "restaurantAmount"
+            ).value = amount;
+
+
+            document.getElementById(
+                "restaurantPayment"
+            ).value =
+                cells[5]
+                    .textContent
+                    .trim();
+
+
+            document.getElementById(
+                "restaurantStatus"
+            ).value =
+                cells[6]
+                    .textContent
+                    .trim();
+
+
+            row.remove();
+
+
+            openRestaurantForm();
+
+
+            updateRestaurantSummary();
+
+        }
+
+
+        function applyRestaurantFilters() {
+
+            const searchText =
+                document
+                    .getElementById(
+                        "restaurantSearch"
+                    )
+                    .value
+                    .toLowerCase();
+
+
+            const selectedStatus =
+                document.getElementById(
+                    "restaurantFilter"
+                ).value;
+
+
+            const rows =
+                document.querySelectorAll(
+                    "#restaurantTable tr"
+                );
+
+
+            rows.forEach(function(row) {
+
+                const text =
+                    row.textContent
+                        .toLowerCase();
+
+
+                const status =
+                    row.querySelector(
+                        "td:nth-child(7)"
+                    )
+                    ?.textContent
+                    .trim();
+
+
+                const matchesSearch =
+                    text.includes(searchText);
+
+
+                const matchesStatus =
+                    selectedStatus === "all" ||
+                    status === selectedStatus;
+
+
+                row.style.display =
+                    matchesSearch &&
+                    matchesStatus
+                        ? ""
+                        : "none";
+
+            });
+
+        }
+
+
+        function searchRestaurantOrders() {
+
+            applyRestaurantFilters();
+
+        }
+
+
+        function filterRestaurantOrders() {
+
+            applyRestaurantFilters();
+
+        }
+
+
+        updateRestaurantSummary();
+
+    </script>
+
+</body>
+
+</html>

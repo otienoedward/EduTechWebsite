@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employees - EDU TECH Hotel Management System</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+<aside class="sidebar">
+
+    <div class="logo">
+        <h2>EDU TECH</h2>
+        <p>HOTEL SYSTEM</p>
+    </div>
+
+    <nav>
+        <a href="./index.html">🏠 Dashboard</a>
+        <a href="./rooms.html">🛏️ Rooms</a>
+        <a href="./guests.html">👤 Guests</a>
+        <a href="./reservations.html">📅 Reservations</a>
+        <a href="./checkin.html">🛎️ Check-in</a>
+        <a href="./checkout.html">🚪 Check-out</a>
+        <a href="./restaurant.html">🍽️ Restaurant</a>
+        <a href="./inventory.html">📦 Inventory</a>
+        <a href="./payments.html">💰 Payments</a>
+        <a href="./expenses.html">💸 Expenses</a>
+        <a href="./employees.html" class="active">👨‍💼 Employees</a>
+        <a href="./housekeeping.html">🧹 Housekeeping</a>
+        <a href="./maintenance.html">🔧 Maintenance</a>
+        <a href="./reports.html">📊 Reports</a>
+        <a href="./settings.html">⚙️ Settings</a>
+    </nav>
+
+</aside>
+
+
+<main class="main-content">
+
+    <header class="topbar">
+
+        <div>
+            <h1>Employees</h1>
+            <p>Manage hotel employees and staff information</p>
+        </div>
+
+        <div class="user">
+
+            <div class="user-icon">A</div>
+
+            <div>
+                <strong>Administrator</strong>
+                <small>System Admin</small>
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <section class="page-content">
+
+        <div class="page-header">
+
+            <div>
+
+                <h2>Employee Management</h2>
+
+                <p>
+                    Register and manage hotel employees.
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="primary-btn"
+                id="newEmployeeButton">
+
+                + Add Employee
+
+            </button>
+
+        </div>
+
+
+        <div class="summary-grid">
+
+            <div class="summary-card">
+
+                <h3>Total Employees</h3>
+
+                <strong id="totalEmployees">0</strong>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <h3>Active</h3>
+
+                <strong id="activeEmployees">0</strong>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <h3>Inactive</h3>
+
+                <strong id="inactiveEmployees">0</strong>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <h3>Total Payroll</h3>
+
+                <strong id="totalPayroll">KSh 0</strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-card">
+
+            <div class="table-tools">
+
+                <input
+                    type="text"
+                    id="employeeSearch"
+                    placeholder="Search employees..."
+                >
+
+                <select id="employeeFilter">
+
+                    <option value="All">All Status</option>
+
+                    <option value="Active">Active</option>
+
+                    <option value="Inactive">Inactive</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="table-responsive">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Position</th>
+                            <th>Salary</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="employeeTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- EMPLOYEE MODAL -->
+
+<div id="employeeModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2 id="employeeModalTitle">
+                Add Employee
+            </h2>
+
+            <button
+                type="button"
+                class="close-btn"
+                id="closeEmployeeButton">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <form id="employeeForm">
+
+            <div class="form-group">
+
+                <label for="employeeName">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="employeeName"
+                    placeholder="Enter employee full name"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="employeePhone">
+                    Phone Number
+                </label>
+
+                <input
+                    type="tel"
+                    id="employeePhone"
+                    placeholder="Enter phone number"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="employeeEmail">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="employeeEmail"
+                    placeholder="Enter email address"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="employeeDepartment">
+                    Department
+                </label>
+
+                <select id="employeeDepartment" required>
+
+                    <option value="">
+                        Select Department
+                    </option>
+
+                    <option value="Management">Management</option>
+                    <option value="Front Office">Front Office</option>
+                    <option value="Housekeeping">Housekeeping</option>
+                    <option value="Restaurant">Restaurant</option>
+                    <option value="Kitchen">Kitchen</option>
+                    <option value="Security">Security</option>
+                    <option value="Accounts">Accounts</option>
+                    <option value="Maintenance">Maintenance</option>
+                    <option value="Human Resources">Human Resources</option>
+                    <option value="IT">IT</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="employeePosition">
+                    Position
+                </label>
+
+                <input
+                    type="text"
+                    id="employeePosition"
+                    placeholder="e.g. Receptionist"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="employeeSalary">
+                    Monthly Salary (KSh)
+                </label>
+
+                <input
+                    type="number"
+                    id="employeeSalary"
+                    min="0"
+                    step="0.01"
+                    placeholder="Enter monthly salary"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="employeeStatus">
+                    Employment Status
+                </label>
+
+                <select id="employeeStatus" required>
+
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    id="cancelEmployeeButton">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-btn">
+
+                    Save Employee
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let editingEmployeeRow = null;
+
+
+/* OPEN FORM */
+
+function showEmployeeForm() {
+
+    const modal =
+        document.getElementById("employeeModal");
+
+    const form =
+        document.getElementById("employeeForm");
+
+    document.getElementById(
+        "employeeModalTitle"
+    ).textContent = "Add Employee";
+
+    form.reset();
+
+    editingEmployeeRow = null;
+
+    modal.style.display = "flex";
+}
+
+
+/* CLOSE FORM */
+
+function hideEmployeeForm() {
+
+    document.getElementById(
+        "employeeModal"
+    ).style.display = "none";
+
+    editingEmployeeRow = null;
+}
+
+
+/* CREATE EMPLOYEE ID */
+
+function createEmployeeID() {
+
+    const rows =
+        document.querySelectorAll(
+            "#employeeTable tr"
+        );
+
+    return "EMP-" +
+        String(rows.length + 1).padStart(3, "0");
+}
+
+
+/* UPDATE SUMMARY */
+
+function updateEmployeeSummary() {
+
+    const rows =
+        document.querySelectorAll(
+            "#employeeTable tr"
+        );
+
+    let active = 0;
+    let inactive = 0;
+    let payroll = 0;
+
+    rows.forEach(function(row) {
+
+        const status =
+            row.dataset.status;
+
+        const salary =
+            parseFloat(row.dataset.salary) || 0;
+
+        if (status === "Active") {
+
+            active++;
+
+            payroll += salary;
+        }
+
+        if (status === "Inactive") {
+
+            inactive++;
+        }
+
+    });
+
+
+    document.getElementById(
+        "totalEmployees"
+    ).textContent = rows.length;
+
+
+    document.getElementById(
+        "activeEmployees"
+    ).textContent = active;
+
+
+    document.getElementById(
+        "inactiveEmployees"
+    ).textContent = inactive;
+
+
+    document.getElementById(
+        "totalPayroll"
+    ).textContent =
+        "KSh " + payroll.toLocaleString();
+}
+
+
+/* SAVE EMPLOYEE */
+
+document
+.getElementById("employeeForm")
+.addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+
+    const name =
+        document.getElementById(
+            "employeeName"
+        ).value.trim();
+
+
+    const phone =
+        document.getElementById(
+            "employeePhone"
+        ).value.trim();
+
+
+    const email =
+        document.getElementById(
+            "employeeEmail"
+        ).value.trim();
+
+
+    const department =
+        document.getElementById(
+            "employeeDepartment"
+        ).value;
+
+
+    const position =
+        document.getElementById(
+            "employeePosition"
+        ).value.trim();
+
+
+    const salary =
+        parseFloat(
+            document.getElementById(
+                "employeeSalary"
+            ).value
+        ) || 0;
+
+
+    const status =
+        document.getElementById(
+            "employeeStatus"
+        ).value;
+
+
+    /* EDIT EXISTING EMPLOYEE */
+
+    if (editingEmployeeRow) {
+
+        editingEmployeeRow.cells[1].textContent =
+            name;
+
+        editingEmployeeRow.cells[2].textContent =
+            phone;
+
+        editingEmployeeRow.cells[3].textContent =
+            email;
+
+        editingEmployeeRow.cells[4].textContent =
+            department;
+
+        editingEmployeeRow.cells[5].textContent =
+            position;
+
+        editingEmployeeRow.cells[6].textContent =
+            "KSh " + salary.toLocaleString();
+
+        editingEmployeeRow.cells[7].innerHTML =
+            '<span class="status ' +
+            status.toLowerCase() +
+            '">' +
+            status +
+            '</span>';
+
+        editingEmployeeRow.dataset.status =
+            status;
+
+        editingEmployeeRow.dataset.salary =
+            salary;
+
+    }
+
+
+    /* NEW EMPLOYEE */
+
+    else {
+
+        const table =
+            document.getElementById(
+                "employeeTable"
+            );
+
+
+        const row =
+            document.createElement("tr");
+
+
+        const employeeID =
+            createEmployeeID();
+
+
+        row.dataset.status =
+            status;
+
+        row.dataset.salary =
+            salary;
+
+
+        row.innerHTML = `
+
+            <td>${employeeID}</td>
+
+            <td>${name}</td>
+
+            <td>${phone}</td>
+
+            <td>${email}</td>
+
+            <td>${department}</td>
+
+            <td>${position}</td>
+
+            <td>
+                KSh ${salary.toLocaleString()}
+            </td>
+
+            <td>
+
+                <span class="status ${status.toLowerCase()}">
+                    ${status}
+                </span>
+
+            </td>
+
+            <td>
+
+                <button
+                    type="button"
+                    class="action-btn"
+                    onclick="editEmployee(this)">
+
+                    Edit
+
+                </button>
+
+                <button
+                    type="button"
+                    class="action-btn delete"
+                    onclick="deleteEmployee(this)">
+
+                    Delete
+
+                </button>
+
+            </td>
+
+        `;
+
+
+        table.appendChild(row);
+
+    }
+
+
+    updateEmployeeSummary();
+
+    hideEmployeeForm();
+
+    alert("Employee saved successfully.");
+
+});
+
+
+/* EDIT EMPLOYEE */
+
+function editEmployee(button) {
+
+    const row =
+        button.closest("tr");
+
+
+    editingEmployeeRow = row;
+
+
+    document.getElementById(
+        "employeeModalTitle"
+    ).textContent =
+        "Edit Employee";
+
+
+    document.getElementById(
+        "employeeName"
+    ).value =
+        row.cells[1].textContent;
+
+
+    document.getElementById(
+        "employeePhone"
+    ).value =
+        row.cells[2].textContent;
+
+
+    document.getElementById(
+        "employeeEmail"
+    ).value =
+        row.cells[3].textContent;
+
+
+    document.getElementById(
+        "employeeDepartment"
+    ).value =
+        row.cells[4].textContent;
+
+
+    document.getElementById(
+        "employeePosition"
+    ).value =
+        row.cells[5].textContent;
+
+
+    document.getElementById(
+        "employeeSalary"
+    ).value =
+        row.dataset.salary;
+
+
+    document.getElementById(
+        "employeeStatus"
+    ).value =
+        row.dataset.status;
+
+
+    document.getElementById(
+        "employeeModal"
+    ).style.display = "flex";
+}
+
+
+/* DELETE EMPLOYEE */
+
+function deleteEmployee(button) {
+
+    if (!confirm("Delete this employee?")) {
+
+        return;
+    }
+
+    button.closest("tr").remove();
+
+    updateEmployeeSummary();
+}
+
+
+/* SEARCH */
+
+document
+.getElementById("employeeSearch")
+.addEventListener("input", function() {
+
+    const search =
+        this.value.toLowerCase();
+
+
+    document
+    .querySelectorAll("#employeeTable tr")
+    .forEach(function(row) {
+
+        row.style.display =
+            row.textContent
+            .toLowerCase()
+            .includes(search)
+            ? ""
+            : "none";
+
+    });
+
+});
+
+
+/* FILTER */
+
+document
+.getElementById("employeeFilter")
+.addEventListener("change", function() {
+
+    const filter = this.value;
+
+
+    document
+    .querySelectorAll("#employeeTable tr")
+    .forEach(function(row) {
+
+        if (filter === "All") {
+
+            row.style.display = "";
+
+        } else {
+
+            row.style.display =
+                row.dataset.status === filter
+                ? ""
+                : "none";
+
+        }
+
+    });
+
+});
+
+
+/* BUTTON EVENTS */
+
+document
+.getElementById("newEmployeeButton")
+.addEventListener(
+    "click",
+    showEmployeeForm
+);
+
+
+document
+.getElementById("closeEmployeeButton")
+.addEventListener(
+    "click",
+    hideEmployeeForm
+);
+
+
+document
+.getElementById("cancelEmployeeButton")
+.addEventListener(
+    "click",
+    hideEmployeeForm
+);
+
+
+/* CLOSE OUTSIDE MODAL */
+
+window.addEventListener("click", function(event) {
+
+    const modal =
+        document.getElementById(
+            "employeeModal"
+        );
+
+
+    if (event.target === modal) {
+
+        hideEmployeeForm();
+
+    }
+
+});
+
+
+/* INITIAL SUMMARY */
+
+updateEmployeeSummary();
+
+</script>
+
+</body>
+</html>

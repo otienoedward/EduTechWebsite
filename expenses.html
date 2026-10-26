@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expenses - EDU TECH Hotel Management System</title>
+    <link rel="stylesheet" href="./style.css">
+
+    <style>
+        .sidebar {
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 250px !important;
+            height: 100vh !important;
+            z-index: 999999 !important;
+            overflow-y: auto !important;
+        }
+
+        .sidebar a {
+            display: block !important;
+            position: relative !important;
+            z-index: 1000000 !important;
+            cursor: pointer !important;
+        }
+
+        .main-content {
+            margin-left: 250px !important;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <aside class="sidebar">
+
+        <h2>EDU TECH</h2>
+        <p class="system-title">Hotel Management</p>
+
+        <nav>
+            <a href="./index.html">Dashboard</a>
+            <a href="./rooms.html">Rooms</a>
+            <a href="./guests.html">Guests</a>
+            <a href="./reservations.html">Reservations</a>
+            <a href="./checkin.html">Check-in</a>
+            <a href="./checkout.html">Check-out</a>
+            <a href="./restaurant.html">Restaurant</a>
+            <a href="./inventory.html">Inventory</a>
+            <a href="./payments.html">Payments</a>
+            <a href="./expenses.html" class="active">Expenses</a>
+            <a href="./employees.html">Employees</a>
+            <a href="./housekeeping.html">Housekeeping</a>
+            <a href="./maintenance.html">Maintenance</a>
+            <a href="./reports.html">Reports</a>
+            <a href="./settings.html">Settings</a>
+        </nav>
+
+    </aside>
+
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <h1>Expenses</h1>
+
+            <div class="user-info">
+                Administrator
+            </div>
+
+        </header>
+
+
+        <section class="page-content">
+
+            <div class="page-header">
+
+                <div>
+                    <h2>Expense Management</h2>
+                    <p>Record and manage hotel expenses.</p>
+                </div>
+
+                <button
+                    type="button"
+                    class="primary-btn"
+                    id="newExpenseButton">
+
+                    + New Expense
+
+                </button>
+
+            </div>
+
+
+            <div class="summary-grid">
+
+                <div class="summary-card">
+                    <h3>Total Expenses</h3>
+                    <strong id="totalExpenses">0</strong>
+                </div>
+
+                <div class="summary-card">
+                    <h3>Paid</h3>
+                    <strong id="paidExpenses">0</strong>
+                </div>
+
+                <div class="summary-card">
+                    <h3>Pending</h3>
+                    <strong id="pendingExpenses">0</strong>
+                </div>
+
+                <div class="summary-card">
+                    <h3>Total Amount</h3>
+                    <strong id="expenseTotal">KSh 0</strong>
+                </div>
+
+            </div>
+
+
+            <div class="table-card">
+
+                <div class="table-tools">
+
+                    <input
+                        type="text"
+                        id="expenseSearch"
+                        placeholder="Search expenses..."
+                    >
+
+                    <select id="expenseFilter">
+
+                        <option value="All">All Status</option>
+                        <option value="Paid">Paid</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Cancelled">Cancelled</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="table-responsive">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Expense ID</th>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Payment Method</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="expenseTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- EXPENSE MODAL -->
+
+<div id="expenseModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2 id="expenseModalTitle">
+                New Expense
+            </h2>
+
+            <button
+                type="button"
+                class="close-btn"
+                id="closeExpenseButton">
+
+                &times;
+
+            </button>
+
+        </div>
+
+
+        <form id="expenseForm">
+
+            <div class="form-group">
+
+                <label for="expenseDate">Date</label>
+
+                <input
+                    type="date"
+                    id="expenseDate"
+                    required>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="expenseCategory">
+                    Category
+                </label>
+
+                <select
+                    id="expenseCategory"
+                    required>
+
+                    <option value="">
+                        Select Category
+                    </option>
+
+                    <option value="Utilities">Utilities</option>
+                    <option value="Food Supplies">Food Supplies</option>
+                    <option value="Maintenance">Maintenance</option>
+                    <option value="Salaries">Salaries</option>
+                    <option value="Transport">Transport</option>
+                    <option value="Cleaning">Cleaning</option>
+                    <option value="Security">Security</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Other">Other</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="expenseDescription">
+                    Description
+                </label>
+
+                <input
+                    type="text"
+                    id="expenseDescription"
+                    placeholder="Enter expense description"
+                    required>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="expenseAmount">
+                    Amount (KSh)
+                </label>
+
+                <input
+                    type="number"
+                    id="expenseAmount"
+                    min="0"
+                    step="0.01"
+                    placeholder="Enter amount"
+                    required>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="expenseMethod">
+                    Payment Method
+                </label>
+
+                <select
+                    id="expenseMethod"
+                    required>
+
+                    <option value="">
+                        Select Payment Method
+                    </option>
+
+                    <option value="Cash">Cash</option>
+                    <option value="M-Pesa">M-Pesa</option>
+                    <option value="Bank">Bank</option>
+                    <option value="Card">Card</option>
+                    <option value="Other">Other</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="expenseStatus">
+                    Status
+                </label>
+
+                <select
+                    id="expenseStatus"
+                    required>
+
+                    <option value="Paid">Paid</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Cancelled">Cancelled</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    id="cancelExpenseButton">
+
+                    Cancel
+
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary-btn">
+
+                    Save Expense
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const EXPENSE_STORAGE_KEY = "eduTechExpenses";
+
+let editingExpenseID = null;
+
+
+/* ================================
+   STORAGE
+================================ */
+
+function getStoredExpenses() {
+
+    const saved =
+        localStorage.getItem(EXPENSE_STORAGE_KEY);
+
+    if (!saved) {
+        return [];
+    }
+
+    try {
+        return JSON.parse(saved);
+    } catch (error) {
+        return [];
+    }
+
+}
+
+
+function saveExpenses(expenses) {
+
+    localStorage.setItem(
+        EXPENSE_STORAGE_KEY,
+        JSON.stringify(expenses)
+    );
+
+}
+
+
+/* ================================
+   OPEN FORM
+================================ */
+
+function showExpenseForm() {
+
+    const modal =
+        document.getElementById("expenseModal");
+
+    const form =
+        document.getElementById("expenseForm");
+
+    form.reset();
+
+    editingExpenseID = null;
+
+    document.getElementById(
+        "expenseModalTitle"
+    ).textContent =
+        "New Expense";
+
+
+    const today =
+        new Date();
+
+
+    const year =
+        today.getFullYear();
+
+
+    const month =
+        String(
+            today.getMonth() + 1
+        ).padStart(2, "0");
+
+
+    const day =
+        String(
+            today.getDate()
+        ).padStart(2, "0");
+
+
+    document.getElementById(
+        "expenseDate"
+    ).value =
+        year + "-" +
+        month + "-" +
+        day;
+
+
+    modal.style.display = "flex";
+
+}
+
+
+/* ================================
+   CLOSE FORM
+================================ */
+
+function hideExpenseForm() {
+
+    document.getElementById(
+        "expenseModal"
+    ).style.display =
+        "none";
+
+    editingExpenseID = null;
+
+}
+
+
+/* ================================
+   CREATE EXPENSE ID
+================================ */
+
+function createExpenseID() {
+
+    const expenses =
+        getStoredExpenses();
+
+
+    let number =
+        expenses.length + 1;
+
+
+    let id =
+        "EXP-" +
+        String(number).padStart(3, "0");
+
+
+    while (
+        expenses.some(function(expense) {
+            return expense.id === id;
+        })
+    ) {
+
+        number++;
+
+        id =
+            "EXP-" +
+            String(number).padStart(3, "0");
+
+    }
+
+
+    return id;
+
+}
+
+
+/* ================================
+   DISPLAY EXPENSES
+================================ */
+
+function displayExpenses() {
+
+    const expenses =
+        getStoredExpenses();
+
+
+    const table =
+        document.getElementById(
+            "expenseTable"
+        );
+
+
+    table.innerHTML = "";
+
+
+    expenses.forEach(function(expense) {
+
+        const row =
+            document.createElement("tr");
+
+
+        row.dataset.id =
+            expense.id;
+
+
+        row.dataset.status =
+            expense.status;
+
+
+        row.dataset.amount =
+            expense.amount;
+
+
+        row.innerHTML = `
+
+            <td>${expense.id}</td>
+
+            <td>${expense.date}</td>
+
+            <td>${expense.category}</td>
+
+            <td>${expense.description}</td>
+
+            <td>
+                KSh ${Number(expense.amount).toLocaleString()}
+            </td>
+
+            <td>${expense.method}</td>
+
+            <td>
+
+                <span class="status ${expense.status.toLowerCase()}">
+                    ${expense.status}
+                </span>
+
+            </td>
+
+            <td>
+
+                <button
+                    type="button"
+                    class="action-btn"
+                    onclick="editExpense(this)">
+
+                    Edit
+
+                </button>
+
+                <button
+                    type="button"
+                    class="action-btn delete"
+                    onclick="deleteExpense(this)">
+
+                    Delete
+
+                </button>
+
+            </td>
+
+        `;
+
+
+        table.appendChild(row);
+
+    });
+
+
+    updateExpenseSummary();
+
+    applyExpenseFilters();
+
+}
+
+
+/* ================================
+   UPDATE SUMMARY
+================================ */
+
+function updateExpenseSummary() {
+
+    const expenses =
+        getStoredExpenses();
+
+
+    let paid =
+        0;
+
+    let pending =
+        0;
+
+    let total =
+        0;
+
+
+    expenses.forEach(function(expense) {
+
+        if (expense.status === "Paid") {
+
+            paid++;
+
+        }
+
+
+        if (expense.status === "Pending") {
+
+            pending++;
+
+        }
+
+
+        if (expense.status !== "Cancelled") {
+
+            total +=
+                Number(expense.amount) || 0;
+
+        }
+
+    });
+
+
+    document.getElementById(
+        "totalExpenses"
+    ).textContent =
+        expenses.length;
+
+
+    document.getElementById(
+        "paidExpenses"
+    ).textContent =
+        paid;
+
+
+    document.getElementById(
+        "pendingExpenses"
+    ).textContent =
+        pending;
+
+
+    document.getElementById(
+        "expenseTotal"
+    ).textContent =
+        "KSh " +
+        total.toLocaleString(
+            "en-KE"
+        );
+
+}
+
+
+/* ================================
+   SAVE EXPENSE
+================================ */
+
+document.getElementById(
+    "expenseForm"
+).addEventListener(
+    "submit",
+    function(event) {
+
+        event.preventDefault();
+
+
+        const date =
+            document.getElementById(
+                "expenseDate"
+            ).value;
+
+
+        const category =
+            document.getElementById(
+                "expenseCategory"
+            ).value;
+
+
+        const description =
+            document.getElementById(
+                "expenseDescription"
+            ).value.trim();
+
+
+        const amount =
+            Number(
+                document.getElementById(
+                    "expenseAmount"
+                ).value
+            ) || 0;
+
+
+        const method =
+            document.getElementById(
+                "expenseMethod"
+            ).value;
+
+
+        const status =
+            document.getElementById(
+                "expenseStatus"
+            ).value;
+
+
+        let expenses =
+            getStoredExpenses();
+
+
+        /* EDIT */
+
+        if (editingExpenseID) {
+
+            const index =
+                expenses.findIndex(
+                    function(expense) {
+
+                        return expense.id ===
+                            editingExpenseID;
+
+                    }
+                );
+
+
+            if (index !== -1) {
+
+                expenses[index] = {
+
+                    id: editingExpenseID,
+                    date: date,
+                    category: category,
+                    description: description,
+                    amount: amount,
+                    method: method,
+                    status: status
+
+                };
+
+            }
+
+        }
+
+
+        /* NEW */
+
+        else {
+
+            expenses.push({
+
+                id: createExpenseID(),
+                date: date,
+                category: category,
+                description: description,
+                amount: amount,
+                method: method,
+                status: status
+
+            });
+
+        }
+
+
+        saveExpenses(expenses);
+
+        displayExpenses();
+
+        hideExpenseForm();
+
+    }
+);
+
+
+/* ================================
+   EDIT EXPENSE
+================================ */
+
+function editExpense(button) {
+
+    const row =
+        button.closest("tr");
+
+
+    editingExpenseID =
+        row.dataset.id;
+
+
+    const expenses =
+        getStoredExpenses();
+
+
+    const expense =
+        expenses.find(
+            function(item) {
+
+                return item.id ===
+                    editingExpenseID;
+
+            }
+        );
+
+
+    if (!expense) {
+        return;
+    }
+
+
+    document.getElementById(
+        "expenseModalTitle"
+    ).textContent =
+        "Edit Expense";
+
+
+    document.getElementById(
+        "expenseDate"
+    ).value =
+        expense.date;
+
+
+    document.getElementById(
+        "expenseCategory"
+    ).value =
+        expense.category;
+
+
+    document.getElementById(
+        "expenseDescription"
+    ).value =
+        expense.description;
+
+
+    document.getElementById(
+        "expenseAmount"
+    ).value =
+        expense.amount;
+
+
+    document.getElementById(
+        "expenseMethod"
+    ).value =
+        expense.method;
+
+
+    document.getElementById(
+        "expenseStatus"
+    ).value =
+        expense.status;
+
+
+    document.getElementById(
+        "expenseModal"
+    ).style.display =
+        "flex";
+
+}
+
+
+/* ================================
+   DELETE EXPENSE
+================================ */
+
+function deleteExpense(button) {
+
+    const row =
+        button.closest("tr");
+
+
+    const expenseID =
+        row.dataset.id;
+
+
+    if (
+        !confirm(
+            "Delete this expense?"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    let expenses =
+        getStoredExpenses();
+
+
+    expenses =
+        expenses.filter(
+            function(expense) {
+
+                return expense.id !==
+                    expenseID;
+
+            }
+        );
+
+
+    saveExpenses(expenses);
+
+    displayExpenses();
+
+}
+
+
+/* ================================
+   SEARCH
+================================ */
+
+function searchExpenses() {
+
+    applyExpenseFilters();
+
+}
+
+
+function applyExpenseFilters() {
+
+    const search =
+        document.getElementById(
+            "expenseSearch"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    const filter =
+        document.getElementById(
+            "expenseFilter"
+        ).value;
+
+
+    document.querySelectorAll(
+        "#expenseTable tr"
+    )
+    .forEach(
+        function(row) {
+
+            const text =
+                row.textContent
+                .toLowerCase();
+
+
+            const status =
+                row.dataset.status || "";
+
+
+            const matchesSearch =
+                text.includes(search);
+
+
+            const matchesFilter =
+                filter === "All" ||
+                status === filter;
+
+
+            row.style.display =
+                matchesSearch &&
+                matchesFilter
+                ? ""
+                : "none";
+
+        }
+    );
+
+}
+
+
+document.getElementById(
+    "expenseSearch"
+).addEventListener(
+    "input",
+    searchExpenses
+);
+
+
+document.getElementById(
+    "expenseFilter"
+).addEventListener(
+    "change",
+    applyExpenseFilters
+);
+
+
+/* ================================
+   BUTTON EVENTS
+================================ */
+
+document.getElementById(
+    "newExpenseButton"
+).addEventListener(
+    "click",
+    showExpenseForm
+);
+
+
+document.getElementById(
+    "closeExpenseButton"
+).addEventListener(
+    "click",
+    hideExpenseForm
+);
+
+
+document.getElementById(
+    "cancelExpenseButton"
+).addEventListener(
+    "click",
+    hideExpenseForm
+);
+
+
+/* ================================
+   CLOSE OUTSIDE MODAL
+================================ */
+
+document.getElementById(
+    "expenseModal"
+).addEventListener(
+    "click",
+    function(event) {
+
+        if (event.target === this) {
+
+            hideExpenseForm();
+
+        }
+
+    }
+);
+
+
+/* ================================
+   START PAGE
+================================ */
+
+displayExpenses();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - EDU TECH Hotel Management System</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">
+            <h2>EDU TECH</h2>
+            <p>Hotel Management</p>
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <a href="./index.html">🏠 Dashboard</a>
+            <a href="./rooms.html">🛏️ Rooms</a>
+            <a href="./guests.html">👤 Guests</a>
+            <a href="./reservations.html">📅 Reservations</a>
+            <a href="./checkin.html">🛎️ Check-in</a>
+            <a href="./checkout.html">🚪 Check-out</a>
+            <a href="./restaurant.html">🍽️ Restaurant</a>
+            <a href="./inventory.html">📦 Inventory</a>
+            <a href="./payments.html">💰 Payments</a>
+            <a href="./expenses.html">💸 Expenses</a>
+            <a href="./employees.html">👨‍💼 Employees</a>
+            <a href="./housekeeping.html">🧹 Housekeeping</a>
+            <a href="./maintenance.html">🔧 Maintenance</a>
+            <a href="./reports.html" class="active">📊 Reports</a>
+            <a href="./settings.html">⚙️ Settings</a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+
+            <div>
+                <h1>Reports</h1>
+                <p>View hotel performance and operational reports</p>
+            </div>
+
+            <button
+                class="primary-btn"
+                onclick="generateReport()"
+            >
+                📄 Generate Report
+            </button>
+
+        </header>
+
+
+        <!-- REPORT FILTER -->
+        <section class="content-card">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Report Period</h2>
+                    <p>Select the period you want to review</p>
+                </div>
+
+                <div class="filters">
+
+                    <select id="reportPeriod" onchange="updateReports()">
+
+                        <option value="today">
+                            Today
+                        </option>
+
+                        <option value="week">
+                            This Week
+                        </option>
+
+                        <option value="month" selected>
+                            This Month
+                        </option>
+
+                        <option value="year">
+                            This Year
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SUMMARY CARDS -->
+        <section class="summary-grid">
+
+            <div class="summary-card">
+
+                <h3>Total Rooms</h3>
+
+                <strong id="reportRooms">
+                    40
+                </strong>
+
+                <p>Hotel rooms</p>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <h3>Occupied Rooms</h3>
+
+                <strong id="reportOccupied">
+                    25
+                </strong>
+
+                <p>Currently occupied</p>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <h3>Reservations</h3>
+
+                <strong id="reportReservations">
+                    0
+                </strong>
+
+                <p>Recorded reservations</p>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <h3>Total Guests</h3>
+
+                <strong id="reportGuests">
+                    0
+                </strong>
+
+                <p>Registered guests</p>
+
+            </div>
+
+        </section>
+
+
+        <!-- FINANCIAL REPORT -->
+        <section class="content-card">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>Financial Summary</h2>
+
+                    <p>
+                        Overview of hotel income and expenses
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-grid">
+
+                <div class="summary-card">
+
+                    <h3>Total Revenue</h3>
+
+                    <strong id="reportRevenue">
+                        KSh 0
+                    </strong>
+
+                    <p>Recorded payments</p>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>Total Expenses</h3>
+
+                    <strong id="reportExpenses">
+                        KSh 0
+                    </strong>
+
+                    <p>Recorded expenses</p>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>Net Income</h3>
+
+                    <strong id="reportNetIncome">
+                        KSh 0
+                    </strong>
+
+                    <p>Revenue minus expenses</p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- OPERATIONS REPORT -->
+        <section class="content-card">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>Operations Summary</h2>
+
+                    <p>
+                        Housekeeping and maintenance performance
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-grid">
+
+                <div class="summary-card">
+
+                    <h3>Housekeeping Tasks</h3>
+
+                    <strong id="reportHousekeeping">
+                        0
+                    </strong>
+
+                    <p>Total housekeeping tasks</p>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>Completed Cleaning</h3>
+
+                    <strong id="reportCleaningCompleted">
+                        0
+                    </strong>
+
+                    <p>Completed tasks</p>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>Maintenance Tasks</h3>
+
+                    <strong id="reportMaintenance">
+                        0
+                    </strong>
+
+                    <p>Total maintenance tasks</p>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>Pending Maintenance</h3>
+
+                    <strong id="reportMaintenancePending">
+                        0
+                    </strong>
+
+                    <p>Tasks still pending</p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- REPORT TABLE -->
+        <section class="content-card">
+
+            <div class="section-header">
+
+                <div>
+
+                    <h2>Report Details</h2>
+
+                    <p>
+                        Current system activity summary
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Category</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="reportTable">
+
+                        <tr>
+                            <td>Rooms</td>
+                            <td>40</td>
+                            <td>Active</td>
+                        </tr>
+
+                        <tr>
+                            <td>Guests</td>
+                            <td>0</td>
+                            <td>Active</td>
+                        </tr>
+
+                        <tr>
+                            <td>Reservations</td>
+                            <td>0</td>
+                            <td>Active</td>
+                        </tr>
+
+                        <tr>
+                            <td>Payments</td>
+                            <td>0</td>
+                            <td>Recorded</td>
+                        </tr>
+
+                        <tr>
+                            <td>Expenses</td>
+                            <td>0</td>
+                            <td>Recorded</td>
+                        </tr>
+
+                        <tr>
+                            <td>Housekeeping</td>
+                            <td>0</td>
+                            <td>Active</td>
+                        </tr>
+
+                        <tr>
+                            <td>Maintenance</td>
+                            <td>0</td>
+                            <td>Active</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+
+// GET NUMBER FROM TEXT
+function getNumber(id) {
+
+    const element =
+        document.getElementById(id);
+
+    if (!element) {
+        return 0;
+    }
+
+    const value =
+        element.textContent
+        .replace(/[^0-9.-]/g, "");
+
+    return Number(value) || 0;
+
+}
+
+
+// UPDATE REPORTS
+function updateReports() {
+
+    let rooms = 40;
+    let occupied = 25;
+
+
+    const reportRooms =
+        document.getElementById("reportRooms");
+
+    const reportOccupied =
+        document.getElementById("reportOccupied");
+
+
+    if (reportRooms) {
+        reportRooms.textContent = rooms;
+    }
+
+
+    if (reportOccupied) {
+        reportOccupied.textContent = occupied;
+    }
+
+
+    updateReportTable();
+
+}
+
+
+// UPDATE REPORT TABLE
+function updateReportTable() {
+
+    const table =
+        document.getElementById("reportTable");
+
+
+    if (!table) {
+        return;
+    }
+
+
+    table.innerHTML = `
+
+        <tr>
+            <td>Rooms</td>
+            <td>${document.getElementById("reportRooms").textContent}</td>
+            <td>Active</td>
+        </tr>
+
+        <tr>
+            <td>Guests</td>
+            <td>${document.getElementById("reportGuests").textContent}</td>
+            <td>Active</td>
+        </tr>
+
+        <tr>
+            <td>Reservations</td>
+            <td>${document.getElementById("reportReservations").textContent}</td>
+            <td>Active</td>
+        </tr>
+
+        <tr>
+            <td>Payments</td>
+            <td>${document.getElementById("reportRevenue").textContent}</td>
+            <td>Recorded</td>
+        </tr>
+
+        <tr>
+            <td>Expenses</td>
+            <td>${document.getElementById("reportExpenses").textContent}</td>
+            <td>Recorded</td>
+        </tr>
+
+        <tr>
+            <td>Housekeeping</td>
+            <td>${document.getElementById("reportHousekeeping").textContent}</td>
+            <td>Active</td>
+        </tr>
+
+        <tr>
+            <td>Maintenance</td>
+            <td>${document.getElementById("reportMaintenance").textContent}</td>
+            <td>Active</td>
+        </tr>
+
+    `;
+
+}
+
+
+// GENERATE REPORT
+function generateReport() {
+
+    const period =
+        document.getElementById("reportPeriod").value;
+
+
+    let periodName = "This Month";
+
+
+    if (period === "today") {
+        periodName = "Today";
+    }
+
+    if (period === "week") {
+        periodName = "This Week";
+    }
+
+    if (period === "year") {
+        periodName = "This Year";
+    }
+
+
+    alert(
+        "EDU TECH HOTEL MANAGEMENT SYSTEM\n\n" +
+        "Report Period: " + periodName + "\n\n" +
+        "Total Rooms: " +
+        document.getElementById("reportRooms").textContent +
+        "\nOccupied Rooms: " +
+        document.getElementById("reportOccupied").textContent +
+        "\nTotal Guests: " +
+        document.getElementById("reportGuests").textContent +
+        "\nReservations: " +
+        document.getElementById("reportReservations").textContent +
+        "\nRevenue: " +
+        document.getElementById("reportRevenue").textContent +
+        "\nExpenses: " +
+        document.getElementById("reportExpenses").textContent +
+        "\nNet Income: " +
+        document.getElementById("reportNetIncome").textContent
+    );
+
+}
+
+
+// INITIALIZE
+updateReports();
+
+</script>
+
+</body>
+</html>
