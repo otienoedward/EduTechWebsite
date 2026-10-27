@@ -87,7 +87,6 @@
 
     </aside>
 
-
     <main class="main-content">
 
         <header class="topbar">
@@ -98,7 +97,6 @@
             </div>
 
         </header>
-
 
         <section class="cards">
 
@@ -144,7 +142,6 @@
 
         </section>
 
-
         <section class="dashboard-section">
 
             <div class="table-container">
@@ -173,7 +170,6 @@
 
         </section>
 
-
         <section class="dashboard-section">
 
             <div class="table-container">
@@ -195,10 +191,16 @@
     </main>
 
 
+    <!-- SUPABASE JAVASCRIPT LIBRARY -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- OUR SUPABASE CONNECTION -->
+    <script src="./supabase.js"></script>
+
+
     <script>
 
         document.addEventListener("DOMContentLoaded", function () {
-
 
             /* =========================================
                ROOMS
@@ -212,7 +214,6 @@
             let occupiedRooms = 0;
             let availableRooms = 0;
             let maintenanceRooms = 0;
-
 
             rooms.forEach(function (room) {
 
@@ -233,26 +234,21 @@
 
             });
 
-
             document.getElementById(
                 "dashboardTotalRooms"
             ).textContent = totalRooms;
-
 
             document.getElementById(
                 "dashboardOccupiedRooms"
             ).textContent = occupiedRooms;
 
-
             document.getElementById(
                 "dashboardAvailableRooms"
             ).textContent = availableRooms;
 
-
             document.getElementById(
                 "dashboardMaintenanceRooms"
             ).textContent = maintenanceRooms;
-
 
 
             /* =========================================
@@ -261,7 +257,6 @@
 
             const today =
                 new Date().toISOString().split("T")[0];
-
 
 
             /* =========================================
@@ -273,7 +268,6 @@
             );
 
             let todayRevenue = 0;
-
 
             payments.forEach(function (payment) {
 
@@ -289,7 +283,6 @@
                             .replace(/[^0-9.-]+/g, "")
                     );
 
-
                 if (
                     paymentDate === today &&
                     paymentStatus === "completed"
@@ -302,7 +295,6 @@
             });
 
 
-
             /* =========================================
                EXPENSES
             ========================================= */
@@ -312,7 +304,6 @@
             );
 
             let todayExpenses = 0;
-
 
             expenses.forEach(function (expense) {
 
@@ -328,7 +319,6 @@
                             .replace(/[^0-9.-]+/g, "")
                     );
 
-
                 if (
                     expenseDate === today &&
                     expenseStatus === "paid"
@@ -341,7 +331,6 @@
             });
 
 
-
             /* =========================================
                PROFIT
             ========================================= */
@@ -349,13 +338,11 @@
             const todayProfit =
                 todayRevenue - todayExpenses;
 
-
             document.getElementById(
                 "dashboardRevenue"
             ).textContent =
                 "KSh " +
                 todayRevenue.toLocaleString();
-
 
             document.getElementById(
                 "dashboardExpenses"
@@ -363,13 +350,11 @@
                 "KSh " +
                 todayExpenses.toLocaleString();
 
-
             document.getElementById(
                 "dashboardProfit"
             ).textContent =
                 "KSh " +
                 todayProfit.toLocaleString();
-
 
 
             /* =========================================
@@ -380,9 +365,7 @@
                 localStorage.getItem("eduTechReservations") || "[]"
             );
 
-
             let todayBookings = 0;
-
 
             reservations.forEach(function (reservation) {
 
@@ -393,12 +376,6 @@
                     String(
                         reservation.status || ""
                     ).toLowerCase();
-
-
-                /*
-                   Count today's reservations except
-                   cancelled reservations.
-                */
 
                 if (
                     reservationDate === today &&
@@ -411,12 +388,10 @@
 
             });
 
-
             document.getElementById(
                 "dashboardBookings"
             ).textContent =
                 todayBookings;
-
 
 
             /* =========================================
@@ -428,9 +403,7 @@
                     "dashboardRoomTable"
                 );
 
-
             roomTable.innerHTML = "";
-
 
             if (rooms.length === 0) {
 
@@ -451,14 +424,11 @@
                             room.status || "Available"
                         );
 
-
                     const statusLower =
                         status.toLowerCase();
 
-
                     let statusClass =
                         "status-available";
-
 
                     if (
                         statusLower === "occupied"
@@ -469,7 +439,6 @@
 
                     }
 
-
                     if (
                         statusLower === "maintenance"
                     ) {
@@ -478,7 +447,6 @@
                             "status-maintenance";
 
                     }
-
 
                     if (
                         statusLower === "cleaning"
@@ -489,12 +457,10 @@
 
                     }
 
-
                     const guest =
                         statusLower === "occupied"
                             ? "Occupied Room"
                             : "-";
-
 
                     roomTable.innerHTML += `
 
@@ -539,6 +505,52 @@
         });
 
     </script>
+    <!-- your existing index.html content above -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+
+    <!-- ADD THE NEW CODE HERE -->
+    <script>
+        async function checkDashboardAccess() {
+            const {
+                data: { session },
+                error
+            } = await supabaseClient.auth.getSession();
+
+            if (error || !session) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            const { data: profile, error: profileError } =
+                await supabaseClient
+                    .from("profiles")
+                    .select("full_name, role, hotel_id")
+                    .eq("id", session.user.id)
+                    .single();
+
+            if (profileError || !profile) {
+                await supabaseClient.auth.signOut();
+                window.location.href = "login.html";
+                return;
+            }
+
+            sessionStorage.setItem("userRole", profile.role);
+            sessionStorage.setItem("userName", profile.full_name);
+
+            if (profile.hotel_id) {
+                sessionStorage.setItem("hotelId", profile.hotel_id);
+            } else {
+                sessionStorage.removeItem("hotelId");
+            }
+        }
+
+        checkDashboardAccess();
+    </script>
 
 </body>
+</html>
+</body>
+
 </html>

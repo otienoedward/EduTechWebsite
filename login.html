@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - EDU TECH Hotel Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="login-page">
+
+    <div class="login-container">
+
+        <div class="login-card">
+
+            <div class="login-logo">
+                <h1>EDU TECH</h1>
+                <p>Hotel Management System</p>
+            </div>
+
+            <form id="loginForm">
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email address"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Sign In
+                </button>
+
+                <div
+                    id="loginMessage"
+                    class="alert"
+                    style="display: none; margin-top: 15px;"
+                ></div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+
+    <script>
+        const loginForm = document.getElementById("loginForm");
+        const loginMessage = document.getElementById("loginMessage");
+
+        loginForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+
+            loginMessage.style.display = "none";
+            loginMessage.textContent = "";
+
+            const { data, error } =
+                await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+            if (error) {
+                loginMessage.className = "alert alert-danger";
+                loginMessage.textContent = error.message;
+                loginMessage.style.display = "block";
+                return;
+            }
+
+            const user = data.user;
+
+            if (!user) {
+                loginMessage.className = "alert alert-danger";
+                loginMessage.textContent =
+                    "Login failed. User account was not found.";
+                loginMessage.style.display = "block";
+                return;
+            }
+
+            const { data: profile, error: profileError } =
+                await supabaseClient
+                    .from("profiles")
+                    .select("id, full_name, role, hotel_id")
+                    .eq("id", user.id)
+                    .single();
+
+            if (profileError) {
+                await supabaseClient.auth.signOut();
+
+                loginMessage.className = "alert alert-danger";
+                loginMessage.textContent =
+                    "Your user profile could not be loaded. Please contact the system administrator.";
+                loginMessage.style.display = "block";
+                return;
+            }
+
+            if (!profile) {
+                await supabaseClient.auth.signOut();
+
+                loginMessage.className = "alert alert-danger";
+                loginMessage.textContent =
+                    "No system profile exists for this account.";
+                loginMessage.style.display = "block";
+                return;
+            }
+
+            if (profile.role !== "system_owner" && !profile.hotel_id) {
+                await supabaseClient.auth.signOut();
+
+                loginMessage.className = "alert alert-danger";
+                loginMessage.textContent =
+                    "Your account is not assigned to a hotel.";
+                loginMessage.style.display = "block";
+                return;
+            }
+
+            sessionStorage.setItem("userRole", profile.role);
+            sessionStorage.setItem("userName", profile.full_name);
+
+            if (profile.hotel_id) {
+                sessionStorage.setItem(
+                    "hotelId",
+                    profile.hotel_id
+                );
+            } else {
+                sessionStorage.removeItem("hotelId");
+            }
+
+            window.location.href = "index.html";
+        });
+    </script>
+
+</body>
+</html>
