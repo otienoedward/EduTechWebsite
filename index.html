@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EDU TECH Hotel Management System - Dashboard</title>
+
     <link rel="stylesheet" href="./style.css">
 
     <style>
@@ -55,6 +56,31 @@
         .dashboard-section {
             margin-top: 25px;
         }
+
+        .dashboard-loading {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+
+        .dashboard-error {
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 6px;
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .user-info {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .hotel-info {
+            font-size: 14px;
+            color: #666;
+        }
     </style>
 </head>
 
@@ -94,6 +120,17 @@
             <div>
                 <h1>Dashboard</h1>
                 <p>Welcome to EDU TECH Hotel Management System</p>
+
+                <div class="user-info">
+                    Logged in as:
+                    <strong id="dashboardUserName">Loading...</strong>
+                    —
+                    <span id="dashboardUserRole">Loading...</span>
+                </div>
+
+                <div class="hotel-info" id="dashboardHotelInfo">
+                    Loading hotel information...
+                </div>
             </div>
 
         </header>
@@ -142,6 +179,8 @@
 
         </section>
 
+        <div id="dashboardError" style="display: none;"></div>
+
         <section class="dashboard-section">
 
             <div class="table-container">
@@ -162,7 +201,13 @@
                         </tr>
                     </thead>
 
-                    <tbody id="dashboardRoomTable"></tbody>
+                    <tbody id="dashboardRoomTable">
+                        <tr>
+                            <td colspan="5" class="dashboard-loading">
+                                Loading room information...
+                            </td>
+                        </tr>
+                    </tbody>
 
                 </table>
 
@@ -178,11 +223,9 @@
                     <h2>Today's Activity</h2>
                 </div>
 
-                <p style="padding:15px;">
-                    Dashboard activity will be connected to reservations,
-                    check-ins, check-outs and other hotel records as we
-                    continue building the system.
-                </p>
+                <div id="dashboardActivity" style="padding: 15px;">
+                    Loading today's activity...
+                </div>
 
             </div>
 
@@ -194,39 +237,298 @@
     <!-- SUPABASE JAVASCRIPT LIBRARY -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- OUR SUPABASE CONNECTION -->
+    <!-- EDU TECH SUPABASE CONNECTION -->
     <script src="./supabase.js"></script>
 
 
     <script>
 
-        document.addEventListener("DOMContentLoaded", function () {
+        let currentProfile = null;
+        let currentHotel = null;
 
-            /* =========================================
-               ROOMS
-            ========================================= */
 
-            const rooms = JSON.parse(
-                localStorage.getItem("eduTechRooms") || "[]"
+        /* =====================================================
+           HELPER FUNCTIONS
+        ===================================================== */
+
+        function formatMoney(amount) {
+            return "KSh " + Number(amount || 0).toLocaleString();
+        }
+
+
+        function escapeHtml(value) {
+
+            if (value === null || value === undefined) {
+                return "";
+            }
+
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+
+        function showDashboardError(message) {
+
+            const errorBox =
+                document.getElementById("dashboardError");
+
+            errorBox.className = "dashboard-error";
+            errorBox.textContent = message;
+            errorBox.style.display = "block";
+        }
+
+
+        function getToday() {
+
+            const now = new Date();
+
+            const year = now.getFullYear();
+            const month =
+                String(now.getMonth() + 1).padStart(2, "0");
+            const day =
+                String(now.getDate()).padStart(2, "0");
+
+            return `${year}-${month}-${day}`;
+        }
+
+
+        function getRoleName(role) {
+
+            const names = {
+                system_owner: "System Owner",
+                hotel_owner: "Hotel Owner",
+                manager: "Manager",
+                receptionist: "Receptionist"
+            };
+
+            return names[role] || role;
+        }
+
+
+        /* =====================================================
+           LOAD USER PROFILE
+        ===================================================== */
+
+        async function loadCurrentUser() {
+
+            const {
+                data: { session },
+                error: sessionError
+            } = await supabaseClient.auth.getSession();
+
+
+            if (sessionError || !session) {
+
+                window.location.href = "login.html";
+                return false;
+            }
+
+
+            const {
+                data: profile,
+                error: profileError
+            } = await supabaseClient
+                .from("profiles")
+                .select("id, full_name, role, hotel_id")
+                .eq("id", session.user.id)
+                .single();
+
+
+            if (profileError || !profile) {
+
+                await supabaseClient.auth.signOut();
+
+                window.location.href = "login.html";
+                return false;
+            }
+
+
+            if (
+                profile.role !== "system_owner" &&
+                !profile.hotel_id
+            ) {
+
+                await supabaseClient.auth.signOut();
+
+                window.location.href = "login.html";
+                return false;
+            }
+
+
+            currentProfile = profile;
+
+
+            sessionStorage.setItem(
+                "userRole",
+                profile.role
             );
+
+            sessionStorage.setItem(
+                "userName",
+                profile.full_name
+            );
+
+
+            if (profile.hotel_id) {
+
+                sessionStorage.setItem(
+                    "hotelId",
+                    profile.hotel_id
+                );
+
+            } else {
+
+                sessionStorage.removeItem("hotelId");
+            }
+
+
+            document.getElementById(
+                "dashboardUserName"
+            ).textContent = profile.full_name;
+
+
+            document.getElementById(
+                "dashboardUserRole"
+            ).textContent = getRoleName(profile.role);
+
+
+            return true;
+        }
+
+
+        /* =====================================================
+           LOAD HOTEL INFORMATION
+        ===================================================== */
+
+        async function loadHotelInformation() {
+
+            const hotelInfo =
+                document.getElementById(
+                    "dashboardHotelInfo"
+                );
+
+
+            if (currentProfile.role === "system_owner") {
+
+                hotelInfo.textContent =
+                    "System-wide view — all hotels";
+
+                return;
+            }
+
+
+            const {
+                data: hotel,
+                error
+            } = await supabaseClient
+                .from("hotels")
+                .select(
+                    "id, hotel_name, location, phone, email"
+                )
+                .eq("id", currentProfile.hotel_id)
+                .single();
+
+
+            if (error || !hotel) {
+
+                hotelInfo.textContent =
+                    "Hotel information unavailable.";
+
+                return;
+            }
+
+
+            currentHotel = hotel;
+
+
+            hotelInfo.textContent =
+                hotel.hotel_name +
+                (
+                    hotel.location
+                        ? " — " + hotel.location
+                        : ""
+                );
+        }
+
+
+        /* =====================================================
+           BUILD HOTEL FILTER
+        ===================================================== */
+
+        function applyHotelFilter(query) {
+
+            if (currentProfile.role === "system_owner") {
+
+                return query;
+            }
+
+
+            return query.eq(
+                "hotel_id",
+                currentProfile.hotel_id
+            );
+        }
+
+
+        /* =====================================================
+           LOAD ROOMS
+        ===================================================== */
+
+        async function loadRooms() {
+
+            let query = supabaseClient
+                .from("rooms")
+                .select(
+                    "id, room_number, room_type, status, price"
+                )
+                .order("room_number");
+
+
+            query = applyHotelFilter(query);
+
+
+            const {
+                data: rooms,
+                error
+            } = await query;
+
+
+            if (error) {
+
+                throw new Error(
+                    "Unable to load rooms: " +
+                    error.message
+                );
+            }
+
 
             let totalRooms = rooms.length;
             let occupiedRooms = 0;
             let availableRooms = 0;
             let maintenanceRooms = 0;
 
+
             rooms.forEach(function (room) {
 
                 const status =
-                    String(room.status || "").toLowerCase();
+                    String(
+                        room.status || ""
+                    ).toLowerCase();
+
 
                 if (status === "occupied") {
                     occupiedRooms++;
                 }
 
+
                 if (status === "available") {
                     availableRooms++;
                 }
+
 
                 if (status === "maintenance") {
                     maintenanceRooms++;
@@ -234,323 +536,592 @@
 
             });
 
+
             document.getElementById(
                 "dashboardTotalRooms"
             ).textContent = totalRooms;
+
 
             document.getElementById(
                 "dashboardOccupiedRooms"
             ).textContent = occupiedRooms;
 
+
             document.getElementById(
                 "dashboardAvailableRooms"
             ).textContent = availableRooms;
+
 
             document.getElementById(
                 "dashboardMaintenanceRooms"
             ).textContent = maintenanceRooms;
 
 
-            /* =========================================
-               TODAY
-            ========================================= */
-
-            const today =
-                new Date().toISOString().split("T")[0];
+            await loadRoomTable(rooms);
+        }
 
 
-            /* =========================================
-               PAYMENTS / REVENUE
-            ========================================= */
+        /* =====================================================
+           LOAD ROOM TABLE
+        ===================================================== */
 
-            const payments = JSON.parse(
-                localStorage.getItem("eduTechPayments") || "[]"
-            );
-
-            let todayRevenue = 0;
-
-            payments.forEach(function (payment) {
-
-                const paymentDate =
-                    payment.date || "";
-
-                const paymentStatus =
-                    String(payment.status || "").toLowerCase();
-
-                const amount =
-                    Number(
-                        String(payment.amount || 0)
-                            .replace(/[^0-9.-]+/g, "")
-                    );
-
-                if (
-                    paymentDate === today &&
-                    paymentStatus === "completed"
-                ) {
-
-                    todayRevenue += amount;
-
-                }
-
-            });
-
-
-            /* =========================================
-               EXPENSES
-            ========================================= */
-
-            const expenses = JSON.parse(
-                localStorage.getItem("eduTechExpenses") || "[]"
-            );
-
-            let todayExpenses = 0;
-
-            expenses.forEach(function (expense) {
-
-                const expenseDate =
-                    expense.date || "";
-
-                const expenseStatus =
-                    String(expense.status || "").toLowerCase();
-
-                const amount =
-                    Number(
-                        String(expense.amount || 0)
-                            .replace(/[^0-9.-]+/g, "")
-                    );
-
-                if (
-                    expenseDate === today &&
-                    expenseStatus === "paid"
-                ) {
-
-                    todayExpenses += amount;
-
-                }
-
-            });
-
-
-            /* =========================================
-               PROFIT
-            ========================================= */
-
-            const todayProfit =
-                todayRevenue - todayExpenses;
-
-            document.getElementById(
-                "dashboardRevenue"
-            ).textContent =
-                "KSh " +
-                todayRevenue.toLocaleString();
-
-            document.getElementById(
-                "dashboardExpenses"
-            ).textContent =
-                "KSh " +
-                todayExpenses.toLocaleString();
-
-            document.getElementById(
-                "dashboardProfit"
-            ).textContent =
-                "KSh " +
-                todayProfit.toLocaleString();
-
-
-            /* =========================================
-               RESERVATIONS / TODAY'S BOOKINGS
-            ========================================= */
-
-            const reservations = JSON.parse(
-                localStorage.getItem("eduTechReservations") || "[]"
-            );
-
-            let todayBookings = 0;
-
-            reservations.forEach(function (reservation) {
-
-                const reservationDate =
-                    reservation.checkin || "";
-
-                const reservationStatus =
-                    String(
-                        reservation.status || ""
-                    ).toLowerCase();
-
-                if (
-                    reservationDate === today &&
-                    reservationStatus !== "cancelled"
-                ) {
-
-                    todayBookings++;
-
-                }
-
-            });
-
-            document.getElementById(
-                "dashboardBookings"
-            ).textContent =
-                todayBookings;
-
-
-            /* =========================================
-               ROOM STATUS TABLE
-            ========================================= */
+        async function loadRoomTable(rooms) {
 
             const roomTable =
                 document.getElementById(
                     "dashboardRoomTable"
                 );
 
+
             roomTable.innerHTML = "";
+
 
             if (rooms.length === 0) {
 
                 roomTable.innerHTML = `
                     <tr>
                         <td colspan="5">
-                            No rooms available.
+                            No rooms have been added yet.
                         </td>
                     </tr>
                 `;
 
-            } else {
+                return;
+            }
 
-                rooms.forEach(function (room) {
 
-                    const status =
-                        String(
-                            room.status || "Available"
-                        );
+            /*
+                Find active reservations so that occupied
+                rooms can display the current guest.
+            */
 
-                    const statusLower =
-                        status.toLowerCase();
+            let reservationQuery = supabaseClient
+                .from("reservations")
+                .select(`
+                    id,
+                    room_id,
+                    status,
+                    check_in,
+                    check_out,
+                    guests (
+                        full_name
+                    )
+                `)
+                .in(
+                    "status",
+                    ["confirmed", "checked_in", "active"]
+                );
 
-                    let statusClass =
-                        "status-available";
 
-                    if (
-                        statusLower === "occupied"
-                    ) {
+            reservationQuery =
+                applyHotelFilter(reservationQuery);
 
-                        statusClass =
-                            "status-occupied";
 
-                    }
+            const {
+                data: reservations
+            } = await reservationQuery;
 
-                    if (
-                        statusLower === "maintenance"
-                    ) {
 
-                        statusClass =
-                            "status-maintenance";
+            const reservationMap = {};
 
-                    }
 
-                    if (
-                        statusLower === "cleaning"
-                    ) {
+            (reservations || []).forEach(
+                function (reservation) {
 
-                        statusClass =
-                            "status-cleaning";
+                    reservationMap[
+                        reservation.room_id
+                    ] = reservation;
 
-                    }
+                }
+            );
+
+
+            rooms.forEach(function (room) {
+
+                const status =
+                    String(
+                        room.status || "Available"
+                    );
+
+
+                const statusLower =
+                    status.toLowerCase();
+
+
+                let statusClass =
+                    "status-available";
+
+
+                if (statusLower === "occupied") {
+
+                    statusClass =
+                        "status-occupied";
+
+                }
+
+
+                if (statusLower === "maintenance") {
+
+                    statusClass =
+                        "status-maintenance";
+
+                }
+
+
+                if (statusLower === "cleaning") {
+
+                    statusClass =
+                        "status-cleaning";
+
+                }
+
+
+                const reservation =
+                    reservationMap[room.id];
+
+
+                let guest = "-";
+
+
+                if (
+                    reservation &&
+                    reservation.guests
+                ) {
+
+                    guest =
+                        reservation.guests.full_name ||
+                        "-";
+                }
+
+
+                roomTable.innerHTML += `
+
+                    <tr>
+
+                        <td>
+                            ${escapeHtml(
+                                room.room_number
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                room.room_type
+                            )}
+                        </td>
+
+                        <td>
+                            ${formatMoney(
+                                room.price
+                            )}
+                        </td>
+
+                        <td>
+
+                            <span class="status ${statusClass}">
+                                ${escapeHtml(status)}
+                            </span>
+
+                        </td>
+
+                        <td>
+                            ${escapeHtml(guest)}
+                        </td>
+
+                    </tr>
+
+                `;
+            });
+        }
+
+
+        /* =====================================================
+           LOAD TODAY'S REVENUE
+        ===================================================== */
+
+        async function loadTodayRevenue() {
+
+            const today = getToday();
+
+
+            let query = supabaseClient
+                .from("payments")
+                .select(
+                    "amount, payment_date"
+                )
+                .eq(
+                    "payment_date",
+                    today
+                );
+
+
+            query = applyHotelFilter(query);
+
+
+            const {
+                data: payments,
+                error
+            } = await query;
+
+
+            if (error) {
+
+                throw new Error(
+                    "Unable to load payments: " +
+                    error.message
+                );
+            }
+
+
+            let total = 0;
+
+
+            (payments || []).forEach(
+                function (payment) {
+
+                    total +=
+                        Number(payment.amount || 0);
+
+                }
+            );
+
+
+            document.getElementById(
+                "dashboardRevenue"
+            ).textContent =
+                formatMoney(total);
+
+
+            return total;
+        }
+
+
+        /* =====================================================
+           LOAD TODAY'S EXPENSES
+        ===================================================== */
+
+        async function loadTodayExpenses() {
+
+            const today = getToday();
+
+
+            let query = supabaseClient
+                .from("expenses")
+                .select(
+                    "amount, expense_date"
+                )
+                .eq(
+                    "expense_date",
+                    today
+                );
+
+
+            query = applyHotelFilter(query);
+
+
+            const {
+                data: expenses,
+                error
+            } = await query;
+
+
+            if (error) {
+
+                throw new Error(
+                    "Unable to load expenses: " +
+                    error.message
+                );
+            }
+
+
+            let total = 0;
+
+
+            (expenses || []).forEach(
+                function (expense) {
+
+                    total +=
+                        Number(expense.amount || 0);
+
+                }
+            );
+
+
+            document.getElementById(
+                "dashboardExpenses"
+            ).textContent =
+                formatMoney(total);
+
+
+            return total;
+        }
+
+
+        /* =====================================================
+           LOAD TODAY'S BOOKINGS
+        ===================================================== */
+
+        async function loadTodayBookings() {
+
+            const today = getToday();
+
+
+            let query = supabaseClient
+                .from("reservations")
+                .select(
+                    "id, status, check_in"
+                )
+                .eq(
+                    "check_in",
+                    today
+                )
+                .neq(
+                    "status",
+                    "cancelled"
+                );
+
+
+            query = applyHotelFilter(query);
+
+
+            const {
+                data: reservations,
+                error
+            } = await query;
+
+
+            if (error) {
+
+                throw new Error(
+                    "Unable to load reservations: " +
+                    error.message
+                );
+            }
+
+
+            const total =
+                reservations
+                    ? reservations.length
+                    : 0;
+
+
+            document.getElementById(
+                "dashboardBookings"
+            ).textContent = total;
+
+
+            return total;
+        }
+
+
+        /* =====================================================
+           LOAD TODAY'S ACTIVITY
+        ===================================================== */
+
+        async function loadTodayActivity() {
+
+            const today = getToday();
+
+
+            let query = supabaseClient
+                .from("reservations")
+                .select(`
+                    id,
+                    status,
+                    check_in,
+                    check_out,
+                    guests (
+                        full_name
+                    ),
+                    rooms (
+                        room_number
+                    )
+                `)
+                .or(
+                    `check_in.eq.${today},check_out.eq.${today}`
+                )
+                .neq(
+                    "status",
+                    "cancelled"
+                )
+                .order(
+                    "check_in"
+                );
+
+
+            query = applyHotelFilter(query);
+
+
+            const {
+                data: reservations,
+                error
+            } = await query;
+
+
+            const activity =
+                document.getElementById(
+                    "dashboardActivity"
+                );
+
+
+            if (error) {
+
+                activity.textContent =
+                    "Today's activity could not be loaded.";
+
+                return;
+            }
+
+
+            if (
+                !reservations ||
+                reservations.length === 0
+            ) {
+
+                activity.textContent =
+                    "No reservation activity for today.";
+
+                return;
+            }
+
+
+            let html = "";
+
+
+            reservations.forEach(
+                function (reservation) {
 
                     const guest =
-                        statusLower === "occupied"
-                            ? "Occupied Room"
+                        reservation.guests
+                            ? reservation.guests.full_name
+                            : "Unknown guest";
+
+
+                    const room =
+                        reservation.rooms
+                            ? reservation.rooms.room_number
                             : "-";
 
-                    roomTable.innerHTML += `
 
-                        <tr>
+                    let action = "Reservation";
 
-                            <td>
-                                ${room.number || "-"}
-                            </td>
 
-                            <td>
-                                ${room.type || "-"}
-                            </td>
+                    if (
+                        reservation.check_in === today
+                    ) {
 
-                            <td>
-                                KSh ${
-                                    Number(
-                                        room.price || 0
-                                    ).toLocaleString()
-                                }
-                            </td>
+                        action = "Check-in";
 
-                            <td>
+                    } else if (
+                        reservation.check_out === today
+                    ) {
 
-                                <span class="status ${statusClass}">
-                                    ${status}
-                                </span>
+                        action = "Check-out";
+                    }
 
-                            </td>
 
-                            <td>
-                                ${guest}
-                            </td>
+                    html += `
+                        <div style="
+                            padding: 10px 0;
+                            border-bottom: 1px solid #eee;
+                        ">
 
-                        </tr>
+                            <strong>
+                                ${escapeHtml(action)}
+                            </strong>
 
+                            —
+                            ${escapeHtml(guest)}
+
+                            — Room
+                            ${escapeHtml(room)}
+
+                            — Status:
+                            ${escapeHtml(
+                                reservation.status
+                            )}
+
+                        </div>
                     `;
+                }
+            );
 
-                });
 
-            }
+            activity.innerHTML = html;
+        }
 
-        });
 
-    </script>
-    <!-- your existing index.html content above -->
+        /* =====================================================
+           LOAD COMPLETE DASHBOARD
+        ===================================================== */
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase.js"></script>
+        async function loadDashboard() {
 
-    <!-- ADD THE NEW CODE HERE -->
-    <script>
-        async function checkDashboardAccess() {
-            const {
-                data: { session },
-                error
-            } = await supabaseClient.auth.getSession();
+            try {
 
-            if (error || !session) {
-                window.location.href = "login.html";
-                return;
-            }
+                await loadCurrentUser();
 
-            const { data: profile, error: profileError } =
-                await supabaseClient
-                    .from("profiles")
-                    .select("full_name, role, hotel_id")
-                    .eq("id", session.user.id)
-                    .single();
 
-            if (profileError || !profile) {
-                await supabaseClient.auth.signOut();
-                window.location.href = "login.html";
-                return;
-            }
+                await loadHotelInformation();
 
-            sessionStorage.setItem("userRole", profile.role);
-            sessionStorage.setItem("userName", profile.full_name);
 
-            if (profile.hotel_id) {
-                sessionStorage.setItem("hotelId", profile.hotel_id);
-            } else {
-                sessionStorage.removeItem("hotelId");
+                const revenue =
+                    await loadTodayRevenue();
+
+
+                const expenses =
+                    await loadTodayExpenses();
+
+
+                await loadRooms();
+
+
+                await loadTodayBookings();
+
+
+                await loadTodayActivity();
+
+
+                const profit =
+                    revenue - expenses;
+
+
+                document.getElementById(
+                    "dashboardProfit"
+                ).textContent =
+                    formatMoney(profit);
+
+
+            } catch (error) {
+
+                console.error(
+                    "Dashboard error:",
+                    error
+                );
+
+
+                showDashboardError(
+                    error.message ||
+                    "Unable to load dashboard data."
+                );
             }
         }
 
-        checkDashboardAccess();
+
+        /* =====================================================
+           START DASHBOARD
+        ===================================================== */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                loadDashboard();
+
+            }
+        );
+
     </script>
 
 </body>
-</html>
-</body>
-
 </html>
