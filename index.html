@@ -1,8 +1,10 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>EDU TECH Hotel Management System - Dashboard</title>
 
     <link rel="stylesheet" href="./style.css">
@@ -57,29 +59,27 @@
             margin-top: 25px;
         }
 
-        .dashboard-loading {
-            padding: 20px;
-            text-align: center;
-            color: #666;
+        .dashboard-user-info {
+            margin-top: 10px;
+            color: #555;
         }
 
         .dashboard-error {
-            padding: 15px;
             margin-top: 15px;
-            border-radius: 6px;
+            padding: 12px;
             background: #f8d7da;
             color: #721c24;
+            border-radius: 6px;
+            display: none;
         }
 
-        .user-info {
-            margin-top: 8px;
-            font-size: 14px;
-            color: #666;
-        }
-
-        .hotel-info {
-            font-size: 14px;
-            color: #666;
+        .dashboard-success {
+            margin-top: 15px;
+            padding: 12px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 6px;
+            display: none;
         }
     </style>
 </head>
@@ -94,119 +94,269 @@
         </div>
 
         <nav>
-            <a href="./index.html" class="active">🏠 Dashboard</a>
-            <a href="./rooms.html">🛏️ Rooms</a>
-            <a href="./guests.html">👤 Guests</a>
-            <a href="./reservations.html">📅 Reservations</a>
-            <a href="./checkin.html">🛎️ Check-in</a>
-            <a href="./checkout.html">🚪 Check-out</a>
-            <a href="./restaurant.html">🍽️ Restaurant</a>
-            <a href="./inventory.html">📦 Inventory</a>
-            <a href="./payments.html">💰 Payments</a>
-            <a href="./expenses.html">💸 Expenses</a>
-            <a href="./employees.html">👨‍💼 Employees</a>
-            <a href="./housekeeping.html">🧹 Housekeeping</a>
-            <a href="./maintenance.html">🔧 Maintenance</a>
-            <a href="./reports.html">📊 Reports</a>
-            <a href="./settings.html">⚙️ Settings</a>
+
+            <a href="./index.html" class="active">
+                🏠 Dashboard
+            </a>
+
+            <a href="./rooms.html">
+                🛏️ Rooms
+            </a>
+
+            <a href="./guests.html">
+                👤 Guests
+            </a>
+
+            <a href="./reservations.html">
+                📅 Reservations
+            </a>
+
+            <a href="./checkin.html">
+                🛎️ Check-in
+            </a>
+
+            <a href="./checkout.html">
+                🚪 Check-out
+            </a>
+
+            <a href="./restaurant.html">
+                🍽️ Restaurant
+            </a>
+
+            <a href="./inventory.html">
+                📦 Inventory
+            </a>
+
+            <a href="./payments.html">
+                💰 Payments
+            </a>
+
+            <a href="./expenses.html">
+                💸 Expenses
+            </a>
+
+            <a href="./employees.html">
+                👨‍💼 Employees
+            </a>
+
+            <a href="./housekeeping.html">
+                🧹 Housekeeping
+            </a>
+
+            <a href="./maintenance.html">
+                🔧 Maintenance
+            </a>
+
+            <a href="./reports.html">
+                📊 Reports
+            </a>
+
+            <a href="./settings.html">
+                ⚙️ Settings
+            </a>
+
         </nav>
 
     </aside>
+
 
     <main class="main-content">
 
         <header class="topbar">
 
             <div>
+
                 <h1>Dashboard</h1>
-                <p>Welcome to EDU TECH Hotel Management System</p>
 
-                <div class="user-info">
+                <p>
+                    Welcome to EDU TECH Hotel Management System
+                </p>
+
+                <div class="dashboard-user-info">
+
                     Logged in as:
-                    <strong id="dashboardUserName">Loading...</strong>
+                    <strong id="dashboardUserName">
+                        Loading...
+                    </strong>
+
                     —
-                    <span id="dashboardUserRole">Loading...</span>
+                    <strong id="dashboardUserRole">
+                        Loading...
+                    </strong>
+
+                    <br>
+
+                    <strong id="dashboardHotelName">
+                        Loading hotel...
+                    </strong>
+
+                    <span id="dashboardHotelLocation"></span>
+
                 </div>
 
-                <div class="hotel-info" id="dashboardHotelInfo">
-                    Loading hotel information...
-                </div>
             </div>
 
         </header>
 
+
+        <!-- ERROR MESSAGE -->
+
+        <div
+            id="dashboardError"
+            class="dashboard-error"
+        ></div>
+
+
+        <!-- DASHBOARD CARDS -->
+
         <section class="cards">
 
             <div class="card">
+
                 <h3>Total Rooms</h3>
-                <h2 id="dashboardTotalRooms">0</h2>
+
+                <h2 id="dashboardTotalRooms">
+                    0
+                </h2>
+
             </div>
 
+
             <div class="card">
+
                 <h3>Occupied Rooms</h3>
-                <h2 id="dashboardOccupiedRooms">0</h2>
+
+                <h2 id="dashboardOccupiedRooms">
+                    0
+                </h2>
+
             </div>
 
+
             <div class="card">
+
                 <h3>Available Rooms</h3>
-                <h2 id="dashboardAvailableRooms">0</h2>
+
+                <h2 id="dashboardAvailableRooms">
+                    0
+                </h2>
+
             </div>
 
+
             <div class="card">
+
                 <h3>Maintenance</h3>
-                <h2 id="dashboardMaintenanceRooms">0</h2>
+
+                <h2 id="dashboardMaintenanceRooms">
+                    0
+                </h2>
+
             </div>
 
+
             <div class="card">
+
                 <h3>Today's Revenue</h3>
-                <h2 id="dashboardRevenue">KSh 0</h2>
+
+                <h2 id="dashboardRevenue">
+                    KSh 0
+                </h2>
+
             </div>
 
+
             <div class="card">
+
                 <h3>Today's Expenses</h3>
-                <h2 id="dashboardExpenses">KSh 0</h2>
+
+                <h2 id="dashboardExpenses">
+                    KSh 0
+                </h2>
+
             </div>
 
+
             <div class="card">
+
                 <h3>Today's Profit</h3>
-                <h2 id="dashboardProfit">KSh 0</h2>
+
+                <h2 id="dashboardProfit">
+                    KSh 0
+                </h2>
+
             </div>
 
+
             <div class="card">
+
                 <h3>Today's Bookings</h3>
-                <h2 id="dashboardBookings">0</h2>
+
+                <h2 id="dashboardBookings">
+                    0
+                </h2>
+
             </div>
 
         </section>
 
-        <div id="dashboardError" style="display: none;"></div>
+
+        <!-- ROOM STATUS -->
 
         <section class="dashboard-section">
 
             <div class="table-container">
 
                 <div class="room-header">
-                    <h2>Room Status</h2>
+
+                    <h2>
+                        Room Status
+                    </h2>
+
                 </div>
+
 
                 <table class="dashboard-table">
 
                     <thead>
+
                         <tr>
-                            <th>Room</th>
-                            <th>Type</th>
-                            <th>Price</th>
-                            <th>Status</th>
-                            <th>Guest</th>
+
+                            <th>
+                                Room
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                Price
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Guest
+                            </th>
+
                         </tr>
+
                     </thead>
 
+
                     <tbody id="dashboardRoomTable">
+
                         <tr>
-                            <td colspan="5" class="dashboard-loading">
+
+                            <td colspan="5">
                                 Loading room information...
                             </td>
+
                         </tr>
+
                     </tbody>
 
                 </table>
@@ -215,17 +365,66 @@
 
         </section>
 
+
+        <!-- TODAY'S ACTIVITY -->
+
         <section class="dashboard-section">
 
             <div class="table-container">
 
                 <div class="room-header">
-                    <h2>Today's Activity</h2>
+
+                    <h2>
+                        Today's Activity
+                    </h2>
+
                 </div>
 
-                <div id="dashboardActivity" style="padding: 15px;">
-                    Loading today's activity...
-                </div>
+
+                <table class="dashboard-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Guest
+                            </th>
+
+                            <th>
+                                Room
+                            </th>
+
+                            <th>
+                                Check-in
+                            </th>
+
+                            <th>
+                                Check-out
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="dashboardActivityTable">
+
+                        <tr>
+
+                            <td colspan="5">
+                                Loading today's activity...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
 
             </div>
 
@@ -235,26 +434,57 @@
 
 
     <!-- SUPABASE JAVASCRIPT LIBRARY -->
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- EDU TECH SUPABASE CONNECTION -->
+
+    <!-- OUR SUPABASE CONNECTION -->
+
     <script src="./supabase.js"></script>
 
 
     <script>
 
+        /*
+        =====================================================
+        GLOBAL VARIABLES
+        =====================================================
+        */
+
+        let currentUser = null;
         let currentProfile = null;
         let currentHotel = null;
 
 
-        /* =====================================================
-           HELPER FUNCTIONS
-        ===================================================== */
+        /*
+        =====================================================
+        HELPER: TODAY
+        =====================================================
+        */
 
-        function formatMoney(amount) {
-            return "KSh " + Number(amount || 0).toLocaleString();
+        function getToday() {
+
+            const date = new Date();
+
+            const year = date.getFullYear();
+
+            const month = String(
+                date.getMonth() + 1
+            ).padStart(2, "0");
+
+            const day = String(
+                date.getDate()
+            ).padStart(2, "0");
+
+            return `${year}-${month}-${day}`;
         }
 
+
+        /*
+        =====================================================
+        HELPER: ESCAPE HTML
+        =====================================================
+        */
 
         function escapeHtml(value) {
 
@@ -271,96 +501,153 @@
         }
 
 
+        /*
+        =====================================================
+        HELPER: SHOW ERROR
+        =====================================================
+        */
+
         function showDashboardError(message) {
 
             const errorBox =
                 document.getElementById("dashboardError");
 
-            errorBox.className = "dashboard-error";
             errorBox.textContent = message;
+
             errorBox.style.display = "block";
         }
 
 
-        function getToday() {
+        /*
+        =====================================================
+        HELPER: HOTEL FILTER
+        =====================================================
+        */
 
-            const now = new Date();
+        function applyHotelFilter(query) {
 
-            const year = now.getFullYear();
-            const month =
-                String(now.getMonth() + 1).padStart(2, "0");
-            const day =
-                String(now.getDate()).padStart(2, "0");
+            if (
+                currentProfile &&
+                currentProfile.role === "system_owner"
+            ) {
 
-            return `${year}-${month}-${day}`;
+                return query;
+
+            }
+
+            if (
+                currentProfile &&
+                currentProfile.hotel_id
+            ) {
+
+                return query.eq(
+                    "hotel_id",
+                    currentProfile.hotel_id
+                );
+
+            }
+
+            return query;
         }
 
 
-        function getRoleName(role) {
+        /*
+        =====================================================
+        CHECK PASSWORD RECOVERY
+        =====================================================
+        */
 
-            const names = {
-                system_owner: "System Owner",
-                hotel_owner: "Hotel Owner",
-                manager: "Manager",
-                receptionist: "Receptionist"
-            };
+        supabaseClient.auth.onAuthStateChange(
+            function (event) {
 
-            return names[role] || role;
-        }
+                if (event === "PASSWORD_RECOVERY") {
+
+                    window.location.href =
+                        "reset-password.html";
+
+                }
+
+            }
+        );
 
 
-        /* =====================================================
-           LOAD USER PROFILE
-        ===================================================== */
+        /*
+        =====================================================
+        LOAD CURRENT USER
+        =====================================================
+        */
 
         async function loadCurrentUser() {
 
             const {
-                data: { session },
+                data: sessionData,
                 error: sessionError
-            } = await supabaseClient.auth.getSession();
+            } =
+                await supabaseClient.auth.getSession();
 
 
-            if (sessionError || !session) {
+            if (
+                sessionError ||
+                !sessionData ||
+                !sessionData.session
+            ) {
 
-                window.location.href = "login.html";
+                window.location.href =
+                    "login.html";
+
                 return false;
             }
 
+
+            currentUser =
+                sessionData.session.user;
+
+
+            /*
+            -------------------------------------------------
+            LOAD PROFILE
+            -------------------------------------------------
+            */
 
             const {
                 data: profile,
                 error: profileError
-            } = await supabaseClient
-                .from("profiles")
-                .select("id, full_name, role, hotel_id")
-                .eq("id", session.user.id)
-                .single();
-
-
-            if (profileError || !profile) {
-
-                await supabaseClient.auth.signOut();
-
-                window.location.href = "login.html";
-                return false;
-            }
+            } =
+                await supabaseClient
+                    .from("profiles")
+                    .select(
+                        "id, full_name, role, hotel_id"
+                    )
+                    .eq(
+                        "id",
+                        currentUser.id
+                    )
+                    .single();
 
 
             if (
-                profile.role !== "system_owner" &&
-                !profile.hotel_id
+                profileError ||
+                !profile
             ) {
 
                 await supabaseClient.auth.signOut();
 
-                window.location.href = "login.html";
+                window.location.href =
+                    "login.html";
+
                 return false;
             }
 
 
-            currentProfile = profile;
+            currentProfile =
+                profile;
 
+
+            /*
+            -------------------------------------------------
+            SAVE SESSION INFORMATION
+            -------------------------------------------------
+            */
 
             sessionStorage.setItem(
                 "userRole",
@@ -382,190 +669,260 @@
 
             } else {
 
-                sessionStorage.removeItem("hotelId");
+                sessionStorage.removeItem(
+                    "hotelId"
+                );
+
             }
 
 
+            /*
+            -------------------------------------------------
+            DISPLAY USER
+            -------------------------------------------------
+            */
+
             document.getElementById(
                 "dashboardUserName"
-            ).textContent = profile.full_name;
+            ).textContent =
+                profile.full_name;
 
 
             document.getElementById(
                 "dashboardUserRole"
-            ).textContent = getRoleName(profile.role);
+            ).textContent =
+                profile.role;
+
+
+            /*
+            -------------------------------------------------
+            SYSTEM OWNER DOES NOT REQUIRE HOTEL
+            -------------------------------------------------
+            */
+
+            if (
+                profile.role === "system_owner"
+            ) {
+
+                document.getElementById(
+                    "dashboardHotelName"
+                ).textContent =
+                    "All Hotels";
+
+                document.getElementById(
+                    "dashboardHotelLocation"
+                ).textContent =
+                    "";
+
+                return true;
+            }
+
+
+            /*
+            -------------------------------------------------
+            OTHER USERS MUST HAVE A HOTEL
+            -------------------------------------------------
+            */
+
+            if (!profile.hotel_id) {
+
+                await supabaseClient.auth.signOut();
+
+                window.location.href =
+                    "login.html";
+
+                return false;
+            }
+
+
+            /*
+            -------------------------------------------------
+            LOAD HOTEL
+            -------------------------------------------------
+            */
+
+            const {
+                data: hotel,
+                error: hotelError
+            } =
+                await supabaseClient
+                    .from("hotels")
+                    .select(
+                        "id, hotel_name, location, phone, email"
+                    )
+                    .eq(
+                        "id",
+                        profile.hotel_id
+                    )
+                    .single();
+
+
+            if (
+                hotelError ||
+                !hotel
+            ) {
+
+                showDashboardError(
+                    "Your assigned hotel could not be loaded."
+                );
+
+                return false;
+            }
+
+
+            currentHotel =
+                hotel;
+
+
+            document.getElementById(
+                "dashboardHotelName"
+            ).textContent =
+                hotel.hotel_name;
+
+
+            document.getElementById(
+                "dashboardHotelLocation"
+            ).textContent =
+                hotel.location
+                    ? " — " + hotel.location
+                    : "";
 
 
             return true;
         }
 
 
-        /* =====================================================
-           LOAD HOTEL INFORMATION
-        ===================================================== */
-
-        async function loadHotelInformation() {
-
-            const hotelInfo =
-                document.getElementById(
-                    "dashboardHotelInfo"
-                );
-
-
-            if (currentProfile.role === "system_owner") {
-
-                hotelInfo.textContent =
-                    "System-wide view — all hotels";
-
-                return;
-            }
-
-
-            const {
-                data: hotel,
-                error
-            } = await supabaseClient
-                .from("hotels")
-                .select(
-                    "id, hotel_name, location, phone, email"
-                )
-                .eq("id", currentProfile.hotel_id)
-                .single();
-
-
-            if (error || !hotel) {
-
-                hotelInfo.textContent =
-                    "Hotel information unavailable.";
-
-                return;
-            }
-
-
-            currentHotel = hotel;
-
-
-            hotelInfo.textContent =
-                hotel.hotel_name +
-                (
-                    hotel.location
-                        ? " — " + hotel.location
-                        : ""
-                );
-        }
-
-
-        /* =====================================================
-           BUILD HOTEL FILTER
-        ===================================================== */
-
-        function applyHotelFilter(query) {
-
-            if (currentProfile.role === "system_owner") {
-
-                return query;
-            }
-
-
-            return query.eq(
-                "hotel_id",
-                currentProfile.hotel_id
-            );
-        }
-
-
-        /* =====================================================
-           LOAD ROOMS
-        ===================================================== */
+        /*
+        =====================================================
+        LOAD ROOMS
+        =====================================================
+        */
 
         async function loadRooms() {
 
-            let query = supabaseClient
-                .from("rooms")
-                .select(
-                    "id, room_number, room_type, status, price"
-                )
-                .order("room_number");
+            let query =
+                supabaseClient
+                    .from("rooms")
+                    .select(
+                        "id, room_number, room_type, status, price, hotel_id"
+                    )
+                    .order(
+                        "room_number",
+                        {
+                            ascending: true
+                        }
+                    );
 
 
-            query = applyHotelFilter(query);
+            query =
+                applyHotelFilter(query);
 
 
             const {
                 data: rooms,
                 error
-            } = await query;
+            } =
+                await query;
 
 
             if (error) {
 
-                throw new Error(
+                showDashboardError(
                     "Unable to load rooms: " +
                     error.message
                 );
+
+                return;
             }
 
 
-            let totalRooms = rooms.length;
+            const roomList =
+                rooms || [];
+
+
             let occupiedRooms = 0;
             let availableRooms = 0;
             let maintenanceRooms = 0;
 
 
-            rooms.forEach(function (room) {
+            roomList.forEach(
+                function (room) {
 
-                const status =
-                    String(
-                        room.status || ""
-                    ).toLowerCase();
+                    const status =
+                        String(
+                            room.status || ""
+                        ).toLowerCase();
 
 
-                if (status === "occupied") {
-                    occupiedRooms++;
+                    if (
+                        status === "occupied"
+                    ) {
+
+                        occupiedRooms++;
+
+                    }
+
+
+                    if (
+                        status === "available"
+                    ) {
+
+                        availableRooms++;
+
+                    }
+
+
+                    if (
+                        status === "maintenance"
+                    ) {
+
+                        maintenanceRooms++;
+
+                    }
+
                 }
-
-
-                if (status === "available") {
-                    availableRooms++;
-                }
-
-
-                if (status === "maintenance") {
-                    maintenanceRooms++;
-                }
-
-            });
+            );
 
 
             document.getElementById(
                 "dashboardTotalRooms"
-            ).textContent = totalRooms;
+            ).textContent =
+                roomList.length;
 
 
             document.getElementById(
                 "dashboardOccupiedRooms"
-            ).textContent = occupiedRooms;
+            ).textContent =
+                occupiedRooms;
 
 
             document.getElementById(
                 "dashboardAvailableRooms"
-            ).textContent = availableRooms;
+            ).textContent =
+                availableRooms;
 
 
             document.getElementById(
                 "dashboardMaintenanceRooms"
-            ).textContent = maintenanceRooms;
+            ).textContent =
+                maintenanceRooms;
 
 
-            await loadRoomTable(rooms);
+            await displayRoomTable(
+                roomList
+            );
         }
 
 
-        /* =====================================================
-           LOAD ROOM TABLE
-        ===================================================== */
+        /*
+        =====================================================
+        DISPLAY ROOM TABLE
+        =====================================================
+        */
 
-        async function loadRoomTable(rooms) {
+        async function displayRoomTable(
+            rooms
+        ) {
 
             const roomTable =
                 document.getElementById(
@@ -573,10 +930,7 @@
                 );
 
 
-            roomTable.innerHTML = "";
-
-
-            if (rooms.length === 0) {
+            if (!rooms.length) {
 
                 roomTable.innerHTML = `
                     <tr>
@@ -590,57 +944,17 @@
             }
 
 
-            /*
-                Find active reservations so that occupied
-                rooms can display the current guest.
-            */
-
-            let reservationQuery = supabaseClient
-                .from("reservations")
-                .select(`
-                    id,
-                    room_id,
-                    status,
-                    check_in,
-                    check_out,
-                    guests (
-                        full_name
-                    )
-                `)
-                .in(
-                    "status",
-                    ["confirmed", "checked_in", "active"]
-                );
+            roomTable.innerHTML = "";
 
 
-            reservationQuery =
-                applyHotelFilter(reservationQuery);
-
-
-            const {
-                data: reservations
-            } = await reservationQuery;
-
-
-            const reservationMap = {};
-
-
-            (reservations || []).forEach(
-                function (reservation) {
-
-                    reservationMap[
-                        reservation.room_id
-                    ] = reservation;
-
-                }
-            );
-
-
-            rooms.forEach(function (room) {
+            for (
+                const room of rooms
+            ) {
 
                 const status =
                     String(
-                        room.status || "Available"
+                        room.status ||
+                        "Available"
                     );
 
 
@@ -652,7 +966,10 @@
                     "status-available";
 
 
-                if (statusLower === "occupied") {
+                if (
+                    statusLower ===
+                    "occupied"
+                ) {
 
                     statusClass =
                         "status-occupied";
@@ -660,7 +977,10 @@
                 }
 
 
-                if (statusLower === "maintenance") {
+                if (
+                    statusLower ===
+                    "maintenance"
+                ) {
 
                     statusClass =
                         "status-maintenance";
@@ -668,7 +988,10 @@
                 }
 
 
-                if (statusLower === "cleaning") {
+                if (
+                    statusLower ===
+                    "cleaning"
+                ) {
 
                     statusClass =
                         "status-cleaning";
@@ -676,21 +999,91 @@
                 }
 
 
-                const reservation =
-                    reservationMap[room.id];
+                let guestName = "-";
 
 
-                let guest = "-";
-
+                /*
+                -------------------------------------------------
+                FIND ACTIVE RESERVATION / GUEST
+                -------------------------------------------------
+                */
 
                 if (
-                    reservation &&
-                    reservation.guests
+                    statusLower ===
+                    "occupied"
                 ) {
 
-                    guest =
-                        reservation.guests.full_name ||
-                        "-";
+                    let reservationQuery =
+                        supabaseClient
+                            .from("reservations")
+                            .select(
+                                `
+                                id,
+                                guest_id,
+                                room_id,
+                                check_in,
+                                check_out,
+                                status,
+                                guests(full_name)
+                                `
+                            )
+                            .eq(
+                                "room_id",
+                                room.id
+                            )
+                            .in(
+                                "status",
+                                [
+                                    "confirmed",
+                                    "checked_in",
+                                    "active"
+                                ]
+                            )
+                            .order(
+                                "check_in",
+                                {
+                                    ascending: false
+                                }
+                            )
+                            .limit(1);
+
+
+                    reservationQuery =
+                        applyHotelFilter(
+                            reservationQuery
+                        );
+
+
+                    const {
+                        data:
+                            reservations
+                    } =
+                        await reservationQuery;
+
+
+                    if (
+                        reservations &&
+                        reservations.length
+                    ) {
+
+                        const reservation =
+                            reservations[0];
+
+
+                        if (
+                            reservation.guests
+                        ) {
+
+                            guestName =
+                                reservation
+                                    .guests
+                                    .full_name ||
+                                "-";
+
+                        }
+
+                    }
+
                 }
 
 
@@ -711,76 +1104,94 @@
                         </td>
 
                         <td>
-                            ${formatMoney(
-                                room.price
-                            )}
+                            KSh ${
+                                Number(
+                                    room.price || 0
+                                ).toLocaleString()
+                            }
                         </td>
 
                         <td>
 
-                            <span class="status ${statusClass}">
-                                ${escapeHtml(status)}
+                            <span
+                                class="status ${statusClass}"
+                            >
+                                ${escapeHtml(
+                                    status
+                                )}
                             </span>
 
                         </td>
 
                         <td>
-                            ${escapeHtml(guest)}
+                            ${escapeHtml(
+                                guestName
+                            )}
                         </td>
 
                     </tr>
 
                 `;
-            });
+            }
         }
 
 
-        /* =====================================================
-           LOAD TODAY'S REVENUE
-        ===================================================== */
+        /*
+        =====================================================
+        LOAD TODAY'S REVENUE
+        =====================================================
+        */
 
         async function loadTodayRevenue() {
 
-            const today = getToday();
+            const today =
+                getToday();
 
 
-            let query = supabaseClient
-                .from("payments")
-                .select(
-                    "amount, payment_date"
-                )
-                .eq(
-                    "payment_date",
-                    today
-                );
+            let query =
+                supabaseClient
+                    .from("payments")
+                    .select(
+                        "amount"
+                    )
+                    .eq(
+                        "payment_date",
+                        today
+                    );
 
 
-            query = applyHotelFilter(query);
+            query =
+                applyHotelFilter(query);
 
 
             const {
-                data: payments,
+                data,
                 error
-            } = await query;
+            } =
+                await query;
 
 
             if (error) {
 
-                throw new Error(
-                    "Unable to load payments: " +
+                showDashboardError(
+                    "Unable to load today's revenue: " +
                     error.message
                 );
+
+                return;
             }
 
 
-            let total = 0;
+            let revenue = 0;
 
 
-            (payments || []).forEach(
+            (data || []).forEach(
                 function (payment) {
 
-                    total +=
-                        Number(payment.amount || 0);
+                    revenue +=
+                        Number(
+                            payment.amount || 0
+                        );
 
                 }
             );
@@ -789,59 +1200,70 @@
             document.getElementById(
                 "dashboardRevenue"
             ).textContent =
-                formatMoney(total);
+                "KSh " +
+                revenue.toLocaleString();
 
 
-            return total;
+            return revenue;
         }
 
 
-        /* =====================================================
-           LOAD TODAY'S EXPENSES
-        ===================================================== */
+        /*
+        =====================================================
+        LOAD TODAY'S EXPENSES
+        =====================================================
+        */
 
         async function loadTodayExpenses() {
 
-            const today = getToday();
+            const today =
+                getToday();
 
 
-            let query = supabaseClient
-                .from("expenses")
-                .select(
-                    "amount, expense_date"
-                )
-                .eq(
-                    "expense_date",
-                    today
-                );
+            let query =
+                supabaseClient
+                    .from("expenses")
+                    .select(
+                        "amount"
+                    )
+                    .eq(
+                        "expense_date",
+                        today
+                    );
 
 
-            query = applyHotelFilter(query);
+            query =
+                applyHotelFilter(query);
 
 
             const {
-                data: expenses,
+                data,
                 error
-            } = await query;
+            } =
+                await query;
 
 
             if (error) {
 
-                throw new Error(
-                    "Unable to load expenses: " +
+                showDashboardError(
+                    "Unable to load today's expenses: " +
                     error.message
                 );
+
+                return 0;
             }
 
 
-            let total = 0;
+            let expenses = 0;
 
 
-            (expenses || []).forEach(
+            (data || []).forEach(
                 function (expense) {
 
-                    total +=
-                        Number(expense.amount || 0);
+                    expenses +=
+                        Number(
+                            expense.amount || 0
+                        );
 
                 }
             );
@@ -850,278 +1272,317 @@
             document.getElementById(
                 "dashboardExpenses"
             ).textContent =
-                formatMoney(total);
+                "KSh " +
+                expenses.toLocaleString();
 
 
-            return total;
+            return expenses;
         }
 
 
-        /* =====================================================
-           LOAD TODAY'S BOOKINGS
-        ===================================================== */
+        /*
+        =====================================================
+        LOAD TODAY'S BOOKINGS
+        =====================================================
+        */
 
         async function loadTodayBookings() {
 
-            const today = getToday();
+            const today =
+                getToday();
 
 
-            let query = supabaseClient
-                .from("reservations")
-                .select(
-                    "id, status, check_in"
-                )
-                .eq(
-                    "check_in",
-                    today
-                )
-                .neq(
-                    "status",
-                    "cancelled"
-                );
+            let query =
+                supabaseClient
+                    .from("reservations")
+                    .select(
+                        "id, status"
+                    )
+                    .eq(
+                        "check_in",
+                        today
+                    )
+                    .neq(
+                        "status",
+                        "cancelled"
+                    );
 
 
-            query = applyHotelFilter(query);
+            query =
+                applyHotelFilter(query);
 
 
             const {
-                data: reservations,
+                data,
                 error
-            } = await query;
+            } =
+                await query;
 
 
             if (error) {
 
-                throw new Error(
-                    "Unable to load reservations: " +
+                showDashboardError(
+                    "Unable to load today's bookings: " +
                     error.message
                 );
+
+                return 0;
             }
 
 
-            const total =
-                reservations
-                    ? reservations.length
+            const bookings =
+                data
+                    ? data.length
                     : 0;
 
 
             document.getElementById(
                 "dashboardBookings"
-            ).textContent = total;
+            ).textContent =
+                bookings;
 
 
-            return total;
+            return bookings;
         }
 
 
-        /* =====================================================
-           LOAD TODAY'S ACTIVITY
-        ===================================================== */
+        /*
+        =====================================================
+        LOAD TODAY'S ACTIVITY
+        =====================================================
+        */
 
         async function loadTodayActivity() {
 
-            const today = getToday();
+            const today =
+                getToday();
 
 
-            let query = supabaseClient
-                .from("reservations")
-                .select(`
-                    id,
-                    status,
-                    check_in,
-                    check_out,
-                    guests (
-                        full_name
-                    ),
-                    rooms (
-                        room_number
+            let query =
+                supabaseClient
+                    .from("reservations")
+                    .select(
+                        `
+                        id,
+                        check_in,
+                        check_out,
+                        status,
+                        guests(full_name),
+                        rooms(room_number)
+                        `
                     )
-                `)
-                .or(
-                    `check_in.eq.${today},check_out.eq.${today}`
-                )
-                .neq(
-                    "status",
-                    "cancelled"
-                )
-                .order(
-                    "check_in"
-                );
+                    .or(
+                        "check_in.eq." +
+                        today +
+                        ",check_out.eq." +
+                        today
+                    )
+                    .order(
+                        "check_in",
+                        {
+                            ascending: true
+                        }
+                    );
 
 
-            query = applyHotelFilter(query);
+            query =
+                applyHotelFilter(query);
 
 
             const {
-                data: reservations,
+                data,
                 error
-            } = await query;
-
-
-            const activity =
-                document.getElementById(
-                    "dashboardActivity"
-                );
+            } =
+                await query;
 
 
             if (error) {
 
-                activity.textContent =
-                    "Today's activity could not be loaded.";
+                showDashboardError(
+                    "Unable to load today's activity: " +
+                    error.message
+                );
 
                 return;
             }
+
+
+            const activityTable =
+                document.getElementById(
+                    "dashboardActivityTable"
+                );
 
 
             if (
-                !reservations ||
-                reservations.length === 0
+                !data ||
+                data.length === 0
             ) {
 
-                activity.textContent =
-                    "No reservation activity for today.";
+                activityTable.innerHTML = `
+                    <tr>
+                        <td colspan="5">
+                            No activity for today.
+                        </td>
+                    </tr>
+                `;
 
                 return;
             }
 
 
-            let html = "";
+            activityTable.innerHTML = "";
 
 
-            reservations.forEach(
+            data.forEach(
                 function (reservation) {
 
-                    const guest =
+                    const guestName =
                         reservation.guests
-                            ? reservation.guests.full_name
-                            : "Unknown guest";
-
-
-                    const room =
-                        reservation.rooms
-                            ? reservation.rooms.room_number
+                            ? reservation
+                                .guests
+                                .full_name
                             : "-";
 
 
-                    let action = "Reservation";
+                    const roomNumber =
+                        reservation.rooms
+                            ? reservation
+                                .rooms
+                                .room_number
+                            : "-";
 
 
-                    if (
-                        reservation.check_in === today
-                    ) {
+                    activityTable.innerHTML += `
 
-                        action = "Check-in";
+                        <tr>
 
-                    } else if (
-                        reservation.check_out === today
-                    ) {
+                            <td>
+                                ${escapeHtml(
+                                    guestName
+                                )}
+                            </td>
 
-                        action = "Check-out";
-                    }
+                            <td>
+                                ${escapeHtml(
+                                    roomNumber
+                                )}
+                            </td>
 
+                            <td>
+                                ${escapeHtml(
+                                    reservation
+                                        .check_in
+                                )}
+                            </td>
 
-                    html += `
-                        <div style="
-                            padding: 10px 0;
-                            border-bottom: 1px solid #eee;
-                        ">
+                            <td>
+                                ${escapeHtml(
+                                    reservation
+                                        .check_out
+                                )}
+                            </td>
 
-                            <strong>
-                                ${escapeHtml(action)}
-                            </strong>
+                            <td>
 
-                            —
-                            ${escapeHtml(guest)}
+                                <span class="status">
 
-                            — Room
-                            ${escapeHtml(room)}
+                                    ${escapeHtml(
+                                        reservation
+                                            .status
+                                    )}
 
-                            — Status:
-                            ${escapeHtml(
-                                reservation.status
-                            )}
+                                </span>
 
-                        </div>
+                            </td>
+
+                        </tr>
+
                     `;
+
                 }
             );
-
-
-            activity.innerHTML = html;
         }
 
 
-        /* =====================================================
-           LOAD COMPLETE DASHBOARD
-        ===================================================== */
+        /*
+        =====================================================
+        LOAD PROFIT
+        =====================================================
+        */
+
+        async function loadProfit() {
+
+            const revenue =
+                await loadTodayRevenue();
+
+
+            const expenses =
+                await loadTodayExpenses();
+
+
+            const safeRevenue =
+                Number(
+                    revenue || 0
+                );
+
+
+            const safeExpenses =
+                Number(
+                    expenses || 0
+                );
+
+
+            const profit =
+                safeRevenue -
+                safeExpenses;
+
+
+            document.getElementById(
+                "dashboardProfit"
+            ).textContent =
+                "KSh " +
+                profit.toLocaleString();
+        }
+
+
+        /*
+        =====================================================
+        LOAD ENTIRE DASHBOARD
+        =====================================================
+        */
 
         async function loadDashboard() {
 
-            try {
-
+            const authenticated =
                 await loadCurrentUser();
 
 
-                await loadHotelInformation();
+            if (!authenticated) {
 
-
-                const revenue =
-                    await loadTodayRevenue();
-
-
-                const expenses =
-                    await loadTodayExpenses();
-
-
-                await loadRooms();
-
-
-                await loadTodayBookings();
-
-
-                await loadTodayActivity();
-
-
-                const profit =
-                    revenue - expenses;
-
-
-                document.getElementById(
-                    "dashboardProfit"
-                ).textContent =
-                    formatMoney(profit);
-
-
-            } catch (error) {
-
-                console.error(
-                    "Dashboard error:",
-                    error
-                );
-
-
-                showDashboardError(
-                    error.message ||
-                    "Unable to load dashboard data."
-                );
+                return;
             }
+
+
+            await loadRooms();
+
+            await loadProfit();
+
+            await loadTodayBookings();
+
+            await loadTodayActivity();
         }
 
 
-        /* =====================================================
-           START DASHBOARD
-        ===================================================== */
+        /*
+        =====================================================
+        START DASHBOARD
+        =====================================================
+        */
 
-        document.addEventListener(
-            "DOMContentLoaded",
-            function () {
-
-                loadDashboard();
-
-            }
-        );
+        loadDashboard();
 
     </script>
 
 </body>
 </html>
+```
