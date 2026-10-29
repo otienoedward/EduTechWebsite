@@ -11,6 +11,43 @@
 
     <link rel="stylesheet" href="./style.css">
 
+    <style>
+
+        /* =====================================================
+           ROLE CONTROL
+        ====================================================== */
+
+        .role-hidden {
+            display: none !important;
+        }
+
+        #accessDeniedScreen {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        #accessDeniedScreen h2 {
+            color: #c0392b;
+            margin-bottom: 10px;
+        }
+
+        #accessDeniedScreen p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        #accessDeniedScreen a {
+            display: inline-block;
+            padding: 10px 18px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+    </style>
+
 </head>
 
 <body>
@@ -29,38 +66,69 @@
 
         </div>
 
-
         <nav>
 
-            <a href="./index.html">🏠 Dashboard</a>
+            <a href="./index.html" data-module="dashboard">
+                🏠 Dashboard
+            </a>
 
-            <a href="./rooms.html">🛏️ Rooms</a>
+            <a href="./rooms.html" data-module="rooms">
+                🛏️ Rooms
+            </a>
 
-            <a href="./guests.html">👤 Guests</a>
+            <a href="./guests.html" data-module="guests">
+                👤 Guests
+            </a>
 
-            <a href="./reservations.html">📅 Reservations</a>
+            <a href="./reservations.html" data-module="reservations">
+                📅 Reservations
+            </a>
 
-            <a href="./checkin.html">🛎️ Check-in</a>
+            <a href="./checkin.html" data-module="checkin">
+                🛎️ Check-in
+            </a>
 
-            <a href="./checkout.html">🚪 Check-out</a>
+            <a href="./checkout.html" data-module="checkout">
+                🚪 Check-out
+            </a>
 
-            <a href="./restaurant.html" class="active">🍽️ Restaurant</a>
+            <a href="./restaurant.html"
+               class="active"
+               data-module="restaurant">
+                🍽️ Restaurant
+            </a>
 
-            <a href="./inventory.html">📦 Inventory</a>
+            <a href="./inventory.html" data-module="inventory">
+                📦 Inventory
+            </a>
 
-            <a href="./payments.html">💰 Payments</a>
+            <a href="./payments.html" data-module="payments">
+                💰 Payments
+            </a>
 
-            <a href="./expenses.html">💸 Expenses</a>
+            <a href="./expenses.html" data-module="expenses">
+                💸 Expenses
+            </a>
 
-            <a href="./employees.html">👨‍💼 Employees</a>
+            <a href="./employees.html" data-module="employees">
+                👨‍💼 Employees
+            </a>
 
-            <a href="./housekeeping.html">🧹 Housekeeping</a>
+            <a href="./housekeeping.html" data-module="housekeeping">
+                🧹 Housekeeping
+            </a>
 
-            <a href="./maintenance.html">🔧 Maintenance</a>
+            <a href="./maintenance.html" data-module="maintenance">
+                🔧 Maintenance
+            </a>
 
-            <a href="./reports.html">📊 Reports</a>
+            <a href="./reports.html" data-module="reports">
+                📊 Reports
+            </a>
 
-            <a href="./settings.html">⚙️ Settings</a>
+            <a href="./settings.html" data-module="settings">
+                ⚙️ Settings
+            </a>
 
         </nav>
 
@@ -73,269 +141,292 @@
 
     <main class="main-content">
 
-        <header class="topbar">
+        <!-- =================================================
+             ACCESS DENIED SCREEN
+        ================================================== -->
 
-            <div>
+        <div id="accessDeniedScreen">
 
-                <h1>Restaurant Management</h1>
+            <h2>Access Denied</h2>
 
-                <p>
-                    Manage restaurant orders, food sales and guest dining
-                </p>
+            <p>
+                You do not have permission to access the Restaurant module.
+            </p>
 
-            </div>
+            <a href="./index.html">
+                Return to Dashboard
+            </a>
 
-
-            <div class="user">
-
-                <div class="user-icon">
-                    A
-                </div>
-
-                <div>
-
-                    <strong>Administrator</strong>
-
-                    <small>
-                        System Admin
-                    </small>
-
-                </div>
-
-            </div>
-
-        </header>
+        </div>
 
 
         <!-- =================================================
-             SUMMARY CARDS
+             RESTAURANT MODULE CONTENT
         ================================================== -->
 
-        <section class="cards">
+        <div id="restaurantModuleContent">
 
-
-            <div class="card">
-
-                <div class="card-icon">
-                    🍽️
-                </div>
+            <header class="topbar">
 
                 <div>
 
-                    <h3>
-                        Today's Orders
-                    </h3>
-
-                    <p id="todayOrders">
-                        0
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <div class="card-icon">
-                    🟡
-                </div>
-
-                <div>
-
-                    <h3>
-                        Pending Orders
-                    </h3>
-
-                    <p id="pendingOrders">
-                        0
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <div class="card-icon">
-                    🟢
-                </div>
-
-                <div>
-
-                    <h3>
-                        Completed Orders
-                    </h3>
-
-                    <p id="completedOrders">
-                        0
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="card">
-
-                <div class="card-icon">
-                    💰
-                </div>
-
-                <div>
-
-                    <h3>
-                        Today's Sales
-                    </h3>
-
-                    <p id="restaurantSales">
-                        KSh 0
-                    </p>
-
-                </div>
-
-            </div>
-
-
-        </section>
-
-
-        <!-- =================================================
-             RESTAURANT ORDERS
-        ================================================== -->
-
-        <section class="room-container">
-
-
-            <div class="room-header">
-
-                <div>
-
-                    <h2>
-                        Restaurant Orders
-                    </h2>
+                    <h1>Restaurant Management</h1>
 
                     <p>
-                        Record and manage food and drink orders
+                        Manage restaurant orders, food sales and guest dining
                     </p>
 
                 </div>
 
 
-                <button
-                    type="button"
-                    class="add-room-btn"
-                    onclick="openRestaurantForm()">
+                <div class="user">
 
-                    + New Order
+                    <div class="user-icon">
+                        A
+                    </div>
 
-                </button>
+                    <div>
 
-            </div>
+                        <strong>Administrator</strong>
 
+                        <small>
+                            System Admin
+                        </small>
 
-            <!-- SEARCH AND FILTER -->
+                    </div>
 
-            <div class="room-tools">
+                </div>
 
-
-                <input
-                    type="text"
-                    id="restaurantSearch"
-                    placeholder="Search guest, room or order..."
-                    onkeyup="searchRestaurantOrders()"
-                >
+            </header>
 
 
-                <select
-                    id="restaurantFilter"
-                    onchange="filterRestaurantOrders()">
+            <!-- =================================================
+                 SUMMARY CARDS
+            ================================================== -->
 
-                    <option value="all">
-                        All Orders
-                    </option>
+            <section class="cards">
 
-                    <option value="Pending">
-                        Pending
-                    </option>
+                <div class="card">
 
-                    <option value="Preparing">
-                        Preparing
-                    </option>
+                    <div class="card-icon">
+                        🍽️
+                    </div>
 
-                    <option value="Served">
-                        Served
-                    </option>
+                    <div>
 
-                    <option value="Paid">
-                        Paid
-                    </option>
+                        <h3>
+                            Today's Orders
+                        </h3>
 
-                    <option value="Cancelled">
-                        Cancelled
-                    </option>
+                        <p id="todayOrders">
+                            0
+                        </p>
 
-                </select>
+                    </div>
 
-            </div>
+                </div>
 
 
-            <!-- TABLE -->
+                <div class="card">
 
-            <div class="table-container">
+                    <div class="card-icon">
+                        🟡
+                    </div>
 
-                <table id="restaurantTableData">
+                    <div>
 
-                    <thead>
+                        <h3>
+                            Pending Orders
+                        </h3>
 
-                        <tr>
+                        <p id="pendingOrders">
+                            0
+                        </p>
 
-                            <th>
-                                Order ID
-                            </th>
+                    </div>
 
-                            <th>
-                                Guest
-                            </th>
-
-                            <th>
-                                Room
-                            </th>
-
-                            <th>
-                                Order Items
-                            </th>
-
-                            <th>
-                                Total
-                            </th>
-
-                            <th>
-                                Payment
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
-                            <th>
-                                Actions
-                            </th>
-
-                        </tr>
-
-                    </thead>
+                </div>
 
 
-                    <tbody id="restaurantTable">
-                    </tbody>
+                <div class="card">
 
-                </table>
+                    <div class="card-icon">
+                        🟢
+                    </div>
 
-            </div>
+                    <div>
 
-        </section>
+                        <h3>
+                            Completed Orders
+                        </h3>
+
+                        <p id="completedOrders">
+                            0
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card">
+
+                    <div class="card-icon">
+                        💰
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Today's Sales
+                        </h3>
+
+                        <p id="restaurantSales">
+                            KSh 0
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 RESTAURANT ORDERS
+            ================================================== -->
+
+            <section class="room-container">
+
+                <div class="room-header">
+
+                    <div>
+
+                        <h2>
+                            Restaurant Orders
+                        </h2>
+
+                        <p>
+                            Record and manage food and drink orders
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="add-room-btn"
+                        onclick="openRestaurantForm()">
+
+                        + New Order
+
+                    </button>
+
+                </div>
+
+
+                <!-- SEARCH AND FILTER -->
+
+                <div class="room-tools">
+
+                    <input
+                        type="text"
+                        id="restaurantSearch"
+                        placeholder="Search guest, room or order..."
+                        onkeyup="searchRestaurantOrders()"
+                    >
+
+
+                    <select
+                        id="restaurantFilter"
+                        onchange="filterRestaurantOrders()">
+
+                        <option value="all">
+                            All Orders
+                        </option>
+
+                        <option value="Pending">
+                            Pending
+                        </option>
+
+                        <option value="Preparing">
+                            Preparing
+                        </option>
+
+                        <option value="Served">
+                            Served
+                        </option>
+
+                        <option value="Paid">
+                            Paid
+                        </option>
+
+                        <option value="Cancelled">
+                            Cancelled
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- TABLE -->
+
+                <div class="table-container">
+
+                    <table id="restaurantTableData">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Order ID
+                                </th>
+
+                                <th>
+                                    Guest
+                                </th>
+
+                                <th>
+                                    Room
+                                </th>
+
+                                <th>
+                                    Order Items
+                                </th>
+
+                                <th>
+                                    Total
+                                </th>
+
+                                <th>
+                                    Payment
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Actions
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="restaurantTable">
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </div>
 
     </main>
 
@@ -348,9 +439,7 @@
         id="restaurantModal"
         class="modal">
 
-
         <div class="modal-content">
-
 
             <div class="modal-header">
 
@@ -373,7 +462,6 @@
             <!-- FORM -->
 
             <form id="restaurantForm">
-
 
                 <label for="restaurantGuest">
                     Guest Name
@@ -521,10 +609,45 @@
 
 
         /* =================================================
+           RESTAURANT ACCESS CHECK
+        ================================================= */
+
+        function restaurantAccessAllowed() {
+
+            const role =
+                String(
+                    sessionStorage.getItem("userRole") ||
+                    localStorage.getItem("userRole") ||
+                    ""
+                )
+                .toLowerCase()
+                .trim();
+
+            return (
+                role === "system_owner" ||
+                role === "hotel_owner" ||
+                role === "manager"
+            );
+
+        }
+
+
+        /* =================================================
            OPEN FORM
         ================================================= */
 
         function openRestaurantForm() {
+
+            if (!restaurantAccessAllowed()) {
+
+                alert(
+                    "You do not have permission to access the Restaurant module."
+                );
+
+                return;
+
+            }
+
 
             document.getElementById(
                 "restaurantModal"
@@ -555,6 +678,17 @@
             function(event) {
 
                 event.preventDefault();
+
+
+                if (!restaurantAccessAllowed()) {
+
+                    alert(
+                        "You do not have permission to save restaurant orders."
+                    );
+
+                    return;
+
+                }
 
 
                 const guest =
@@ -918,6 +1052,17 @@
             button
         ) {
 
+            if (!restaurantAccessAllowed()) {
+
+                alert(
+                    "You do not have permission to delete restaurant orders."
+                );
+
+                return;
+
+            }
+
+
             if (
                 confirm(
                     "Are you sure you want to delete this restaurant order?"
@@ -943,6 +1088,17 @@
         function editRestaurantRecord(
             button
         ) {
+
+            if (!restaurantAccessAllowed()) {
+
+                alert(
+                    "You do not have permission to edit restaurant orders."
+                );
+
+                return;
+
+            }
+
 
             const row =
                 button.closest(
@@ -1032,6 +1188,13 @@
         ================================================= */
 
         function applyRestaurantFilters() {
+
+            if (!restaurantAccessAllowed()) {
+
+                return;
+
+            }
+
 
             const searchText =
                 document
@@ -1146,7 +1309,11 @@
            INITIAL SUMMARY
         ================================================= */
 
-        updateRestaurantSummary();
+        if (restaurantAccessAllowed()) {
+
+            updateRestaurantSummary();
+
+        }
 
     </script>
 
@@ -1249,10 +1416,10 @@
 
 
             /* =================================================
-               GET ROLE
+               GET CURRENT ROLE
             ================================================= */
 
-            function getRole() {
+            function getCurrentRole() {
 
                 let role =
                     sessionStorage.getItem(
@@ -1287,6 +1454,21 @@
                 link
             ) {
 
+                const dataModule =
+                    link.getAttribute(
+                        "data-module"
+                    );
+
+
+                if (dataModule) {
+
+                    return dataModule
+                        .toLowerCase()
+                        .trim();
+
+                }
+
+
                 const href =
                     String(
                         link.getAttribute(
@@ -1302,15 +1484,9 @@
                 if (
 
                     href === "./" ||
-
                     href === "/" ||
-
-                    href ===
-                        "index.html" ||
-
-                    href ===
-                        "./index.html" ||
-
+                    href === "index.html" ||
+                    href === "./index.html" ||
                     href.endsWith(
                         "/index.html"
                     )
@@ -1350,12 +1526,10 @@
                 ) {
 
                     if (
-
                         href.includes(
                             modules[i] +
                             ".html"
                         )
-
                     ) {
 
                         return modules[i];
@@ -1371,7 +1545,7 @@
 
 
             /* =================================================
-               CURRENT MODULE
+               GET CURRENT MODULE
             ================================================= */
 
             function getCurrentModule() {
@@ -1386,9 +1560,7 @@
                 if (
 
                     !filename ||
-
-                    filename ===
-                        "index.html"
+                    filename === "index.html"
 
                 ) {
 
@@ -1406,13 +1578,13 @@
 
 
             /* =================================================
-               APPLY ROLE CONTROL
+               APPLY SIDEBAR ROLE CONTROL
             ================================================= */
 
             function applyRoleControl() {
 
                 const role =
-                    getRole();
+                    getCurrentRole();
 
 
                 if (!role) {
@@ -1461,12 +1633,22 @@
                                 )
                             ) {
 
+                                link.classList
+                                    .remove(
+                                        "role-hidden"
+                                    );
+
                                 link.style
                                     .removeProperty(
                                         "display"
                                     );
 
                             } else {
+
+                                link.classList
+                                    .add(
+                                        "role-hidden"
+                                    );
 
                                 link.style
                                     .setProperty(
@@ -1484,13 +1666,13 @@
 
 
             /* =================================================
-               PROTECT DIRECT PAGE ACCESS
+               DIRECT PAGE ACCESS PROTECTION
             ================================================= */
 
-            function protectPage() {
+            function protectDirectPageAccess() {
 
                 const role =
-                    getRole();
+                    getCurrentRole();
 
 
                 if (!role) {
@@ -1523,8 +1705,30 @@
                     )
                 ) {
 
-                    window.location.href =
-                        "./index.html";
+                    document.getElementById(
+                        "restaurantModuleContent"
+                    ).style.display = "none";
+
+
+                    document.getElementById(
+                        "restaurantModal"
+                    ).style.display = "none";
+
+
+                    document.getElementById(
+                        "accessDeniedScreen"
+                    ).style.display = "block";
+
+
+                    setTimeout(
+                        function() {
+
+                            window.location.href =
+                                "./index.html";
+
+                        },
+                        500
+                    );
 
                 }
 
@@ -1539,20 +1743,18 @@
 
                 applyRoleControl();
 
-                protectPage();
+                protectDirectPageAccess();
 
             }
 
 
             /* =================================================
-               START
+               START ROLE CONTROL
             ================================================= */
 
             if (
-
                 document.readyState ===
                 "loading"
-
             ) {
 
                 document.addEventListener(
@@ -1568,7 +1770,7 @@
 
 
             /* =================================================
-               RE-APPLY SIDEBAR CONTROL
+               CONTINUOUS SIDEBAR CHECK
             ================================================= */
 
             setInterval(
@@ -1583,7 +1785,6 @@
 
             window.applyRoleControl =
                 applyRoleControl;
-
 
         })();
 
