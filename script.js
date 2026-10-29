@@ -2,7 +2,7 @@
 
 /* =========================================================
    EDU TECH HOTEL MANAGEMENT SYSTEM
-   GLOBAL ROLE CONTROL + GLOBAL LOGOUT
+   SAFE GLOBAL ROLE CONTROL + LOGOUT
    ========================================================= */
 
 
@@ -82,11 +82,10 @@ const ROLE_PERMISSIONS = {
 
 
 /* =========================================================
-   MODULES CONTROLLED BY ROLE
+   PROTECTED MODULES
    ========================================================= */
 
 const PROTECTED_MODULES = [
-
     "rooms",
     "guests",
     "reservations",
@@ -102,7 +101,6 @@ const PROTECTED_MODULES = [
     "reports",
     "settings",
     "hotels"
-
 ];
 
 
@@ -130,7 +128,7 @@ function getCurrentUserRole() {
 
 
 /* =========================================================
-   GET MODULE FROM LINK
+   GET MODULE NAME FROM LINK
    ========================================================= */
 
 function getModuleFromLink(element) {
@@ -157,7 +155,8 @@ function getModuleFromLink(element) {
         href
             .split("?")[0]
             .split("#")[0]
-            .toLowerCase();
+            .toLowerCase()
+            .trim();
 
     const fileName =
         cleanHref.substring(
@@ -172,7 +171,7 @@ function getModuleFromLink(element) {
 
 
 /* =========================================================
-   CHECK DASHBOARD LINK
+   CHECK DASHBOARD
    ========================================================= */
 
 function isDashboardLink(element) {
@@ -192,24 +191,18 @@ function isDashboardLink(element) {
             .trim();
 
     return (
-
         moduleName === "dashboard" ||
-
         moduleName === "index" ||
-
         href === "./" ||
-
         href === "/" ||
-
         href.endsWith("index.html")
-
     );
 
 }
 
 
 /* =========================================================
-   CHECK LOGOUT ELEMENT
+   CHECK LOGOUT
    ========================================================= */
 
 function isLogoutElement(element) {
@@ -333,10 +326,6 @@ async function logoutUser(event) {
 
     try {
 
-        /*
-           Sign out from Supabase when available.
-        */
-
         if (
             typeof supabaseClient !== "undefined" &&
             supabaseClient &&
@@ -358,12 +347,8 @@ async function logoutUser(event) {
 
 
     /*
-       Remove only authentication/session
-       information.
-
-       DO NOT clear all storage because the
-       application may contain payment,
-       inventory or other local data.
+       Remove only login/session information.
+       Do not clear the entire browser storage.
     */
 
     sessionStorage.removeItem("userRole");
@@ -376,7 +361,7 @@ async function logoutUser(event) {
 
 
     /*
-       Return to login page.
+       Return to login.
     */
 
     window.location.href =
@@ -385,279 +370,183 @@ async function logoutUser(event) {
 }
 
 
-/*
-   Make logout function available globally.
-*/
-
 window.logoutUser =
     logoutUser;
 
 
 /* =========================================================
-   CREATE GLOBAL LOGOUT CONTROL
+   FIND EXISTING LOGOUT
    ========================================================= */
 
-function ensureGlobalLogoutControl() {
+function findLogoutElement(sidebar) {
 
-    const sidebars =
-        document.querySelectorAll(
-            ".sidebar"
-        );
-
-    sidebars.forEach(
-        function(sidebar) {
-
-            /*
-               Look for an existing Logout control.
-            */
-
-            let logoutElement =
-                sidebar.querySelector(
-                    '[data-action="logout"]'
-                );
-
-
-            /*
-               If not found, search all links
-               and buttons for an existing Logout.
-            */
-
-            if (!logoutElement) {
-
-                const possibleElements =
-                    sidebar.querySelectorAll(
-                        "a, button"
-                    );
-
-                possibleElements.forEach(
-                    function(element) {
-
-                        if (
-                            !logoutElement &&
-                            isLogoutElement(element)
-                        ) {
-
-                            logoutElement =
-                                element;
-
-                        }
-
-                    }
-                );
-
-            }
-
-
-            /*
-               If Logout does not exist on this page,
-               create it.
-            */
-
-            if (!logoutElement) {
-
-                logoutElement =
-                    document.createElement(
-                        "button"
-                    );
-
-                logoutElement.type =
-                    "button";
-
-                logoutElement.className =
-                    "logout-btn";
-
-                logoutElement.setAttribute(
-                    "data-action",
-                    "logout"
-                );
-
-                logoutElement.textContent =
-                    "Logout";
-
-                sidebar.appendChild(
-                    logoutElement
-                );
-
-            }
-
-
-            /*
-               Standardize the Logout control.
-            */
-
-            logoutElement.setAttribute(
-                "data-action",
-                "logout"
-            );
-
-            logoutElement.classList.add(
-                "logout-btn"
-            );
-
-
-            /*
-               Remove role hiding.
-            */
-
-            logoutElement.classList.remove(
-                "role-hidden"
-            );
-
-            logoutElement.classList.remove(
-                "hidden"
-            );
-
-            logoutElement.classList.remove(
-                "d-none"
-            );
-
-
-            logoutElement.removeAttribute(
-                "aria-hidden"
-            );
-
-
-            /*
-               Force visibility.
-            */
-
-            logoutElement.style.setProperty(
-                "display",
-                "flex",
-                "important"
-            );
-
-            logoutElement.style.setProperty(
-                "visibility",
-                "visible",
-                "important"
-            );
-
-            logoutElement.style.setProperty(
-                "opacity",
-                "1",
-                "important"
-            );
-
-
-            /*
-               Make sure Logout has only one
-               click handler.
-
-               Clone and replace only if the
-               element was originally created
-               without our handler.
-            */
-
-            if (
-                logoutElement.dataset.globalLogoutBound !== "true"
-            ) {
-
-                logoutElement.addEventListener(
-                    "click",
-                    logoutUser
-                );
-
-                logoutElement.dataset.globalLogoutBound =
-                    "true";
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   FORCE LOGOUT VISIBLE
-   ========================================================= */
-
-function forceLogoutVisible() {
-
-    const sidebars =
-        document.querySelectorAll(
-            ".sidebar"
-        );
-
-    sidebars.forEach(
-        function(sidebar) {
-
-            const elements =
-                sidebar.querySelectorAll(
-                    "a, button"
-                );
-
-            elements.forEach(
-                function(element) {
-
-                    if (
-                        !isLogoutElement(element)
-                    ) {
-                        return;
-                    }
-
-
-                    element.classList.remove(
-                        "role-hidden"
-                    );
-
-                    element.classList.remove(
-                        "hidden"
-                    );
-
-                    element.classList.remove(
-                        "d-none"
-                    );
-
-                    element.removeAttribute(
-                        "aria-hidden"
-                    );
-
-
-                    element.style.setProperty(
-                        "display",
-                        "flex",
-                        "important"
-                    );
-
-                    element.style.setProperty(
-                        "visibility",
-                        "visible",
-                        "important"
-                    );
-
-                    element.style.setProperty(
-                        "opacity",
-                        "1",
-                        "important"
-                    );
-
-                }
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   CHECK PROTECTED MODULE
-   ========================================================= */
-
-function isProtectedModuleLink(element) {
-
-    if (!element) {
-        return false;
+    if (!sidebar) {
+        return null;
     }
 
-    const moduleName =
-        getModuleFromLink(element);
 
-    return PROTECTED_MODULES.includes(
-        moduleName
+    /*
+       First look for explicit Logout.
+    */
+
+    const explicitLogout =
+        sidebar.querySelector(
+            '[data-action="logout"]'
+        );
+
+    if (explicitLogout) {
+        return explicitLogout;
+    }
+
+
+    /*
+       Then inspect existing links/buttons.
+    */
+
+    const elements =
+        sidebar.querySelectorAll(
+            "a, button"
+        );
+
+    for (
+        let i = 0;
+        i < elements.length;
+        i++
+    ) {
+
+        if (
+            isLogoutElement(
+                elements[i]
+            )
+        ) {
+
+            return elements[i];
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =========================================================
+   CREATE LOGOUT IF MISSING
+   ========================================================= */
+
+function ensureLogout(sidebar) {
+
+    if (!sidebar) {
+        return null;
+    }
+
+
+    let logout =
+        findLogoutElement(sidebar);
+
+
+    /*
+       If Logout already exists,
+       use it.
+    */
+
+    if (!logout) {
+
+        logout =
+            document.createElement(
+                "button"
+            );
+
+        logout.type =
+            "button";
+
+        logout.className =
+            "logout-btn";
+
+        logout.textContent =
+            "Logout";
+
+        logout.setAttribute(
+            "data-action",
+            "logout"
+        );
+
+
+        sidebar.appendChild(
+            logout
+        );
+
+    }
+
+
+    /*
+       Give the Logout control a standard
+       identifier.
+    */
+
+    logout.setAttribute(
+        "data-action",
+        "logout"
     );
+
+
+    logout.classList.add(
+        "logout-btn"
+    );
+
+
+    /*
+       Remove any role hiding.
+    */
+
+    logout.classList.remove(
+        "role-hidden"
+    );
+
+    logout.classList.remove(
+        "hidden"
+    );
+
+    logout.classList.remove(
+        "d-none"
+    );
+
+    logout.removeAttribute(
+        "aria-hidden"
+    );
+
+
+    /*
+       Do NOT repeatedly force inline
+       display styles.
+
+       The CSS already controls the
+       appearance of the Logout button.
+    */
+
+
+    /*
+       Attach logout event only once.
+    */
+
+    if (
+        logout.dataset.logoutBound !== "true"
+    ) {
+
+        logout.addEventListener(
+            "click",
+            logoutUser
+        );
+
+        logout.dataset.logoutBound =
+            "true";
+
+    }
+
+
+    return logout;
 
 }
 
@@ -684,7 +573,13 @@ function setModuleVisibility(
         isLogoutElement(element)
     ) {
 
-        forceLogoutVisible();
+        element.classList.remove(
+            "role-hidden"
+        );
+
+        element.removeAttribute(
+            "aria-hidden"
+        );
 
         return;
 
@@ -718,18 +613,10 @@ function setModuleVisibility(
 
 
 /* =========================================================
-   APPLY GLOBAL ROLE SIDEBAR
+   APPLY ROLE CONTROL
    ========================================================= */
 
 function applyGlobalRoleSidebar() {
-
-    /*
-       First make sure every page has
-       a Logout control.
-    */
-
-    ensureGlobalLogoutControl();
-
 
     const sidebars =
         document.querySelectorAll(
@@ -747,13 +634,19 @@ function applyGlobalRoleSidebar() {
 
 
     /*
-       If role has not loaded yet,
-       do not hide any modules.
+       If no role is available yet,
+       don't hide anything.
     */
 
     if (!role) {
 
-        forceLogoutVisible();
+        sidebars.forEach(
+            function(sidebar) {
+
+                ensureLogout(sidebar);
+
+            }
+        );
 
         return;
 
@@ -767,6 +660,14 @@ function applyGlobalRoleSidebar() {
     sidebars.forEach(
         function(sidebar) {
 
+            /*
+               Make sure Logout exists
+               on this page.
+            */
+
+            ensureLogout(sidebar);
+
+
             const links =
                 sidebar.querySelectorAll(
                     "a"
@@ -777,14 +678,18 @@ function applyGlobalRoleSidebar() {
                 function(link) {
 
                     /*
-                       Logout is NEVER a module.
+                       Never process Logout
+                       as a module.
                     */
 
                     if (
                         isLogoutElement(link)
                     ) {
 
-                        forceLogoutVisible();
+                        setModuleVisibility(
+                            link,
+                            true
+                        );
 
                         return;
 
@@ -810,12 +715,15 @@ function applyGlobalRoleSidebar() {
 
 
                     /*
-                       Only process protected
+                       Ignore anything that is
+                       not one of our protected
                        hotel modules.
                     */
 
                     if (
-                        !isProtectedModuleLink(link)
+                        !PROTECTED_MODULES.includes(
+                            getModuleFromLink(link)
+                        )
                     ) {
 
                         return;
@@ -846,7 +754,8 @@ function applyGlobalRoleSidebar() {
 
 
                     /*
-                       Check role permission.
+                       Other roles use their
+                       permission list.
                     */
 
                     const allowed =
@@ -865,14 +774,6 @@ function applyGlobalRoleSidebar() {
 
         }
     );
-
-
-    /*
-       Final protection for Logout.
-    */
-
-    ensureGlobalLogoutControl();
-    forceLogoutVisible();
 
 
     /*
@@ -899,10 +800,14 @@ window.applyGlobalRoleSidebar =
 
 
 /* =========================================================
-   RUN GLOBAL ROLE CONTROL
+   INITIALIZE ONCE
    ========================================================= */
 
-function runGlobalRoleControl() {
+function initializeGlobalControls() {
+
+    /*
+       Run only once.
+    */
 
     applyGlobalRoleSidebar();
 
@@ -910,7 +815,7 @@ function runGlobalRoleControl() {
 
 
 /* =========================================================
-   INITIALIZE AFTER DOM LOAD
+   DOM READY
    ========================================================= */
 
 if (
@@ -919,186 +824,19 @@ if (
 
     document.addEventListener(
         "DOMContentLoaded",
-        runGlobalRoleControl
-    );
-
-} else {
-
-    runGlobalRoleControl();
-
-}
-
-
-/* =========================================================
-   SIDEBAR OBSERVER
-   ========================================================= */
-
-let sidebarObserverStarted =
-    false;
-
-
-function startSidebarObserver() {
-
-    if (
-        sidebarObserverStarted
-    ) {
-
-        return;
-
-    }
-
-
-    sidebarObserverStarted =
-        true;
-
-
-    const observer =
-        new MutationObserver(
-            function(mutations) {
-
-                let sidebarChanged =
-                    false;
-
-
-                mutations.forEach(
-                    function(mutation) {
-
-                        /*
-                           Only watch newly added or
-                           removed sidebar elements.
-
-                           IMPORTANT:
-                           We intentionally do NOT watch
-                           class/style changes because our
-                           own role-control code changes
-                           those attributes.
-                        */
-
-                        if (
-                            mutation.type ===
-                            "childList"
-                        ) {
-
-                            const target =
-                                mutation.target;
-
-
-                            if (
-                                target &&
-                                target.closest &&
-                                target.closest(
-                                    ".sidebar"
-                                )
-                            ) {
-
-                                sidebarChanged =
-                                    true;
-
-                            }
-
-
-                            if (
-                                mutation.addedNodes &&
-                                mutation.addedNodes.length
-                            ) {
-
-                                mutation.addedNodes.forEach(
-                                    function(node) {
-
-                                        if (
-                                            node.nodeType === 1 &&
-                                            node.closest &&
-                                            node.closest(
-                                                ".sidebar"
-                                            )
-                                        ) {
-
-                                            sidebarChanged =
-                                                true;
-
-                                        }
-
-                                    }
-                                );
-
-                            }
-
-                        }
-
-                    }
-                );
-
-
-                if (
-                    sidebarChanged
-                ) {
-
-                    /*
-                       Small delay allows the
-                       page to finish inserting
-                       sidebar content.
-                    */
-
-                    setTimeout(
-                        function() {
-
-                            applyGlobalRoleSidebar();
-
-                        },
-                        20
-                    );
-
-                }
-
-            }
-        );
-
-
-    observer.observe(
-        document.body,
+        initializeGlobalControls,
         {
-            childList: true,
-            subtree: true
+            once: true
         }
     );
 
-}
-
-
-/* =========================================================
-   START SIDEBAR OBSERVER
-   ========================================================= */
-
-if (
-    document.readyState === "loading"
-) {
-
-    document.addEventListener(
-        "DOMContentLoaded",
-        startSidebarObserver
-    );
-
 } else {
 
-    startSidebarObserver();
+    initializeGlobalControls();
 
 }
 
 
 /* =========================================================
-   BACKUP ROLE CHECK
-   ========================================================= */
-
-setInterval(
-    function() {
-
-        applyGlobalRoleSidebar();
-
-    },
-    2000
-);
-
-
-/* =========================================================
-   END OF GLOBAL SCRIPT
+   END OF SAFE GLOBAL SCRIPT
    ========================================================= */
