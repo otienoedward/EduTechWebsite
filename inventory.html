@@ -1,472 +1,1090 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Inventory Management - EDU TECH HOTEL</title>
+
 <link rel="stylesheet" href="./style.css">
 
+
 <style>
+
+/* =========================================================
+   INVENTORY PAGE LAYOUT
+========================================================= */
+
 .sidebar {
+
     position: fixed !important;
+
     left: 0 !important;
+
     top: 0 !important;
+
     width: 250px !important;
+
     height: 100vh !important;
+
     z-index: 999999 !important;
+
     overflow-y: auto !important;
+
 }
+
+
 .main-content {
+
     margin-left: 250px !important;
+
 }
+
+
 .sidebar a {
+
     display: block !important;
+
     cursor: pointer !important;
+
 }
+
 </style>
+
 </head>
+
 
 <body>
 
+
 <div class="dashboard">
 
+
+<!-- =====================================================
+     SIDEBAR
+====================================================== -->
+
 <aside class="sidebar">
+
+
 <div class="logo">
+
 <h2>EDU TECH</h2>
+
 <p>HOTEL MANAGEMENT</p>
+
 </div>
 
+
 <nav>
-<a href="./index.html">Dashboard</a>
-<a href="./rooms.html">Rooms</a>
-<a href="./guests.html">Guests</a>
-<a href="./reservations.html">Reservations</a>
-<a href="./checkin.html">Check-in</a>
-<a href="./checkout.html">Check-out</a>
-<a href="./restaurant.html">Restaurant</a>
-<a href="./inventory.html" class="active">Inventory</a>
-<a href="./payments.html">Payments</a>
-<a href="./expenses.html">Expenses</a>
-<a href="./employees.html">Employees</a>
-<a href="./housekeeping.html">Housekeeping</a>
-<a href="./maintenance.html">Maintenance</a>
-<a href="./reports.html">Reports</a>
-<a href="./settings.html">Settings</a>
+
+
+<a href="./index.html">
+Dashboard
+</a>
+
+
+<a href="./rooms.html">
+Rooms
+</a>
+
+
+<a href="./guests.html">
+Guests
+</a>
+
+
+<a href="./reservations.html">
+Reservations
+</a>
+
+
+<a href="./checkin.html">
+Check-in
+</a>
+
+
+<a href="./checkout.html">
+Check-out
+</a>
+
+
+<a href="./restaurant.html">
+Restaurant
+</a>
+
+
+<a href="./inventory.html" class="active">
+Inventory
+</a>
+
+
+<a href="./payments.html">
+Payments
+</a>
+
+
+<a href="./expenses.html">
+Expenses
+</a>
+
+
+<a href="./employees.html">
+Employees
+</a>
+
+
+<a href="./housekeeping.html">
+Housekeeping
+</a>
+
+
+<a href="./maintenance.html">
+Maintenance
+</a>
+
+
+<a href="./reports.html">
+Reports
+</a>
+
+
+<a href="./settings.html">
+Settings
+</a>
+
+
 </nav>
+
 </aside>
 
 
+<!-- =====================================================
+     MAIN CONTENT
+====================================================== -->
+
 <main class="main-content">
 
+
 <header class="topbar">
+
+
 <div>
-<h1>Inventory Management</h1>
-<p>Track and manage hotel inventory</p>
+
+<h1>
+Inventory Management
+</h1>
+
+
+<p>
+Track and manage hotel inventory
+</p>
+
 </div>
 
+
 <div class="user-info">
-<strong>Administrator</strong>
-<span>System Admin</span>
+
+<strong>
+Administrator
+</strong>
+
+
+<span>
+System Admin
+</span>
+
 </div>
+
+
 </header>
 
 
+<!-- =====================================================
+     SUMMARY CARDS
+====================================================== -->
+
 <section class="summary-cards">
 
-<div class="summary-card">
-<h3>Total Items</h3>
-<p id="totalInventoryItems">0</p>
-</div>
 
 <div class="summary-card">
-<h3>In Stock</h3>
-<p id="inStockItems">0</p>
+
+<h3>
+Total Items
+</h3>
+
+
+<p id="totalInventoryItems">
+0
+</p>
+
 </div>
 
-<div class="summary-card">
-<h3>Low Stock</h3>
-<p id="lowStockItems">0</p>
-</div>
 
 <div class="summary-card">
-<h3>Total Value</h3>
-<p id="inventoryValue">KSh 0</p>
+
+<h3>
+In Stock
+</h3>
+
+
+<p id="inStockItems">
+0
+</p>
+
 </div>
+
+
+<div class="summary-card">
+
+<h3>
+Low Stock
+</h3>
+
+
+<p id="lowStockItems">
+0
+</p>
+
+</div>
+
+
+<div class="summary-card">
+
+<h3>
+Total Value
+</h3>
+
+
+<p id="inventoryValue">
+KSh 0
+</p>
+
+</div>
+
 
 </section>
 
 
+<!-- =====================================================
+     INVENTORY SECTION
+====================================================== -->
+
 <section class="content-section">
 
+
 <div class="section-header">
+
+
 <div>
-<h2>Hotel Inventory</h2>
-<p>Record and manage hotel stock items</p>
+
+<h2>
+Hotel Inventory
+</h2>
+
+
+<p>
+Record and manage hotel stock items
+</p>
+
 </div>
 
-<button type="button" class="primary-btn" onclick="openInventoryForm()">
+
+<button
+type="button"
+class="primary-btn"
+onclick="openInventoryForm()">
+
 + New Inventory Item
+
 </button>
+
+
 </div>
 
+
+<!-- SEARCH AND FILTER -->
 
 <div class="table-controls">
+
 
 <input
 type="text"
 id="inventorySearch"
 placeholder="Search inventory..."
-onkeyup="filterInventory()">
+onkeyup="filterInventory()"
+>
 
-<select id="inventoryFilter" onchange="filterInventory()">
-<option value="all">All Stock Status</option>
-<option value="In Stock">In Stock</option>
-<option value="Low Stock">Low Stock</option>
-<option value="Out of Stock">Out of Stock</option>
+
+<select
+id="inventoryFilter"
+onchange="filterInventory()">
+
+
+<option value="all">
+All Stock Status
+</option>
+
+
+<option value="In Stock">
+In Stock
+</option>
+
+
+<option value="Low Stock">
+Low Stock
+</option>
+
+
+<option value="Out of Stock">
+Out of Stock
+</option>
+
+
 </select>
+
 
 </div>
 
+
+<!-- TABLE -->
 
 <div class="table-container">
 
+
 <table id="inventoryTable">
 
+
 <thead>
+
+
 <tr>
-<th>Item ID</th>
-<th>Item Name</th>
-<th>Category</th>
-<th>Quantity</th>
-<th>Unit Price</th>
-<th>Supplier</th>
-<th>Stock Status</th>
-<th>Actions</th>
+
+<th>
+Item ID
+</th>
+
+<th>
+Item Name
+</th>
+
+<th>
+Category
+</th>
+
+<th>
+Quantity
+</th>
+
+<th>
+Unit Price
+</th>
+
+<th>
+Supplier
+</th>
+
+<th>
+Stock Status
+</th>
+
+<th>
+Actions
+</th>
+
 </tr>
+
+
 </thead>
 
-<tbody id="inventoryTableBody"></tbody>
+
+<tbody id="inventoryTableBody">
+</tbody>
+
 
 </table>
 
+
 </div>
+
 
 </section>
 
+
 </main>
+
 </div>
 
 
-<!-- INVENTORY FORM -->
+<!-- =====================================================
+     INVENTORY FORM MODAL
+====================================================== -->
 
-<div id="inventoryModal" class="modal">
+<div
+id="inventoryModal"
+class="modal">
+
 
 <div class="modal-content">
 
-<div class="modal-header">
-<h2 id="inventoryModalTitle">New Inventory Item</h2>
 
-<button type="button" onclick="closeInventoryForm()">
+<div class="modal-header">
+
+
+<h2 id="inventoryModalTitle">
+New Inventory Item
+</h2>
+
+
+<button
+type="button"
+onclick="closeInventoryForm()">
+
 &times;
+
 </button>
+
+
 </div>
 
 
 <form id="inventoryForm">
 
+
 <div class="form-group">
-<label>Item Name</label>
-<input type="text" id="inventoryItemName" required>
+
+
+<label for="inventoryItemName">
+Item Name
+</label>
+
+
+<input
+type="text"
+id="inventoryItemName"
+required
+>
+
+
 </div>
 
 
 <div class="form-group">
-<label>Category</label>
 
-<select id="inventoryCategory" required>
-<option value="">Select Category</option>
-<option value="Food">Food</option>
-<option value="Beverages">Beverages</option>
-<option value="Cleaning">Cleaning</option>
-<option value="Toiletries">Toiletries</option>
-<option value="Kitchen">Kitchen</option>
-<option value="Office">Office</option>
-<option value="Maintenance">Maintenance</option>
-<option value="Other">Other</option>
+
+<label for="inventoryCategory">
+Category
+</label>
+
+
+<select
+id="inventoryCategory"
+required>
+
+
+<option value="">
+Select Category
+</option>
+
+
+<option value="Food">
+Food
+</option>
+
+
+<option value="Beverages">
+Beverages
+</option>
+
+
+<option value="Cleaning">
+Cleaning
+</option>
+
+
+<option value="Toiletries">
+Toiletries
+</option>
+
+
+<option value="Kitchen">
+Kitchen
+</option>
+
+
+<option value="Office">
+Office
+</option>
+
+
+<option value="Maintenance">
+Maintenance
+</option>
+
+
+<option value="Other">
+Other
+</option>
+
+
 </select>
+
+
 </div>
 
 
 <div class="form-group">
-<label>Quantity</label>
-<input type="number" id="inventoryQuantity" min="0" required>
+
+
+<label for="inventoryQuantity">
+Quantity
+</label>
+
+
+<input
+type="number"
+id="inventoryQuantity"
+min="0"
+required
+>
+
+
 </div>
 
 
 <div class="form-group">
-<label>Unit Price (KSh)</label>
-<input type="number" id="inventoryUnitPrice" min="0" step="0.01" required>
+
+
+<label for="inventoryUnitPrice">
+Unit Price (KSh)
+</label>
+
+
+<input
+type="number"
+id="inventoryUnitPrice"
+min="0"
+step="0.01"
+required
+>
+
+
 </div>
 
 
 <div class="form-group">
-<label>Supplier</label>
-<input type="text" id="inventorySupplier" required>
+
+
+<label for="inventorySupplier">
+Supplier
+</label>
+
+
+<input
+type="text"
+id="inventorySupplier"
+required
+>
+
+
 </div>
 
 
 <div class="form-actions">
 
+
 <button
 type="button"
 class="secondary-btn"
 onclick="closeInventoryForm()">
+
 Cancel
+
 </button>
 
-<button type="submit" class="primary-btn">
+
+<button
+type="submit"
+class="primary-btn">
+
 Save Inventory Item
+
 </button>
+
 
 </div>
+
 
 </form>
 
-</div>
+
 </div>
 
+</div>
+
+
+<!-- =====================================================
+     MAIN JAVASCRIPT
+====================================================== -->
 
 <script src="./script.js"></script>
 
+
 <script>
+
+
+"use strict";
+
 
 let editingRow = null;
 
 
-/* OPEN FORM */
+/* =========================================================
+   OPEN FORM
+========================================================= */
 
 function openInventoryForm() {
 
-document.getElementById("inventoryForm").reset();
+
+document
+.getElementById(
+"inventoryForm"
+)
+.reset();
+
 
 editingRow = null;
 
-document.getElementById("inventoryModalTitle").textContent =
+
+document
+.getElementById(
+"inventoryModalTitle"
+)
+.textContent =
 "New Inventory Item";
 
-document.getElementById("inventoryModal").style.display =
+
+document
+.getElementById(
+"inventoryModal"
+)
+.style.display =
 "flex";
+
 
 }
 
 
-/* CLOSE FORM */
+/* =========================================================
+   CLOSE FORM
+========================================================= */
 
 function closeInventoryForm() {
 
-document.getElementById("inventoryModal").style.display =
+
+document
+.getElementById(
+"inventoryModal"
+)
+.style.display =
 "none";
 
-document.getElementById("inventoryForm").reset();
+
+document
+.getElementById(
+"inventoryForm"
+)
+.reset();
+
 
 editingRow = null;
 
+
 }
 
 
-/* STOCK STATUS */
+/* =========================================================
+   STOCK STATUS
+========================================================= */
 
 function getStockStatus(quantity) {
 
-if (Number(quantity) <= 0) {
+
+if (
+Number(quantity) <= 0
+) {
+
 return "Out of Stock";
+
 }
 
-if (Number(quantity) <= 5) {
+
+if (
+Number(quantity) <= 5
+) {
+
 return "Low Stock";
+
 }
+
 
 return "In Stock";
 
+
 }
 
 
-/* STATUS CLASS */
+/* =========================================================
+   STATUS CLASS
+========================================================= */
 
 function getStatusClass(status) {
 
-if (status === "In Stock") {
+
+if (
+status === "In Stock"
+) {
+
 return "status-available";
+
 }
 
-if (status === "Low Stock") {
+
+if (
+status === "Low Stock"
+) {
+
 return "status-maintenance";
+
 }
+
 
 return "status-occupied";
 
+
 }
 
 
-/* UPDATE SUMMARY */
+/* =========================================================
+   UPDATE SUMMARY
+========================================================= */
 
 function updateInventorySummary() {
 
+
 const rows =
-document.querySelectorAll("#inventoryTableBody tr");
+document.querySelectorAll(
+"#inventoryTableBody tr"
+);
+
 
 let total = 0;
+
 let inStock = 0;
+
 let lowStock = 0;
+
 let value = 0;
 
-rows.forEach(function(row) {
+
+rows.forEach(
+function(row) {
+
 
 total++;
 
+
 const quantity =
-Number(row.cells[3].textContent);
+Number(
+row.cells[3].textContent
+);
+
 
 const price =
-Number(row.dataset.price);
+Number(
+row.dataset.price
+);
+
 
 const status =
 row.dataset.status;
 
-value += quantity * price;
 
-if (status === "In Stock") {
+value +=
+quantity *
+price;
+
+
+if (
+status === "In Stock"
+) {
+
 inStock++;
+
 }
 
-if (status === "Low Stock") {
+
+if (
+status === "Low Stock"
+) {
+
 lowStock++;
+
 }
 
-});
+
+}
+);
 
 
-document.getElementById("totalInventoryItems").textContent =
+document
+.getElementById(
+"totalInventoryItems"
+)
+.textContent =
 total;
 
-document.getElementById("inStockItems").textContent =
+
+document
+.getElementById(
+"inStockItems"
+)
+.textContent =
 inStock;
 
-document.getElementById("lowStockItems").textContent =
+
+document
+.getElementById(
+"lowStockItems"
+)
+.textContent =
 lowStock;
 
-document.getElementById("inventoryValue").textContent =
-"KSh " + value.toLocaleString("en-KE");
+
+document
+.getElementById(
+"inventoryValue"
+)
+.textContent =
+"KSh " +
+value.toLocaleString(
+"en-KE"
+);
+
 
 }
 
 
-/* GENERATE ID */
+/* =========================================================
+   GENERATE INVENTORY ID
+========================================================= */
 
 function generateInventoryID() {
 
+
 const rows =
-document.querySelectorAll("#inventoryTableBody tr");
+document.querySelectorAll(
+"#inventoryTableBody tr"
+);
+
 
 return "INV-" +
-String(rows.length + 1).padStart(3, "0");
+String(
+rows.length + 1
+)
+.padStart(
+3,
+"0"
+);
+
 
 }
 
 
-/* ADD OR EDIT */
+/* =========================================================
+   ADD OR EDIT INVENTORY
+========================================================= */
 
-document.getElementById("inventoryForm").addEventListener(
+document
+.getElementById(
+"inventoryForm"
+)
+.addEventListener(
 "submit",
 function(event) {
+
 
 event.preventDefault();
 
 
 const name =
-document.getElementById("inventoryItemName").value.trim();
+document
+.getElementById(
+"inventoryItemName"
+)
+.value
+.trim();
+
 
 const category =
-document.getElementById("inventoryCategory").value;
+document
+.getElementById(
+"inventoryCategory"
+)
+.value;
+
 
 const quantity =
-Number(document.getElementById("inventoryQuantity").value);
+Number(
+document
+.getElementById(
+"inventoryQuantity"
+)
+.value
+);
+
 
 const price =
-Number(document.getElementById("inventoryUnitPrice").value);
+Number(
+document
+.getElementById(
+"inventoryUnitPrice"
+)
+.value
+);
+
 
 const supplier =
-document.getElementById("inventorySupplier").value.trim();
+document
+.getElementById(
+"inventorySupplier"
+)
+.value
+.trim();
 
 
-if (!name || !category || !supplier) {
+if (
+!name ||
+!category ||
+!supplier
+) {
 
-alert("Please complete all fields.");
+
+alert(
+"Please complete all fields."
+);
+
 
 return;
+
 
 }
 
 
-/* EDIT */
+/* =====================================================
+   EDIT EXISTING ITEM
+===================================================== */
 
-if (editingRow) {
+if (
+editingRow
+) {
+
 
 const status =
-getStockStatus(quantity);
+getStockStatus(
+quantity
+);
 
-editingRow.cells[1].textContent =
+
+editingRow.cells[1]
+.textContent =
 name;
 
-editingRow.cells[2].textContent =
+
+editingRow.cells[2]
+.textContent =
 category;
 
-editingRow.cells[3].textContent =
+
+editingRow.cells[3]
+.textContent =
 quantity;
 
-editingRow.cells[4].textContent =
-"KSh " + price.toLocaleString("en-KE", {
-minimumFractionDigits: 2
-});
 
-editingRow.cells[5].textContent =
+editingRow.cells[4]
+.textContent =
+"KSh " +
+price.toLocaleString(
+"en-KE",
+{
+minimumFractionDigits: 2
+}
+);
+
+
+editingRow.cells[5]
+.textContent =
 supplier;
 
-editingRow.cells[6].innerHTML =
+
+editingRow.cells[6]
+.innerHTML =
 '<span class="status-badge ' +
 getStatusClass(status) +
 '">' +
 status +
 '</span>';
 
+
 editingRow.dataset.status =
 status;
+
 
 editingRow.dataset.price =
 price;
 
+
 closeInventoryForm();
+
 
 updateInventorySummary();
 
+
+filterInventory();
+
+
 return;
+
 
 }
 
 
-/* NEW ITEM */
+/* =====================================================
+   CREATE NEW ITEM
+========================================================= */
 
 const id =
 generateInventoryID();
 
+
 const status =
-getStockStatus(quantity);
+getStockStatus(
+quantity
+);
+
 
 const row =
-document.createElement("tr");
+document.createElement(
+"tr"
+);
+
 
 row.dataset.status =
 status;
+
 
 row.dataset.price =
 price;
@@ -474,168 +1092,867 @@ price;
 
 row.innerHTML =
 
-"<td>" + id + "</td>" +
-"<td>" + name + "</td>" +
-"<td>" + category + "</td>" +
-"<td>" + quantity + "</td>" +
-"<td>KSh " +
-price.toLocaleString("en-KE", {
-minimumFractionDigits: 2
-}) +
+
+"<td>" +
+id +
 "</td>" +
-"<td>" + supplier + "</td>" +
-"<td><span class='status-badge " +
+
+
+"<td>" +
+name +
+"</td>" +
+
+
+"<td>" +
+category +
+"</td>" +
+
+
+"<td>" +
+quantity +
+"</td>" +
+
+
+"<td>KSh " +
+price.toLocaleString(
+"en-KE",
+{
+minimumFractionDigits: 2
+}
+) +
+"</td>" +
+
+
+"<td>" +
+supplier +
+"</td>" +
+
+
+"<td>" +
+
+"<span class='status-badge " +
 getStatusClass(status) +
 "'>" +
+
 status +
-"</span></td>" +
+
+"</span>" +
+
+"</td>" +
+
+
 "<td>" +
-"<button type='button' class='secondary-btn' onclick='editInventoryItem(this)'>Edit</button> " +
-"<button type='button' class='danger-btn' onclick='deleteInventoryItem(this)'>Delete</button>" +
+
+"<button " +
+"type='button' " +
+"class='secondary-btn' " +
+"onclick='editInventoryItem(this)'>" +
+
+"Edit" +
+
+"</button> " +
+
+
+"<button " +
+"type='button' " +
+"class='danger-btn' " +
+"onclick='deleteInventoryItem(this)'>" +
+
+"Delete" +
+
+"</button>" +
+
 "</td>";
 
 
-document.getElementById("inventoryTableBody")
-.appendChild(row);
+document
+.getElementById(
+"inventoryTableBody"
+)
+.appendChild(
+row
+);
 
 
 closeInventoryForm();
 
+
 updateInventorySummary();
+
+
+filterInventory();
+
 
 }
 );
 
 
-/* EDIT */
+/* =========================================================
+   EDIT INVENTORY ITEM
+========================================================= */
 
-function editInventoryItem(button) {
+function editInventoryItem(
+button
+) {
+
 
 editingRow =
-button.closest("tr");
+button.closest(
+"tr"
+);
 
 
-document.getElementById("inventoryItemName").value =
-editingRow.cells[1].textContent;
+document
+.getElementById(
+"inventoryItemName"
+)
+.value =
+editingRow.cells[1]
+.textContent;
 
-document.getElementById("inventoryCategory").value =
-editingRow.cells[2].textContent;
 
-document.getElementById("inventoryQuantity").value =
-editingRow.cells[3].textContent;
+document
+.getElementById(
+"inventoryCategory"
+)
+.value =
+editingRow.cells[2]
+.textContent;
 
-document.getElementById("inventoryUnitPrice").value =
+
+document
+.getElementById(
+"inventoryQuantity"
+)
+.value =
+editingRow.cells[3]
+.textContent;
+
+
+document
+.getElementById(
+"inventoryUnitPrice"
+)
+.value =
 editingRow.dataset.price;
 
-document.getElementById("inventorySupplier").value =
-editingRow.cells[5].textContent;
+
+document
+.getElementById(
+"inventorySupplier"
+)
+.value =
+editingRow.cells[5]
+.textContent;
 
 
-document.getElementById("inventoryModalTitle").textContent =
+document
+.getElementById(
+"inventoryModalTitle"
+)
+.textContent =
 "Edit Inventory Item";
 
-document.getElementById("inventoryModal").style.display =
+
+document
+.getElementById(
+"inventoryModal"
+)
+.style.display =
 "flex";
+
 
 }
 
 
-/* DELETE */
+/* =========================================================
+   DELETE INVENTORY ITEM
+========================================================= */
 
-function deleteInventoryItem(button) {
+function deleteInventoryItem(
+button
+) {
+
 
 const row =
-button.closest("tr");
+button.closest(
+"tr"
+);
+
 
 const name =
-row.cells[1].textContent;
+row.cells[1]
+.textContent;
 
-if (confirm("Delete " + name + "?")) {
+
+if (
+confirm(
+"Delete " +
+name +
+"?"
+)
+) {
+
 
 row.remove();
 
+
 updateInventorySummary();
 
-}
+
+filterInventory();
+
 
 }
 
 
-/* SEARCH AND FILTER */
+}
+
+
+/* =========================================================
+   SEARCH AND FILTER
+========================================================= */
 
 function filterInventory() {
 
+
 const search =
-document.getElementById("inventorySearch")
+document
+.getElementById(
+"inventorySearch"
+)
 .value
-.toLowerCase();
+.toLowerCase()
+.trim();
+
 
 const filter =
-document.getElementById("inventoryFilter")
+document
+.getElementById(
+"inventoryFilter"
+)
 .value;
 
 
 const rows =
-document.querySelectorAll("#inventoryTableBody tr");
+document.querySelectorAll(
+"#inventoryTableBody tr"
+);
 
 
-rows.forEach(function(row) {
+rows.forEach(
+function(row) {
+
 
 const text =
-row.textContent.toLowerCase();
+row.textContent
+.toLowerCase();
+
 
 const status =
 row.dataset.status;
 
 
 const searchMatch =
-text.includes(search);
+text.includes(
+search
+);
+
 
 const filterMatch =
 filter === "all" ||
 status === filter;
 
 
-if (searchMatch && filterMatch) {
+if (
+searchMatch &&
+filterMatch
+) {
 
-row.style.display = "";
+
+row.style.display =
+"";
+
 
 } else {
 
-row.style.display = "none";
+
+row.style.display =
+"none";
+
 
 }
 
-});
+
+}
+);
+
 
 }
 
 
-/* CLOSE WHEN CLICKING OUTSIDE */
+/* =========================================================
+   CLOSE MODAL WHEN CLICKING OUTSIDE
+========================================================= */
 
-window.addEventListener("click", function(event) {
+window.addEventListener(
+"click",
+function(event) {
+
 
 const modal =
-document.getElementById("inventoryModal");
+document.getElementById(
+"inventoryModal"
+);
 
-if (event.target === modal) {
+
+if (
+event.target === modal
+) {
+
 
 closeInventoryForm();
 
+
 }
 
-});
+
+}
+);
 
 
-/* INITIALIZE */
+/* =========================================================
+   INITIALIZE
+========================================================= */
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener(
+"DOMContentLoaded",
+function() {
+
 
 updateInventorySummary();
 
-});
+
+}
+);
+
 
 </script>
 
+
+<!-- =====================================================
+     ROLE CONTROL
+====================================================== -->
+
+<script>
+
+
+(function () {
+
+
+"use strict";
+
+
+/* =========================================================
+   ROLE PERMISSIONS
+========================================================= */
+
+const ROLE_PERMISSIONS = {
+
+
+system_owner: [
+
+"dashboard",
+"rooms",
+"guests",
+"reservations",
+"checkin",
+"checkout",
+"restaurant",
+"inventory",
+"payments",
+"expenses",
+"employees",
+"housekeeping",
+"maintenance",
+"reports",
+"settings",
+"hotels"
+
+],
+
+
+hotel_owner: [
+
+"dashboard",
+"rooms",
+"guests",
+"reservations",
+"checkin",
+"checkout",
+"restaurant",
+"inventory",
+"payments",
+"expenses",
+"employees",
+"housekeeping",
+"maintenance",
+"reports",
+"settings"
+
+],
+
+
+manager: [
+
+"dashboard",
+"rooms",
+"guests",
+"reservations",
+"checkin",
+"checkout",
+"restaurant",
+"inventory",
+"payments",
+"expenses",
+"employees",
+"housekeeping",
+"maintenance",
+"reports",
+"settings"
+
+],
+
+
+receptionist: [
+
+"dashboard",
+"rooms",
+"guests",
+"reservations",
+"checkin",
+"checkout",
+"payments",
+"reports"
+
+]
+
+};
+
+
+/* =========================================================
+   GET USER ROLE
+========================================================= */
+
+function getRole() {
+
+
+let role =
+sessionStorage.getItem(
+"userRole"
+);
+
+
+if (!role) {
+
+
+role =
+localStorage.getItem(
+"userRole"
+);
+
+
+}
+
+
+return String(
+role || ""
+)
+.toLowerCase()
+.trim();
+
+
+}
+
+
+/* =========================================================
+   GET MODULE FROM LINK
+========================================================= */
+
+function getModuleFromLink(
+link
+) {
+
+
+const href =
+String(
+link.getAttribute(
+"href"
+) || ""
+)
+.toLowerCase()
+.split("?")[0]
+.split("#")[0]
+.trim();
+
+
+/* DASHBOARD */
+
+if (
+
+
+href === "./" ||
+
+
+href === "/" ||
+
+
+href === "index.html" ||
+
+
+href === "./index.html" ||
+
+
+href.endsWith(
+"/index.html"
+)
+
+
+) {
+
+
+return "dashboard";
+
+
+}
+
+
+/* OTHER MODULES */
+
+const modules = [
+
+
+"rooms",
+
+"guests",
+
+"reservations",
+
+"checkin",
+
+"checkout",
+
+"restaurant",
+
+"inventory",
+
+"payments",
+
+"expenses",
+
+"employees",
+
+"housekeeping",
+
+"maintenance",
+
+"reports",
+
+"settings",
+
+"hotels"
+
+
+];
+
+
+for (
+let i = 0;
+i < modules.length;
+i++
+) {
+
+
+if (
+href.includes(
+modules[i] +
+".html"
+)
+) {
+
+
+return modules[i];
+
+
+}
+
+
+}
+
+
+return null;
+
+
+}
+
+
+/* =========================================================
+   GET CURRENT PAGE MODULE
+========================================================= */
+
+function getCurrentModule() {
+
+
+const filename =
+window.location.pathname
+.split("/")
+.pop()
+.toLowerCase();
+
+
+if (
+
+
+!filename ||
+
+
+filename ===
+"index.html"
+
+
+) {
+
+
+return "dashboard";
+
+
+}
+
+
+return filename.replace(
+".html",
+""
+);
+
+
+}
+
+
+/* =========================================================
+   HIDE UNAUTHORIZED LINKS
+========================================================= */
+
+function applyRoleControl() {
+
+
+const role =
+getRole();
+
+
+if (!role) {
+
+
+return;
+
+
+}
+
+
+const allowed =
+ROLE_PERMISSIONS[
+role
+];
+
+
+if (!allowed) {
+
+
+return;
+
+
+}
+
+
+document
+.querySelectorAll(
+".sidebar nav a"
+)
+.forEach(
+function(link) {
+
+
+const module =
+getModuleFromLink(
+link
+);
+
+
+if (!module) {
+
+
+return;
+
+
+}
+
+
+if (
+allowed.includes(
+module
+)
+) {
+
+
+link.style.removeProperty(
+"display"
+);
+
+
+} else {
+
+
+link.style.setProperty(
+"display",
+"none",
+"important"
+);
+
+
+}
+
+
+}
+);
+
+
+}
+
+
+/* =========================================================
+   PROTECT DIRECT PAGE ACCESS
+========================================================= */
+
+function protectPage() {
+
+
+const role =
+getRole();
+
+
+if (!role) {
+
+
+return;
+
+
+}
+
+
+const allowed =
+ROLE_PERMISSIONS[
+role
+];
+
+
+if (!allowed) {
+
+
+return;
+
+
+}
+
+
+const currentModule =
+getCurrentModule();
+
+
+if (
+!allowed.includes(
+currentModule
+)
+) {
+
+
+window.location.href =
+"./index.html";
+
+
+}
+
+
+}
+
+
+/* =========================================================
+   RUN ROLE CONTROL
+========================================================= */
+
+function runRoleControl() {
+
+
+applyRoleControl();
+
+
+protectPage();
+
+
+}
+
+
+/* =========================================================
+   START ROLE CONTROL
+========================================================= */
+
+if (
+
+
+document.readyState ===
+"loading"
+
+
+) {
+
+
+document.addEventListener(
+"DOMContentLoaded",
+runRoleControl
+);
+
+
+} else {
+
+
+runRoleControl();
+
+
+}
+
+
+/* =========================================================
+   KEEP SIDEBAR PROTECTED
+========================================================= */
+
+setInterval(
+applyRoleControl,
+500
+);
+
+
+/* =========================================================
+   GLOBAL FUNCTION
+========================================================= */
+
+window.applyRoleControl =
+applyRoleControl;
+
+
+})();
+
+
+</script>
+
+
 </body>
+
 </html>
