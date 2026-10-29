@@ -30,6 +30,20 @@
         .main-content {
             margin-left: 250px !important;
         }
+
+        .role-hidden {
+            display: none !important;
+        }
+
+        #accessDenied {
+            display: none;
+            padding: 40px;
+            text-align: center;
+        }
+
+        #accessDenied h2 {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 
@@ -48,37 +62,67 @@
 
         <nav>
 
-            <a href="./index.html">Dashboard</a>
+            <a href="./index.html" data-module="dashboard">
+                Dashboard
+            </a>
 
-            <a href="./rooms.html">Rooms</a>
+            <a href="./rooms.html" data-module="rooms">
+                Rooms
+            </a>
 
-            <a href="./guests.html">Guests</a>
+            <a href="./guests.html" data-module="guests">
+                Guests
+            </a>
 
-            <a href="./reservations.html">Reservations</a>
+            <a href="./reservations.html" data-module="reservations">
+                Reservations
+            </a>
 
-            <a href="./checkin.html">Check-in</a>
+            <a href="./checkin.html" data-module="checkin">
+                Check-in
+            </a>
 
-            <a href="./checkout.html">Check-out</a>
+            <a href="./checkout.html" data-module="checkout">
+                Check-out
+            </a>
 
-            <a href="./restaurant.html">Restaurant</a>
+            <a href="./restaurant.html" data-module="restaurant">
+                Restaurant
+            </a>
 
-            <a href="./inventory.html">Inventory</a>
+            <a href="./inventory.html" data-module="inventory">
+                Inventory
+            </a>
 
-            <a href="./payments.html">Payments</a>
+            <a href="./payments.html" data-module="payments">
+                Payments
+            </a>
 
-            <a href="./expenses.html" class="active">
+            <a href="./expenses.html"
+               data-module="expenses"
+               class="active">
                 Expenses
             </a>
 
-            <a href="./employees.html">Employees</a>
+            <a href="./employees.html" data-module="employees">
+                Employees
+            </a>
 
-            <a href="./housekeeping.html">Housekeeping</a>
+            <a href="./housekeeping.html" data-module="housekeeping">
+                Housekeeping
+            </a>
 
-            <a href="./maintenance.html">Maintenance</a>
+            <a href="./maintenance.html" data-module="maintenance">
+                Maintenance
+            </a>
 
-            <a href="./reports.html">Reports</a>
+            <a href="./reports.html" data-module="reports">
+                Reports
+            </a>
 
-            <a href="./settings.html">Settings</a>
+            <a href="./settings.html" data-module="settings">
+                Settings
+            </a>
 
         </nav>
 
@@ -276,6 +320,20 @@
                 </div>
 
             </div>
+
+        </section>
+
+
+        <!-- ACCESS DENIED -->
+        <section id="accessDenied">
+
+            <h2>
+                Access Denied
+            </h2>
+
+            <p>
+                You do not have permission to access the Expenses module.
+            </p>
 
         </section>
 
@@ -559,10 +617,74 @@ function saveExpenses(expenses) {
 
 
 /* ================================
+   EXPENSE ACCESS CHECK
+================================ */
+
+function getCurrentUserRole() {
+
+    let role =
+        sessionStorage.getItem(
+            "userRole"
+        );
+
+
+    if (!role) {
+
+        role =
+            localStorage.getItem(
+                "userRole"
+            );
+
+    }
+
+
+    return String(
+        role || ""
+    )
+    .toLowerCase()
+    .trim();
+
+}
+
+
+function expenseAccessAllowed() {
+
+    const role =
+        getCurrentUserRole();
+
+
+    const allowedRoles = [
+
+        "system_owner",
+        "hotel_owner",
+        "manager"
+
+    ];
+
+
+    return allowedRoles.includes(
+        role
+    );
+
+}
+
+
+/* ================================
    OPEN FORM
 ================================ */
 
 function showExpenseForm() {
+
+    if (!expenseAccessAllowed()) {
+
+        alert(
+            "You do not have permission to manage Expenses."
+        );
+
+        return;
+
+    }
+
 
     const modal =
         document.getElementById(
@@ -928,6 +1050,19 @@ document.getElementById(
         event.preventDefault();
 
 
+        if (!expenseAccessAllowed()) {
+
+            alert(
+                "You do not have permission to manage Expenses."
+            );
+
+            hideExpenseForm();
+
+            return;
+
+        }
+
+
         const date =
             document.getElementById(
                 "expenseDate"
@@ -1070,6 +1205,17 @@ document.getElementById(
 
 function editExpense(button) {
 
+    if (!expenseAccessAllowed()) {
+
+        alert(
+            "You do not have permission to edit Expenses."
+        );
+
+        return;
+
+    }
+
+
     const row =
         button.closest("tr");
 
@@ -1155,6 +1301,17 @@ function editExpense(button) {
 ================================ */
 
 function deleteExpense(button) {
+
+    if (!expenseAccessAllowed()) {
+
+        alert(
+            "You do not have permission to delete Expenses."
+        );
+
+        return;
+
+    }
+
 
     const row =
         button.closest("tr");
@@ -1472,6 +1629,23 @@ displayExpenses();
 
     function getModuleFromLink(link) {
 
+        const dataModule =
+            link.getAttribute(
+                "data-module"
+            );
+
+
+        if (dataModule) {
+
+            return String(
+                dataModule
+            )
+            .toLowerCase()
+            .trim();
+
+        }
+
+
         const href =
             String(
                 link.getAttribute(
@@ -1627,11 +1801,19 @@ displayExpenses();
                         )
                     ) {
 
+                        link.classList.remove(
+                            "role-hidden"
+                        );
+
                         link.style.removeProperty(
                             "display"
                         );
 
                     } else {
+
+                        link.classList.add(
+                            "role-hidden"
+                        );
 
                         link.style.setProperty(
                             "display",
@@ -1690,6 +1872,98 @@ displayExpenses();
 
 
     /* ================================
+       ACCESS DENIED SCREEN
+    ================================= */
+
+    function showAccessDenied() {
+
+        const denied =
+            document.getElementById(
+                "accessDenied"
+            );
+
+
+        const pageContent =
+            document.querySelector(
+                ".page-content"
+            );
+
+
+        if (denied) {
+
+            denied.style.display =
+                "block";
+
+        }
+
+
+        if (pageContent) {
+
+            pageContent.style.display =
+                "none";
+
+        }
+
+
+        const modal =
+            document.getElementById(
+                "expenseModal"
+            );
+
+
+        if (modal) {
+
+            modal.style.display =
+                "none";
+
+        }
+
+    }
+
+
+    /* ================================
+       PAGE ACCESS CONTROL
+    ================================= */
+
+    function checkExpensePageAccess() {
+
+        const role =
+            getRole();
+
+
+        if (!role) {
+            return;
+        }
+
+
+        if (
+            role === "receptionist"
+        ) {
+
+            showAccessDenied();
+
+            return;
+
+        }
+
+
+        if (
+            role === "system_owner" ||
+            role === "hotel_owner" ||
+            role === "manager"
+        ) {
+
+            return;
+
+        }
+
+
+        showAccessDenied();
+
+    }
+
+
+    /* ================================
        RUN ROLE CONTROL
     ================================= */
 
@@ -1698,6 +1972,8 @@ displayExpenses();
         applyRoleControl();
 
         protectPage();
+
+        checkExpensePageAccess();
 
     }
 
@@ -1720,13 +1996,17 @@ displayExpenses();
 
 
     /*
-       Re-apply the sidebar control
-       periodically so other scripts
-       cannot restore hidden links.
+       Re-apply role control periodically.
     */
 
     setInterval(
         applyRoleControl,
+        500
+    );
+
+
+    setInterval(
+        checkExpensePageAccess,
         500
     );
 
