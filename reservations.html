@@ -44,7 +44,6 @@
     <!-- MAIN CONTENT -->
     <main class="main-content">
 
-        <!-- TOP BAR -->
         <header class="topbar">
 
             <div>
@@ -149,7 +148,6 @@
             </div>
 
 
-            <!-- SEARCH AND FILTER -->
             <div class="room-tools">
 
                 <input
@@ -181,7 +179,6 @@
             </div>
 
 
-            <!-- TABLE -->
             <div class="table-container">
 
                 <table id="reservationsTable">
@@ -364,31 +361,21 @@
                 document.getElementById("closeReservationBtn");
 
 
-            /* OPEN RESERVATION FORM */
-
             newReservationBtn.addEventListener(
                 "click",
                 function () {
-
                     reservationModal.style.display = "flex";
-
                 }
             );
 
-
-            /* CLOSE RESERVATION FORM */
 
             closeReservationBtn.addEventListener(
                 "click",
                 function () {
-
                     reservationModal.style.display = "none";
-
                 }
             );
 
-
-            /* CALCULATE NIGHTS */
 
             function calculateNights(checkin, checkout) {
 
@@ -401,18 +388,13 @@
                 const difference =
                     end - start;
 
-                const nights =
-                    Math.ceil(
-                        difference /
-                        (1000 * 60 * 60 * 24)
-                    );
-
-                return nights;
+                return Math.ceil(
+                    difference /
+                    (1000 * 60 * 60 * 24)
+                );
 
             }
 
-
-            /* DISPLAY RESERVATIONS */
 
             function displayReservations() {
 
@@ -487,47 +469,36 @@
 
                     if (reservation.status === "Confirmed") {
 
-                        statusClass =
-                            "available-status";
+                        statusClass = "available-status";
 
-                    } else if (reservation.status === "Pending") {
+                    }
 
-                        statusClass =
-                            "cleaning-status";
+                    else if (reservation.status === "Pending") {
 
-                    } else if (reservation.status === "Cancelled") {
+                        statusClass = "cleaning-status";
 
-                        statusClass =
-                            "occupied-status";
+                    }
+
+                    else if (reservation.status === "Cancelled") {
+
+                        statusClass = "occupied-status";
 
                     }
 
 
                     row.innerHTML = `
 
-                        <td>
-                            ${reservation.bookingId || ""}
-                        </td>
+                        <td>${reservation.bookingId || ""}</td>
 
-                        <td>
-                            ${reservation.guest || ""}
-                        </td>
+                        <td>${reservation.guest || ""}</td>
 
-                        <td>
-                            ${reservation.room || ""}
-                        </td>
+                        <td>${reservation.room || ""}</td>
 
-                        <td>
-                            ${reservation.checkin || ""}
-                        </td>
+                        <td>${reservation.checkin || ""}</td>
 
-                        <td>
-                            ${reservation.checkout || ""}
-                        </td>
+                        <td>${reservation.checkout || ""}</td>
 
-                        <td>
-                            ${reservation.nights || 0}
-                        </td>
+                        <td>${reservation.nights || 0}</td>
 
                         <td>
                             KSh ${Number(
@@ -560,8 +531,6 @@
                 });
 
 
-                /* ATTACH DELETE BUTTONS */
-
                 const deleteButtons =
                     reservationTable.querySelectorAll(
                         ".delete-btn"
@@ -590,8 +559,6 @@
 
             }
 
-
-            /* UPDATE SUMMARY CARDS */
 
             function updateReservationSummary() {
 
@@ -632,8 +599,6 @@
 
             }
 
-
-            /* SAVE RESERVATION */
 
             reservationForm.addEventListener(
                 "submit",
@@ -703,11 +668,10 @@
 
 
                     const bookingId =
-                        "RES-" +
-                        Date.now();
+                        "RES-" + Date.now();
 
 
-                    const reservation = {
+                    reservations.push({
 
                         bookingId: bookingId,
 
@@ -727,12 +691,7 @@
 
                         status: status
 
-                    };
-
-
-                    reservations.push(
-                        reservation
-                    );
+                    });
 
 
                     localStorage.setItem(
@@ -745,10 +704,7 @@
 
                     reservationForm.reset();
 
-
-                    reservationModal.style.display =
-                        "none";
-
+                    reservationModal.style.display = "none";
 
                     displayReservations();
 
@@ -760,8 +716,6 @@
                 }
             );
 
-
-            /* DELETE RESERVATION */
 
             function deleteReservation(bookingId) {
 
@@ -799,23 +753,17 @@
             }
 
 
-            /* SEARCH */
-
             reservationSearch.addEventListener(
                 "input",
                 displayReservations
             );
 
 
-            /* FILTER */
-
             reservationFilter.addEventListener(
                 "change",
                 displayReservations
             );
 
-
-            /* CLOSE MODAL WHEN CLICKING OUTSIDE */
 
             reservationModal.addEventListener(
                 "click",
@@ -826,8 +774,7 @@
                         reservationModal
                     ) {
 
-                        reservationModal.style.display =
-                            "none";
+                        reservationModal.style.display = "none";
 
                     }
 
@@ -835,13 +782,358 @@
             );
 
 
-            /* INITIAL DISPLAY */
-
             displayReservations();
 
         });
 
     </script>
+
+
+    <!-- ============================================================
+         ROLE CONTROL
+         ============================================================ -->
+
+    <script>
+
+        (function () {
+
+            "use strict";
+
+
+            const ROLE_PERMISSIONS = {
+
+                system_owner: [
+                    "dashboard",
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "restaurant",
+                    "inventory",
+                    "payments",
+                    "expenses",
+                    "employees",
+                    "housekeeping",
+                    "maintenance",
+                    "reports",
+                    "settings",
+                    "hotels"
+                ],
+
+
+                hotel_owner: [
+                    "dashboard",
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "restaurant",
+                    "inventory",
+                    "payments",
+                    "expenses",
+                    "employees",
+                    "housekeeping",
+                    "maintenance",
+                    "reports",
+                    "settings"
+                ],
+
+
+                manager: [
+                    "dashboard",
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "restaurant",
+                    "inventory",
+                    "payments",
+                    "expenses",
+                    "employees",
+                    "housekeeping",
+                    "maintenance",
+                    "reports",
+                    "settings"
+                ],
+
+
+                receptionist: [
+                    "dashboard",
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "payments",
+                    "reports"
+                ]
+
+            };
+
+
+            function getRole() {
+
+                let role =
+                    sessionStorage.getItem("userRole");
+
+
+                if (!role) {
+
+                    role =
+                        localStorage.getItem("userRole");
+
+                }
+
+
+                return String(
+                    role || ""
+                )
+                    .toLowerCase()
+                    .trim();
+
+            }
+
+
+            function getModuleFromLink(link) {
+
+                const href =
+                    String(
+                        link.getAttribute("href") || ""
+                    )
+                        .toLowerCase()
+                        .split("?")[0]
+                        .split("#")[0]
+                        .trim();
+
+
+                if (
+                    href === "./" ||
+                    href === "/" ||
+                    href === "index.html" ||
+                    href === "./index.html" ||
+                    href.endsWith("/index.html")
+                ) {
+                    return "dashboard";
+                }
+
+
+                const modules = [
+
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "restaurant",
+                    "inventory",
+                    "payments",
+                    "expenses",
+                    "employees",
+                    "housekeeping",
+                    "maintenance",
+                    "reports",
+                    "settings",
+                    "hotels"
+
+                ];
+
+
+                for (
+                    let i = 0;
+                    i < modules.length;
+                    i++
+                ) {
+
+                    if (
+                        href.includes(
+                            modules[i] + ".html"
+                        )
+                    ) {
+
+                        return modules[i];
+
+                    }
+
+                }
+
+
+                return null;
+
+            }
+
+
+            function getCurrentModule() {
+
+                const filename =
+                    window.location.pathname
+                        .split("/")
+                        .pop()
+                        .toLowerCase();
+
+
+                if (
+                    !filename ||
+                    filename === "index.html"
+                ) {
+
+                    return "dashboard";
+
+                }
+
+
+                return filename
+                    .replace(".html", "");
+
+            }
+
+
+            function applyRoleControl() {
+
+                const role =
+                    getRole();
+
+
+                if (!role) {
+                    return;
+                }
+
+
+                const allowed =
+                    ROLE_PERMISSIONS[role];
+
+
+                if (!allowed) {
+                    return;
+                }
+
+
+                document
+                    .querySelectorAll(
+                        ".sidebar nav a"
+                    )
+                    .forEach(function (link) {
+
+                        const module =
+                            getModuleFromLink(link);
+
+
+                        if (!module) {
+                            return;
+                        }
+
+
+                        if (
+                            allowed.includes(module)
+                        ) {
+
+                            link.style.removeProperty(
+                                "display"
+                            );
+
+                        }
+
+                        else {
+
+                            link.style.setProperty(
+                                "display",
+                                "none",
+                                "important"
+                            );
+
+                        }
+
+                    });
+
+            }
+
+
+            function protectPage() {
+
+                const role =
+                    getRole();
+
+
+                if (!role) {
+                    return;
+                }
+
+
+                const allowed =
+                    ROLE_PERMISSIONS[role];
+
+
+                if (!allowed) {
+                    return;
+                }
+
+
+                const currentModule =
+                    getCurrentModule();
+
+
+                if (
+                    !allowed.includes(
+                        currentModule
+                    )
+                ) {
+
+                    window.location.href =
+                        "./index.html";
+
+                }
+
+            }
+
+
+            function runRoleControl() {
+
+                applyRoleControl();
+
+                protectPage();
+
+            }
+
+
+            if (
+                document.readyState === "loading"
+            ) {
+
+                document.addEventListener(
+                    "DOMContentLoaded",
+                    runRoleControl
+                );
+
+            }
+
+            else {
+
+                runRoleControl();
+
+            }
+
+
+            /*
+             * Keep the sidebar protected because
+             * other page scripts may modify it.
+             */
+
+            setInterval(
+                applyRoleControl,
+                500
+            );
+
+
+            window.applyRoleControl =
+                applyRoleControl;
+
+
+        })();
+
+    </script>
+
 
 </body>
 
