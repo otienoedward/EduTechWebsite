@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Maintenance - EDU TECH Hotel Management System</title>
+
     <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./supabase.css">
 
     <style>
-        .role-hidden {
-            display: none !important;
-        }
-
         .access-denied {
             display: none;
             padding: 50px 20px;
@@ -35,6 +34,66 @@
             text-decoration: none;
             border-radius: 6px;
         }
+
+        .sidebar-logout {
+            margin: 15px 10px;
+        }
+
+        .sidebar-logout button {
+            width: 100%;
+            border: none;
+            padding: 11px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #dc2626;
+            color: white;
+            font-size: 14px;
+        }
+
+        .sidebar-logout button:hover {
+            background: #b91c1c;
+        }
+
+        .maintenance-empty {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+
+        .status-badge.low {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-badge.medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.high {
+            background: #fed7aa;
+            color: #9a3412;
+        }
+
+        .status-badge.urgent {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.in-progress {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-badge.completed {
+            background: #dcfce7;
+            color: #166534;
+        }
     </style>
 </head>
 
@@ -42,7 +101,10 @@
 
 <div class="dashboard">
 
-    <!-- SIDEBAR -->
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
     <aside class="sidebar">
 
         <div class="logo">
@@ -52,41 +114,108 @@
 
         <nav class="sidebar-nav">
 
-            <a href="./index.html" data-module="dashboard">🏠 Dashboard</a>
-            <a href="./rooms.html" data-module="rooms">🛏️ Rooms</a>
-            <a href="./guests.html" data-module="guests">👤 Guests</a>
-            <a href="./reservations.html" data-module="reservations">📅 Reservations</a>
-            <a href="./checkin.html" data-module="checkin">🛎️ Check-in</a>
-            <a href="./checkout.html" data-module="checkout">🚪 Check-out</a>
-            <a href="./restaurant.html" data-module="restaurant">🍽️ Restaurant</a>
-            <a href="./inventory.html" data-module="inventory">📦 Inventory</a>
-            <a href="./payments.html" data-module="payments">💰 Payments</a>
-            <a href="./expenses.html" data-module="expenses">💸 Expenses</a>
-            <a href="./employees.html" data-module="employees">👨‍💼 Employees</a>
-            <a href="./housekeeping.html" data-module="housekeeping">🧹 Housekeeping</a>
-            <a href="./maintenance.html" data-module="maintenance" class="active">🔧 Maintenance</a>
-            <a href="./reports.html" data-module="reports">📊 Reports</a>
-            <a href="./settings.html" data-module="settings">⚙️ Settings</a>
+            <a href="./index.html" data-module="dashboard">
+                🏠 Dashboard
+            </a>
+
+            <a href="./rooms.html" data-module="rooms">
+                🛏️ Rooms
+            </a>
+
+            <a href="./guests.html" data-module="guests">
+                👤 Guests
+            </a>
+
+            <a href="./reservations.html" data-module="reservations">
+                📅 Reservations
+            </a>
+
+            <a href="./checkin.html" data-module="checkin">
+                🛎️ Check-in
+            </a>
+
+            <a href="./checkout.html" data-module="checkout">
+                🚪 Check-out
+            </a>
+
+            <a href="./restaurant.html" data-module="restaurant">
+                🍽️ Restaurant
+            </a>
+
+            <a href="./inventory.html" data-module="inventory">
+                📦 Inventory
+            </a>
+
+            <a href="./payments.html" data-module="payments">
+                💰 Payments
+            </a>
+
+            <a href="./expenses.html" data-module="expenses">
+                💸 Expenses
+            </a>
+
+            <a href="./employees.html" data-module="employees">
+                👨‍💼 Employees
+            </a>
+
+            <a href="./housekeeping.html" data-module="housekeeping">
+                🧹 Housekeeping
+            </a>
+
+            <a
+                href="./maintenance.html"
+                data-module="maintenance"
+                class="active"
+            >
+                🔧 Maintenance
+            </a>
+
+            <a href="./reports.html" data-module="reports">
+                📊 Reports
+            </a>
+
+            <a href="./settings.html" data-module="settings">
+                ⚙️ Settings
+            </a>
 
         </nav>
+
+        <!-- GLOBAL LOGOUT -->
+        <div class="sidebar-logout">
+            <button
+                type="button"
+                class="logout-btn"
+                data-action="logout"
+            >
+                🚪 Logout
+            </button>
+        </div>
 
     </aside>
 
 
-    <!-- MAIN CONTENT -->
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
     <main class="main-content">
 
         <!-- TOP BAR -->
+
         <header class="topbar">
 
             <div>
                 <h1>Maintenance</h1>
-                <p>Manage hotel maintenance requests and repairs</p>
+
+                <p>
+                    Manage hotel maintenance requests and repairs
+                </p>
             </div>
 
             <button
                 class="primary-btn"
                 id="addMaintenanceBtn"
+                type="button"
                 onclick="openMaintenanceForm()"
             >
                 + Add Maintenance Task
@@ -95,13 +224,20 @@
         </header>
 
 
-        <!-- ACCESS DENIED -->
-        <section id="maintenanceAccessDenied" class="access-denied">
+        <!-- =================================================
+             ACCESS DENIED
+        ================================================== -->
+
+        <section
+            id="maintenanceAccessDenied"
+            class="access-denied"
+        >
 
             <h2>Access Denied</h2>
 
             <p>
-                You do not have permission to access the Maintenance module.
+                You do not have permission to access the
+                Maintenance module.
             </p>
 
             <a href="./index.html">
@@ -111,45 +247,83 @@
         </section>
 
 
-        <!-- MAINTENANCE CONTENT -->
+        <!-- =================================================
+             MAINTENANCE CONTENT
+        ================================================== -->
+
         <div id="maintenanceContent">
 
 
             <!-- SUMMARY CARDS -->
+
             <section class="summary-grid">
 
                 <div class="summary-card">
+
                     <h3>Total Tasks</h3>
-                    <strong id="totalMaintenance">0</strong>
+
+                    <strong id="totalMaintenance">
+                        0
+                    </strong>
+
                 </div>
 
+
                 <div class="summary-card">
+
                     <h3>Pending</h3>
-                    <strong id="pendingMaintenance">0</strong>
+
+                    <strong id="pendingMaintenance">
+                        0
+                    </strong>
+
                 </div>
 
+
                 <div class="summary-card">
+
                     <h3>In Progress</h3>
-                    <strong id="inProgressMaintenance">0</strong>
+
+                    <strong id="inProgressMaintenance">
+                        0
+                    </strong>
+
                 </div>
 
+
                 <div class="summary-card">
+
                     <h3>Completed</h3>
-                    <strong id="completedMaintenance">0</strong>
+
+                    <strong id="completedMaintenance">
+                        0
+                    </strong>
+
                 </div>
 
             </section>
 
 
-            <!-- SEARCH AND FILTER -->
+            <!-- =================================================
+                 SEARCH AND FILTER
+            ================================================== -->
+
             <section class="content-card">
 
                 <div class="section-header">
 
                     <div>
-                        <h2>Maintenance Tasks</h2>
-                        <p>View and manage maintenance work</p>
+
+                        <h2>
+                            Maintenance Tasks
+                        </h2>
+
+                        <p>
+                            View and manage maintenance work
+                        </p>
+
                     </div>
+
 
                     <div class="filters">
 
@@ -157,17 +331,27 @@
                             type="text"
                             id="maintenanceSearch"
                             placeholder="Search room or technician..."
-                            onkeyup="searchMaintenance()"
                         >
 
-                        <select
-                            id="maintenanceFilter"
-                            onchange="filterMaintenance()"
-                        >
-                            <option value="all">All Status</option>
-                            <option value="Pending">Pending</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Completed">Completed</option>
+
+                        <select id="maintenanceFilter">
+
+                            <option value="all">
+                                All Status
+                            </option>
+
+                            <option value="Pending">
+                                Pending
+                            </option>
+
+                            <option value="In Progress">
+                                In Progress
+                            </option>
+
+                            <option value="Completed">
+                                Completed
+                            </option>
+
                         </select>
 
                     </div>
@@ -175,7 +359,10 @@
                 </div>
 
 
-                <!-- TABLE -->
+                <!-- =================================================
+                     TABLE
+                ================================================== -->
+
                 <div class="table-container">
 
                     <table>
@@ -183,19 +370,47 @@
                         <thead>
 
                             <tr>
-                                <th>Task ID</th>
-                                <th>Room</th>
-                                <th>Maintenance Type</th>
-                                <th>Technician</th>
-                                <th>Date</th>
-                                <th>Priority</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+
+                                <th>
+                                    Task ID
+                                </th>
+
+                                <th>
+                                    Room
+                                </th>
+
+                                <th>
+                                    Maintenance Type
+                                </th>
+
+                                <th>
+                                    Technician
+                                </th>
+
+                                <th>
+                                    Date
+                                </th>
+
+                                <th>
+                                    Priority
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Actions
+                                </th>
+
                             </tr>
 
                         </thead>
 
-                        <tbody id="maintenanceTable"></tbody>
+
+                        <tbody id="maintenanceTable">
+
+                        </tbody>
 
                     </table>
 
@@ -210,17 +425,34 @@
 </div>
 
 
-<!-- MAINTENANCE MODAL -->
-<div id="maintenanceModal" class="modal">
+<!-- =========================================================
+     MAINTENANCE MODAL
+========================================================== -->
+
+<div
+    id="maintenanceModal"
+    class="modal"
+>
 
     <div class="modal-content">
+
+
+        <!-- MODAL HEADER -->
 
         <div class="modal-header">
 
             <div>
-                <h2>Add Maintenance Task</h2>
-                <p>Create a new maintenance request</p>
+
+                <h2>
+                    Add Maintenance Task
+                </h2>
+
+                <p>
+                    Create a new maintenance request
+                </p>
+
             </div>
+
 
             <button
                 type="button"
@@ -233,9 +465,15 @@
         </div>
 
 
+        <!-- FORM -->
+
         <form id="maintenanceForm">
 
+
             <div class="form-grid">
+
+
+                <!-- ROOM -->
 
                 <div class="form-group">
 
@@ -252,6 +490,8 @@
 
                 </div>
 
+
+                <!-- TYPE -->
 
                 <div class="form-group">
 
@@ -301,6 +541,8 @@
                 </div>
 
 
+                <!-- TECHNICIAN -->
+
                 <div class="form-group">
 
                     <label for="maintenanceTechnician">
@@ -317,6 +559,8 @@
                 </div>
 
 
+                <!-- DATE -->
+
                 <div class="form-group">
 
                     <label for="maintenanceDate">
@@ -331,6 +575,8 @@
 
                 </div>
 
+
+                <!-- PRIORITY -->
 
                 <div class="form-group">
 
@@ -368,6 +614,8 @@
                 </div>
 
 
+                <!-- STATUS -->
+
                 <div class="form-group">
 
                     <label for="maintenanceStatus">
@@ -398,6 +646,8 @@
             </div>
 
 
+            <!-- FORM ACTIONS -->
+
             <div class="form-actions">
 
                 <button
@@ -407,6 +657,7 @@
                 >
                     Cancel
                 </button>
+
 
                 <button
                     type="submit"
@@ -424,97 +675,45 @@
 </div>
 
 
+<!-- =========================================================
+     SUPABASE
+========================================================== -->
+
+<script src="./supabase.js"></script>
+
+
+<!-- =========================================================
+     GLOBAL SCRIPT
+     
+     IMPORTANT:
+     This replaces the old page-specific role-control system.
+========================================================== -->
+
+<script src="./script.js"></script>
+
+
+<!-- =========================================================
+     MAINTENANCE SCRIPT
+========================================================== -->
+
 <script>
 
 let maintenanceTasks = [];
 
 
 // ============================================================
-// ROLE PERMISSIONS
-// ============================================================
-
-const ROLE_PERMISSIONS = {
-
-    system_owner: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings",
-        "hotels"
-    ],
-
-    hotel_owner: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings"
-    ],
-
-    manager: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings"
-    ],
-
-    receptionist: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "payments",
-        "reports"
-    ]
-
-};
-
-
-// ============================================================
 // GET CURRENT ROLE
 // ============================================================
 
-function getCurrentRole() {
+function getMaintenanceRole() {
 
     return (
         sessionStorage.getItem("userRole") ||
         localStorage.getItem("userRole") ||
         ""
-    ).toLowerCase().trim();
+    )
+        .toLowerCase()
+        .trim();
 
 }
 
@@ -525,13 +724,15 @@ function getCurrentRole() {
 
 function maintenanceAccessAllowed(showMessage = true) {
 
-    const role = getCurrentRole();
+    const role = getMaintenanceRole();
+
 
     const allowedRoles = [
         "system_owner",
         "hotel_owner",
         "manager"
     ];
+
 
     if (!allowedRoles.includes(role)) {
 
@@ -544,8 +745,8 @@ function maintenanceAccessAllowed(showMessage = true) {
         }
 
         return false;
-
     }
+
 
     return true;
 
@@ -553,51 +754,19 @@ function maintenanceAccessAllowed(showMessage = true) {
 
 
 // ============================================================
-// APPLY SIDEBAR ROLE CONTROL
+// PROTECT MAINTENANCE PAGE
 // ============================================================
 
-function applyRoleControl() {
+function protectMaintenancePage() {
 
-    const role = getCurrentRole();
-
-    const allowedModules =
-        ROLE_PERMISSIONS[role] || [];
-
-    const sidebarLinks =
-        document.querySelectorAll(
-            ".sidebar-nav a[data-module]"
-        );
+    const role = getMaintenanceRole();
 
 
-    sidebarLinks.forEach(function(link) {
-
-        const module =
-            link.getAttribute("data-module");
-
-
-        if (allowedModules.includes(module)) {
-
-            link.classList.remove("role-hidden");
-
-            link.style.setProperty(
-                "display",
-                "",
-                "important"
-            );
-
-        } else {
-
-            link.classList.add("role-hidden");
-
-            link.style.setProperty(
-                "display",
-                "none",
-                "important"
-            );
-
-        }
-
-    });
+    const allowedRoles = [
+        "system_owner",
+        "hotel_owner",
+        "manager"
+    ];
 
 
     const content =
@@ -605,10 +774,12 @@ function applyRoleControl() {
             "maintenanceContent"
         );
 
+
     const denied =
         document.getElementById(
             "maintenanceAccessDenied"
         );
+
 
     const addButton =
         document.getElementById(
@@ -616,11 +787,7 @@ function applyRoleControl() {
         );
 
 
-    if (
-        role === "system_owner" ||
-        role === "hotel_owner" ||
-        role === "manager"
-    ) {
+    if (allowedRoles.includes(role)) {
 
         if (content) {
             content.style.display = "";
@@ -634,102 +801,52 @@ function applyRoleControl() {
             addButton.style.display = "";
         }
 
-    } else {
-
-        if (content) {
-            content.style.display = "none";
-        }
-
-        if (denied) {
-            denied.style.display = "block";
-        }
-
-        if (addButton) {
-            addButton.style.display = "none";
-        }
-
+        return true;
     }
+
+
+    if (content) {
+        content.style.display = "none";
+    }
+
+
+    if (addButton) {
+        addButton.style.display = "none";
+    }
+
+
+    if (denied) {
+        denied.style.display = "block";
+    }
+
+
+    /*
+     * Give the global authentication/session
+     * system a moment to finish loading.
+     */
+    setTimeout(function() {
+
+        const latestRole =
+            getMaintenanceRole();
+
+
+        if (!allowedRoles.includes(latestRole)) {
+
+            window.location.href =
+                "./index.html";
+
+        }
+
+    }, 1000);
+
+
+    return false;
 
 }
 
 
 // ============================================================
-// DIRECT PAGE ACCESS PROTECTION
-// ============================================================
-
-function protectMaintenancePage() {
-
-    const role = getCurrentRole();
-
-    const allowedRoles = [
-        "system_owner",
-        "hotel_owner",
-        "manager"
-    ];
-
-
-    if (!allowedRoles.includes(role)) {
-
-        const denied =
-            document.getElementById(
-                "maintenanceAccessDenied"
-            );
-
-        const content =
-            document.getElementById(
-                "maintenanceContent"
-            );
-
-        const addButton =
-            document.getElementById(
-                "addMaintenanceBtn"
-            );
-
-
-        if (content) {
-            content.style.display = "none";
-        }
-
-        if (addButton) {
-            addButton.style.display = "none";
-        }
-
-        if (denied) {
-            denied.style.display = "block";
-        }
-
-
-        /*
-         * Give the page a short moment to check the
-         * stored session before redirecting.
-         */
-        setTimeout(function() {
-
-            const latestRole =
-                getCurrentRole();
-
-            if (
-                ![
-                    "system_owner",
-                    "hotel_owner",
-                    "manager"
-                ].includes(latestRole)
-            ) {
-
-                window.location.href =
-                    "./index.html";
-
-            }
-
-        }, 800);
-
-    }
-
-}
-
-
-// ============================================================
-// OPEN FORM
+// OPEN MAINTENANCE FORM
 // ============================================================
 
 function openMaintenanceForm() {
@@ -739,14 +856,24 @@ function openMaintenanceForm() {
     }
 
 
-    document.getElementById(
-        "maintenanceModal"
-    ).style.display = "flex";
+    const modal =
+        document.getElementById(
+            "maintenanceModal"
+        );
 
 
-    document.getElementById(
-        "maintenanceForm"
-    ).reset();
+    const form =
+        document.getElementById(
+            "maintenanceForm"
+        );
+
+
+    if (!modal || !form) {
+        return;
+    }
+
+
+    form.reset();
 
 
     const today =
@@ -759,6 +886,9 @@ function openMaintenanceForm() {
         "maintenanceDate"
     ).value = today;
 
+
+    modal.style.display = "flex";
+
 }
 
 
@@ -768,9 +898,15 @@ function openMaintenanceForm() {
 
 function closeMaintenanceForm() {
 
-    document.getElementById(
-        "maintenanceModal"
-    ).style.display = "none";
+    const modal =
+        document.getElementById(
+            "maintenanceModal"
+        );
+
+
+    if (modal) {
+        modal.style.display = "none";
+    }
 
 }
 
@@ -781,96 +917,101 @@ function closeMaintenanceForm() {
 
 function generateMaintenanceId() {
 
-    return "MT-" +
+    return (
+        "MT-" +
         String(
             maintenanceTasks.length + 1
-        ).padStart(3, "0");
+        ).padStart(3, "0")
+    );
 
 }
 
 
 // ============================================================
-// ADD TASK
+// ADD MAINTENANCE TASK
 // ============================================================
 
-document.getElementById(
-    "maintenanceForm"
-).addEventListener(
-    "submit",
-    function(event) {
+function saveMaintenanceTask(event) {
 
-        event.preventDefault();
+    event.preventDefault();
 
 
-        if (!maintenanceAccessAllowed()) {
-            return;
-        }
-
-
-        const room =
-            document.getElementById(
-                "maintenanceRoom"
-            ).value.trim();
-
-
-        const type =
-            document.getElementById(
-                "maintenanceType"
-            ).value;
-
-
-        const technician =
-            document.getElementById(
-                "maintenanceTechnician"
-            ).value.trim();
-
-
-        const date =
-            document.getElementById(
-                "maintenanceDate"
-            ).value;
-
-
-        const priority =
-            document.getElementById(
-                "maintenancePriority"
-            ).value;
-
-
-        const status =
-            document.getElementById(
-                "maintenanceStatus"
-            ).value;
-
-
-        const newTask = {
-
-            id: generateMaintenanceId(),
-            room: room,
-            type: type,
-            technician: technician,
-            date: date,
-            priority: priority,
-            status: status
-
-        };
-
-
-        maintenanceTasks.push(newTask);
-
-
-        renderMaintenanceTasks();
-
-        updateMaintenanceCounts();
-
-        closeMaintenanceForm();
-
+    if (!maintenanceAccessAllowed()) {
+        return;
     }
-);
+
+
+    const room =
+        document.getElementById(
+            "maintenanceRoom"
+        ).value.trim();
+
+
+    const type =
+        document.getElementById(
+            "maintenanceType"
+        ).value;
+
+
+    const technician =
+        document.getElementById(
+            "maintenanceTechnician"
+        ).value.trim();
+
+
+    const date =
+        document.getElementById(
+            "maintenanceDate"
+        ).value;
+
+
+    const priority =
+        document.getElementById(
+            "maintenancePriority"
+        ).value;
+
+
+    const status =
+        document.getElementById(
+            "maintenanceStatus"
+        ).value;
+
+
+    const newTask = {
+
+        id: generateMaintenanceId(),
+
+        room: room,
+
+        type: type,
+
+        technician: technician,
+
+        date: date,
+
+        priority: priority,
+
+        status: status
+
+    };
+
+
+    maintenanceTasks.push(
+        newTask
+    );
+
+
+    renderMaintenanceTasks();
+
+    updateMaintenanceCounts();
+
+    closeMaintenanceForm();
+
+}
 
 
 // ============================================================
-// DISPLAY TASKS
+// RENDER MAINTENANCE TABLE
 // ============================================================
 
 function renderMaintenanceTasks() {
@@ -881,54 +1022,116 @@ function renderMaintenanceTasks() {
         );
 
 
+    if (!table) {
+        return;
+    }
+
+
     table.innerHTML = "";
+
+
+    if (maintenanceTasks.length === 0) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="8"
+                    class="maintenance-empty"
+                >
+                    No maintenance tasks found.
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+    }
 
 
     maintenanceTasks.forEach(
         function(item) {
 
             const row =
-                document.createElement("tr");
+                document.createElement(
+                    "tr"
+                );
+
+
+            const priorityClass =
+                String(
+                    item.priority || ""
+                )
+                .toLowerCase();
+
+
+            const statusClass =
+                String(
+                    item.status || ""
+                )
+                .toLowerCase()
+                .replace(/\s+/g, "-");
 
 
             row.innerHTML = `
 
-                <td>${item.id}</td>
-
-                <td>${item.room}</td>
-
-                <td>${item.type}</td>
-
-                <td>${item.technician}</td>
-
-                <td>${item.date}</td>
-
                 <td>
-                    <span class="status-badge ${item.priority.toLowerCase()}">
-                        ${item.priority}
-                    </span>
+                    ${escapeMaintenanceHtml(item.id)}
                 </td>
 
                 <td>
-                    <span class="status-badge ${item.status
-                        .toLowerCase()
-                        .replace(" ", "-")}">
-                        ${item.status}
+                    ${escapeMaintenanceHtml(item.room)}
+                </td>
+
+                <td>
+                    ${escapeMaintenanceHtml(item.type)}
+                </td>
+
+                <td>
+                    ${escapeMaintenanceHtml(item.technician)}
+                </td>
+
+                <td>
+                    ${escapeMaintenanceHtml(item.date)}
+                </td>
+
+                <td>
+
+                    <span
+                        class="status-badge ${priorityClass}"
+                    >
+                        ${escapeMaintenanceHtml(item.priority)}
                     </span>
+
+                </td>
+
+                <td>
+
+                    <span
+                        class="status-badge ${statusClass}"
+                    >
+                        ${escapeMaintenanceHtml(item.status)}
+                    </span>
+
                 </td>
 
                 <td>
 
                     <button
+                        type="button"
                         class="action-btn"
-                        onclick="viewMaintenance('${item.id}')"
+                        onclick="viewMaintenance('${escapeMaintenanceAttribute(item.id)}')"
                     >
                         View
                     </button>
 
+
                     <button
+                        type="button"
                         class="action-btn danger"
-                        onclick="deleteMaintenance('${item.id}')"
+                        onclick="deleteMaintenance('${escapeMaintenanceAttribute(item.id)}')"
                     >
                         Delete
                     </button>
@@ -947,39 +1150,173 @@ function renderMaintenanceTasks() {
 
 
 // ============================================================
+// HTML ESCAPE
+// ============================================================
+
+function escapeMaintenanceHtml(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+// ============================================================
+// ATTRIBUTE ESCAPE
+// ============================================================
+
+function escapeMaintenanceAttribute(value) {
+
+    return String(value ?? "")
+        .replace(/\\/g, "\\\\")
+        .replace(/'/g, "\\'");
+
+}
+
+
+// ============================================================
 // UPDATE COUNTS
 // ============================================================
 
 function updateMaintenanceCounts() {
 
-    document.getElementById(
-        "totalMaintenance"
-    ).textContent =
-        maintenanceTasks.length;
+    const total =
+        document.getElementById(
+            "totalMaintenance"
+        );
 
 
-    document.getElementById(
-        "pendingMaintenance"
-    ).textContent =
-        maintenanceTasks.filter(
-            item => item.status === "Pending"
-        ).length;
+    const pending =
+        document.getElementById(
+            "pendingMaintenance"
+        );
 
 
-    document.getElementById(
-        "inProgressMaintenance"
-    ).textContent =
-        maintenanceTasks.filter(
-            item => item.status === "In Progress"
-        ).length;
+    const progress =
+        document.getElementById(
+            "inProgressMaintenance"
+        );
 
 
-    document.getElementById(
-        "completedMaintenance"
-    ).textContent =
-        maintenanceTasks.filter(
-            item => item.status === "Completed"
-        ).length;
+    const completed =
+        document.getElementById(
+            "completedMaintenance"
+        );
+
+
+    if (total) {
+
+        total.textContent =
+            maintenanceTasks.length;
+
+    }
+
+
+    if (pending) {
+
+        pending.textContent =
+            maintenanceTasks.filter(
+                item =>
+                    item.status === "Pending"
+            ).length;
+
+    }
+
+
+    if (progress) {
+
+        progress.textContent =
+            maintenanceTasks.filter(
+                item =>
+                    item.status === "In Progress"
+            ).length;
+
+    }
+
+
+    if (completed) {
+
+        completed.textContent =
+            maintenanceTasks.filter(
+                item =>
+                    item.status === "Completed"
+            ).length;
+
+    }
+
+}
+
+
+// ============================================================
+// SEARCH + FILTER
+// ============================================================
+
+function applyMaintenanceFilters() {
+
+    const searchInput =
+        document.getElementById(
+            "maintenanceSearch"
+        );
+
+
+    const filterInput =
+        document.getElementById(
+            "maintenanceFilter"
+        );
+
+
+    const search =
+        (
+            searchInput
+                ? searchInput.value
+                : ""
+        )
+        .toLowerCase()
+        .trim();
+
+
+    const filter =
+        filterInput
+            ? filterInput.value
+            : "all";
+
+
+    const rows =
+        document.querySelectorAll(
+            "#maintenanceTable tr"
+        );
+
+
+    rows.forEach(function(row) {
+
+        const text =
+            row.textContent
+                .toLowerCase();
+
+
+        const matchesSearch =
+            !search ||
+            text.includes(search);
+
+
+        const matchesFilter =
+            filter === "all" ||
+            text.includes(
+                filter.toLowerCase()
+            );
+
+
+        row.style.display =
+            matchesSearch &&
+            matchesFilter
+                ? ""
+                : "none";
+
+    });
 
 }
 
@@ -990,33 +1327,12 @@ function updateMaintenanceCounts() {
 
 function searchMaintenance() {
 
-    if (!maintenanceAccessAllowed()) {
+    if (!maintenanceAccessAllowed(false)) {
         return;
     }
 
 
-    const search =
-        document.getElementById(
-            "maintenanceSearch"
-        ).value.toLowerCase();
-
-
-    const rows =
-        document.querySelectorAll(
-            "#maintenanceTable tr"
-        );
-
-
-    rows.forEach(function(row) {
-
-        row.style.display =
-            row.textContent
-                .toLowerCase()
-                .includes(search)
-                ? ""
-                : "none";
-
-    });
+    applyMaintenanceFilters();
 
 }
 
@@ -1027,46 +1343,18 @@ function searchMaintenance() {
 
 function filterMaintenance() {
 
-    if (!maintenanceAccessAllowed()) {
+    if (!maintenanceAccessAllowed(false)) {
         return;
     }
 
 
-    const filter =
-        document.getElementById(
-            "maintenanceFilter"
-        ).value;
-
-
-    const rows =
-        document.querySelectorAll(
-            "#maintenanceTable tr"
-        );
-
-
-    rows.forEach(function(row) {
-
-        if (filter === "all") {
-
-            row.style.display = "";
-
-            return;
-
-        }
-
-
-        row.style.display =
-            row.textContent.includes(filter)
-                ? ""
-                : "none";
-
-    });
+    applyMaintenanceFilters();
 
 }
 
 
 // ============================================================
-// VIEW
+// VIEW MAINTENANCE
 // ============================================================
 
 function viewMaintenance(id) {
@@ -1078,7 +1366,8 @@ function viewMaintenance(id) {
 
     const item =
         maintenanceTasks.find(
-            task => task.id === id
+            task =>
+                task.id === id
         );
 
 
@@ -1088,20 +1377,35 @@ function viewMaintenance(id) {
 
 
     alert(
-        "Task ID: " + item.id +
-        "\nRoom: " + item.room +
-        "\nMaintenance Type: " + item.type +
-        "\nTechnician: " + item.technician +
-        "\nDate: " + item.date +
-        "\nPriority: " + item.priority +
-        "\nStatus: " + item.status
+
+        "Task ID: " +
+        item.id +
+
+        "\nRoom: " +
+        item.room +
+
+        "\nMaintenance Type: " +
+        item.type +
+
+        "\nTechnician: " +
+        item.technician +
+
+        "\nDate: " +
+        item.date +
+
+        "\nPriority: " +
+        item.priority +
+
+        "\nStatus: " +
+        item.status
+
     );
 
 }
 
 
 // ============================================================
-// DELETE
+// DELETE MAINTENANCE
 // ============================================================
 
 function deleteMaintenance(id) {
@@ -1111,26 +1415,29 @@ function deleteMaintenance(id) {
     }
 
 
-    if (
-        !confirm(
+    const confirmed =
+        confirm(
             "Are you sure you want to delete this maintenance task?"
-        )
-    ) {
+        );
 
+
+    if (!confirmed) {
         return;
-
     }
 
 
     maintenanceTasks =
         maintenanceTasks.filter(
-            task => task.id !== id
+            task =>
+                task.id !== id
         );
 
 
     renderMaintenanceTasks();
 
     updateMaintenanceCounts();
+
+    applyMaintenanceFilters();
 
 }
 
@@ -1149,7 +1456,10 @@ window.addEventListener(
             );
 
 
-        if (event.target === modal) {
+        if (
+            modal &&
+            event.target === modal
+        ) {
 
             closeMaintenanceForm();
 
@@ -1160,38 +1470,110 @@ window.addEventListener(
 
 
 // ============================================================
-// INITIALIZE ROLE CONTROL
+// INITIALIZE MAINTENANCE PAGE
 // ============================================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
+function initializeMaintenancePage() {
 
-        applyRoleControl();
+    protectMaintenancePage();
 
-        protectMaintenancePage();
+    renderMaintenanceTasks();
 
-        renderMaintenanceTasks();
+    updateMaintenanceCounts();
 
-        updateMaintenanceCounts();
+
+    const form =
+        document.getElementById(
+            "maintenanceForm"
+        );
+
+
+    if (form) {
+
+        form.addEventListener(
+            "submit",
+            saveMaintenanceTask
+        );
 
     }
-);
+
+
+    const search =
+        document.getElementById(
+            "maintenanceSearch"
+        );
+
+
+    if (search) {
+
+        search.addEventListener(
+            "input",
+            searchMaintenance
+        );
+
+    }
+
+
+    const filter =
+        document.getElementById(
+            "maintenanceFilter"
+        );
+
+
+    if (filter) {
+
+        filter.addEventListener(
+            "change",
+            filterMaintenance
+        );
+
+    }
+
+}
 
 
 // ============================================================
-// CONTINUOUS ROLE CHECK
+// START PAGE
 // ============================================================
 
-setInterval(
-    applyRoleControl,
-    500
-);
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeMaintenancePage
+    );
+
+} else {
+
+    initializeMaintenancePage();
+
+}
 
 
-// Make available globally
-window.applyRoleControl =
-    applyRoleControl;
+// ============================================================
+// MAKE FUNCTIONS AVAILABLE TO HTML
+// ============================================================
+
+window.openMaintenanceForm =
+    openMaintenanceForm;
+
+window.closeMaintenanceForm =
+    closeMaintenanceForm;
+
+window.searchMaintenance =
+    searchMaintenance;
+
+window.filterMaintenance =
+    filterMaintenance;
+
+window.viewMaintenance =
+    viewMaintenance;
+
+window.deleteMaintenance =
+    deleteMaintenance;
 
 </script>
 
