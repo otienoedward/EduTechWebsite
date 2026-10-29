@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +8,9 @@
     <title>Payment Management - EDU TECH HOTEL</title>
 
     <link rel="stylesheet" href="./style.css">
+
+    <!-- PDF LIBRARY -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
         .sidebar {
@@ -32,6 +36,158 @@
             margin-left: 250px !important;
             position: relative !important;
             z-index: 1 !important;
+        }
+
+        /* RECEIPT MODAL */
+
+        .receipt-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            z-index: 2000000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .receipt-box {
+            background: #ffffff;
+            width: 100%;
+            max-width: 650px;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+            color: #222;
+        }
+
+        .receipt-header {
+            text-align: center;
+            border-bottom: 2px solid #222;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .receipt-header h1 {
+            margin: 0;
+            font-size: 26px;
+        }
+
+        .receipt-header h2 {
+            margin: 5px 0;
+            font-size: 18px;
+        }
+
+        .receipt-header p {
+            margin: 3px 0;
+        }
+
+        .receipt-title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .receipt-details {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .receipt-details td {
+            padding: 9px 5px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .receipt-details td:first-child {
+            font-weight: bold;
+            width: 40%;
+        }
+
+        .receipt-total {
+            margin-top: 20px;
+            padding: 15px;
+            border: 2px solid #222;
+            display: flex;
+            justify-content: space-between;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .receipt-footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .receipt-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .receipt-actions button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .receipt-print-btn {
+            background: #333;
+            color: white;
+        }
+
+        .receipt-pdf-btn {
+            background: #b00020;
+            color: white;
+        }
+
+        .receipt-close-btn {
+            background: #777;
+            color: white;
+        }
+
+        .receipt-btn {
+            background: #1d6f42;
+            color: white;
+        }
+
+        @media print {
+
+            body * {
+                visibility: hidden !important;
+            }
+
+            #receiptModal,
+            #receiptModal * {
+                visibility: visible !important;
+            }
+
+            #receiptModal {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                display: block !important;
+                background: white !important;
+                padding: 0 !important;
+            }
+
+            .receipt-box {
+                box-shadow: none !important;
+                max-width: none !important;
+                width: 100% !important;
+            }
+
+            .receipt-actions {
+                display: none !important;
+            }
         }
     </style>
 </head>
@@ -368,33 +524,166 @@
 </div>
 
 
+<!-- =========================================================
+     RECEIPT MODAL
+========================================================= -->
+
+<div id="receiptModal" class="receipt-modal">
+
+    <div class="receipt-box" id="receiptContent">
+
+        <div class="receipt-header">
+
+            <h1>EDU TECH</h1>
+
+            <h2>HOTEL MANAGEMENT</h2>
+
+            <p>Payment Receipt</p>
+
+        </div>
+
+
+        <div class="receipt-title">
+            OFFICIAL PAYMENT RECEIPT
+        </div>
+
+
+        <table class="receipt-details">
+
+            <tr>
+                <td>Receipt Number</td>
+                <td id="receiptNumber">-</td>
+            </tr>
+
+            <tr>
+                <td>Payment ID</td>
+                <td id="receiptPaymentId">-</td>
+            </tr>
+
+            <tr>
+                <td>Guest Name</td>
+                <td id="receiptGuest">-</td>
+            </tr>
+
+            <tr>
+                <td>Room Number</td>
+                <td id="receiptRoom">-</td>
+            </tr>
+
+            <tr>
+                <td>Description</td>
+                <td id="receiptDescription">-</td>
+            </tr>
+
+            <tr>
+                <td>Payment Method</td>
+                <td id="receiptMethod">-</td>
+            </tr>
+
+            <tr>
+                <td>Payment Date</td>
+                <td id="receiptDate">-</td>
+            </tr>
+
+            <tr>
+                <td>Status</td>
+                <td id="receiptStatus">-</td>
+            </tr>
+
+        </table>
+
+
+        <div class="receipt-total">
+
+            <span>AMOUNT PAID</span>
+
+            <span id="receiptAmount">
+                KSh 0
+            </span>
+
+        </div>
+
+
+        <div class="receipt-footer">
+
+            <p>Thank you for choosing EDU TECH HOTEL.</p>
+
+            <p>This is an electronically generated receipt.</p>
+
+        </div>
+
+
+        <div class="receipt-actions">
+
+            <button
+                class="receipt-print-btn"
+                onclick="printReceipt()">
+
+                Print Receipt
+
+            </button>
+
+
+            <button
+                class="receipt-pdf-btn"
+                onclick="downloadReceiptPDF()">
+
+                Download PDF
+
+            </button>
+
+
+            <button
+                class="receipt-close-btn"
+                onclick="closeReceipt()">
+
+                Close
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 <script src="./script.js"></script>
 
 
 <script>
 
-    const PAYMENT_STORAGE_KEY = "eduTechPayments";
+    const PAYMENT_STORAGE_KEY =
+        "eduTechPayments";
 
     let editingPaymentRow = null;
 
+    let currentReceiptPayment = null;
 
-    /* ================================
+
+    /* =====================================================
        PAYMENT STORAGE
-    ================================= */
+    ===================================================== */
 
     function getStoredPayments() {
 
         const saved =
-            localStorage.getItem(PAYMENT_STORAGE_KEY);
+            localStorage.getItem(
+                PAYMENT_STORAGE_KEY
+            );
 
         if (!saved) {
             return [];
         }
 
         try {
+
             return JSON.parse(saved);
+
         } catch (error) {
+
             return [];
+
         }
 
     }
@@ -410,50 +699,68 @@
     }
 
 
-    /* ================================
+    /* =====================================================
        OPEN PAYMENT FORM
-    ================================= */
+    ===================================================== */
 
     function openPaymentForm() {
 
-        document.getElementById("paymentModal").style.display =
-            "flex";
+        document.getElementById(
+            "paymentModal"
+        ).style.display = "flex";
 
-        document.getElementById("paymentForm").reset();
+
+        document.getElementById(
+            "paymentForm"
+        ).reset();
+
 
         editingPaymentRow = null;
 
-        document.getElementById("paymentModalTitle").textContent =
+
+        document.getElementById(
+            "paymentModalTitle"
+        ).textContent =
             "New Payment";
 
-        const today =
-            new Date().toISOString().split("T")[0];
 
-        document.getElementById("paymentDate").value =
-            today;
+        const today =
+            new Date()
+                .toISOString()
+                .split("T")[0];
+
+
+        document.getElementById(
+            "paymentDate"
+        ).value = today;
 
     }
 
 
-    /* ================================
+    /* =====================================================
        CLOSE PAYMENT FORM
-    ================================= */
+    ===================================================== */
 
     function closePaymentForm() {
 
-        document.getElementById("paymentModal").style.display =
-            "none";
+        document.getElementById(
+            "paymentModal"
+        ).style.display = "none";
 
-        document.getElementById("paymentForm").reset();
+
+        document.getElementById(
+            "paymentForm"
+        ).reset();
+
 
         editingPaymentRow = null;
 
     }
 
 
-    /* ================================
+    /* =====================================================
        STATUS CLASS
-    ================================= */
+    ===================================================== */
 
     function getPaymentStatusClass(status) {
 
@@ -470,17 +777,21 @@
     }
 
 
-    /* ================================
+    /* =====================================================
        DISPLAY PAYMENTS
-    ================================= */
+    ===================================================== */
 
     function displayPayments() {
 
         const payments =
             getStoredPayments();
 
+
         const tableBody =
-            document.getElementById("paymentTable");
+            document.getElementById(
+                "paymentTable"
+            );
+
 
         tableBody.innerHTML = "";
 
@@ -490,41 +801,46 @@
             const row =
                 document.createElement("tr");
 
+
             row.dataset.id =
                 payment.id;
 
+
             row.dataset.amount =
                 payment.amount;
+
 
             row.dataset.status =
                 payment.status;
 
 
             const statusClass =
-                getPaymentStatusClass(payment.status);
+                getPaymentStatusClass(
+                    payment.status
+                );
 
 
             row.innerHTML = `
 
-                <td>${payment.id}</td>
+                <td>${escapePaymentHTML(payment.id)}</td>
 
-                <td>${payment.guest}</td>
+                <td>${escapePaymentHTML(payment.guest)}</td>
 
-                <td>${payment.room}</td>
+                <td>${escapePaymentHTML(payment.room)}</td>
 
-                <td>${payment.description}</td>
+                <td>${escapePaymentHTML(payment.description)}</td>
 
                 <td>
                     KSh ${Number(payment.amount).toLocaleString()}
                 </td>
 
-                <td>${payment.method}</td>
+                <td>${escapePaymentHTML(payment.method)}</td>
 
-                <td>${payment.date}</td>
+                <td>${escapePaymentHTML(payment.date)}</td>
 
                 <td>
                     <span class="status ${statusClass}">
-                        ${payment.status}
+                        ${escapePaymentHTML(payment.status)}
                     </span>
                 </td>
 
@@ -540,6 +856,12 @@
                         class="action-btn edit-btn"
                         onclick="editPaymentRecord(this)">
                         Edit
+                    </button>
+
+                    <button
+                        class="action-btn receipt-btn"
+                        onclick="openPaymentReceipt(this)">
+                        Receipt
                     </button>
 
                     <button
@@ -562,26 +884,58 @@
 
         applyPaymentFilters();
 
+
+        if (
+            typeof saveCurrentModuleTablesForReports ===
+            "function"
+        ) {
+
+            saveCurrentModuleTablesForReports();
+
+        }
+
     }
 
 
-    /* ================================
+    /* =====================================================
+       SAFE HTML
+    ===================================================== */
+
+    function escapePaymentHTML(value) {
+
+        return String(
+            value ?? ""
+        )
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+    }
+
+
+    /* =====================================================
        PAYMENT SUMMARY
-    ================================= */
+    ===================================================== */
 
     function updatePaymentSummary() {
 
         const payments =
             getStoredPayments();
 
+
         let totalPayments =
             payments.length;
+
 
         let completedPayments =
             0;
 
+
         let pendingPayments =
             0;
+
 
         let revenue =
             0;
@@ -589,17 +943,26 @@
 
         payments.forEach(function(payment) {
 
-            if (payment.status === "Completed") {
+            if (
+                payment.status ===
+                "Completed"
+            ) {
 
                 completedPayments++;
 
+
                 revenue +=
-                    Number(payment.amount) || 0;
+                    Number(
+                        payment.amount
+                    ) || 0;
 
             }
 
 
-            if (payment.status === "Pending") {
+            if (
+                payment.status ===
+                "Pending"
+            ) {
 
                 pendingPayments++;
 
@@ -608,16 +971,27 @@
         });
 
 
-        document.getElementById("totalPayments").textContent =
+        document.getElementById(
+            "totalPayments"
+        ).textContent =
             totalPayments;
 
-        document.getElementById("completedPayments").textContent =
+
+        document.getElementById(
+            "completedPayments"
+        ).textContent =
             completedPayments;
 
-        document.getElementById("pendingPayments").textContent =
+
+        document.getElementById(
+            "pendingPayments"
+        ).textContent =
             pendingPayments;
 
-        document.getElementById("paymentRevenue").textContent =
+
+        document.getElementById(
+            "paymentRevenue"
+        ).textContent =
             "KSh " +
             revenue.toLocaleString(
                 "en-KE",
@@ -630,26 +1004,88 @@
     }
 
 
-    /* ================================
+    /* =====================================================
        GENERATE PAYMENT ID
-    ================================= */
+    ===================================================== */
 
     function generatePaymentID() {
 
         const payments =
             getStoredPayments();
 
-        return "PAY-" +
-            String(payments.length + 1).padStart(3, "0");
+
+        let highestNumber = 0;
+
+
+        payments.forEach(function(payment) {
+
+            const match =
+                String(payment.id)
+                    .match(
+                        /PAY-(\d+)/
+                    );
+
+
+            if (match) {
+
+                const number =
+                    parseInt(
+                        match[1],
+                        10
+                    );
+
+
+                if (
+                    number >
+                    highestNumber
+                ) {
+
+                    highestNumber =
+                        number;
+
+                }
+
+            }
+
+        });
+
+
+        return (
+            "PAY-" +
+            String(
+                highestNumber + 1
+            ).padStart(3, "0")
+        );
 
     }
 
 
-    /* ================================
-       SAVE PAYMENT
-    ================================= */
+    /* =====================================================
+       GENERATE RECEIPT NUMBER
+    ===================================================== */
 
-    document.getElementById("paymentForm").addEventListener(
+    function generateReceiptNumber(paymentId) {
+
+        return (
+            "REC-" +
+            String(paymentId)
+                .replace(
+                    "PAY-",
+                    ""
+                )
+                .padStart(3, "0")
+        );
+
+    }
+
+
+    /* =====================================================
+       SAVE PAYMENT
+    ===================================================== */
+
+    document.getElementById(
+        "paymentForm"
+    ).addEventListener(
         "submit",
         function(event) {
 
@@ -657,27 +1093,47 @@
 
 
             const guest =
-                document.getElementById("paymentGuest").value.trim();
+                document.getElementById(
+                    "paymentGuest"
+                ).value.trim();
+
 
             const room =
-                document.getElementById("paymentRoom").value.trim();
+                document.getElementById(
+                    "paymentRoom"
+                ).value.trim();
+
 
             const description =
-                document.getElementById("paymentDescription").value.trim();
+                document.getElementById(
+                    "paymentDescription"
+                ).value.trim();
+
 
             const amount =
                 Number(
-                    document.getElementById("paymentAmount").value
+                    document.getElementById(
+                        "paymentAmount"
+                    ).value
                 );
 
+
             const method =
-                document.getElementById("paymentMethod").value;
+                document.getElementById(
+                    "paymentMethod"
+                ).value;
+
 
             const date =
-                document.getElementById("paymentDate").value;
+                document.getElementById(
+                    "paymentDate"
+                ).value;
+
 
             const status =
-                document.getElementById("paymentStatus").value;
+                document.getElementById(
+                    "paymentStatus"
+                ).value;
 
 
             const payments =
@@ -693,36 +1149,61 @@
 
 
                 const index =
-                    payments.findIndex(function(payment) {
+                    payments.findIndex(
+                        function(payment) {
 
-                        return payment.id === paymentID;
+                            return (
+                                payment.id ===
+                                paymentID
+                            );
 
-                    });
+                        }
+                    );
 
 
                 if (index !== -1) {
 
                     payments[index] = {
 
-                        id: paymentID,
-                        guest: guest,
-                        room: room,
-                        description: description,
-                        amount: amount,
-                        method: method,
-                        date: date,
-                        status: status
+                        id:
+                            paymentID,
+
+                        guest:
+                            guest,
+
+                        room:
+                            room,
+
+                        description:
+                            description,
+
+                        amount:
+                            amount,
+
+                        method:
+                            method,
+
+                        date:
+                            date,
+
+                        status:
+                            status
 
                     };
 
                 }
 
 
-                savePayments(payments);
+                savePayments(
+                    payments
+                );
+
 
                 displayPayments();
 
+
                 closePaymentForm();
+
 
                 return;
 
@@ -733,23 +1214,45 @@
 
             const payment = {
 
-                id: generatePaymentID(),
-                guest: guest,
-                room: room,
-                description: description,
-                amount: amount,
-                method: method,
-                date: date,
-                status: status
+                id:
+                    generatePaymentID(),
+
+                guest:
+                    guest,
+
+                room:
+                    room,
+
+                description:
+                    description,
+
+                amount:
+                    amount,
+
+                method:
+                    method,
+
+                date:
+                    date,
+
+                status:
+                    status
 
             };
 
 
-            payments.push(payment);
+            payments.push(
+                payment
+            );
 
-            savePayments(payments);
+
+            savePayments(
+                payments
+            );
+
 
             displayPayments();
+
 
             closePaymentForm();
 
@@ -757,74 +1260,105 @@
     );
 
 
-    /* ================================
+    /* =====================================================
        VIEW PAYMENT
-    ================================= */
+    ===================================================== */
 
     function viewPaymentRecord(button) {
 
         const row =
             button.closest("tr");
 
-        const paymentID =
-            row.cells[0].textContent;
 
-        const guest =
-            row.cells[1].textContent;
+        const payment =
+            findPaymentFromRow(row);
 
-        const room =
-            row.cells[2].textContent;
 
-        const description =
-            row.cells[3].textContent;
-
-        const amount =
-            row.cells[4].textContent;
-
-        const method =
-            row.cells[5].textContent;
-
-        const date =
-            row.cells[6].textContent;
-
-        const status =
-            row.dataset.status;
+        if (!payment) {
+            return;
+        }
 
 
         alert(
+
             "Payment Details\n\n" +
 
             "Payment ID: " +
-            paymentID + "\n" +
+            payment.id +
+            "\n" +
 
             "Guest: " +
-            guest + "\n" +
+            payment.guest +
+            "\n" +
 
             "Room: " +
-            room + "\n" +
+            payment.room +
+            "\n" +
 
             "Description: " +
-            description + "\n" +
+            payment.description +
+            "\n" +
 
-            "Amount: " +
-            amount + "\n" +
+            "Amount: KSh " +
+            Number(
+                payment.amount
+            ).toLocaleString() +
+            "\n" +
 
             "Payment Method: " +
-            method + "\n" +
+            payment.method +
+            "\n" +
 
             "Date: " +
-            date + "\n" +
+            payment.date +
+            "\n" +
 
             "Status: " +
-            status
+            payment.status
+
         );
 
     }
 
 
-    /* ================================
+    /* =====================================================
+       FIND PAYMENT
+    ===================================================== */
+
+    function findPaymentFromRow(row) {
+
+        if (!row) {
+            return null;
+        }
+
+
+        const paymentID =
+            row.dataset.id;
+
+
+        const payments =
+            getStoredPayments();
+
+
+        return (
+            payments.find(
+                function(payment) {
+
+                    return (
+                        payment.id ===
+                        paymentID
+                    );
+
+                }
+            ) || null
+        );
+
+    }
+
+
+    /* =====================================================
        EDIT PAYMENT
-    ================================= */
+    ===================================================== */
 
     function editPaymentRecord(button) {
 
@@ -832,46 +1366,82 @@
             button.closest("tr");
 
 
-        document.getElementById("paymentGuest").value =
-            editingPaymentRow.cells[1].textContent;
-
-        document.getElementById("paymentRoom").value =
-            editingPaymentRow.cells[2].textContent;
-
-        document.getElementById("paymentDescription").value =
-            editingPaymentRow.cells[3].textContent;
-
-        document.getElementById("paymentAmount").value =
-            editingPaymentRow.dataset.amount;
-
-        document.getElementById("paymentMethod").value =
-            editingPaymentRow.cells[5].textContent;
-
-        document.getElementById("paymentDate").value =
-            editingPaymentRow.cells[6].textContent;
-
-        document.getElementById("paymentStatus").value =
-            editingPaymentRow.dataset.status;
+        const payment =
+            findPaymentFromRow(
+                editingPaymentRow
+            );
 
 
-        document.getElementById("paymentModalTitle").textContent =
+        if (!payment) {
+            return;
+        }
+
+
+        document.getElementById(
+            "paymentGuest"
+        ).value =
+            payment.guest;
+
+
+        document.getElementById(
+            "paymentRoom"
+        ).value =
+            payment.room;
+
+
+        document.getElementById(
+            "paymentDescription"
+        ).value =
+            payment.description;
+
+
+        document.getElementById(
+            "paymentAmount"
+        ).value =
+            payment.amount;
+
+
+        document.getElementById(
+            "paymentMethod"
+        ).value =
+            payment.method;
+
+
+        document.getElementById(
+            "paymentDate"
+        ).value =
+            payment.date;
+
+
+        document.getElementById(
+            "paymentStatus"
+        ).value =
+            payment.status;
+
+
+        document.getElementById(
+            "paymentModalTitle"
+        ).textContent =
             "Edit Payment";
 
 
-        document.getElementById("paymentModal").style.display =
+        document.getElementById(
+            "paymentModal"
+        ).style.display =
             "flex";
 
     }
 
 
-    /* ================================
+    /* =====================================================
        DELETE PAYMENT
-    ================================= */
+    ===================================================== */
 
     function deletePaymentRecord(button) {
 
         const row =
             button.closest("tr");
+
 
         const paymentID =
             row.dataset.id;
@@ -895,23 +1465,31 @@
 
 
         payments =
-            payments.filter(function(payment) {
+            payments.filter(
+                function(payment) {
 
-                return payment.id !== paymentID;
+                    return (
+                        payment.id !==
+                        paymentID
+                    );
 
-            });
+                }
+            );
 
 
-        savePayments(payments);
+        savePayments(
+            payments
+        );
+
 
         displayPayments();
 
     }
 
 
-    /* ================================
+    /* =====================================================
        SEARCH
-    ================================= */
+    ===================================================== */
 
     function searchPayments() {
 
@@ -920,9 +1498,9 @@
     }
 
 
-    /* ================================
+    /* =====================================================
        FILTER
-    ================================= */
+    ===================================================== */
 
     function filterPayments() {
 
@@ -934,67 +1512,526 @@
     function applyPaymentFilters() {
 
         const search =
-            document.getElementById("paymentSearch")
+            document.getElementById(
+                "paymentSearch"
+            )
             .value
             .toLowerCase()
             .trim();
 
 
         const filter =
-            document.getElementById("paymentFilter").value;
+            document.getElementById(
+                "paymentFilter"
+            ).value;
 
 
         const rows =
-            document.querySelectorAll("#paymentTable tr");
+            document.querySelectorAll(
+                "#paymentTable tr"
+            );
 
 
-        rows.forEach(function(row) {
+        rows.forEach(
+            function(row) {
 
-            const rowText =
-                row.textContent.toLowerCase();
-
-            const status =
-                row.dataset.status || "";
-
-
-            const matchesSearch =
-                rowText.includes(search);
+                const rowText =
+                    row.textContent
+                        .toLowerCase();
 
 
-            const matchesFilter =
-                filter === "all" ||
-                status === filter;
+                const status =
+                    row.dataset.status ||
+                    "";
 
 
-            if (matchesSearch && matchesFilter) {
+                const matchesSearch =
+                    rowText.includes(
+                        search
+                    );
 
-                row.style.display = "";
 
-            } else {
+                const matchesFilter =
+                    filter === "all" ||
+                    status === filter;
 
-                row.style.display = "none";
+
+                if (
+                    matchesSearch &&
+                    matchesFilter
+                ) {
+
+                    row.style.display =
+                        "";
+
+                } else {
+
+                    row.style.display =
+                        "none";
+
+                }
 
             }
-
-        });
+        );
 
     }
 
 
-    /* ================================
-       CLOSE MODAL WHEN CLICKING OUTSIDE
-    ================================= */
+    /* =====================================================
+       PAYMENT RECEIPT
+    ===================================================== */
+
+    function openPaymentReceipt(button) {
+
+        const row =
+            button.closest("tr");
+
+
+        const payment =
+            findPaymentFromRow(row);
+
+
+        if (!payment) {
+
+            alert(
+                "Payment information could not be found."
+            );
+
+            return;
+
+        }
+
+
+        currentReceiptPayment =
+            payment;
+
+
+        document.getElementById(
+            "receiptNumber"
+        ).textContent =
+            generateReceiptNumber(
+                payment.id
+            );
+
+
+        document.getElementById(
+            "receiptPaymentId"
+        ).textContent =
+            payment.id;
+
+
+        document.getElementById(
+            "receiptGuest"
+        ).textContent =
+            payment.guest;
+
+
+        document.getElementById(
+            "receiptRoom"
+        ).textContent =
+            payment.room;
+
+
+        document.getElementById(
+            "receiptDescription"
+        ).textContent =
+            payment.description;
+
+
+        document.getElementById(
+            "receiptMethod"
+        ).textContent =
+            payment.method;
+
+
+        document.getElementById(
+            "receiptDate"
+        ).textContent =
+            payment.date;
+
+
+        document.getElementById(
+            "receiptStatus"
+        ).textContent =
+            payment.status;
+
+
+        document.getElementById(
+            "receiptAmount"
+        ).textContent =
+            "KSh " +
+            Number(
+                payment.amount
+            ).toLocaleString(
+                "en-KE",
+                {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }
+            );
+
+
+        document.getElementById(
+            "receiptModal"
+        ).style.display =
+            "flex";
+
+    }
+
+
+    /* =====================================================
+       CLOSE RECEIPT
+    ===================================================== */
+
+    function closeReceipt() {
+
+        document.getElementById(
+            "receiptModal"
+        ).style.display =
+            "none";
+
+
+        currentReceiptPayment =
+            null;
+
+    }
+
+
+    /* =====================================================
+       PRINT RECEIPT
+    ===================================================== */
+
+    function printReceipt() {
+
+        if (!currentReceiptPayment) {
+
+            alert(
+                "No receipt is currently selected."
+            );
+
+            return;
+
+        }
+
+
+        window.print();
+
+    }
+
+
+    /* =====================================================
+       DOWNLOAD RECEIPT PDF
+    ===================================================== */
+
+    function downloadReceiptPDF() {
+
+        if (!currentReceiptPayment) {
+
+            alert(
+                "No receipt is currently selected."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !window.jspdf ||
+            !window.jspdf.jsPDF
+        ) {
+
+            alert(
+                "The PDF library has not loaded yet. Please try again."
+            );
+
+            return;
+
+        }
+
+
+        const payment =
+            currentReceiptPayment;
+
+
+        const {
+            jsPDF
+        } =
+            window.jspdf;
+
+
+        const doc =
+            new jsPDF();
+
+
+        const receiptNumber =
+            generateReceiptNumber(
+                payment.id
+            );
+
+
+        const amount =
+            Number(
+                payment.amount
+            ) || 0;
+
+
+        /* HEADER */
+
+        doc.setFontSize(20);
+
+        doc.setFont(
+            "helvetica",
+            "bold"
+        );
+
+
+        doc.text(
+            "EDU TECH",
+            105,
+            20,
+            {
+                align: "center"
+            }
+        );
+
+
+        doc.setFontSize(14);
+
+        doc.text(
+            "HOTEL MANAGEMENT",
+            105,
+            29,
+            {
+                align: "center"
+            }
+        );
+
+
+        doc.setFontSize(12);
+
+        doc.setFont(
+            "helvetica",
+            "normal"
+        );
+
+
+        doc.text(
+            "PAYMENT RECEIPT",
+            105,
+            40,
+            {
+                align: "center"
+            }
+        );
+
+
+        doc.line(
+            20,
+            47,
+            190,
+            47
+        );
+
+
+        /* DETAILS */
+
+        let y =
+            62;
+
+
+        function addLine(
+            label,
+            value
+        ) {
+
+            doc.setFont(
+                "helvetica",
+                "bold"
+            );
+
+
+            doc.text(
+                label,
+                25,
+                y
+            );
+
+
+            doc.setFont(
+                "helvetica",
+                "normal"
+            );
+
+
+            doc.text(
+                String(value),
+                80,
+                y
+            );
+
+
+            y += 10;
+
+        }
+
+
+        addLine(
+            "Receipt Number:",
+            receiptNumber
+        );
+
+
+        addLine(
+            "Payment ID:",
+            payment.id
+        );
+
+
+        addLine(
+            "Guest Name:",
+            payment.guest
+        );
+
+
+        addLine(
+            "Room Number:",
+            payment.room
+        );
+
+
+        addLine(
+            "Description:",
+            payment.description
+        );
+
+
+        addLine(
+            "Payment Method:",
+            payment.method
+        );
+
+
+        addLine(
+            "Payment Date:",
+            payment.date
+        );
+
+
+        addLine(
+            "Status:",
+            payment.status
+        );
+
+
+        y += 5;
+
+
+        doc.line(
+            20,
+            y,
+            190,
+            y
+        );
+
+
+        y += 15;
+
+
+        doc.setFontSize(15);
+
+        doc.setFont(
+            "helvetica",
+            "bold"
+        );
+
+
+        doc.text(
+            "AMOUNT PAID:",
+            25,
+            y
+        );
+
+
+        doc.text(
+            "KSh " +
+            amount.toLocaleString(
+                "en-KE",
+                {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }
+            ),
+            185,
+            y,
+            {
+                align: "right"
+            }
+        );
+
+
+        y += 25;
+
+
+        doc.setFontSize(10);
+
+        doc.setFont(
+            "helvetica",
+            "normal"
+        );
+
+
+        doc.text(
+            "Thank you for choosing EDU TECH HOTEL.",
+            105,
+            y,
+            {
+                align: "center"
+            }
+        );
+
+
+        y += 8;
+
+
+        doc.text(
+            "This is an electronically generated receipt.",
+            105,
+            y,
+            {
+                align: "center"
+            }
+        );
+
+
+        doc.save(
+            receiptNumber +
+            ".pdf"
+        );
+
+    }
+
+
+    /* =====================================================
+       CLOSE RECEIPT WHEN CLICKING OUTSIDE
+    ===================================================== */
 
     window.addEventListener(
         "click",
         function(event) {
 
-            const modal =
-                document.getElementById("paymentModal");
+            const receiptModal =
+                document.getElementById(
+                    "receiptModal"
+                );
 
-            if (event.target === modal) {
 
-                closePaymentForm();
+            if (
+                event.target ===
+                receiptModal
+            ) {
+
+                closeReceipt();
 
             }
 
@@ -1002,9 +2039,9 @@
     );
 
 
-    /* ================================
+    /* =====================================================
        START PAYMENT PAGE
-    ================================= */
+    ===================================================== */
 
     document.addEventListener(
         "DOMContentLoaded",
@@ -1019,3 +2056,4 @@
 
 </body>
 </html>
+```
