@@ -30,6 +30,29 @@
         }
 
         /* =====================================================
+           LOGOUT BUTTON
+           ===================================================== */
+
+        .sidebar .logout-btn {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            margin-top: 16px;
+            padding: 12px 14px;
+            border: 0;
+            background: transparent;
+            color: inherit;
+            font: inherit;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .sidebar .logout-btn:hover {
+            opacity: 0.85;
+        }
+
+        /* =====================================================
            RESTRICTION SCREEN
            ===================================================== */
 
@@ -375,6 +398,21 @@
 
         </nav>
 
+        <!-- =================================================
+             LOGOUT
+             ================================================= -->
+
+        <button
+            type="button"
+            class="logout-btn"
+            data-action="logout"
+            id="logoutButton"
+            onclick="logoutUser(event)">
+
+            Logout
+
+        </button>
+
     </aside>
 
 
@@ -495,7 +533,7 @@
                         type="text"
                         id="paymentSearch"
                         placeholder="Search payments..."
-                        onkeyup="searchPayments()">
+                        onkeyup="searchPayments">
 
 
                     <select
@@ -973,6 +1011,61 @@ let paymentModuleRestricted = false;
 let verifiedHotelId = null;
 
 let verifiedRole = null;
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+async function logoutUser(event) {
+
+    if (event) {
+        event.preventDefault();
+    }
+
+    try {
+
+        if (
+            typeof supabaseClient !== "undefined" &&
+            supabaseClient
+        ) {
+
+            await supabaseClient.auth.signOut();
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Logout error:",
+            error
+        );
+
+    }
+
+    /*
+       Remove login/session information only.
+       Do NOT remove payment records.
+    */
+
+    sessionStorage.removeItem("userRole");
+    sessionStorage.removeItem("userName");
+    sessionStorage.removeItem("hotelId");
+
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("hotelId");
+
+    /*
+       Go back to the login page.
+    */
+
+    window.location.href =
+        "./login.html";
+
+}
+
+window.logoutUser = logoutUser;
 
 
 /* =========================================================
@@ -1495,8 +1588,6 @@ async function checkPaymentsModuleRestriction() {
     }
 
 
-    /* System Owner does not need a hotel check */
-
     if (
         role === "system_owner"
     ) {
@@ -1575,8 +1666,6 @@ async function checkPaymentsModuleRestriction() {
         }
 
 
-        /* Hotel status */
-
         const hotelStatus =
             String(
                 hotel.status || ""
@@ -1597,8 +1686,6 @@ async function checkPaymentsModuleRestriction() {
 
         }
 
-
-        /* Subscription status */
 
         const subscriptionStatus =
             String(
@@ -1621,8 +1708,6 @@ async function checkPaymentsModuleRestriction() {
 
         }
 
-
-        /* Subscription end date */
 
         if (hotel.subscription_end) {
 
@@ -1662,8 +1747,6 @@ async function checkPaymentsModuleRestriction() {
 
         }
 
-
-        /* Module restriction */
 
         const restrictions =
             normalizeModuleRestrictions(
@@ -3652,6 +3735,33 @@ document.addEventListener(
 
 
         updateUserDisplay();
+
+
+        /*
+         Make sure Logout is always
+         available and visible.
+        */
+
+        const logoutButton =
+            document.getElementById(
+                "logoutButton"
+            );
+
+
+        if (logoutButton) {
+
+            logoutButton.style.display =
+                "flex";
+
+            logoutButton.classList.remove(
+                "role-hidden"
+            );
+
+            logoutButton.removeAttribute(
+                "aria-hidden"
+            );
+
+        }
 
 
         /*
