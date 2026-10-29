@@ -1,10 +1,54 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Settings - EDU TECH Hotel Management System</title>
+
     <link rel="stylesheet" href="./style.css">
+
+    <style>
+        .settings-message {
+            display: none;
+            margin-top: 15px;
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .settings-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .settings-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .logo-preview {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .logo-preview img {
+            max-width: 160px;
+            max-height: 100px;
+            object-fit: contain;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 5px;
+            background: #fff;
+        }
+
+        .logo-note {
+            font-size: 13px;
+            color: #666;
+            margin-top: 6px;
+        }
+    </style>
 </head>
 
 <body>
@@ -82,7 +126,7 @@
                         <input
                             type="text"
                             id="hotelName"
-                            value="EDU TECH Hotel"
+                            placeholder="Enter hotel name"
                             required
                         >
 
@@ -133,7 +177,43 @@
 
                     </div>
 
+
+                    <div class="form-group">
+
+                        <label for="hotelLogo">
+                            Hotel Logo
+                        </label>
+
+                        <input
+                            type="file"
+                            id="hotelLogo"
+                            accept="image/png,image/jpeg,image/webp"
+                        >
+
+                        <p class="logo-note">
+                            Recommended: PNG, JPG or WebP image.
+                        </p>
+
+                        <div
+                            id="logoPreview"
+                            class="logo-preview"
+                        >
+                            <img
+                                id="hotelLogoPreview"
+                                src=""
+                                alt="Hotel logo preview"
+                            >
+                        </div>
+
+                    </div>
+
                 </div>
+
+
+                <div
+                    id="hotelMessage"
+                    class="settings-message"
+                ></div>
 
 
                 <div class="form-actions">
@@ -175,7 +255,7 @@
 
                     <select id="currency">
 
-                        <option value="KES" selected>
+                        <option value="KES">
                             KSh - Kenyan Shilling
                         </option>
 
@@ -200,7 +280,7 @@
 
                     <select id="dateFormat">
 
-                        <option value="DD/MM/YYYY" selected>
+                        <option value="DD/MM/YYYY">
                             DD/MM/YYYY
                         </option>
 
@@ -225,7 +305,7 @@
 
                     <select id="hotelTimezone">
 
-                        <option value="Africa/Nairobi" selected>
+                        <option value="Africa/Nairobi">
                             Africa/Nairobi (EAT)
                         </option>
 
@@ -250,7 +330,7 @@
 
                     <select id="language">
 
-                        <option value="English" selected>
+                        <option value="English">
                             English
                         </option>
 
@@ -265,6 +345,12 @@
             </div>
 
 
+            <div
+                id="preferencesMessage"
+                class="settings-message"
+            ></div>
+
+
             <div class="form-actions">
 
                 <button
@@ -273,274 +359,4 @@
                     onclick="savePreferences()"
                 >
                     Save Preferences
-                </button>
-
-            </div>
-
-        </section>
-
-
-        <!-- NOTIFICATION SETTINGS -->
-        <section class="content-card">
-
-            <div class="section-header">
-
-                <div>
-                    <h2>Notifications</h2>
-                    <p>Choose which system notifications you want</p>
-                </div>
-
-            </div>
-
-
-            <div class="settings-options">
-
-                <label>
-                    <input
-                        type="checkbox"
-                        id="reservationNotifications"
-                        checked
-                    >
-                    Reservation notifications
-                </label>
-
-
-                <label>
-                    <input
-                        type="checkbox"
-                        id="paymentNotifications"
-                        checked
-                    >
-                    Payment notifications
-                </label>
-
-
-                <label>
-                    <input
-                        type="checkbox"
-                        id="maintenanceNotifications"
-                        checked
-                    >
-                    Maintenance notifications
-                </label>
-
-
-                <label>
-                    <input
-                        type="checkbox"
-                        id="housekeepingNotifications"
-                        checked
-                    >
-                    Housekeeping notifications
-                </label>
-
-            </div>
-
-
-            <div class="form-actions">
-
-                <button
-                    type="button"
-                    class="primary-btn"
-                    onclick="saveNotifications()"
-                >
-                    Save Notifications
-                </button>
-
-            </div>
-
-        </section>
-
-
-        <!-- SECURITY -->
-        <section class="content-card">
-
-            <div class="section-header">
-
-                <div>
-                    <h2>Security</h2>
-                    <p>Basic system security options</p>
-                </div>
-
-            </div>
-
-
-            <div class="form-grid">
-
-                <div class="form-group">
-
-                    <label for="sessionTimeout">
-                        Session Timeout
-                    </label>
-
-                    <select id="sessionTimeout">
-
-                        <option value="15">
-                            15 Minutes
-                        </option>
-
-                        <option value="30" selected>
-                            30 Minutes
-                        </option>
-
-                        <option value="60">
-                            1 Hour
-                        </option>
-
-                        <option value="120">
-                            2 Hours
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="loginProtection">
-                        Login Protection
-                    </label>
-
-                    <select id="loginProtection">
-
-                        <option value="enabled" selected>
-                            Enabled
-                        </option>
-
-                        <option value="disabled">
-                            Disabled
-                        </option>
-
-                    </select>
-
-                </div>
-
-            </div>
-
-
-            <div class="form-actions">
-
-                <button
-                    type="button"
-                    class="primary-btn"
-                    onclick="saveSecurity()"
-                >
-                    Save Security Settings
-                </button>
-
-            </div>
-
-        </section>
-
-
-        <!-- SYSTEM INFORMATION -->
-        <section class="content-card">
-
-            <div class="section-header">
-
-                <div>
-                    <h2>System Information</h2>
-                    <p>Information about this hotel management system</p>
-                </div>
-
-            </div>
-
-
-            <div class="summary-grid">
-
-                <div class="summary-card">
-
-                    <h3>System</h3>
-
-                    <strong>
-                        EDU TECH HMS
-                    </strong>
-
-                    <p>
-                        Hotel Management System
-                    </p>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <h3>Version</h3>
-
-                    <strong>
-                        1.0
-                    </strong>
-
-                    <p>
-                        Current version
-                    </p>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <h3>Platform</h3>
-
-                    <strong>
-                        Web
-                    </strong>
-
-                    <p>
-                        Browser-based system
-                    </p>
-
-                </div>
-
-            </div>
-
-        </section>
-
-    </main>
-
-</div>
-
-
-<script>
-
-
-// HOTEL INFORMATION
-document
-    .getElementById("hotelSettingsForm")
-    .addEventListener("submit", function(event) {
-
-        event.preventDefault();
-
-        alert("Hotel information saved successfully.");
-
-    });
-
-
-// SAVE PREFERENCES
-function savePreferences() {
-
-    alert("System preferences saved successfully.");
-
-}
-
-
-// SAVE NOTIFICATIONS
-function saveNotifications() {
-
-    alert("Notification settings saved successfully.");
-
-}
-
-
-// SAVE SECURITY
-function saveSecurity() {
-
-    alert("Security settings saved successfully.");
-
-}
-
-</script>
-
-</body>
-</html>
+                </
