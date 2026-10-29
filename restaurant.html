@@ -15,7 +15,9 @@
 
 <body>
 
-    <!-- SIDEBAR -->
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
 
     <aside class="sidebar">
 
@@ -26,6 +28,7 @@
             <p>HOTEL SYSTEM</p>
 
         </div>
+
 
         <nav>
 
@@ -64,7 +67,9 @@
     </aside>
 
 
-    <!-- MAIN CONTENT -->
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
 
     <main class="main-content">
 
@@ -80,6 +85,7 @@
 
             </div>
 
+
             <div class="user">
 
                 <div class="user-icon">
@@ -90,7 +96,9 @@
 
                     <strong>Administrator</strong>
 
-                    <small>System Admin</small>
+                    <small>
+                        System Admin
+                    </small>
 
                 </div>
 
@@ -99,9 +107,12 @@
         </header>
 
 
-        <!-- SUMMARY CARDS -->
+        <!-- =================================================
+             SUMMARY CARDS
+        ================================================== -->
 
         <section class="cards">
+
 
             <div class="card">
 
@@ -111,9 +122,13 @@
 
                 <div>
 
-                    <h3>Today's Orders</h3>
+                    <h3>
+                        Today's Orders
+                    </h3>
 
-                    <p id="todayOrders">0</p>
+                    <p id="todayOrders">
+                        0
+                    </p>
 
                 </div>
 
@@ -128,9 +143,13 @@
 
                 <div>
 
-                    <h3>Pending Orders</h3>
+                    <h3>
+                        Pending Orders
+                    </h3>
 
-                    <p id="pendingOrders">0</p>
+                    <p id="pendingOrders">
+                        0
+                    </p>
 
                 </div>
 
@@ -145,9 +164,13 @@
 
                 <div>
 
-                    <h3>Completed Orders</h3>
+                    <h3>
+                        Completed Orders
+                    </h3>
 
-                    <p id="completedOrders">0</p>
+                    <p id="completedOrders">
+                        0
+                    </p>
 
                 </div>
 
@@ -162,26 +185,36 @@
 
                 <div>
 
-                    <h3>Today's Sales</h3>
+                    <h3>
+                        Today's Sales
+                    </h3>
 
-                    <p id="restaurantSales">KSh 0</p>
+                    <p id="restaurantSales">
+                        KSh 0
+                    </p>
 
                 </div>
 
             </div>
 
+
         </section>
 
 
-        <!-- RESTAURANT ORDERS -->
+        <!-- =================================================
+             RESTAURANT ORDERS
+        ================================================== -->
 
         <section class="room-container">
+
 
             <div class="room-header">
 
                 <div>
 
-                    <h2>Restaurant Orders</h2>
+                    <h2>
+                        Restaurant Orders
+                    </h2>
 
                     <p>
                         Record and manage food and drink orders
@@ -189,7 +222,9 @@
 
                 </div>
 
+
                 <button
+                    type="button"
                     class="add-room-btn"
                     onclick="openRestaurantForm()">
 
@@ -204,12 +239,14 @@
 
             <div class="room-tools">
 
+
                 <input
                     type="text"
                     id="restaurantSearch"
                     placeholder="Search guest, room or order..."
-                    onkeyup="searchRestaurantOrders"
+                    onkeyup="searchRestaurantOrders()"
                 >
+
 
                 <select
                     id="restaurantFilter"
@@ -254,28 +291,44 @@
 
                         <tr>
 
-                            <th>Order ID</th>
+                            <th>
+                                Order ID
+                            </th>
 
-                            <th>Guest</th>
+                            <th>
+                                Guest
+                            </th>
 
-                            <th>Room</th>
+                            <th>
+                                Room
+                            </th>
 
-                            <th>Order Items</th>
+                            <th>
+                                Order Items
+                            </th>
 
-                            <th>Total</th>
+                            <th>
+                                Total
+                            </th>
 
-                            <th>Payment</th>
+                            <th>
+                                Payment
+                            </th>
 
-                            <th>Status</th>
+                            <th>
+                                Status
+                            </th>
 
-                            <th>Actions</th>
+                            <th>
+                                Actions
+                            </th>
 
                         </tr>
 
                     </thead>
 
-                    <tbody id="restaurantTable">
 
+                    <tbody id="restaurantTable">
                     </tbody>
 
                 </table>
@@ -287,17 +340,24 @@
     </main>
 
 
-    <!-- RESTAURANT MODAL -->
+    <!-- =====================================================
+         RESTAURANT MODAL
+    ====================================================== -->
 
-    <div id="restaurantModal" class="modal">
+    <div
+        id="restaurantModal"
+        class="modal">
+
 
         <div class="modal-content">
+
 
             <div class="modal-header">
 
                 <h2>
                     New Restaurant Order
                 </h2>
+
 
                 <button
                     type="button"
@@ -310,9 +370,12 @@
             </div>
 
 
+            <!-- FORM -->
+
             <form id="restaurantForm">
 
-                <label>
+
+                <label for="restaurantGuest">
                     Guest Name
                 </label>
 
@@ -324,7 +387,7 @@
                 >
 
 
-                <label>
+                <label for="restaurantRoom">
                     Room Number
                 </label>
 
@@ -336,7 +399,7 @@
                 >
 
 
-                <label>
+                <label for="restaurantItems">
                     Order Items
                 </label>
 
@@ -348,7 +411,7 @@
                 ></textarea>
 
 
-                <label>
+                <label for="restaurantAmount">
                     Total Amount (KSh)
                 </label>
 
@@ -361,7 +424,7 @@
                 >
 
 
-                <label>
+                <label for="restaurantPayment">
                     Payment Method
                 </label>
 
@@ -392,7 +455,7 @@
                 </select>
 
 
-                <label>
+                <label for="restaurantStatus">
                     Order Status
                 </label>
 
@@ -438,18 +501,54 @@
     </div>
 
 
-    <!-- MAIN JAVASCRIPT -->
+    <!-- =====================================================
+         MAIN JAVASCRIPT
+    ====================================================== -->
 
     <script src="./script.js"></script>
 
 
-    <!-- RESTAURANT PAGE JAVASCRIPT -->
+    <!-- =====================================================
+         RESTAURANT PAGE JAVASCRIPT
+    ====================================================== -->
 
     <script>
 
         const restaurantForm =
-            document.getElementById("restaurantForm");
+            document.getElementById(
+                "restaurantForm"
+            );
 
+
+        /* =================================================
+           OPEN FORM
+        ================================================= */
+
+        function openRestaurantForm() {
+
+            document.getElementById(
+                "restaurantModal"
+            ).style.display = "flex";
+
+        }
+
+
+        /* =================================================
+           CLOSE FORM
+        ================================================= */
+
+        function closeRestaurantForm() {
+
+            document.getElementById(
+                "restaurantModal"
+            ).style.display = "none";
+
+        }
+
+
+        /* =================================================
+           SAVE RESTAURANT ORDER
+        ================================================= */
 
         restaurantForm.addEventListener(
             "submit",
@@ -460,21 +559,27 @@
 
                 const guest =
                     document
-                        .getElementById("restaurantGuest")
+                        .getElementById(
+                            "restaurantGuest"
+                        )
                         .value
                         .trim();
 
 
                 const room =
                     document
-                        .getElementById("restaurantRoom")
+                        .getElementById(
+                            "restaurantRoom"
+                        )
                         .value
                         .trim();
 
 
                 const items =
                     document
-                        .getElementById("restaurantItems")
+                        .getElementById(
+                            "restaurantItems"
+                        )
                         .value
                         .trim();
 
@@ -482,20 +587,26 @@
                 const amount =
                     Number(
                         document
-                            .getElementById("restaurantAmount")
+                            .getElementById(
+                                "restaurantAmount"
+                            )
                             .value
                     );
 
 
                 const payment =
                     document
-                        .getElementById("restaurantPayment")
+                        .getElementById(
+                            "restaurantPayment"
+                        )
                         .value;
 
 
                 const status =
                     document
-                        .getElementById("restaurantStatus")
+                        .getElementById(
+                            "restaurantStatus"
+                        )
                         .value;
 
 
@@ -514,22 +625,36 @@
 
 
                 const row =
-                    document.createElement("tr");
+                    document.createElement(
+                        "tr"
+                    );
 
 
                 row.innerHTML = `
 
-                    <td>${orderID}</td>
+                    <td>
+                        ${orderID}
+                    </td>
 
-                    <td>${guest}</td>
+                    <td>
+                        ${guest}
+                    </td>
 
-                    <td>${room}</td>
+                    <td>
+                        ${room}
+                    </td>
 
-                    <td>${items}</td>
+                    <td>
+                        ${items}
+                    </td>
 
-                    <td>KSh ${amount.toLocaleString()}</td>
+                    <td>
+                        KSh ${amount.toLocaleString()}
+                    </td>
 
-                    <td>${payment}</td>
+                    <td>
+                        ${payment}
+                    </td>
 
                     <td>
 
@@ -544,6 +669,7 @@
                     <td>
 
                         <button
+                            type="button"
                             class="edit-btn"
                             onclick="editRestaurantRecord(this)">
 
@@ -551,7 +677,9 @@
 
                         </button>
 
+
                         <button
+                            type="button"
                             class="delete-btn"
                             onclick="deleteRestaurantRecord(this)">
 
@@ -564,7 +692,9 @@
                 `;
 
 
-                table.appendChild(row);
+                table.appendChild(
+                    row
+                );
 
 
                 updateRestaurantSummary();
@@ -579,32 +709,67 @@
         );
 
 
-        function getRestaurantStatusClass(status) {
+        /* =================================================
+           STATUS CLASS
+        ================================================= */
 
-            if (status === "Paid") {
+        function getRestaurantStatusClass(
+            status
+        ) {
+
+            if (
+                status === "Paid"
+            ) {
+
                 return "available-status";
+
             }
 
-            if (status === "Served") {
+
+            if (
+                status === "Served"
+            ) {
+
                 return "available-status";
+
             }
 
-            if (status === "Pending") {
+
+            if (
+                status === "Pending"
+            ) {
+
                 return "cleaning-status";
+
             }
 
-            if (status === "Preparing") {
+
+            if (
+                status === "Preparing"
+            ) {
+
                 return "cleaning-status";
+
             }
 
-            if (status === "Cancelled") {
+
+            if (
+                status === "Cancelled"
+            ) {
+
                 return "maintenance-status";
+
             }
+
 
             return "";
 
         }
 
+
+        /* =================================================
+           UPDATE SUMMARY
+        ================================================= */
 
         function updateRestaurantSummary() {
 
@@ -614,82 +779,126 @@
                 );
 
 
-            let pending = 0;
+            let pending =
+                0;
 
-            let completed = 0;
 
-            let sales = 0;
+            let completed =
+                0;
+
+
+            let sales =
+                0;
 
 
             const todayOrders =
                 rows.length;
 
 
-            rows.forEach(function(row) {
+            rows.forEach(
+                function(row) {
 
-                const cells =
-                    row.querySelectorAll("td");
+                    const cells =
+                        row.querySelectorAll(
+                            "td"
+                        );
 
 
-                if (cells.length < 7) {
-                    return;
+                    if (
+                        cells.length < 7
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const amountText =
+                        cells[4]
+                            .textContent
+                            .replace(
+                                "KSh",
+                                ""
+                            )
+                            .replace(
+                                /,/g,
+                                ""
+                            )
+                            .trim();
+
+
+                    const amount =
+                        Number(
+                            amountText
+                        ) || 0;
+
+
+                    const status =
+                        cells[6]
+                            .textContent
+                            .trim();
+
+
+                    if (
+
+                        status ===
+                        "Paid" ||
+
+                        status ===
+                        "Served"
+
+                    ) {
+
+                        completed++;
+
+                    }
+
+
+                    if (
+
+                        status ===
+                        "Pending" ||
+
+                        status ===
+                        "Preparing"
+
+                    ) {
+
+                        pending++;
+
+                    }
+
+
+                    if (
+                        status ===
+                        "Paid"
+                    ) {
+
+                        sales +=
+                            amount;
+
+                    }
+
                 }
-
-
-                const amountText =
-                    cells[4]
-                        .textContent
-                        .replace("KSh", "")
-                        .replace(/,/g, "")
-                        .trim();
-
-
-                const amount =
-                    Number(amountText) || 0;
-
-
-                const status =
-                    cells[6]
-                        .textContent
-                        .trim();
-
-
-                if (
-                    status === "Paid" ||
-                    status === "Served"
-                ) {
-                    completed++;
-                }
-
-
-                if (
-                    status === "Pending" ||
-                    status === "Preparing"
-                ) {
-                    pending++;
-                }
-
-
-                if (status === "Paid") {
-                    sales += amount;
-                }
-
-            });
+            );
 
 
             document.getElementById(
                 "todayOrders"
-            ).textContent = todayOrders;
+            ).textContent =
+                todayOrders;
 
 
             document.getElementById(
                 "pendingOrders"
-            ).textContent = pending;
+            ).textContent =
+                pending;
 
 
             document.getElementById(
                 "completedOrders"
-            ).textContent = completed;
+            ).textContent =
+                completed;
 
 
             document.getElementById(
@@ -701,7 +910,13 @@
         }
 
 
-        function deleteRestaurantRecord(button) {
+        /* =================================================
+           DELETE ORDER
+        ================================================= */
+
+        function deleteRestaurantRecord(
+            button
+        ) {
 
             if (
                 confirm(
@@ -713,6 +928,7 @@
                     .closest("tr")
                     .remove();
 
+
                 updateRestaurantSummary();
 
             }
@@ -720,14 +936,24 @@
         }
 
 
-        function editRestaurantRecord(button) {
+        /* =================================================
+           EDIT ORDER
+        ================================================= */
+
+        function editRestaurantRecord(
+            button
+        ) {
 
             const row =
-                button.closest("tr");
+                button.closest(
+                    "tr"
+                );
 
 
             const cells =
-                row.querySelectorAll("td");
+                row.querySelectorAll(
+                    "td"
+                );
 
 
             document.getElementById(
@@ -757,14 +983,21 @@
             const amount =
                 cells[4]
                     .textContent
-                    .replace("KSh", "")
-                    .replace(/,/g, "")
+                    .replace(
+                        "KSh",
+                        ""
+                    )
+                    .replace(
+                        /,/g,
+                        ""
+                    )
                     .trim();
 
 
             document.getElementById(
                 "restaurantAmount"
-            ).value = amount;
+            ).value =
+                amount;
 
 
             document.getElementById(
@@ -794,6 +1027,10 @@
         }
 
 
+        /* =================================================
+           FILTERS
+        ================================================= */
+
         function applyRestaurantFilters() {
 
             const searchText =
@@ -802,13 +1039,16 @@
                         "restaurantSearch"
                     )
                     .value
-                    .toLowerCase();
+                    .toLowerCase()
+                    .trim();
 
 
             const selectedStatus =
-                document.getElementById(
-                    "restaurantFilter"
-                ).value;
+                document
+                    .getElementById(
+                        "restaurantFilter"
+                    )
+                    .value;
 
 
             const rows =
@@ -817,37 +1057,46 @@
                 );
 
 
-            rows.forEach(function(row) {
+            rows.forEach(
+                function(row) {
 
-                const text =
-                    row.textContent
-                        .toLowerCase();
-
-
-                const status =
-                    row.querySelector(
-                        "td:nth-child(7)"
-                    )
-                    ?.textContent
-                    .trim();
+                    const text =
+                        row.textContent
+                            .toLowerCase();
 
 
-                const matchesSearch =
-                    text.includes(searchText);
+                    const status =
+                        row.querySelector(
+                            "td:nth-child(7)"
+                        )
+                        ?.textContent
+                        .trim();
 
 
-                const matchesStatus =
-                    selectedStatus === "all" ||
-                    status === selectedStatus;
+                    const matchesSearch =
+                        text.includes(
+                            searchText
+                        );
 
 
-                row.style.display =
-                    matchesSearch &&
-                    matchesStatus
-                        ? ""
-                        : "none";
+                    const matchesStatus =
+                        selectedStatus ===
+                            "all" ||
+                        status ===
+                            selectedStatus;
 
-            });
+
+                    row.style.display =
+
+                        matchesSearch &&
+                        matchesStatus
+
+                            ? ""
+
+                            : "none";
+
+                }
+            );
 
         }
 
@@ -866,7 +1115,477 @@
         }
 
 
+        /* =================================================
+           CLOSE MODAL WHEN CLICKING OUTSIDE
+        ================================================= */
+
+        window.addEventListener(
+            "click",
+            function(event) {
+
+                const modal =
+                    document.getElementById(
+                        "restaurantModal"
+                    );
+
+
+                if (
+                    event.target ===
+                    modal
+                ) {
+
+                    closeRestaurantForm();
+
+                }
+
+            }
+        );
+
+
+        /* =================================================
+           INITIAL SUMMARY
+        ================================================= */
+
         updateRestaurantSummary();
+
+    </script>
+
+
+    <!-- =====================================================
+         ROLE CONTROL
+    ====================================================== -->
+
+    <script>
+
+        (function () {
+
+            "use strict";
+
+
+            /* =================================================
+               ROLE PERMISSIONS
+            ================================================= */
+
+            const ROLE_PERMISSIONS = {
+
+                system_owner: [
+
+                    "dashboard",
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "restaurant",
+                    "inventory",
+                    "payments",
+                    "expenses",
+                    "employees",
+                    "housekeeping",
+                    "maintenance",
+                    "reports",
+                    "settings",
+                    "hotels"
+
+                ],
+
+
+                hotel_owner: [
+
+                    "dashboard",
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "restaurant",
+                    "inventory",
+                    "payments",
+                    "expenses",
+                    "employees",
+                    "housekeeping",
+                    "maintenance",
+                    "reports",
+                    "settings"
+
+                ],
+
+
+                manager: [
+
+                    "dashboard",
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "restaurant",
+                    "inventory",
+                    "payments",
+                    "expenses",
+                    "employees",
+                    "housekeeping",
+                    "maintenance",
+                    "reports",
+                    "settings"
+
+                ],
+
+
+                receptionist: [
+
+                    "dashboard",
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "payments",
+                    "reports"
+
+                ]
+
+            };
+
+
+            /* =================================================
+               GET ROLE
+            ================================================= */
+
+            function getRole() {
+
+                let role =
+                    sessionStorage.getItem(
+                        "userRole"
+                    );
+
+
+                if (!role) {
+
+                    role =
+                        localStorage.getItem(
+                            "userRole"
+                        );
+
+                }
+
+
+                return String(
+                    role || ""
+                )
+                    .toLowerCase()
+                    .trim();
+
+            }
+
+
+            /* =================================================
+               GET MODULE FROM LINK
+            ================================================= */
+
+            function getModuleFromLink(
+                link
+            ) {
+
+                const href =
+                    String(
+                        link.getAttribute(
+                            "href"
+                        ) || ""
+                    )
+                        .toLowerCase()
+                        .split("?")[0]
+                        .split("#")[0]
+                        .trim();
+
+
+                if (
+
+                    href === "./" ||
+
+                    href === "/" ||
+
+                    href ===
+                        "index.html" ||
+
+                    href ===
+                        "./index.html" ||
+
+                    href.endsWith(
+                        "/index.html"
+                    )
+
+                ) {
+
+                    return "dashboard";
+
+                }
+
+
+                const modules = [
+
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "restaurant",
+                    "inventory",
+                    "payments",
+                    "expenses",
+                    "employees",
+                    "housekeeping",
+                    "maintenance",
+                    "reports",
+                    "settings",
+                    "hotels"
+
+                ];
+
+
+                for (
+                    let i = 0;
+                    i < modules.length;
+                    i++
+                ) {
+
+                    if (
+
+                        href.includes(
+                            modules[i] +
+                            ".html"
+                        )
+
+                    ) {
+
+                        return modules[i];
+
+                    }
+
+                }
+
+
+                return null;
+
+            }
+
+
+            /* =================================================
+               CURRENT MODULE
+            ================================================= */
+
+            function getCurrentModule() {
+
+                const filename =
+                    window.location.pathname
+                        .split("/")
+                        .pop()
+                        .toLowerCase();
+
+
+                if (
+
+                    !filename ||
+
+                    filename ===
+                        "index.html"
+
+                ) {
+
+                    return "dashboard";
+
+                }
+
+
+                return filename.replace(
+                    ".html",
+                    ""
+                );
+
+            }
+
+
+            /* =================================================
+               APPLY ROLE CONTROL
+            ================================================= */
+
+            function applyRoleControl() {
+
+                const role =
+                    getRole();
+
+
+                if (!role) {
+
+                    return;
+
+                }
+
+
+                const allowed =
+                    ROLE_PERMISSIONS[
+                        role
+                    ];
+
+
+                if (!allowed) {
+
+                    return;
+
+                }
+
+
+                document
+                    .querySelectorAll(
+                        ".sidebar nav a"
+                    )
+                    .forEach(
+                        function(link) {
+
+                            const module =
+                                getModuleFromLink(
+                                    link
+                                );
+
+
+                            if (!module) {
+
+                                return;
+
+                            }
+
+
+                            if (
+                                allowed.includes(
+                                    module
+                                )
+                            ) {
+
+                                link.style
+                                    .removeProperty(
+                                        "display"
+                                    );
+
+                            } else {
+
+                                link.style
+                                    .setProperty(
+                                        "display",
+                                        "none",
+                                        "important"
+                                    );
+
+                            }
+
+                        }
+                    );
+
+            }
+
+
+            /* =================================================
+               PROTECT DIRECT PAGE ACCESS
+            ================================================= */
+
+            function protectPage() {
+
+                const role =
+                    getRole();
+
+
+                if (!role) {
+
+                    return;
+
+                }
+
+
+                const allowed =
+                    ROLE_PERMISSIONS[
+                        role
+                    ];
+
+
+                if (!allowed) {
+
+                    return;
+
+                }
+
+
+                const currentModule =
+                    getCurrentModule();
+
+
+                if (
+                    !allowed.includes(
+                        currentModule
+                    )
+                ) {
+
+                    window.location.href =
+                        "./index.html";
+
+                }
+
+            }
+
+
+            /* =================================================
+               RUN ROLE CONTROL
+            ================================================= */
+
+            function runRoleControl() {
+
+                applyRoleControl();
+
+                protectPage();
+
+            }
+
+
+            /* =================================================
+               START
+            ================================================= */
+
+            if (
+
+                document.readyState ===
+                "loading"
+
+            ) {
+
+                document.addEventListener(
+                    "DOMContentLoaded",
+                    runRoleControl
+                );
+
+            } else {
+
+                runRoleControl();
+
+            }
+
+
+            /* =================================================
+               RE-APPLY SIDEBAR CONTROL
+            ================================================= */
+
+            setInterval(
+                applyRoleControl,
+                500
+            );
+
+
+            /* =================================================
+               GLOBAL FUNCTION
+            ================================================= */
+
+            window.applyRoleControl =
+                applyRoleControl;
+
+
+        })();
 
     </script>
 
