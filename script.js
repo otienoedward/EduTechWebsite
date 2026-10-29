@@ -1,15 +1,14 @@
-// ===============================
+// ============================================================
 // EDU TECH HOTEL MANAGEMENT SYSTEM
 // Main JavaScript File
-// ===============================
+// ============================================================
 
 
-// ===============================
+// ============================================================
 // ROOMS
-// ===============================
+// ============================================================
 
 const ROOM_STORAGE_KEY = "eduTechRooms";
-
 
 function openRoomForm() {
     const modal = document.getElementById("roomModal");
@@ -19,7 +18,6 @@ function openRoomForm() {
     }
 }
 
-
 function closeRoomForm() {
     const modal = document.getElementById("roomModal");
 
@@ -27,7 +25,6 @@ function closeRoomForm() {
         modal.style.display = "none";
     }
 }
-
 
 function getRoomStatusClass(status) {
 
@@ -51,26 +48,32 @@ function getRoomStatusClass(status) {
 }
 
 
-/* ===============================
-   ROOM STORAGE
-================================ */
+// ============================================================
+// ROOM STORAGE
+// ============================================================
 
 function getStoredRooms() {
 
-    const savedRooms = localStorage.getItem(ROOM_STORAGE_KEY);
+    const savedRooms =
+        localStorage.getItem(ROOM_STORAGE_KEY);
 
     if (savedRooms) {
 
         try {
+
             return JSON.parse(savedRooms);
 
         } catch (error) {
 
-            console.error("Could not read saved rooms.", error);
+            console.error(
+                "Could not read saved rooms.",
+                error
+            );
         }
     }
 
     return [
+
         {
             number: "101",
             type: "Single",
@@ -98,9 +101,9 @@ function getStoredRooms() {
             price: 10000,
             status: "Maintenance"
         }
+
     ];
 }
-
 
 function saveRooms(rooms) {
 
@@ -111,28 +114,32 @@ function saveRooms(rooms) {
 }
 
 
-/* ===============================
-   DISPLAY ROOMS
-================================ */
+// ============================================================
+// DISPLAY ROOMS
+// ============================================================
 
 function displayRooms() {
 
-    const table = document.getElementById("roomsTable");
+    const table =
+        document.getElementById("roomsTable");
 
     if (!table) return;
 
-    const tbody = table.querySelector("tbody");
+    const tbody =
+        table.querySelector("tbody");
 
     if (!tbody) return;
 
-    const rooms = getStoredRooms();
+    const rooms =
+        getStoredRooms();
 
     tbody.innerHTML = "";
 
 
     rooms.forEach(function(room) {
 
-        const row = document.createElement("tr");
+        const row =
+            document.createElement("tr");
 
         row.innerHTML = `
 
@@ -159,6 +166,7 @@ function displayRooms() {
                 </button>
 
             </td>
+
         `;
 
         tbody.appendChild(row);
@@ -171,24 +179,29 @@ function displayRooms() {
     updateRoomCounts();
 
     applyRoomFilters();
+
+    saveCurrentModuleTablesForReports();
 }
 
 
-/* ===============================
-   ROOM COUNTS
-================================ */
+// ============================================================
+// ROOM COUNTS
+// ============================================================
 
 function updateRoomCounts() {
 
-    const table = document.getElementById("roomsTable");
+    const table =
+        document.getElementById("roomsTable");
 
     if (!table) return;
 
-    const rows = table.querySelectorAll("tbody tr");
+    const rows =
+        table.querySelectorAll("tbody tr");
 
     let available = 0;
     let occupied = 0;
     let maintenance = 0;
+
 
     rows.forEach(function(row) {
 
@@ -199,6 +212,7 @@ function updateRoomCounts() {
 
         const value =
             status.textContent.trim();
+
 
         if (value === "Available") {
             available++;
@@ -220,16 +234,24 @@ function updateRoomCounts() {
 
 
     const availableCard =
-        document.querySelector(".cards .card:nth-child(2) p");
+        document.querySelector(
+            ".cards .card:nth-child(2) p"
+        );
 
     const occupiedCard =
-        document.querySelector(".cards .card:nth-child(3) p");
+        document.querySelector(
+            ".cards .card:nth-child(3) p"
+        );
 
     const maintenanceCard =
-        document.querySelector(".cards .card:nth-child(4) p");
+        document.querySelector(
+            ".cards .card:nth-child(4) p"
+        );
 
     const totalCard =
-        document.querySelector(".cards .card:nth-child(1) p");
+        document.querySelector(
+            ".cards .card:nth-child(1) p"
+        );
 
 
     if (totalCard) {
@@ -250,9 +272,9 @@ function updateRoomCounts() {
 }
 
 
-/* ===============================
-   ROOM FILTERS
-================================ */
+// ============================================================
+// ROOM FILTERS
+// ============================================================
 
 function applyRoomFilters() {
 
@@ -289,7 +311,9 @@ function applyRoomFilters() {
 
         const roomNumber =
             row.cells[0]
-                ? row.cells[0].textContent.toLowerCase()
+                ? row.cells[0]
+                    .textContent
+                    .toLowerCase()
                 : "";
 
 
@@ -299,7 +323,9 @@ function applyRoomFilters() {
 
         const status =
             statusElement
-                ? statusElement.textContent.trim()
+                ? statusElement
+                    .textContent
+                    .trim()
                 : "";
 
 
@@ -320,20 +346,18 @@ function applyRoomFilters() {
     });
 }
 
-
 function searchRooms() {
     applyRoomFilters();
 }
-
 
 function filterRooms() {
     applyRoomFilters();
 }
 
 
-/* ===============================
-   EDIT ROOM
-================================ */
+// ============================================================
+// EDIT ROOM
+// ============================================================
 
 function editRoom(button) {
 
@@ -344,11 +368,15 @@ function editRoom(button) {
 
 
     const roomNumber =
-        row.cells[0].textContent.trim();
+        row.cells[0]
+            .textContent
+            .trim();
 
 
     const roomType =
-        row.cells[1].textContent.trim();
+        row.cells[1]
+            .textContent
+            .trim();
 
 
     const price =
@@ -360,20 +388,19 @@ function editRoom(button) {
 
 
     const status =
-        row.cells[3].textContent.trim();
+        row.cells[3]
+            .textContent
+            .trim();
 
 
     const numberInput =
         document.getElementById("roomNumber");
 
-
     const typeInput =
         document.getElementById("roomType");
 
-
     const priceInput =
         document.getElementById("roomPrice");
-
 
     const statusInput =
         document.getElementById("roomStatus");
@@ -383,16 +410,13 @@ function editRoom(button) {
         numberInput.value = roomNumber;
     }
 
-
     if (typeInput) {
         typeInput.value = roomType;
     }
 
-
     if (priceInput) {
         priceInput.value = price;
     }
-
 
     if (statusInput) {
         statusInput.value = status;
@@ -414,9 +438,9 @@ function editRoom(button) {
 }
 
 
-/* ===============================
-   DELETE ROOM
-================================ */
+// ============================================================
+// DELETE ROOM
+// ============================================================
 
 function deleteRoom(button) {
 
@@ -432,12 +456,13 @@ function deleteRoom(button) {
     const row =
         button.closest("tr");
 
-
     if (!row) return;
 
 
     const roomNumber =
-        row.cells[0].textContent.trim();
+        row.cells[0]
+            .textContent
+            .trim();
 
 
     let rooms =
@@ -454,14 +479,13 @@ function deleteRoom(button) {
 
     saveRooms(rooms);
 
-
     displayRooms();
 }
 
 
-/* ===============================
-   GUESTS
-================================ */
+// ============================================================
+// GUESTS
+// ============================================================
 
 function openGuestForm() {
 
@@ -472,7 +496,6 @@ function openGuestForm() {
         modal.style.display = "flex";
     }
 }
-
 
 function closeGuestForm() {
 
@@ -494,11 +517,15 @@ function updateGuestCount() {
 
 
     const count =
-        table.querySelectorAll("tbody tr").length;
+        table.querySelectorAll(
+            "tbody tr"
+        ).length;
 
 
     const cards =
-        document.querySelectorAll(".cards .card");
+        document.querySelectorAll(
+            ".cards .card"
+        );
 
 
     if (cards.length > 0) {
@@ -528,10 +555,14 @@ function viewGuest(button) {
     alert(
         "Guest Details\n\n" +
         "Name: " +
-        row.cells[0].textContent.trim() +
+        row.cells[0]
+            .textContent
+            .trim() +
         "\n" +
         "Phone: " +
-        row.cells[1].textContent.trim()
+        row.cells[1]
+            .textContent
+            .trim()
     );
 }
 
@@ -557,6 +588,8 @@ function deleteGuest(button) {
 
         updateGuestCount();
 
+        saveCurrentModuleTablesForReports();
+
     }
 }
 
@@ -565,7 +598,6 @@ function searchGuests() {
 
     const input =
         document.getElementById("searchGuest");
-
 
     const table =
         document.getElementById("guestTable");
@@ -578,7 +610,8 @@ function searchGuests() {
         input.value.toLowerCase();
 
 
-    table.querySelectorAll("tbody tr")
+    table
+        .querySelectorAll("tbody tr")
         .forEach(function(row) {
 
             row.style.display =
@@ -586,20 +619,30 @@ function searchGuests() {
                     .toLowerCase()
                     .includes(searchText)
                     ? ""
-                    : "none";
+                    : "";
+
+            if (
+                !row.textContent
+                    .toLowerCase()
+                    .includes(searchText)
+            ) {
+                row.style.display = "none";
+            }
 
         });
 }
 
 
-/* ===============================
-   RESERVATIONS
-================================ */
+// ============================================================
+// RESERVATIONS
+// ============================================================
 
 function openReservationForm() {
 
     const modal =
-        document.getElementById("reservationModal");
+        document.getElementById(
+            "reservationModal"
+        );
 
     if (modal) {
         modal.style.display = "flex";
@@ -610,7 +653,9 @@ function openReservationForm() {
 function closeReservationForm() {
 
     const modal =
-        document.getElementById("reservationModal");
+        document.getElementById(
+            "reservationModal"
+        );
 
     if (modal) {
         modal.style.display = "none";
@@ -621,7 +666,9 @@ function closeReservationForm() {
 function updateReservationCounts() {
 
     const table =
-        document.getElementById("reservationTable");
+        document.getElementById(
+            "reservationTable"
+        );
 
     if (!table) return;
 
@@ -633,29 +680,25 @@ function updateReservationCounts() {
     let total =
         rows.length;
 
-
     let confirmed = 0;
-
     let pending = 0;
-
     let cancelled = 0;
 
 
     rows.forEach(function(row) {
 
         const text =
-            row.textContent.toLowerCase();
+            row.textContent
+                .toLowerCase();
 
 
         if (text.includes("confirmed")) {
             confirmed++;
         }
 
-
         if (text.includes("pending")) {
             pending++;
         }
-
 
         if (text.includes("cancelled")) {
             cancelled++;
@@ -665,16 +708,20 @@ function updateReservationCounts() {
 
 
     const cards =
-        document.querySelectorAll(".cards .card");
+        document.querySelectorAll(
+            ".cards .card"
+        );
 
 
     if (
         cards[0] &&
         cards[0].querySelector("p")
     ) {
+
         cards[0]
             .querySelector("p")
             .textContent = total;
+
     }
 
 
@@ -682,9 +729,11 @@ function updateReservationCounts() {
         cards[1] &&
         cards[1].querySelector("p")
     ) {
+
         cards[1]
             .querySelector("p")
             .textContent = confirmed;
+
     }
 
 
@@ -692,9 +741,11 @@ function updateReservationCounts() {
         cards[2] &&
         cards[2].querySelector("p")
     ) {
+
         cards[2]
             .querySelector("p")
             .textContent = pending;
+
     }
 
 
@@ -702,9 +753,11 @@ function updateReservationCounts() {
         cards[3] &&
         cards[3].querySelector("p")
     ) {
+
         cards[3]
             .querySelector("p")
             .textContent = cancelled;
+
     }
 }
 
@@ -746,6 +799,8 @@ function deleteReservation(button) {
 
         updateReservationCounts();
 
+        saveCurrentModuleTablesForReports();
+
     }
 }
 
@@ -753,11 +808,14 @@ function deleteReservation(button) {
 function searchReservations() {
 
     const input =
-        document.getElementById("searchReservation");
-
+        document.getElementById(
+            "searchReservation"
+        );
 
     const table =
-        document.getElementById("reservationTable");
+        document.getElementById(
+            "reservationTable"
+        );
 
 
     if (!input || !table) return;
@@ -767,15 +825,17 @@ function searchReservations() {
         input.value.toLowerCase();
 
 
-    table.querySelectorAll("tbody tr")
+    table
+        .querySelectorAll("tbody tr")
         .forEach(function(row) {
 
-            row.style.display =
+            const matches =
                 row.textContent
                     .toLowerCase()
-                    .includes(searchText)
-                    ? ""
-                    : "none";
+                    .includes(searchText);
+
+            row.style.display =
+                matches ? "" : "none";
 
         });
 }
@@ -784,11 +844,14 @@ function searchReservations() {
 function filterReservations() {
 
     const filter =
-        document.getElementById("reservationFilter");
-
+        document.getElementById(
+            "reservationFilter"
+        );
 
     const table =
-        document.getElementById("reservationTable");
+        document.getElementById(
+            "reservationTable"
+        );
 
 
     if (!filter || !table) return;
@@ -798,7 +861,8 @@ function filterReservations() {
         filter.value.toLowerCase();
 
 
-    table.querySelectorAll("tbody tr")
+    table
+        .querySelectorAll("tbody tr")
         .forEach(function(row) {
 
             if (selected === "all") {
@@ -820,14 +884,16 @@ function filterReservations() {
 }
 
 
-/* ===============================
-   CHECK-IN
-================================ */
+// ============================================================
+// CHECK-IN
+// ============================================================
 
 function openCheckinForm() {
 
     const modal =
-        document.getElementById("checkinModal");
+        document.getElementById(
+            "checkinModal"
+        );
 
     if (modal) {
         modal.style.display = "flex";
@@ -838,7 +904,9 @@ function openCheckinForm() {
 function closeCheckinForm() {
 
     const modal =
-        document.getElementById("checkinModal");
+        document.getElementById(
+            "checkinModal"
+        );
 
     if (modal) {
         modal.style.display = "none";
@@ -849,7 +917,9 @@ function closeCheckinForm() {
 function updateCheckinCounts() {
 
     const table =
-        document.getElementById("checkinTable");
+        document.getElementById(
+            "checkinTable"
+        );
 
     if (!table) return;
 
@@ -865,36 +935,33 @@ function updateCheckinCounts() {
 
 
     let todayCount = 0;
-
     let checkedIn = 0;
-
     let expected = 0;
-
     let pending = 0;
 
 
     rows.forEach(function(row) {
 
         const text =
-            row.textContent.toLowerCase();
+            row.textContent
+                .toLowerCase();
 
 
         if (text.includes("checked in")) {
             checkedIn++;
         }
 
-
         if (text.includes("expected")) {
             expected++;
         }
-
 
         if (text.includes("pending")) {
             pending++;
         }
 
-
-        if (row.textContent.includes(today)) {
+        if (
+            row.textContent.includes(today)
+        ) {
             todayCount++;
         }
 
@@ -902,38 +969,44 @@ function updateCheckinCounts() {
 
 
     const todayElement =
-        document.getElementById("todayCheckins");
-
+        document.getElementById(
+            "todayCheckins"
+        );
 
     const checkedElement =
-        document.getElementById("checkedInCount");
-
+        document.getElementById(
+            "checkedInCount"
+        );
 
     const expectedElement =
-        document.getElementById("expectedArrivals");
-
+        document.getElementById(
+            "expectedArrivals"
+        );
 
     const pendingElement =
-        document.getElementById("pendingCheckins");
+        document.getElementById(
+            "pendingCheckins"
+        );
 
 
     if (todayElement) {
-        todayElement.textContent = todayCount;
+        todayElement.textContent =
+            todayCount;
     }
-
 
     if (checkedElement) {
-        checkedElement.textContent = checkedIn;
+        checkedElement.textContent =
+            checkedIn;
     }
-
 
     if (expectedElement) {
-        expectedElement.textContent = expected;
+        expectedElement.textContent =
+            expected;
     }
 
-
     if (pendingElement) {
-        pendingElement.textContent = pending;
+        pendingElement.textContent =
+            pending;
     }
 }
 
@@ -975,6 +1048,8 @@ function deleteCheckin(button) {
 
         updateCheckinCounts();
 
+        saveCurrentModuleTablesForReports();
+
     }
 }
 
@@ -982,11 +1057,14 @@ function deleteCheckin(button) {
 function searchCheckins() {
 
     const input =
-        document.getElementById("searchCheckin");
-
+        document.getElementById(
+            "searchCheckin"
+        );
 
     const table =
-        document.getElementById("checkinTable");
+        document.getElementById(
+            "checkinTable"
+        );
 
 
     if (!input || !table) return;
@@ -996,7 +1074,8 @@ function searchCheckins() {
         input.value.toLowerCase();
 
 
-    table.querySelectorAll("tbody tr")
+    table
+        .querySelectorAll("tbody tr")
         .forEach(function(row) {
 
             row.style.display =
@@ -1013,11 +1092,14 @@ function searchCheckins() {
 function filterCheckins() {
 
     const filter =
-        document.getElementById("checkinFilter");
-
+        document.getElementById(
+            "checkinFilter"
+        );
 
     const table =
-        document.getElementById("checkinTable");
+        document.getElementById(
+            "checkinTable"
+        );
 
 
     if (!filter || !table) return;
@@ -1027,7 +1109,8 @@ function filterCheckins() {
         filter.value.toLowerCase();
 
 
-    table.querySelectorAll("tbody tr")
+    table
+        .querySelectorAll("tbody tr")
         .forEach(function(row) {
 
             if (selected === "all") {
@@ -1049,14 +1132,16 @@ function filterCheckins() {
 }
 
 
-/* ===============================
-   CHECK-OUT
-================================ */
+// ============================================================
+// CHECK-OUT
+// ============================================================
 
 function openCheckoutForm() {
 
     const modal =
-        document.getElementById("checkoutModal");
+        document.getElementById(
+            "checkoutModal"
+        );
 
     if (modal) {
         modal.style.display = "flex";
@@ -1067,7 +1152,9 @@ function openCheckoutForm() {
 function closeCheckoutForm() {
 
     const modal =
-        document.getElementById("checkoutModal");
+        document.getElementById(
+            "checkoutModal"
+        );
 
     if (modal) {
         modal.style.display = "none";
@@ -1078,7 +1165,9 @@ function closeCheckoutForm() {
 function updateCheckoutCounts() {
 
     const table =
-        document.getElementById("checkoutTable");
+        document.getElementById(
+            "checkoutTable"
+        );
 
     if (!table) return;
 
@@ -1088,22 +1177,20 @@ function updateCheckoutCounts() {
 
 
     let completed = 0;
-
     let pending = 0;
-
     let revenue = 0;
 
 
     rows.forEach(function(row) {
 
         const text =
-            row.textContent.toLowerCase();
+            row.textContent
+                .toLowerCase();
 
 
         if (text.includes("completed")) {
             completed++;
         }
-
 
         if (text.includes("pending")) {
             pending++;
@@ -1120,7 +1207,10 @@ function updateCheckoutCounts() {
             const amount =
                 parseFloat(
                     amountCell.textContent
-                        .replace(/[^0-9.]/g, "")
+                        .replace(
+                            /[^0-9.]/g,
+                            ""
+                        )
                 );
 
 
@@ -1134,35 +1224,40 @@ function updateCheckoutCounts() {
 
 
     const todayElement =
-        document.getElementById("todayCheckouts");
-
+        document.getElementById(
+            "todayCheckouts"
+        );
 
     const completedElement =
-        document.getElementById("completedCheckouts");
-
+        document.getElementById(
+            "completedCheckouts"
+        );
 
     const pendingElement =
-        document.getElementById("pendingCheckouts");
-
+        document.getElementById(
+            "pendingCheckouts"
+        );
 
     const revenueElement =
-        document.getElementById("checkoutRevenue");
+        document.getElementById(
+            "checkoutRevenue"
+        );
 
 
     if (todayElement) {
-        todayElement.textContent = rows.length;
+        todayElement.textContent =
+            rows.length;
     }
-
 
     if (completedElement) {
-        completedElement.textContent = completed;
+        completedElement.textContent =
+            completed;
     }
-
 
     if (pendingElement) {
-        pendingElement.textContent = pending;
+        pendingElement.textContent =
+            pending;
     }
-
 
     if (revenueElement) {
 
@@ -1211,6 +1306,8 @@ function deleteCheckout(button) {
 
         updateCheckoutCounts();
 
+        saveCurrentModuleTablesForReports();
+
     }
 }
 
@@ -1218,11 +1315,14 @@ function deleteCheckout(button) {
 function searchCheckouts() {
 
     const input =
-        document.getElementById("searchCheckout");
-
+        document.getElementById(
+            "searchCheckout"
+        );
 
     const table =
-        document.getElementById("checkoutTable");
+        document.getElementById(
+            "checkoutTable"
+        );
 
 
     if (!input || !table) return;
@@ -1232,7 +1332,8 @@ function searchCheckouts() {
         input.value.toLowerCase();
 
 
-    table.querySelectorAll("tbody tr")
+    table
+        .querySelectorAll("tbody tr")
         .forEach(function(row) {
 
             row.style.display =
@@ -1249,11 +1350,14 @@ function searchCheckouts() {
 function filterCheckouts() {
 
     const filter =
-        document.getElementById("checkoutFilter");
-
+        document.getElementById(
+            "checkoutFilter"
+        );
 
     const table =
-        document.getElementById("checkoutTable");
+        document.getElementById(
+            "checkoutTable"
+        );
 
 
     if (!filter || !table) return;
@@ -1263,7 +1367,8 @@ function filterCheckouts() {
         filter.value.toLowerCase();
 
 
-    table.querySelectorAll("tbody tr")
+    table
+        .querySelectorAll("tbody tr")
         .forEach(function(row) {
 
             if (selected === "all") {
@@ -1285,14 +1390,16 @@ function filterCheckouts() {
 }
 
 
-/* ===============================
-   RESTAURANT
-================================ */
+// ============================================================
+// RESTAURANT
+// ============================================================
 
 function openRestaurantForm() {
 
     const modal =
-        document.getElementById("restaurantModal");
+        document.getElementById(
+            "restaurantModal"
+        );
 
     if (modal) {
         modal.style.display = "flex";
@@ -1303,7 +1410,9 @@ function openRestaurantForm() {
 function closeRestaurantForm() {
 
     const modal =
-        document.getElementById("restaurantModal");
+        document.getElementById(
+            "restaurantModal"
+        );
 
     if (modal) {
         modal.style.display = "none";
@@ -1314,7 +1423,9 @@ function closeRestaurantForm() {
 function updateRestaurantCounts() {
 
     const table =
-        document.getElementById("restaurantTable");
+        document.getElementById(
+            "restaurantTable"
+        );
 
     if (!table) return;
 
@@ -1326,24 +1437,21 @@ function updateRestaurantCounts() {
     let total =
         rows.length;
 
-
     let pending = 0;
-
     let completed = 0;
-
     let revenue = 0;
 
 
     rows.forEach(function(row) {
 
         const text =
-            row.textContent.toLowerCase();
+            row.textContent
+                .toLowerCase();
 
 
         if (text.includes("pending")) {
             pending++;
         }
-
 
         if (text.includes("completed")) {
             completed++;
@@ -1359,7 +1467,10 @@ function updateRestaurantCounts() {
             const amount =
                 parseFloat(
                     cell.textContent
-                        .replace(/[^0-9.]/g, "")
+                        .replace(
+                            /[^0-9.]/g,
+                            ""
+                        )
                 );
 
 
@@ -1367,7 +1478,9 @@ function updateRestaurantCounts() {
                 !isNaN(amount) &&
                 cell.textContent.includes("KSh")
             ) {
+
                 revenue += amount;
+
             }
 
         });
@@ -1376,16 +1489,21 @@ function updateRestaurantCounts() {
 
 
     const cards =
-        document.querySelectorAll(".cards .card");
+        document.querySelectorAll(
+            ".cards .card"
+        );
 
 
     if (
         cards[0] &&
         cards[0].querySelector("p")
     ) {
+
         cards[0]
             .querySelector("p")
-            .textContent = total;
+            .textContent =
+            total;
+
     }
 
 
@@ -1393,9 +1511,12 @@ function updateRestaurantCounts() {
         cards[1] &&
         cards[1].querySelector("p")
     ) {
+
         cards[1]
             .querySelector("p")
-            .textContent = completed;
+            .textContent =
+            completed;
+
     }
 
 
@@ -1403,9 +1524,12 @@ function updateRestaurantCounts() {
         cards[2] &&
         cards[2].querySelector("p")
     ) {
+
         cards[2]
             .querySelector("p")
-            .textContent = pending;
+            .textContent =
+            pending;
+
     }
 
 
@@ -1413,11 +1537,13 @@ function updateRestaurantCounts() {
         cards[3] &&
         cards[3].querySelector("p")
     ) {
+
         cards[3]
             .querySelector("p")
             .textContent =
             "KSh " +
             revenue.toLocaleString();
+
     }
 }
 
@@ -1459,6 +1585,8 @@ function deleteRestaurantOrder(button) {
 
         updateRestaurantCounts();
 
+        saveCurrentModuleTablesForReports();
+
     }
 }
 
@@ -1466,11 +1594,14 @@ function deleteRestaurantOrder(button) {
 function searchRestaurantOrders() {
 
     const input =
-        document.getElementById("searchRestaurant");
-
+        document.getElementById(
+            "searchRestaurant"
+        );
 
     const table =
-        document.getElementById("restaurantTable");
+        document.getElementById(
+            "restaurantTable"
+        );
 
 
     if (!input || !table) return;
@@ -1480,7 +1611,8 @@ function searchRestaurantOrders() {
         input.value.toLowerCase();
 
 
-    table.querySelectorAll("tbody tr")
+    table
+        .querySelectorAll("tbody tr")
         .forEach(function(row) {
 
             row.style.display =
@@ -1497,11 +1629,14 @@ function searchRestaurantOrders() {
 function filterRestaurantOrders() {
 
     const filter =
-        document.getElementById("restaurantFilter");
-
+        document.getElementById(
+            "restaurantFilter"
+        );
 
     const table =
-        document.getElementById("restaurantTable");
+        document.getElementById(
+            "restaurantTable"
+        );
 
 
     if (!filter || !table) return;
@@ -1511,7 +1646,8 @@ function filterRestaurantOrders() {
         filter.value.toLowerCase();
 
 
-    table.querySelectorAll("tbody tr")
+    table
+        .querySelectorAll("tbody tr")
         .forEach(function(row) {
 
             if (selected === "all") {
@@ -1533,14 +1669,16 @@ function filterRestaurantOrders() {
 }
 
 
-/* ===============================
-   INVENTORY
-================================ */
+// ============================================================
+// INVENTORY
+// ============================================================
 
 function openInventoryForm() {
 
     const modal =
-        document.getElementById("inventoryModal");
+        document.getElementById(
+            "inventoryModal"
+        );
 
     if (modal) {
         modal.style.display = "flex";
@@ -1551,7 +1689,9 @@ function openInventoryForm() {
 function closeInventoryForm() {
 
     const modal =
-        document.getElementById("inventoryModal");
+        document.getElementById(
+            "inventoryModal"
+        );
 
     if (modal) {
         modal.style.display = "none";
@@ -1562,7 +1702,9 @@ function closeInventoryForm() {
 function updateInventoryCounts() {
 
     const table =
-        document.getElementById("inventoryTable");
+        document.getElementById(
+            "inventoryTable"
+        );
 
     if (!table) return;
 
@@ -1574,22 +1716,20 @@ function updateInventoryCounts() {
     let total =
         rows.length;
 
-
     let lowStock = 0;
-
     let outOfStock = 0;
 
 
     rows.forEach(function(row) {
 
         const text =
-            row.textContent.toLowerCase();
+            row.textContent
+                .toLowerCase();
 
 
         if (text.includes("low stock")) {
             lowStock++;
         }
-
 
         if (text.includes("out of stock")) {
             outOfStock++;
@@ -1599,16 +1739,21 @@ function updateInventoryCounts() {
 
 
     const cards =
-        document.querySelectorAll(".cards .card");
+        document.querySelectorAll(
+            ".cards .card"
+        );
 
 
     if (
         cards[0] &&
         cards[0].querySelector("p")
     ) {
+
         cards[0]
             .querySelector("p")
-            .textContent = total;
+            .textContent =
+            total;
+
     }
 
 
@@ -1616,12 +1761,14 @@ function updateInventoryCounts() {
         cards[1] &&
         cards[1].querySelector("p")
     ) {
+
         cards[1]
             .querySelector("p")
             .textContent =
             total -
             lowStock -
             outOfStock;
+
     }
 
 
@@ -1629,9 +1776,12 @@ function updateInventoryCounts() {
         cards[2] &&
         cards[2].querySelector("p")
     ) {
+
         cards[2]
             .querySelector("p")
-            .textContent = lowStock;
+            .textContent =
+            lowStock;
+
     }
 
 
@@ -1639,9 +1789,12 @@ function updateInventoryCounts() {
         cards[3] &&
         cards[3].querySelector("p")
     ) {
+
         cards[3]
             .querySelector("p")
-            .textContent = outOfStock;
+            .textContent =
+            outOfStock;
+
     }
 }
 
@@ -1683,6 +1836,8 @@ function deleteInventory(button) {
 
         updateInventoryCounts();
 
+        saveCurrentModuleTablesForReports();
+
     }
 }
 
@@ -1690,11 +1845,14 @@ function deleteInventory(button) {
 function searchInventory() {
 
     const input =
-        document.getElementById("searchInventory");
-
+        document.getElementById(
+            "searchInventory"
+        );
 
     const table =
-        document.getElementById("inventoryTable");
+        document.getElementById(
+            "inventoryTable"
+        );
 
 
     if (!input || !table) return;
@@ -1704,7 +1862,8 @@ function searchInventory() {
         input.value.toLowerCase();
 
 
-    table.querySelectorAll("tbody tr")
+    table
+        .querySelectorAll("tbody tr")
         .forEach(function(row) {
 
             row.style.display =
@@ -1721,11 +1880,14 @@ function searchInventory() {
 function filterInventory() {
 
     const filter =
-        document.getElementById("inventoryFilter");
-
+        document.getElementById(
+            "inventoryFilter"
+        );
 
     const table =
-        document.getElementById("inventoryTable");
+        document.getElementById(
+            "inventoryTable"
+        );
 
 
     if (!filter || !table) return;
@@ -1735,7 +1897,8 @@ function filterInventory() {
         filter.value.toLowerCase();
 
 
-    table.querySelectorAll("tbody tr")
+    table
+        .querySelectorAll("tbody tr")
         .forEach(function(row) {
 
             if (selected === "all") {
@@ -1757,14 +1920,16 @@ function filterInventory() {
 }
 
 
-/* ===============================
-   PAYMENTS
-================================ */
+// ============================================================
+// PAYMENTS
+// ============================================================
 
 function openPaymentForm() {
 
     const modal =
-        document.getElementById("paymentModal");
+        document.getElementById(
+            "paymentModal"
+        );
 
     if (modal) {
         modal.style.display = "flex";
@@ -1775,7 +1940,9 @@ function openPaymentForm() {
 function closePaymentForm() {
 
     const modal =
-        document.getElementById("paymentModal");
+        document.getElementById(
+            "paymentModal"
+        );
 
     if (modal) {
         modal.style.display = "none";
@@ -1786,7 +1953,9 @@ function closePaymentForm() {
 function updatePaymentCounts() {
 
     const table =
-        document.getElementById("paymentTable");
+        document.getElementById(
+            "paymentTable"
+        );
 
     if (!table) return;
 
@@ -1798,24 +1967,21 @@ function updatePaymentCounts() {
     let totalPayments =
         rows.length;
 
-
     let completed = 0;
-
     let pending = 0;
-
     let revenue = 0;
 
 
     rows.forEach(function(row) {
 
         const text =
-            row.textContent.toLowerCase();
+            row.textContent
+                .toLowerCase();
 
 
         if (text.includes("completed")) {
             completed++;
         }
-
 
         if (text.includes("pending")) {
             pending++;
@@ -1826,13 +1992,18 @@ function updatePaymentCounts() {
             .forEach(function(cell) {
 
                 if (
-                    cell.textContent.includes("KSh")
+                    cell.textContent.includes(
+                        "KSh"
+                    )
                 ) {
 
                     const amount =
                         parseFloat(
                             cell.textContent
-                                .replace(/[^0-9.]/g, "")
+                                .replace(
+                                    /[^0-9.]/g,
+                                    ""
+                                )
                         );
 
 
@@ -1848,17 +2019,21 @@ function updatePaymentCounts() {
 
 
     const cards =
-        document.querySelectorAll(".cards .card");
+        document.querySelectorAll(
+            ".cards .card"
+        );
 
 
     if (
         cards[0] &&
         cards[0].querySelector("p")
     ) {
+
         cards[0]
             .querySelector("p")
             .textContent =
             totalPayments;
+
     }
 
 
@@ -1866,10 +2041,12 @@ function updatePaymentCounts() {
         cards[1] &&
         cards[1].querySelector("p")
     ) {
+
         cards[1]
             .querySelector("p")
             .textContent =
             completed;
+
     }
 
 
@@ -1877,10 +2054,12 @@ function updatePaymentCounts() {
         cards[2] &&
         cards[2].querySelector("p")
     ) {
+
         cards[2]
             .querySelector("p")
             .textContent =
             pending;
+
     }
 
 
@@ -1888,11 +2067,13 @@ function updatePaymentCounts() {
         cards[3] &&
         cards[3].querySelector("p")
     ) {
+
         cards[3]
             .querySelector("p")
             .textContent =
             "KSh " +
             revenue.toLocaleString();
+
     }
 }
 
@@ -1934,6 +2115,8 @@ function deletePayment(button) {
 
         updatePaymentCounts();
 
+        saveCurrentModuleTablesForReports();
+
     }
 }
 
@@ -1941,11 +2124,14 @@ function deletePayment(button) {
 function searchPayments() {
 
     const input =
-        document.getElementById("searchPayment");
-
+        document.getElementById(
+            "searchPayment"
+        );
 
     const table =
-        document.getElementById("paymentTable");
+        document.getElementById(
+            "paymentTable"
+        );
 
 
     if (!input || !table) return;
@@ -1955,7 +2141,8 @@ function searchPayments() {
         input.value.toLowerCase();
 
 
-    table.querySelectorAll("tbody tr")
+    table
+        .querySelectorAll("tbody tr")
         .forEach(function(row) {
 
             row.style.display =
@@ -1972,11 +2159,14 @@ function searchPayments() {
 function filterPayments() {
 
     const filter =
-        document.getElementById("paymentFilter");
-
+        document.getElementById(
+            "paymentFilter"
+        );
 
     const table =
-        document.getElementById("paymentTable");
+        document.getElementById(
+            "paymentTable"
+        );
 
 
     if (!filter || !table) return;
@@ -1986,7 +2176,8 @@ function filterPayments() {
         filter.value.toLowerCase();
 
 
-    table.querySelectorAll("tbody tr")
+    table
+        .querySelectorAll("tbody tr")
         .forEach(function(row) {
 
             if (selected === "all") {
@@ -2008,14 +2199,16 @@ function filterPayments() {
 }
 
 
-/* ===============================
-   EXPENSES
-================================ */
+// ============================================================
+// EXPENSES
+// ============================================================
 
 function openExpenseForm() {
 
     const modal =
-        document.getElementById("expenseModal");
+        document.getElementById(
+            "expenseModal"
+        );
 
     if (modal) {
         modal.style.display = "flex";
@@ -2026,7 +2219,9 @@ function openExpenseForm() {
 function closeExpenseForm() {
 
     const modal =
-        document.getElementById("expenseModal");
+        document.getElementById(
+            "expenseModal"
+        );
 
     if (modal) {
         modal.style.display = "none";
@@ -2037,7 +2232,9 @@ function closeExpenseForm() {
 function updateExpenseCounts() {
 
     const table =
-        document.getElementById("expenseTable");
+        document.getElementById(
+            "expenseTable"
+        );
 
     if (!table) return;
 
@@ -2049,16 +2246,15 @@ function updateExpenseCounts() {
     let totalExpenses =
         rows.length;
 
-
     let totalAmount = 0;
-
     let pending = 0;
 
 
     rows.forEach(function(row) {
 
         const text =
-            row.textContent.toLowerCase();
+            row.textContent
+                .toLowerCase();
 
 
         if (text.includes("pending")) {
@@ -2070,13 +2266,18 @@ function updateExpenseCounts() {
             .forEach(function(cell) {
 
                 if (
-                    cell.textContent.includes("KSh")
+                    cell.textContent.includes(
+                        "KSh"
+                    )
                 ) {
 
                     const amount =
                         parseFloat(
                             cell.textContent
-                                .replace(/[^0-9.]/g, "")
+                                .replace(
+                                    /[^0-9.]/g,
+                                    ""
+                                )
                         );
 
 
@@ -2092,17 +2293,21 @@ function updateExpenseCounts() {
 
 
     const cards =
-        document.querySelectorAll(".cards .card");
+        document.querySelectorAll(
+            ".cards .card"
+        );
 
 
     if (
         cards[0] &&
         cards[0].querySelector("p")
     ) {
+
         cards[0]
             .querySelector("p")
             .textContent =
             totalExpenses;
+
     }
 
 
@@ -2110,11 +2315,13 @@ function updateExpenseCounts() {
         cards[1] &&
         cards[1].querySelector("p")
     ) {
+
         cards[1]
             .querySelector("p")
             .textContent =
             "KSh " +
             totalAmount.toLocaleString();
+
     }
 
 
@@ -2122,10 +2329,12 @@ function updateExpenseCounts() {
         cards[2] &&
         cards[2].querySelector("p")
     ) {
+
         cards[2]
             .querySelector("p")
             .textContent =
             pending;
+
     }
 }
 
@@ -2167,6 +2376,8 @@ function deleteExpense(button) {
 
         updateExpenseCounts();
 
+        saveCurrentModuleTablesForReports();
+
     }
 }
 
@@ -2174,11 +2385,14 @@ function deleteExpense(button) {
 function searchExpenses() {
 
     const input =
-        document.getElementById("searchExpense");
-
+        document.getElementById(
+            "searchExpense"
+        );
 
     const table =
-        document.getElementById("expenseTable");
+        document.getElementById(
+            "expenseTable"
+        );
 
 
     if (!input || !table) return;
@@ -2188,7 +2402,8 @@ function searchExpenses() {
         input.value.toLowerCase();
 
 
-    table.querySelectorAll("tbody tr")
+    table
+        .querySelectorAll("tbody tr")
         .forEach(function(row) {
 
             row.style.display =
@@ -2205,11 +2420,14 @@ function searchExpenses() {
 function filterExpenses() {
 
     const filter =
-        document.getElementById("expenseFilter");
-
+        document.getElementById(
+            "expenseFilter"
+        );
 
     const table =
-        document.getElementById("expenseTable");
+        document.getElementById(
+            "expenseTable"
+        );
 
 
     if (!filter || !table) return;
@@ -2219,7 +2437,8 @@ function filterExpenses() {
         filter.value.toLowerCase();
 
 
-    table.querySelectorAll("tbody tr")
+    table
+        .querySelectorAll("tbody tr")
         .forEach(function(row) {
 
             if (selected === "all") {
@@ -2241,61 +2460,525 @@ function filterExpenses() {
 }
 
 
-/* ===============================
-   MODAL CLOSE
-================================ */
+// ============================================================
+// MODAL CLOSE
+// ============================================================
 
-window.addEventListener("click", function(event) {
+window.addEventListener(
+    "click",
+    function(event) {
 
-    const modals =
-        document.querySelectorAll(".modal");
+        const modals =
+            document.querySelectorAll(
+                ".modal"
+            );
 
 
-    modals.forEach(function(modal) {
+        modals.forEach(function(modal) {
 
-        if (event.target === modal) {
+            if (event.target === modal) {
 
-            modal.style.display = "none";
+                modal.style.display =
+                    "none";
+
+            }
+
+        });
+
+    }
+);
+
+
+// ============================================================
+// REPORTING DATA BRIDGE
+// ============================================================
+
+const REPORT_STORAGE_KEYS = {
+
+    rooms:
+        "eduTechReportRooms",
+
+    guests:
+        "eduTechReportGuests",
+
+    reservations:
+        "eduTechReportReservations",
+
+    checkins:
+        "eduTechReportCheckins",
+
+    checkouts:
+        "eduTechReportCheckouts",
+
+    restaurant:
+        "eduTechReportRestaurant",
+
+    inventory:
+        "eduTechReportInventory",
+
+    payments:
+        "eduTechReportPayments",
+
+    expenses:
+        "eduTechReportExpenses",
+
+    employees:
+        "eduTechReportEmployees",
+
+    housekeeping:
+        "eduTechReportHousekeeping",
+
+    maintenance:
+        "eduTechReportMaintenance"
+
+};
+
+
+// ============================================================
+// READ REPORT STORAGE
+// ============================================================
+
+function reportReadStorage(key) {
+
+    try {
+
+        const value =
+            localStorage.getItem(key);
+
+
+        if (!value) {
+            return [];
+        }
+
+
+        const parsed =
+            JSON.parse(value);
+
+
+        return Array.isArray(parsed)
+            ? parsed
+            : [];
+
+
+    } catch (error) {
+
+        console.warn(
+            "Report storage read error:",
+            key,
+            error
+        );
+
+
+        return [];
+    }
+}
+
+
+// ============================================================
+// WRITE REPORT STORAGE
+// ============================================================
+
+function reportWriteStorage(
+    key,
+    data
+) {
+
+    try {
+
+        localStorage.setItem(
+            key,
+            JSON.stringify(
+                Array.isArray(data)
+                    ? data
+                    : []
+            )
+        );
+
+
+    } catch (error) {
+
+        console.warn(
+            "Report storage write error:",
+            key,
+            error
+        );
+
+    }
+}
+
+
+// ============================================================
+// GET TABLE HEADERS
+// ============================================================
+
+function reportGetTableHeaders(table) {
+
+    if (!table) {
+        return [];
+    }
+
+
+    const headers =
+        table.querySelectorAll(
+            "thead th"
+        );
+
+
+    return Array.from(headers).map(
+        function(header) {
+
+            return header
+                .textContent
+                .trim()
+                .toLowerCase()
+                .replace(
+                    /\s+/g,
+                    "_"
+                );
+
+        }
+    );
+}
+
+
+// ============================================================
+// CONVERT TABLE ROW TO OBJECT
+// ============================================================
+
+function reportTableRowToObject(
+    row,
+    headers
+) {
+
+    const cells =
+        row.querySelectorAll("td");
+
+
+    const record = {};
+
+
+    headers.forEach(
+        function(header, index) {
+
+            if (!cells[index]) {
+                return;
+            }
+
+
+            record[header] =
+                cells[index]
+                    .textContent
+                    .trim();
+
+        }
+    );
+
+
+    return record;
+}
+
+
+// ============================================================
+// SAVE TABLE TO REPORT STORAGE
+// ============================================================
+
+function reportSaveTable(
+    tableId,
+    storageKey
+) {
+
+    const table =
+        document.getElementById(
+            tableId
+        );
+
+
+    if (!table) {
+        return;
+    }
+
+
+    const tbody =
+        table.querySelector("tbody");
+
+
+    if (!tbody) {
+        return;
+    }
+
+
+    const headers =
+        reportGetTableHeaders(table);
+
+
+    const rows =
+        tbody.querySelectorAll("tr");
+
+
+    const records = [];
+
+
+    rows.forEach(function(row) {
+
+        const text =
+            row.textContent
+                .trim()
+                .toLowerCase();
+
+
+        if (!text) {
+            return;
+        }
+
+
+        if (
+            text.includes("no record") ||
+            text.includes("no records") ||
+            text.includes("no data")
+        ) {
+            return;
+        }
+
+
+        const record =
+            reportTableRowToObject(
+                row,
+                headers
+            );
+
+
+        if (
+            Object.keys(record).length > 0
+        ) {
+
+            records.push(record);
 
         }
 
     });
 
-});
+
+    /*
+     * Only replace existing report data
+     * when real rows are present.
+     */
+
+    if (records.length > 0) {
+
+        reportWriteStorage(
+            storageKey,
+            records
+        );
+
+    }
+}
 
 
-/* ===============================
-   PAGE INITIALIZATION
-================================ */
+// ============================================================
+// SAVE ALL CURRENT TABLES
+// ============================================================
+
+function saveCurrentModuleTablesForReports() {
+
+    reportSaveTable(
+        "roomsTable",
+        REPORT_STORAGE_KEYS.rooms
+    );
+
+
+    reportSaveTable(
+        "guestTable",
+        REPORT_STORAGE_KEYS.guests
+    );
+
+
+    reportSaveTable(
+        "reservationTable",
+        REPORT_STORAGE_KEYS.reservations
+    );
+
+
+    reportSaveTable(
+        "checkinTable",
+        REPORT_STORAGE_KEYS.checkins
+    );
+
+
+    reportSaveTable(
+        "checkoutTable",
+        REPORT_STORAGE_KEYS.checkouts
+    );
+
+
+    reportSaveTable(
+        "restaurantTable",
+        REPORT_STORAGE_KEYS.restaurant
+    );
+
+
+    reportSaveTable(
+        "inventoryTable",
+        REPORT_STORAGE_KEYS.inventory
+    );
+
+
+    reportSaveTable(
+        "paymentTable",
+        REPORT_STORAGE_KEYS.payments
+    );
+
+
+    reportSaveTable(
+        "expenseTable",
+        REPORT_STORAGE_KEYS.expenses
+    );
+
+
+    reportSaveTable(
+        "employeeTable",
+        REPORT_STORAGE_KEYS.employees
+    );
+
+
+    reportSaveTable(
+        "housekeepingTable",
+        REPORT_STORAGE_KEYS.housekeeping
+    );
+
+
+    reportSaveTable(
+        "maintenanceTable",
+        REPORT_STORAGE_KEYS.maintenance
+    );
+}
+
+
+// ============================================================
+// REPORT TABLE WATCHER
+// ============================================================
+
+function startReportTableWatcher() {
+
+    const tableIds = [
+
+        "roomsTable",
+
+        "guestTable",
+
+        "reservationTable",
+
+        "checkinTable",
+
+        "checkoutTable",
+
+        "restaurantTable",
+
+        "inventoryTable",
+
+        "paymentTable",
+
+        "expenseTable",
+
+        "employeeTable",
+
+        "housekeepingTable",
+
+        "maintenanceTable"
+
+    ];
+
+
+    tableIds.forEach(
+        function(tableId) {
+
+            const table =
+                document.getElementById(
+                    tableId
+                );
+
+
+            if (!table) {
+                return;
+            }
+
+
+            const observer =
+                new MutationObserver(
+                    function() {
+
+                        saveCurrentModuleTablesForReports();
+
+                    }
+                );
+
+
+            observer.observe(
+                table,
+                {
+                    childList: true,
+                    subtree: true
+                }
+            );
+
+        }
+    );
+}
+
+
+// ============================================================
+// GLOBAL REPORT OBJECT
+// ============================================================
+
+window.eduTechReports = {
+
+    keys:
+        REPORT_STORAGE_KEYS,
+
+    read:
+        reportReadStorage,
+
+    write:
+        reportWriteStorage,
+
+    saveTables:
+        saveCurrentModuleTablesForReports
+
+};
+
+
+// ============================================================
+// PAGE INITIALIZATION
+// ============================================================
 
 document.addEventListener(
     "DOMContentLoaded",
     function() {
 
 
-        /* ==========================
-           ROOMS
-        ========================== */
+        // ----------------------------------------------------
+        // ROOMS
+        // ----------------------------------------------------
 
         const roomForm =
-            document.getElementById("roomForm");
+            document.getElementById(
+                "roomForm"
+            );
 
 
         if (roomForm) {
 
-
-            /*
-             * Load saved rooms.
-             * If no rooms have been saved before,
-             * save the four original rooms.
-             */
-
-            if (!localStorage.getItem(ROOM_STORAGE_KEY)) {
+            if (
+                !localStorage.getItem(
+                    ROOM_STORAGE_KEY
+                )
+            ) {
 
                 const defaultRooms =
                     getStoredRooms();
 
-                saveRooms(defaultRooms);
+                saveRooms(
+                    defaultRooms
+                );
 
             }
 
@@ -2312,26 +2995,34 @@ document.addEventListener(
 
                     const roomNumber =
                         document
-                            .getElementById("roomNumber")
+                            .getElementById(
+                                "roomNumber"
+                            )
                             .value
                             .trim();
 
 
                     const roomType =
                         document
-                            .getElementById("roomType")
+                            .getElementById(
+                                "roomType"
+                            )
                             .value;
 
 
                     const roomPrice =
                         document
-                            .getElementById("roomPrice")
+                            .getElementById(
+                                "roomPrice"
+                            )
                             .value;
 
 
                     const roomStatus =
                         document
-                            .getElementById("roomStatus")
+                            .getElementById(
+                                "roomStatus"
+                            )
                             .value;
 
 
@@ -2340,7 +3031,9 @@ document.addEventListener(
                         !roomType ||
                         !roomPrice
                     ) {
+
                         return;
+
                     }
 
 
@@ -2349,24 +3042,30 @@ document.addEventListener(
 
 
                     const editingRoom =
-                        roomForm.dataset.editingRoom;
+                        roomForm.dataset
+                            .editingRoom;
 
 
                     const newRoom = {
 
-                        number: roomNumber,
+                        number:
+                            roomNumber,
 
-                        type: roomType,
+                        type:
+                            roomType,
 
-                        price: Number(roomPrice),
+                        price:
+                            Number(
+                                roomPrice
+                            ),
 
-                        status: roomStatus
+                        status:
+                            roomStatus
 
                     };
 
 
                     if (editingRoom) {
-
 
                         const roomIndex =
                             rooms.findIndex(
@@ -2381,26 +3080,35 @@ document.addEventListener(
                             );
 
 
-                        if (roomIndex !== -1) {
+                        if (
+                            roomIndex !== -1
+                        ) {
 
-                            rooms[roomIndex] =
+                            rooms[
+                                roomIndex
+                            ] =
                                 newRoom;
 
                         }
 
 
-                        delete roomForm.dataset.editingRoom;
+                        delete roomForm
+                            .dataset
+                            .editingRoom;
 
 
                     } else {
 
-
-                        rooms.push(newRoom);
+                        rooms.push(
+                            newRoom
+                        );
 
                     }
 
 
-                    saveRooms(rooms);
+                    saveRooms(
+                        rooms
+                    );
 
 
                     displayRooms();
@@ -2422,9 +3130,9 @@ document.addEventListener(
         }
 
 
-        /* ==========================
-           OTHER MODULE COUNTERS
-        ========================== */
+        // ----------------------------------------------------
+        // OTHER MODULE COUNTERS
+        // ----------------------------------------------------
 
         updateGuestCount();
 
@@ -2442,18 +3150,70 @@ document.addEventListener(
 
         updateExpenseCounts();
 
+
+        // ----------------------------------------------------
+        // REPORT DATA BRIDGE
+        // ----------------------------------------------------
+
+        setTimeout(
+            function() {
+
+                saveCurrentModuleTablesForReports();
+
+                startReportTableWatcher();
+
+            },
+            1000
+        );
+
+
+        setTimeout(
+            function() {
+
+                saveCurrentModuleTablesForReports();
+
+            },
+            3000
+        );
+
+
+        setTimeout(
+            function() {
+
+                saveCurrentModuleTablesForReports();
+
+            },
+            6000
+        );
+
     }
 );
 
 
-/* ===============================
-   ROOM BUTTONS
-================================ */
+// ============================================================
+// SAVE REPORT DATA BEFORE LEAVING PAGE
+// ============================================================
+
+window.addEventListener(
+    "beforeunload",
+    function() {
+
+        saveCurrentModuleTablesForReports();
+
+    }
+);
+
+
+// ============================================================
+// ROOM BUTTONS
+// ============================================================
 
 function attachRoomButtons() {
 
     const table =
-        document.getElementById("roomsTable");
+        document.getElementById(
+            "roomsTable"
+        );
 
 
     if (!table) return;
@@ -2461,29 +3221,33 @@ function attachRoomButtons() {
 
     table
         .querySelectorAll(".edit-btn")
-        .forEach(function(button) {
+        .forEach(
+            function(button) {
 
-            button.onclick =
-                function() {
+                button.onclick =
+                    function() {
 
-                    editRoom(this);
+                        editRoom(this);
 
-                };
+                    };
 
-        });
+            }
+        );
 
 
     table
         .querySelectorAll(".delete-btn")
-        .forEach(function(button) {
+        .forEach(
+            function(button) {
 
-            button.onclick =
-                function() {
+                button.onclick =
+                    function() {
 
-                    deleteRoom(this);
+                        deleteRoom(this);
 
-                };
+                    };
 
-        });
+            }
+        );
 
 }
