@@ -1,107 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Check-out - EDU TECH Hotel Management System</title>
+
     <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
 
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+
 <aside class="sidebar">
+
     <div class="logo">
         <h2>EDU TECH</h2>
         <p>HOTEL SYSTEM</p>
     </div>
 
     <nav>
+
         <a href="./index.html">🏠 Dashboard</a>
+
         <a href="./rooms.html">🛏️ Rooms</a>
+
         <a href="./guests.html">👤 Guests</a>
+
         <a href="./reservations.html">📅 Reservations</a>
+
         <a href="./checkin.html">🛎️ Check-in</a>
+
         <a href="./checkout.html" class="active">🚪 Check-out</a>
+
         <a href="./restaurant.html">🍽️ Restaurant</a>
+
         <a href="./inventory.html">📦 Inventory</a>
+
         <a href="./payments.html">💰 Payments</a>
+
         <a href="./expenses.html">💸 Expenses</a>
+
         <a href="./employees.html">👨‍💼 Employees</a>
+
         <a href="./housekeeping.html">🧹 Housekeeping</a>
+
         <a href="./maintenance.html">🔧 Maintenance</a>
+
         <a href="./reports.html">📊 Reports</a>
+
         <a href="./settings.html">⚙️ Settings</a>
+
     </nav>
+
 </aside>
+
+
+<!-- =========================================================
+     MAIN CONTENT
+========================================================= -->
 
 <main class="main-content">
 
     <header class="topbar">
+
         <div>
+
             <h1>Check-out Management</h1>
-            <p>Manage guest departures and completed stays</p>
+
+            <p>
+                Manage guest departures and completed stays
+            </p>
+
         </div>
 
+
         <div class="user">
-            <div class="user-icon">A</div>
-            <div>
-                <strong>Administrator</strong>
-                <small>System Admin</small>
+
+            <div class="user-icon">
+                A
             </div>
+
+            <div>
+
+                <strong>Administrator</strong>
+
+                <small>
+                    System Admin
+                </small>
+
+            </div>
+
         </div>
+
     </header>
+
+
+    <!-- =====================================================
+         SUMMARY CARDS
+    ===================================================== -->
 
     <section class="cards">
 
         <div class="card">
-            <div class="card-icon">🚪</div>
-            <div>
-                <h3>Today's Check-outs</h3>
-                <p id="todayCheckouts">0</p>
+
+            <div class="card-icon">
+                🚪
             </div>
+
+            <div>
+
+                <h3>
+                    Today's Check-outs
+                </h3>
+
+                <p id="todayCheckouts">
+                    0
+                </p>
+
+            </div>
+
         </div>
 
-        <div class="card">
-            <div class="card-icon">🟢</div>
-            <div>
-                <h3>Completed</h3>
-                <p id="completedCheckouts">0</p>
-            </div>
-        </div>
 
         <div class="card">
-            <div class="card-icon">🟡</div>
-            <div>
-                <h3>Pending</h3>
-                <p id="pendingCheckouts">0</p>
+
+            <div class="card-icon">
+                🟢
             </div>
+
+            <div>
+
+                <h3>
+                    Completed
+                </h3>
+
+                <p id="completedCheckouts">
+                    0
+                </p>
+
+            </div>
+
         </div>
 
+
         <div class="card">
-            <div class="card-icon">💰</div>
-            <div>
-                <h3>Total Revenue</h3>
-                <p id="checkoutRevenue">KSh 0</p>
+
+            <div class="card-icon">
+                🟡
             </div>
+
+            <div>
+
+                <h3>
+                    Pending
+                </h3>
+
+                <p id="pendingCheckouts">
+                    0
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="card-icon">
+                💰
+            </div>
+
+            <div>
+
+                <h3>
+                    Total Revenue
+                </h3>
+
+                <p id="checkoutRevenue">
+                    KSh 0
+                </p>
+
+            </div>
+
         </div>
 
     </section>
 
+
+    <!-- =====================================================
+         CHECK-OUT SECTION
+    ===================================================== -->
+
     <section class="room-container">
 
         <div class="room-header">
+
             <div>
-                <h2>Guest Check-outs</h2>
-                <p>Process and manage guests leaving the hotel</p>
+
+                <h2>
+                    Guest Check-outs
+                </h2>
+
+                <p>
+                    Process and manage guests leaving the hotel
+                </p>
+
             </div>
+
 
             <button
                 type="button"
                 class="add-room-btn"
                 onclick="openCheckoutForm()">
+
                 + New Check-out
+
             </button>
+
         </div>
+
+
+        <!-- SEARCH AND FILTER -->
 
         <div class="room-tools">
 
@@ -109,42 +233,92 @@
                 type="text"
                 id="checkoutSearch"
                 placeholder="Search guest or room..."
-                onkeyup="applyCheckoutFilters"
+                onkeyup="applyCheckoutFilters()"
             >
+
 
             <select
                 id="checkoutFilter"
                 onchange="applyCheckoutFilters()">
 
-                <option value="all">All Status</option>
-                <option value="Pending">Pending</option>
-                <option value="Completed">Completed</option>
-                <option value="Cancelled">Cancelled</option>
+                <option value="all">
+                    All Status
+                </option>
+
+                <option value="Pending">
+                    Pending
+                </option>
+
+                <option value="Completed">
+                    Completed
+                </option>
+
+                <option value="Cancelled">
+                    Cancelled
+                </option>
 
             </select>
 
         </div>
+
+
+        <!-- TABLE -->
 
         <div class="table-container">
 
             <table id="checkoutsTable">
 
                 <thead>
+
                     <tr>
-                        <th>Check-out ID</th>
-                        <th>Guest</th>
-                        <th>Room</th>
-                        <th>Check-in Date</th>
-                        <th>Check-out Date</th>
-                        <th>Nights</th>
-                        <th>Total Bill</th>
-                        <th>Payment</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+
+                        <th>
+                            Check-out ID
+                        </th>
+
+                        <th>
+                            Guest
+                        </th>
+
+                        <th>
+                            Room
+                        </th>
+
+                        <th>
+                            Check-in Date
+                        </th>
+
+                        <th>
+                            Check-out Date
+                        </th>
+
+                        <th>
+                            Nights
+                        </th>
+
+                        <th>
+                            Total Bill
+                        </th>
+
+                        <th>
+                            Payment
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
                     </tr>
+
                 </thead>
 
-                <tbody id="checkoutTable"></tbody>
+
+                <tbody id="checkoutTable">
+                </tbody>
 
             </table>
 
@@ -154,23 +328,45 @@
 
 </main>
 
-<div id="checkoutModal" class="modal">
+
+<!-- =========================================================
+     CHECK-OUT MODAL
+========================================================= -->
+
+<div
+    id="checkoutModal"
+    class="modal">
+
 
     <div class="modal-content">
 
+
         <div class="modal-header">
-            <h2>New Guest Check-out</h2>
+
+            <h2>
+                New Guest Check-out
+            </h2>
+
 
             <button
                 type="button"
                 onclick="closeCheckoutForm()">
+
                 ×
+
             </button>
+
         </div>
+
+
+        <!-- FORM -->
 
         <form id="checkoutForm">
 
-            <label for="checkoutGuest">Guest Name</label>
+
+            <label for="checkoutGuest">
+                Guest Name
+            </label>
 
             <input
                 type="text"
@@ -179,7 +375,10 @@
                 required
             >
 
-            <label for="checkoutRoom">Room Number</label>
+
+            <label for="checkoutRoom">
+                Room Number
+            </label>
 
             <input
                 type="text"
@@ -188,7 +387,10 @@
                 required
             >
 
-            <label for="checkoutCheckin">Check-in Date</label>
+
+            <label for="checkoutCheckin">
+                Check-in Date
+            </label>
 
             <input
                 type="date"
@@ -196,7 +398,10 @@
                 required
             >
 
-            <label for="checkoutDate">Check-out Date</label>
+
+            <label for="checkoutDate">
+                Check-out Date
+            </label>
 
             <input
                 type="date"
@@ -204,7 +409,10 @@
                 required
             >
 
-            <label for="checkoutNights">Number of Nights</label>
+
+            <label for="checkoutNights">
+                Number of Nights
+            </label>
 
             <input
                 type="number"
@@ -214,7 +422,10 @@
                 required
             >
 
-            <label for="checkoutBill">Total Bill (KSh)</label>
+
+            <label for="checkoutBill">
+                Total Bill (KSh)
+            </label>
 
             <input
                 type="number"
@@ -224,36 +435,76 @@
                 required
             >
 
-            <label for="checkoutPayment">Payment Status</label>
 
-            <select id="checkoutPayment" required>
-                <option value="Paid">Paid</option>
-                <option value="Pending">Pending</option>
-                <option value="Partial">Partial</option>
+            <label for="checkoutPayment">
+                Payment Status
+            </label>
+
+            <select
+                id="checkoutPayment"
+                required>
+
+                <option value="Paid">
+                    Paid
+                </option>
+
+                <option value="Pending">
+                    Pending
+                </option>
+
+                <option value="Partial">
+                    Partial
+                </option>
+
             </select>
 
-            <label for="checkoutStatus">Check-out Status</label>
 
-            <select id="checkoutStatus" required>
-                <option value="Completed">Completed</option>
-                <option value="Pending">Pending</option>
-                <option value="Cancelled">Cancelled</option>
+            <label for="checkoutStatus">
+                Check-out Status
+            </label>
+
+            <select
+                id="checkoutStatus"
+                required>
+
+                <option value="Completed">
+                    Completed
+                </option>
+
+                <option value="Pending">
+                    Pending
+                </option>
+
+                <option value="Cancelled">
+                    Cancelled
+                </option>
+
             </select>
+
+
+            <!-- FORM BUTTONS -->
 
             <div class="form-actions">
+
 
                 <button
                     type="button"
                     class="secondary-btn"
                     onclick="closeCheckoutForm()">
+
                     Cancel
+
                 </button>
+
 
                 <button
                     type="submit"
                     class="save-room-btn">
+
                     Save Check-out
+
                 </button>
+
 
             </div>
 
@@ -263,77 +514,126 @@
 
 </div>
 
+
+<!-- =========================================================
+     CHECK-OUT JAVASCRIPT
+========================================================= -->
+
 <script>
 
-const CHECKOUT_STORAGE_KEY = "eduTechCheckouts";
-const ROOM_STORAGE_KEY = "eduTechRooms";
+"use strict";
+
+
+/* =========================================================
+   STORAGE KEYS
+========================================================= */
+
+const CHECKOUT_STORAGE_KEY =
+    "eduTechCheckouts";
+
+const ROOM_STORAGE_KEY =
+    "eduTechRooms";
+
+
+/* =========================================================
+   LOAD CHECK-OUTS
+========================================================= */
 
 let checkouts =
-    JSON.parse(localStorage.getItem(CHECKOUT_STORAGE_KEY)) || [];
+    JSON.parse(
+        localStorage.getItem(
+            CHECKOUT_STORAGE_KEY
+        )
+    ) || [];
 
 
-/* ================================
+/* =========================================================
    SAVE CHECK-OUTS
-================================ */
+========================================================= */
 
 function saveCheckouts() {
 
     localStorage.setItem(
+
         CHECKOUT_STORAGE_KEY,
+
         JSON.stringify(checkouts)
+
     );
 
 }
 
 
-/* ================================
+/* =========================================================
    GET ROOMS
-================================ */
+========================================================= */
 
 function getRooms() {
 
     return JSON.parse(
-        localStorage.getItem(ROOM_STORAGE_KEY)
+
+        localStorage.getItem(
+            ROOM_STORAGE_KEY
+        )
+
     ) || [];
 
 }
 
 
-/* ================================
+/* =========================================================
    SAVE ROOMS
-================================ */
+========================================================= */
 
 function saveRooms(rooms) {
 
     localStorage.setItem(
+
         ROOM_STORAGE_KEY,
+
         JSON.stringify(rooms)
+
     );
 
 }
 
 
-/* ================================
+/* =========================================================
    UPDATE ROOM STATUS
-================================ */
+========================================================= */
 
-function updateRoomStatus(roomNumber, newStatus) {
+function updateRoomStatus(
+    roomNumber,
+    newStatus
+) {
 
-    const rooms = getRooms();
+    const rooms =
+        getRooms();
+
 
     if (!rooms.length) {
+
         return;
+
     }
 
-    const room = rooms.find(function(item) {
 
-        return String(item.number) === String(roomNumber);
+    const room =
+        rooms.find(function(item) {
 
-    });
+            return String(
+                item.number
+            ) === String(
+                roomNumber
+            );
+
+        });
+
 
     if (room) {
 
-        room.status = newStatus;
+        room.status =
+            newStatus;
 
         saveRooms(rooms);
 
@@ -342,40 +642,61 @@ function updateRoomStatus(roomNumber, newStatus) {
 }
 
 
-/* ================================
+/* =========================================================
    OPEN CHECK-OUT FORM
-================================ */
+========================================================= */
 
 function openCheckoutForm() {
 
     const modal =
-        document.getElementById("checkoutModal");
+        document.getElementById(
+            "checkoutModal"
+        );
 
-    modal.style.display = "flex";
+
+    modal.style.display =
+        "flex";
+
 
     const today =
-        new Date().toISOString().split("T")[0];
+        new Date()
+            .toISOString()
+            .split("T")[0];
 
-    document.getElementById("checkoutDate").value = today;
 
-    if (!document.getElementById("checkoutCheckin").value) {
+    document.getElementById(
+        "checkoutDate"
+    ).value =
+        today;
 
-        document.getElementById("checkoutCheckin").value = today;
+
+    if (
+        !document.getElementById(
+            "checkoutCheckin"
+        ).value
+    ) {
+
+        document.getElementById(
+            "checkoutCheckin"
+        ).value =
+            today;
 
     }
 
 }
 
 
-/* ================================
+/* =========================================================
    CLOSE CHECK-OUT FORM
-================================ */
+========================================================= */
 
 function closeCheckoutForm() {
 
     document.getElementById(
         "checkoutModal"
-    ).style.display = "none";
+    ).style.display =
+        "none";
+
 
     document.getElementById(
         "checkoutForm"
@@ -384,201 +705,343 @@ function closeCheckoutForm() {
 }
 
 
-/* ================================
+/* =========================================================
    SAVE CHECK-OUT
-================================ */
+========================================================= */
 
 document
-.getElementById("checkoutForm")
-.addEventListener("submit", function(event) {
+    .getElementById("checkoutForm")
+    .addEventListener(
+        "submit",
+        function(event) {
 
-    event.preventDefault();
-
-    const guest =
-        document.getElementById("checkoutGuest").value.trim();
-
-    const room =
-        document.getElementById("checkoutRoom").value.trim();
-
-    const checkinDate =
-        document.getElementById("checkoutCheckin").value;
-
-    const checkoutDate =
-        document.getElementById("checkoutDate").value;
-
-    const nights =
-        Number(
-            document.getElementById("checkoutNights").value
-        );
-
-    const bill =
-        Number(
-            document.getElementById("checkoutBill").value
-        );
-
-    const payment =
-        document.getElementById("checkoutPayment").value;
-
-    const status =
-        document.getElementById("checkoutStatus").value;
+            event.preventDefault();
 
 
-    if (
-        !guest ||
-        !room ||
-        !checkinDate ||
-        !checkoutDate ||
-        nights < 1 ||
-        bill < 0
-    ) {
-
-        alert("Please fill in all required fields.");
-
-        return;
-
-    }
+            const guest =
+                document
+                    .getElementById(
+                        "checkoutGuest"
+                    )
+                    .value
+                    .trim();
 
 
-    if (checkoutDate < checkinDate) {
-
-        alert("Check-out date cannot be earlier than check-in date.");
-
-        return;
-
-    }
-
-
-    const checkout = {
-
-        id: "OUT-" + Date.now(),
-
-        guest: guest,
-
-        room: room,
-
-        checkinDate: checkinDate,
-
-        checkoutDate: checkoutDate,
-
-        nights: nights,
-
-        bill: bill,
-
-        payment: payment,
-
-        status: status
-
-    };
+            const room =
+                document
+                    .getElementById(
+                        "checkoutRoom"
+                    )
+                    .value
+                    .trim();
 
 
-    checkouts.push(checkout);
-
-    saveCheckouts();
-
-
-    /*
-       If the guest has completed check-out,
-       automatically make the room available.
-    */
-
-    if (status === "Completed") {
-
-        updateRoomStatus(room, "Available");
-
-    }
+            const checkinDate =
+                document
+                    .getElementById(
+                        "checkoutCheckin"
+                    )
+                    .value;
 
 
-    displayCheckouts();
+            const checkoutDate =
+                document
+                    .getElementById(
+                        "checkoutDate"
+                    )
+                    .value;
 
-    closeCheckoutForm();
 
-    alert("Check-out record saved successfully.");
+            const nights =
+                Number(
+                    document
+                        .getElementById(
+                            "checkoutNights"
+                        )
+                        .value
+                );
 
-});
+
+            const bill =
+                Number(
+                    document
+                        .getElementById(
+                            "checkoutBill"
+                        )
+                        .value
+                );
 
 
-/* ================================
+            const payment =
+                document
+                    .getElementById(
+                        "checkoutPayment"
+                    )
+                    .value;
+
+
+            const status =
+                document
+                    .getElementById(
+                        "checkoutStatus"
+                    )
+                    .value;
+
+
+            /* VALIDATION */
+
+            if (
+                !guest ||
+                !room ||
+                !checkinDate ||
+                !checkoutDate ||
+                nights < 1 ||
+                bill < 0
+            ) {
+
+                alert(
+                    "Please fill in all required fields."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                checkoutDate <
+                checkinDate
+            ) {
+
+                alert(
+                    "Check-out date cannot be earlier than check-in date."
+                );
+
+                return;
+
+            }
+
+
+            /* CREATE CHECK-OUT */
+
+            const checkout = {
+
+                id:
+                    "OUT-" +
+                    Date.now(),
+
+                guest:
+                    guest,
+
+                room:
+                    room,
+
+                checkinDate:
+                    checkinDate,
+
+                checkoutDate:
+                    checkoutDate,
+
+                nights:
+                    nights,
+
+                bill:
+                    bill,
+
+                payment:
+                    payment,
+
+                status:
+                    status
+
+            };
+
+
+            /* ADD RECORD */
+
+            checkouts.push(
+                checkout
+            );
+
+
+            saveCheckouts();
+
+
+            /*
+                If the guest has completed
+                check-out, make the room available.
+            */
+
+            if (
+                status ===
+                "Completed"
+            ) {
+
+                updateRoomStatus(
+                    room,
+                    "Available"
+                );
+
+            }
+
+
+            displayCheckouts();
+
+
+            closeCheckoutForm();
+
+
+            alert(
+                "Check-out record saved successfully."
+            );
+
+        }
+    );
+
+
+/* =========================================================
    DISPLAY CHECK-OUTS
-================================ */
+========================================================= */
 
 function displayCheckouts() {
 
     const table =
-        document.getElementById("checkoutTable");
-
-    table.innerHTML = "";
-
-
-    checkouts.forEach(function(item) {
-
-        const row =
-            document.createElement("tr");
+        document.getElementById(
+            "checkoutTable"
+        );
 
 
-        row.innerHTML = `
+    table.innerHTML =
+        "";
 
-            <td>${item.id}</td>
 
-            <td>${item.guest}</td>
+    if (checkouts.length === 0) {
 
-            <td>${item.room}</td>
+        table.innerHTML = `
 
-            <td>${item.checkinDate}</td>
+            <tr>
 
-            <td>${item.checkoutDate}</td>
+                <td
+                    colspan="10"
+                    style="
+                        text-align:center;
+                        padding:25px;
+                    "
+                >
 
-            <td>${item.nights}</td>
+                    No check-out records found.
 
-            <td>
-                KSh ${Number(item.bill || 0).toLocaleString()}
-            </td>
+                </td>
 
-            <td>${item.payment}</td>
-
-            <td>${item.status}</td>
-
-            <td>
-
-                <button
-                    type="button"
-                    class="action-btn delete-btn"
-                    onclick="deleteCheckout('${item.id}')">
-
-                    Delete
-
-                </button>
-
-            </td>
+            </tr>
 
         `;
 
+    }
 
-        table.appendChild(row);
 
-    });
+    checkouts.forEach(
+        function(item) {
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${item.id || ""}
+                </td>
+
+                <td>
+                    ${item.guest || ""}
+                </td>
+
+                <td>
+                    ${item.room || ""}
+                </td>
+
+                <td>
+                    ${item.checkinDate || ""}
+                </td>
+
+                <td>
+                    ${item.checkoutDate || ""}
+                </td>
+
+                <td>
+                    ${item.nights || 0}
+                </td>
+
+                <td>
+                    KSh ${Number(
+                        item.bill || 0
+                    ).toLocaleString()}
+                </td>
+
+                <td>
+                    ${item.payment || ""}
+                </td>
+
+                <td>
+                    ${item.status || ""}
+                </td>
+
+                <td>
+
+                    <button
+                        type="button"
+                        class="action-btn delete-btn"
+                        onclick="deleteCheckout('${item.id}')"
+                    >
+
+                        Delete
+
+                    </button>
+
+                </td>
+
+            `;
+
+
+            table.appendChild(
+                row
+            );
+
+        }
+    );
 
 
     updateCheckoutSummary();
 
+
+    applyCheckoutFilters();
+
 }
 
 
-/* ================================
+/* =========================================================
    DELETE CHECK-OUT
-================================ */
+========================================================= */
 
 function deleteCheckout(id) {
 
     const checkout =
-        checkouts.find(function(item) {
+        checkouts.find(
+            function(item) {
 
-            return item.id === id;
+                return item.id === id;
 
-        });
+            }
+        );
 
 
     if (!checkout) {
+
         return;
+
     }
 
 
@@ -594,26 +1057,34 @@ function deleteCheckout(id) {
 
 
     checkouts =
-        checkouts.filter(function(item) {
+        checkouts.filter(
+            function(item) {
 
-            return item.id !== id;
+                return item.id !== id;
 
-        });
+            }
+        );
 
 
     saveCheckouts();
 
 
     /*
-       If a completed check-out is deleted,
-       temporarily return the room to Occupied.
+        If a completed check-out is deleted,
+        return the room to Occupied.
     */
 
-    if (checkout.status === "Completed") {
+    if (
+        checkout.status ===
+        "Completed"
+    ) {
 
         updateRoomStatus(
+
             checkout.room,
+
             "Occupied"
+
         );
 
     }
@@ -624,22 +1095,28 @@ function deleteCheckout(id) {
 }
 
 
-/* ================================
-   APPLY SEARCH + FILTER
-================================ */
+/* =========================================================
+   SEARCH + FILTER
+========================================================= */
 
 function applyCheckoutFilters() {
 
     const search =
         document
-        .getElementById("checkoutSearch")
-        .value
-        .toLowerCase()
-        .trim();
+            .getElementById(
+                "checkoutSearch"
+            )
+            .value
+            .toLowerCase()
+            .trim();
 
 
     const filter =
-        document.getElementById("checkoutFilter").value;
+        document
+            .getElementById(
+                "checkoutFilter"
+            )
+            .value;
 
 
     const rows =
@@ -648,111 +1125,153 @@ function applyCheckoutFilters() {
         );
 
 
-    rows.forEach(function(row) {
+    rows.forEach(
+        function(row) {
 
-        const text =
-            row.textContent.toLowerCase();
-
-
-        const status =
-            row.children[8]
-            ? row.children[8].textContent.trim()
-            : "";
+            const text =
+                row.textContent
+                    .toLowerCase();
 
 
-        const matchesSearch =
-            text.includes(search);
+            const status =
+                row.children[8]
+                    ? row.children[8]
+                        .textContent
+                        .trim()
+                    : "";
 
 
-        const matchesFilter =
-            filter === "all" ||
-            status === filter;
+            const matchesSearch =
+                text.includes(
+                    search
+                );
 
 
-        row.style.display =
-            matchesSearch && matchesFilter
-            ? ""
-            : "none";
+            const matchesFilter =
+                filter === "all" ||
+                status === filter;
 
-    });
+
+            row.style.display =
+                matchesSearch &&
+                matchesFilter
+                    ? ""
+                    : "none";
+
+        }
+    );
 
 }
 
 
-/* ================================
+/* =========================================================
    SUMMARY
-================================ */
+========================================================= */
 
 function updateCheckoutSummary() {
 
     const today =
-        new Date().toISOString().split("T")[0];
+        new Date()
+            .toISOString()
+            .split("T")[0];
 
 
     const todayCount =
-        checkouts.filter(function(item) {
+        checkouts.filter(
+            function(item) {
 
-            return item.checkoutDate === today;
+                return (
+                    item.checkoutDate ===
+                    today
+                );
 
-        }).length;
+            }
+        ).length;
 
 
     const completed =
-        checkouts.filter(function(item) {
+        checkouts.filter(
+            function(item) {
 
-            return item.status === "Completed";
+                return (
+                    item.status ===
+                    "Completed"
+                );
 
-        }).length;
+            }
+        ).length;
 
 
     const pending =
-        checkouts.filter(function(item) {
+        checkouts.filter(
+            function(item) {
 
-            return item.status === "Pending";
+                return (
+                    item.status ===
+                    "Pending"
+                );
 
-        }).length;
+            }
+        ).length;
 
 
     const revenue =
         checkouts
-        .filter(function(item) {
+            .filter(
+                function(item) {
 
-            return item.status === "Completed";
+                    return (
+                        item.status ===
+                        "Completed"
+                    );
 
-        })
-        .reduce(function(total, item) {
+                }
+            )
+            .reduce(
+                function(total, item) {
 
-            return total + Number(item.bill || 0);
+                    return (
+                        total +
+                        Number(
+                            item.bill || 0
+                        )
+                    );
 
-        }, 0);
+                },
+                0
+            );
 
 
     document.getElementById(
         "todayCheckouts"
-    ).textContent = todayCount;
+    ).textContent =
+        todayCount;
 
 
     document.getElementById(
         "completedCheckouts"
-    ).textContent = completed;
+    ).textContent =
+        completed;
 
 
     document.getElementById(
         "pendingCheckouts"
-    ).textContent = pending;
+    ).textContent =
+        pending;
 
 
     document.getElementById(
         "checkoutRevenue"
     ).textContent =
-        "KSh " + revenue.toLocaleString();
+        "KSh " +
+        revenue.toLocaleString();
 
 }
 
 
-/* ================================
+/* =========================================================
    CALCULATE NIGHTS
-================================ */
+========================================================= */
 
 function calculateNights() {
 
@@ -761,13 +1280,17 @@ function calculateNights() {
             "checkoutCheckin"
         ).value;
 
+
     const checkoutValue =
         document.getElementById(
             "checkoutDate"
         ).value;
 
 
-    if (!checkinValue || !checkoutValue) {
+    if (
+        !checkinValue ||
+        !checkoutValue
+    ) {
 
         return;
 
@@ -775,16 +1298,31 @@ function calculateNights() {
 
 
     const checkin =
-        new Date(checkinValue);
+        new Date(
+            checkinValue
+        );
+
 
     const checkout =
-        new Date(checkoutValue);
+        new Date(
+            checkoutValue
+        );
 
 
     const difference =
         Math.ceil(
-            (checkout - checkin) /
-            (1000 * 60 * 60 * 24)
+
+            (
+                checkout -
+                checkin
+            ) /
+            (
+                1000 *
+                60 *
+                60 *
+                24
+            )
+
         );
 
 
@@ -792,57 +1330,505 @@ function calculateNights() {
 
         document.getElementById(
             "checkoutNights"
-        ).value = difference;
+        ).value =
+            difference;
 
     }
 
 }
 
 
-document
-.getElementById("checkoutCheckin")
-.addEventListener(
-    "change",
-    calculateNights
-);
-
+/* =========================================================
+   DATE EVENTS
+========================================================= */
 
 document
-.getElementById("checkoutDate")
-.addEventListener(
-    "change",
-    calculateNights
-);
+    .getElementById(
+        "checkoutCheckin"
+    )
+    .addEventListener(
+        "change",
+        calculateNights
+    );
 
 
-/* ================================
-   CLOSE MODAL WHEN CLICKING OUTSIDE
-================================ */
-
-window.addEventListener("click", function(event) {
-
-    const modal =
-        document.getElementById(
-            "checkoutModal"
-        );
+document
+    .getElementById(
+        "checkoutDate"
+    )
+    .addEventListener(
+        "change",
+        calculateNights
+    );
 
 
-    if (event.target === modal) {
+/* =========================================================
+   CLOSE MODAL OUTSIDE
+========================================================= */
 
-        closeCheckoutForm();
+window.addEventListener(
+    "click",
+    function(event) {
+
+        const modal =
+            document.getElementById(
+                "checkoutModal"
+            );
+
+
+        if (
+            event.target ===
+            modal
+        ) {
+
+            closeCheckoutForm();
+
+        }
 
     }
+);
 
-});
 
-
-/* ================================
+/* =========================================================
    INITIAL LOAD
-================================ */
+========================================================= */
 
 displayCheckouts();
 
 </script>
 
+
+<!-- =========================================================
+     ROLE CONTROL
+========================================================= -->
+
+<script>
+
+(function () {
+
+    "use strict";
+
+
+    /* =====================================================
+       ROLE PERMISSIONS
+    ===================================================== */
+
+    const ROLE_PERMISSIONS = {
+
+        system_owner: [
+
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings",
+            "hotels"
+
+        ],
+
+
+        hotel_owner: [
+
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings"
+
+        ],
+
+
+        manager: [
+
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings"
+
+        ],
+
+
+        receptionist: [
+
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "payments",
+            "reports"
+
+        ]
+
+    };
+
+
+    /* =====================================================
+       GET CURRENT USER ROLE
+    ===================================================== */
+
+    function getRole() {
+
+        let role =
+            sessionStorage.getItem(
+                "userRole"
+            );
+
+
+        if (!role) {
+
+            role =
+                localStorage.getItem(
+                    "userRole"
+                );
+
+        }
+
+
+        return String(
+            role || ""
+        )
+            .toLowerCase()
+            .trim();
+
+    }
+
+
+    /* =====================================================
+       GET MODULE FROM SIDEBAR LINK
+    ===================================================== */
+
+    function getModuleFromLink(link) {
+
+        const href =
+            String(
+                link.getAttribute(
+                    "href"
+                ) || ""
+            )
+                .toLowerCase()
+                .split("?")[0]
+                .split("#")[0]
+                .trim();
+
+
+        /* DASHBOARD */
+
+        if (
+
+            href === "./" ||
+
+            href === "/" ||
+
+            href === "index.html" ||
+
+            href === "./index.html" ||
+
+            href.endsWith(
+                "/index.html"
+            )
+
+        ) {
+
+            return "dashboard";
+
+        }
+
+
+        /* OTHER MODULES */
+
+        const modules = [
+
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings",
+            "hotels"
+
+        ];
+
+
+        for (
+            let i = 0;
+            i < modules.length;
+            i++
+        ) {
+
+            if (
+
+                href.includes(
+                    modules[i] +
+                    ".html"
+                )
+
+            ) {
+
+                return modules[i];
+
+            }
+
+        }
+
+
+        return null;
+
+    }
+
+
+    /* =====================================================
+       GET CURRENT PAGE MODULE
+    ===================================================== */
+
+    function getCurrentModule() {
+
+        const filename =
+            window.location.pathname
+                .split("/")
+                .pop()
+                .toLowerCase();
+
+
+        if (
+
+            !filename ||
+
+            filename === "index.html"
+
+        ) {
+
+            return "dashboard";
+
+        }
+
+
+        return filename.replace(
+            ".html",
+            ""
+        );
+
+    }
+
+
+    /* =====================================================
+       HIDE UNAUTHORIZED SIDEBAR LINKS
+    ===================================================== */
+
+    function applyRoleControl() {
+
+        const role =
+            getRole();
+
+
+        if (!role) {
+
+            return;
+
+        }
+
+
+        const allowed =
+            ROLE_PERMISSIONS[role];
+
+
+        if (!allowed) {
+
+            return;
+
+        }
+
+
+        document
+            .querySelectorAll(
+                ".sidebar nav a"
+            )
+            .forEach(
+                function(link) {
+
+                    const module =
+                        getModuleFromLink(
+                            link
+                        );
+
+
+                    if (!module) {
+
+                        return;
+
+                    }
+
+
+                    if (
+                        allowed.includes(
+                            module
+                        )
+                    ) {
+
+                        link.style.removeProperty(
+                            "display"
+                        );
+
+                    } else {
+
+                        link.style.setProperty(
+                            "display",
+                            "none",
+                            "important"
+                        );
+
+                    }
+
+                }
+            );
+
+    }
+
+
+    /* =====================================================
+       PROTECT DIRECT PAGE ACCESS
+    ===================================================== */
+
+    function protectPage() {
+
+        const role =
+            getRole();
+
+
+        if (!role) {
+
+            return;
+
+        }
+
+
+        const allowed =
+            ROLE_PERMISSIONS[role];
+
+
+        if (!allowed) {
+
+            return;
+
+        }
+
+
+        const currentModule =
+            getCurrentModule();
+
+
+        if (
+            !allowed.includes(
+                currentModule
+            )
+        ) {
+
+            window.location.href =
+                "./index.html";
+
+        }
+
+    }
+
+
+    /* =====================================================
+       RUN ROLE CONTROL
+    ===================================================== */
+
+    function runRoleControl() {
+
+        applyRoleControl();
+
+        protectPage();
+
+    }
+
+
+    /* =====================================================
+       PAGE READY
+    ===================================================== */
+
+    if (
+
+        document.readyState ===
+        "loading"
+
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            runRoleControl
+        );
+
+    } else {
+
+        runRoleControl();
+
+    }
+
+
+    /* =====================================================
+       KEEP SIDEBAR PROTECTED
+    ===================================================== */
+
+    setInterval(
+        applyRoleControl,
+        500
+    );
+
+
+    /* =====================================================
+       GLOBAL FUNCTION
+    ===================================================== */
+
+    window.applyRoleControl =
+        applyRoleControl;
+
+
+})();
+
+</script>
+
 </body>
+
 </html>
