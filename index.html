@@ -1296,10 +1296,10 @@
                 supabaseClient
                     .from("reservations")
                     .select(
-                        "id, status"
+                        '"id", "status"'
                     )
                     .eq(
-                        "check_in",
+                        "check in date",
                         today
                     )
                     .neq(
@@ -1357,37 +1357,21 @@
             const today =
                 getToday();
 
-
             let reservationQuery =
                 supabaseClient
                     .from("reservations")
                     .select(
-                        "id, guest_id, room_id, check_in, check_out, status"
-                    )
-                    .or(
-                        "check_in.eq." +
-                        today +
-                        ",check_out.eq." +
-                        today
-                    )
-                    .order(
-                        "check_in",
-                        {
-                            ascending: true
-                        }
+                        '"id", "guest id", "room id", "check in date", "check out date", "status"'
                     );
-
 
             reservationQuery =
                 applyHotelFilter(reservationQuery);
 
-
             const {
-                data: reservations,
+                data: allReservations,
                 error: reservationError
             } =
                 await reservationQuery;
-
 
             if (reservationError) {
 
@@ -1399,17 +1383,34 @@
                 return;
             }
 
+            const reservations =
+                (allReservations || [])
+                    .filter(function (reservation) {
+
+                        return (
+                            reservation["check in date"] === today ||
+                            reservation["check out date"] === today
+                        );
+
+                    })
+                    .sort(function (a, b) {
+
+                        return String(
+                            a["check in date"] || ""
+                        ).localeCompare(
+                            String(
+                                b["check in date"] || ""
+                            )
+                        );
+
+                    });
 
             const activityTable =
                 document.getElementById(
                     "dashboardActivityTable"
                 );
 
-
-            if (
-                !reservations ||
-                reservations.length === 0
-            ) {
+            if (reservations.length === 0) {
 
                 activityTable.innerHTML = `
                     <tr>
@@ -1422,30 +1423,26 @@
                 return;
             }
 
-
             const guestIds =
                 [...new Set(
                     reservations
                         .map(function (reservation) {
-                            return reservation.guest_id;
+                            return reservation["guest id"];
                         })
                         .filter(Boolean)
                 )];
-
 
             const roomIds =
                 [...new Set(
                     reservations
                         .map(function (reservation) {
-                            return reservation.room_id;
+                            return reservation["room id"];
                         })
                         .filter(Boolean)
                 )];
 
-
             let guests = [];
             let rooms = [];
-
 
             if (guestIds.length > 0) {
 
@@ -1457,7 +1454,6 @@
                         .from("guests")
                         .select("id, full_name")
                         .in("id", guestIds);
-
 
                 if (guestError) {
 
@@ -1472,7 +1468,6 @@
                 guests = guestData || [];
             }
 
-
             if (roomIds.length > 0) {
 
                 const {
@@ -1483,7 +1478,6 @@
                         .from("rooms")
                         .select("id, room_number")
                         .in("id", roomIds);
-
 
                 if (roomError) {
 
@@ -1498,7 +1492,6 @@
                 rooms = roomData || [];
             }
 
-
             const guestMap = {};
 
             guests.forEach(
@@ -1507,7 +1500,6 @@
                         guest.full_name;
                 }
             );
-
 
             const roomMap = {};
 
@@ -1518,26 +1510,28 @@
                 }
             );
 
-
             activityTable.innerHTML = "";
-
 
             reservations.forEach(
                 function (reservation) {
 
-                    const guestName =
-                        reservation.guest_id &&
-                        guestMap[reservation.guest_id]
-                            ? guestMap[reservation.guest_id]
-                            : "-";
+                    const guestId =
+                        reservation["guest id"];
 
+                    const roomId =
+                        reservation["room id"];
+
+                    const guestName =
+                        guestId &&
+                        guestMap[guestId]
+                            ? guestMap[guestId]
+                            : "-";
 
                     const roomNumber =
-                        reservation.room_id &&
-                        roomMap[reservation.room_id]
-                            ? roomMap[reservation.room_id]
+                        roomId &&
+                        roomMap[roomId]
+                            ? roomMap[roomId]
                             : "-";
-
 
                     activityTable.innerHTML += `
 
@@ -1557,36 +1551,30 @@
 
                             <td>
                                 ${escapeHtml(
-                                    reservation.check_in
+                                    reservation["check in date"]
                                 )}
                             </td>
 
                             <td>
                                 ${escapeHtml(
-                                    reservation.check_out
+                                    reservation["check out date"]
                                 )}
                             </td>
 
                             <td>
-
                                 <span class="status">
-
                                     ${escapeHtml(
                                         reservation.status
                                     )}
-
                                 </span>
-
                             </td>
 
                         </tr>
 
                     `;
-
                 }
             );
         }
-
 
 
         /*
