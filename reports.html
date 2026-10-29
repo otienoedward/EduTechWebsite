@@ -4,7 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reports - EDU TECH Hotel Management System</title>
+
     <link rel="stylesheet" href="./style.css">
+
+    <style>
+
+        /* REPORT ACTIONS */
+        .report-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .secondary-btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            background: #6c757d;
+            color: white;
+        }
+
+        .secondary-btn:hover {
+            opacity: 0.9;
+        }
+
+        .report-message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .report-message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .report-message.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .report-loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        @media print {
+
+            .sidebar,
+            .topbar button,
+            .report-actions,
+            .filters,
+            .report-message {
+                display: none !important;
+            }
+
+            .main-content {
+                margin: 0 !important;
+                padding: 20px !important;
+            }
+
+            .content-card,
+            .summary-card {
+                break-inside: avoid;
+            }
+
+            body {
+                background: white !important;
+            }
+
+        }
+
+    </style>
+
 </head>
 
 <body>
@@ -49,18 +125,51 @@
         <header class="topbar">
 
             <div>
+
                 <h1>Reports</h1>
-                <p>View hotel performance and operational reports</p>
+
+                <p>
+                    View hotel performance and operational reports
+                </p>
+
             </div>
 
-            <button
-                class="primary-btn"
-                onclick="generateReport()"
-            >
-                📄 Generate Report
-            </button>
+            <div class="report-actions">
+
+                <button
+                    class="primary-btn"
+                    id="generateReportBtn"
+                    type="button"
+                >
+                    📄 Generate Report
+                </button>
+
+                <button
+                    class="secondary-btn"
+                    id="printReportBtn"
+                    type="button"
+                >
+                    🖨️ Print
+                </button>
+
+                <button
+                    class="secondary-btn"
+                    id="downloadReportBtn"
+                    type="button"
+                >
+                    ⬇️ Download
+                </button>
+
+            </div>
 
         </header>
+
+
+        <!-- REPORT MESSAGE -->
+        <div
+            id="reportMessage"
+            class="report-message"
+        ></div>
 
 
         <!-- REPORT FILTER -->
@@ -69,13 +178,18 @@
             <div class="section-header">
 
                 <div>
+
                     <h2>Report Period</h2>
-                    <p>Select the period you want to review</p>
+
+                    <p>
+                        Select the period you want to review
+                    </p>
+
                 </div>
 
                 <div class="filters">
 
-                    <select id="reportPeriod" onchange="updateReports()">
+                    <select id="reportPeriod">
 
                         <option value="today">
                             Today
@@ -110,7 +224,7 @@
                 <h3>Total Rooms</h3>
 
                 <strong id="reportRooms">
-                    40
+                    0
                 </strong>
 
                 <p>Hotel rooms</p>
@@ -123,7 +237,7 @@
                 <h3>Occupied Rooms</h3>
 
                 <strong id="reportOccupied">
-                    25
+                    0
                 </strong>
 
                 <p>Currently occupied</p>
@@ -307,7 +421,7 @@
 
                     <h2>Report Details</h2>
 
-                    <p>
+                    <p id="reportDetailsDescription">
                         Current system activity summary
                     </p>
 
@@ -323,55 +437,30 @@
                     <thead>
 
                         <tr>
-                            <th>Category</th>
-                            <th>Total</th>
-                            <th>Status</th>
+
+                            <th>
+                                Category
+                            </th>
+
+                            <th>
+                                Total
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
                         </tr>
 
                     </thead>
+
 
                     <tbody id="reportTable">
 
                         <tr>
                             <td>Rooms</td>
-                            <td>40</td>
-                            <td>Active</td>
-                        </tr>
-
-                        <tr>
-                            <td>Guests</td>
                             <td>0</td>
-                            <td>Active</td>
-                        </tr>
-
-                        <tr>
-                            <td>Reservations</td>
-                            <td>0</td>
-                            <td>Active</td>
-                        </tr>
-
-                        <tr>
-                            <td>Payments</td>
-                            <td>0</td>
-                            <td>Recorded</td>
-                        </tr>
-
-                        <tr>
-                            <td>Expenses</td>
-                            <td>0</td>
-                            <td>Recorded</td>
-                        </tr>
-
-                        <tr>
-                            <td>Housekeeping</td>
-                            <td>0</td>
-                            <td>Active</td>
-                        </tr>
-
-                        <tr>
-                            <td>Maintenance</td>
-                            <td>0</td>
-                            <td>Active</td>
+                            <td>Loading</td>
                         </tr>
 
                     </tbody>
@@ -387,62 +476,979 @@
 </div>
 
 
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="./supabase.js"></script>
+
+
 <script>
 
+/*
+=========================================================
+GLOBAL VARIABLES
+=========================================================
+*/
 
-// GET NUMBER FROM TEXT
-function getNumber(id) {
+let currentUser = null;
+let currentProfile = null;
 
-    const element =
-        document.getElementById(id);
+let reportData = {
+    period: "month",
+    periodName: "This Month",
+    rooms: 0,
+    occupied: 0,
+    guests: 0,
+    reservations: 0,
+    revenue: 0,
+    expenses: 0,
+    netIncome: 0,
+    housekeeping: 0,
+    cleaningCompleted: 0,
+    maintenance: 0,
+    maintenancePending: 0
+};
 
-    if (!element) {
+
+/*
+=========================================================
+GET DATE
+=========================================================
+*/
+
+function getTodayDate() {
+
+    const date = new Date();
+
+    return date.toISOString().split("T")[0];
+
+}
+
+
+/*
+=========================================================
+GET PERIOD
+=========================================================
+*/
+
+function getReportPeriod() {
+
+    const selected =
+        document.getElementById("reportPeriod").value;
+
+    const now = new Date();
+
+    let start = new Date(now);
+
+    let end = new Date(now);
+
+    if (selected === "today") {
+
+        start = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate()
+        );
+
+    }
+
+    if (selected === "week") {
+
+        const day = now.getDay();
+
+        const difference =
+            day === 0 ? 6 : day - 1;
+
+        start = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate() - difference
+        );
+
+    }
+
+    if (selected === "month") {
+
+        start = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            1
+        );
+
+    }
+
+    if (selected === "year") {
+
+        start = new Date(
+            now.getFullYear(),
+            0,
+            1
+        );
+
+    }
+
+    start.setHours(0, 0, 0, 0);
+
+    end.setHours(23, 59, 59, 999);
+
+    return {
+        start,
+        end
+    };
+
+}
+
+
+/*
+=========================================================
+PERIOD NAME
+=========================================================
+*/
+
+function getPeriodName() {
+
+    const value =
+        document.getElementById("reportPeriod").value;
+
+    if (value === "today") {
+        return "Today";
+    }
+
+    if (value === "week") {
+        return "This Week";
+    }
+
+    if (value === "year") {
+        return "This Year";
+    }
+
+    return "This Month";
+
+}
+
+
+/*
+=========================================================
+DATE FIELD DETECTION
+=========================================================
+*/
+
+function findKey(row, possibleNames) {
+
+    if (!row) {
+        return null;
+    }
+
+    const keys = Object.keys(row);
+
+    for (const name of possibleNames) {
+
+        const exact =
+            keys.find(
+                key =>
+                    key.toLowerCase() ===
+                    name.toLowerCase()
+            );
+
+        if (exact) {
+            return exact;
+        }
+
+    }
+
+    return null;
+
+}
+
+
+/*
+=========================================================
+NUMBER FIELD DETECTION
+=========================================================
+*/
+
+function findNumber(row, possibleNames) {
+
+    const key =
+        findKey(row, possibleNames);
+
+    if (!key) {
         return 0;
     }
 
     const value =
-        element.textContent
-        .replace(/[^0-9.-]/g, "");
+        Number(row[key]);
 
-    return Number(value) || 0;
-
-}
-
-
-// UPDATE REPORTS
-function updateReports() {
-
-    let rooms = 40;
-    let occupied = 25;
-
-
-    const reportRooms =
-        document.getElementById("reportRooms");
-
-    const reportOccupied =
-        document.getElementById("reportOccupied");
-
-
-    if (reportRooms) {
-        reportRooms.textContent = rooms;
-    }
-
-
-    if (reportOccupied) {
-        reportOccupied.textContent = occupied;
-    }
-
-
-    updateReportTable();
+    return Number.isFinite(value)
+        ? value
+        : 0;
 
 }
 
 
-// UPDATE REPORT TABLE
+/*
+=========================================================
+CHECK IF DATE IS IN PERIOD
+=========================================================
+*/
+
+function isDateInPeriod(value, period) {
+
+    if (!value) {
+        return false;
+    }
+
+    const date =
+        new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return false;
+    }
+
+    return (
+        date >= period.start &&
+        date <= period.end
+    );
+
+}
+
+
+/*
+=========================================================
+HOTEL FILTER
+=========================================================
+*/
+
+function belongsToCurrentHotel(row) {
+
+    if (
+        !currentProfile ||
+        currentProfile.role === "system_owner"
+    ) {
+
+        return true;
+
+    }
+
+    const hotelKey =
+        findKey(
+            row,
+            [
+                "hotel_id",
+                "hotel id",
+                "hotelId"
+            ]
+        );
+
+    if (!hotelKey) {
+        return true;
+    }
+
+    if (!currentProfile.hotel_id) {
+        return true;
+    }
+
+    return (
+        String(row[hotelKey]) ===
+        String(currentProfile.hotel_id)
+    );
+
+}
+
+
+/*
+=========================================================
+LOAD USER
+=========================================================
+*/
+
+async function loadCurrentUser() {
+
+    const {
+        data: sessionData,
+        error: sessionError
+    } =
+        await supabaseClient.auth.getSession();
+
+
+    if (
+        sessionError ||
+        !sessionData ||
+        !sessionData.session
+    ) {
+
+        window.location.href =
+            "login.html";
+
+        return false;
+
+    }
+
+
+    currentUser =
+        sessionData.session.user;
+
+
+    const {
+        data: profile,
+        error: profileError
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select("*")
+            .eq(
+                "id",
+                currentUser.id
+            )
+            .single();
+
+
+    if (profileError) {
+
+        showMessage(
+            "Unable to load your user profile: " +
+            profileError.message,
+            "error"
+        );
+
+        return false;
+
+    }
+
+
+    currentProfile =
+        profile;
+
+    return true;
+
+}
+
+
+/*
+=========================================================
+LOAD TABLE
+=========================================================
+*/
+
+async function loadTable(tableName) {
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from(tableName)
+            .select("*");
+
+
+    if (error) {
+
+        console.error(
+            "Error loading " +
+            tableName,
+            error
+        );
+
+        return [];
+
+    }
+
+
+    return (data || [])
+        .filter(belongsToCurrentHotel);
+
+}
+
+
+/*
+=========================================================
+FORMAT MONEY
+=========================================================
+*/
+
+function formatMoney(value) {
+
+    return (
+        "KSh " +
+        Number(value || 0)
+            .toLocaleString(
+                "en-KE",
+                {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }
+            )
+    );
+
+}
+
+
+/*
+=========================================================
+LOAD REPORT
+=========================================================
+*/
+
+async function loadReport() {
+
+    try {
+
+        document.body.classList.add(
+            "report-loading"
+        );
+
+
+        const period =
+            getReportPeriod();
+
+
+        /*
+        -------------------------------------------------
+        LOAD ALL REQUIRED TABLES
+        -------------------------------------------------
+        */
+
+        const [
+            rooms,
+            guests,
+            reservations,
+            payments,
+            expenses,
+            housekeeping,
+            maintenance
+        ] =
+        await Promise.all([
+
+            loadTable("rooms"),
+
+            loadTable("guests"),
+
+            loadTable("reservations"),
+
+            loadTable("payments"),
+
+            loadTable("expenses"),
+
+            loadTable("housekeeping"),
+
+            loadTable("maintenance")
+
+        ]);
+
+
+        /*
+        -------------------------------------------------
+        ROOMS
+        -------------------------------------------------
+        */
+
+        const occupiedRooms =
+            rooms.filter(row => {
+
+                const statusKey =
+                    findKey(
+                        row,
+                        [
+                            "status",
+                            "room status"
+                        ]
+                    );
+
+                if (!statusKey) {
+                    return false;
+                }
+
+                return String(
+                    row[statusKey]
+                ).toLowerCase() ===
+                "occupied";
+
+            });
+
+
+        /*
+        -------------------------------------------------
+        RESERVATIONS
+        -------------------------------------------------
+        */
+
+        const reservationDateFields = [
+
+            "check in",
+            "check_in",
+            "checkin",
+            "reservation_date",
+            "reservation date",
+            "created_at",
+            "created at"
+
+        ];
+
+
+        const periodReservations =
+            reservations.filter(row => {
+
+                const dateKey =
+                    findKey(
+                        row,
+                        reservationDateFields
+                    );
+
+                if (!dateKey) {
+                    return false;
+                }
+
+                return isDateInPeriod(
+                    row[dateKey],
+                    period
+                );
+
+            });
+
+
+        /*
+        -------------------------------------------------
+        PAYMENTS
+        -------------------------------------------------
+        */
+
+        const paymentDateFields = [
+
+            "payment_date",
+            "payment date",
+            "paid_at",
+            "paid at",
+            "created_at",
+            "created at",
+            "date"
+
+        ];
+
+
+        const periodPayments =
+            payments.filter(row => {
+
+                const dateKey =
+                    findKey(
+                        row,
+                        paymentDateFields
+                    );
+
+                if (!dateKey) {
+                    return false;
+                }
+
+                return isDateInPeriod(
+                    row[dateKey],
+                    period
+                );
+
+            });
+
+
+        let revenue = 0;
+
+
+        for (const payment of periodPayments) {
+
+            revenue +=
+                findNumber(
+                    payment,
+                    [
+                        "amount",
+                        "payment_amount",
+                        "payment amount",
+                        "total",
+                        "paid_amount",
+                        "paid amount"
+                    ]
+                );
+
+        }
+
+
+        /*
+        -------------------------------------------------
+        EXPENSES
+        -------------------------------------------------
+        */
+
+        const expenseDateFields = [
+
+            "expense_date",
+            "expense date",
+            "date",
+            "created_at",
+            "created at"
+
+        ];
+
+
+        const periodExpenses =
+            expenses.filter(row => {
+
+                const dateKey =
+                    findKey(
+                        row,
+                        expenseDateFields
+                    );
+
+                if (!dateKey) {
+                    return false;
+                }
+
+                return isDateInPeriod(
+                    row[dateKey],
+                    period
+                );
+
+            });
+
+
+        let expenseTotal = 0;
+
+
+        for (const expense of periodExpenses) {
+
+            expenseTotal +=
+                findNumber(
+                    expense,
+                    [
+                        "amount",
+                        "expense_amount",
+                        "expense amount",
+                        "total",
+                        "cost"
+                    ]
+                );
+
+        }
+
+
+        /*
+        -------------------------------------------------
+        HOUSEKEEPING
+        -------------------------------------------------
+        */
+
+        const housekeepingDateFields = [
+
+            "date",
+            "task_date",
+            "task date",
+            "created_at",
+            "created at"
+
+        ];
+
+
+        const periodHousekeeping =
+            housekeeping.filter(row => {
+
+                const dateKey =
+                    findKey(
+                        row,
+                        housekeepingDateFields
+                    );
+
+                if (!dateKey) {
+                    return true;
+                }
+
+                return isDateInPeriod(
+                    row[dateKey],
+                    period
+                );
+
+            });
+
+
+        const completedCleaning =
+            periodHousekeeping.filter(row => {
+
+                const statusKey =
+                    findKey(
+                        row,
+                        [
+                            "status",
+                            "task_status",
+                            "task status"
+                        ]
+                    );
+
+                if (!statusKey) {
+                    return false;
+                }
+
+                const status =
+                    String(
+                        row[statusKey]
+                    ).toLowerCase();
+
+                return (
+                    status === "completed" ||
+                    status === "complete" ||
+                    status === "done"
+                );
+
+            });
+
+
+        /*
+        -------------------------------------------------
+        MAINTENANCE
+        -------------------------------------------------
+        */
+
+        const maintenanceDateFields = [
+
+            "date",
+            "maintenance_date",
+            "maintenance date",
+            "created_at",
+            "created at"
+
+        ];
+
+
+        const periodMaintenance =
+            maintenance.filter(row => {
+
+                const dateKey =
+                    findKey(
+                        row,
+                        maintenanceDateFields
+                    );
+
+                if (!dateKey) {
+                    return true;
+                }
+
+                return isDateInPeriod(
+                    row[dateKey],
+                    period
+                );
+
+            });
+
+
+        const pendingMaintenance =
+            periodMaintenance.filter(row => {
+
+                const statusKey =
+                    findKey(
+                        row,
+                        [
+                            "status",
+                            "maintenance_status",
+                            "maintenance status"
+                        ]
+                    );
+
+                if (!statusKey) {
+                    return true;
+                }
+
+                const status =
+                    String(
+                        row[statusKey]
+                    ).toLowerCase();
+
+                return !(
+                    status === "completed" ||
+                    status === "complete" ||
+                    status === "closed" ||
+                    status === "done"
+                );
+
+            });
+
+
+        /*
+        -------------------------------------------------
+        SAVE REPORT DATA
+        -------------------------------------------------
+        */
+
+        reportData = {
+
+            period:
+                document.getElementById(
+                    "reportPeriod"
+                ).value,
+
+            periodName:
+                getPeriodName(),
+
+            rooms:
+                rooms.length,
+
+            occupied:
+                occupiedRooms.length,
+
+            guests:
+                guests.length,
+
+            reservations:
+                periodReservations.length,
+
+            revenue:
+                revenue,
+
+            expenses:
+                expenseTotal,
+
+            netIncome:
+                revenue - expenseTotal,
+
+            housekeeping:
+                periodHousekeeping.length,
+
+            cleaningCompleted:
+                completedCleaning.length,
+
+            maintenance:
+                periodMaintenance.length,
+
+            maintenancePending:
+                pendingMaintenance.length
+
+        };
+
+
+        /*
+        -------------------------------------------------
+        UPDATE SCREEN
+        -------------------------------------------------
+        */
+
+        document.getElementById(
+            "reportRooms"
+        ).textContent =
+            reportData.rooms;
+
+
+        document.getElementById(
+            "reportOccupied"
+        ).textContent =
+            reportData.occupied;
+
+
+        document.getElementById(
+            "reportReservations"
+        ).textContent =
+            reportData.reservations;
+
+
+        document.getElementById(
+            "reportGuests"
+        ).textContent =
+            reportData.guests;
+
+
+        document.getElementById(
+            "reportRevenue"
+        ).textContent =
+            formatMoney(
+                reportData.revenue
+            );
+
+
+        document.getElementById(
+            "reportExpenses"
+        ).textContent =
+            formatMoney(
+                reportData.expenses
+            );
+
+
+        document.getElementById(
+            "reportNetIncome"
+        ).textContent =
+            formatMoney(
+                reportData.netIncome
+            );
+
+
+        document.getElementById(
+            "reportHousekeeping"
+        ).textContent =
+            reportData.housekeeping;
+
+
+        document.getElementById(
+            "reportCleaningCompleted"
+        ).textContent =
+            reportData.cleaningCompleted;
+
+
+        document.getElementById(
+            "reportMaintenance"
+        ).textContent =
+            reportData.maintenance;
+
+
+        document.getElementById(
+            "reportMaintenancePending"
+        ).textContent =
+            reportData.maintenancePending;
+
+
+        updateReportTable();
+
+
+        document.getElementById(
+            "reportDetailsDescription"
+        ).textContent =
+            reportData.periodName +
+            " system activity summary";
+
+
+        showMessage(
+            "Report generated successfully for " +
+            reportData.periodName + ".",
+            "success"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Report generation error:",
+            error
+        );
+
+
+        showMessage(
+            "Unable to generate report: " +
+            error.message,
+            "error"
+        );
+
+
+    } finally {
+
+        document.body.classList.remove(
+            "report-loading"
+        );
+
+    }
+
+}
+
+
+/*
+=========================================================
+UPDATE REPORT TABLE
+=========================================================
+*/
+
 function updateReportTable() {
 
     const table =
-        document.getElementById("reportTable");
+        document.getElementById(
+            "reportTable"
+        );
 
 
     if (!table) {
@@ -454,44 +1460,68 @@ function updateReportTable() {
 
         <tr>
             <td>Rooms</td>
-            <td>${document.getElementById("reportRooms").textContent}</td>
+            <td>${reportData.rooms}</td>
             <td>Active</td>
+        </tr>
+
+        <tr>
+            <td>Occupied Rooms</td>
+            <td>${reportData.occupied}</td>
+            <td>Current</td>
         </tr>
 
         <tr>
             <td>Guests</td>
-            <td>${document.getElementById("reportGuests").textContent}</td>
-            <td>Active</td>
+            <td>${reportData.guests}</td>
+            <td>Registered</td>
         </tr>
 
         <tr>
             <td>Reservations</td>
-            <td>${document.getElementById("reportReservations").textContent}</td>
-            <td>Active</td>
+            <td>${reportData.reservations}</td>
+            <td>Recorded</td>
         </tr>
 
         <tr>
-            <td>Payments</td>
-            <td>${document.getElementById("reportRevenue").textContent}</td>
+            <td>Payments / Revenue</td>
+            <td>${formatMoney(reportData.revenue)}</td>
             <td>Recorded</td>
         </tr>
 
         <tr>
             <td>Expenses</td>
-            <td>${document.getElementById("reportExpenses").textContent}</td>
+            <td>${formatMoney(reportData.expenses)}</td>
             <td>Recorded</td>
         </tr>
 
         <tr>
+            <td>Net Income</td>
+            <td>${formatMoney(reportData.netIncome)}</td>
+            <td>Calculated</td>
+        </tr>
+
+        <tr>
             <td>Housekeeping</td>
-            <td>${document.getElementById("reportHousekeeping").textContent}</td>
-            <td>Active</td>
+            <td>${reportData.housekeeping}</td>
+            <td>Recorded</td>
+        </tr>
+
+        <tr>
+            <td>Completed Cleaning</td>
+            <td>${reportData.cleaningCompleted}</td>
+            <td>Completed</td>
         </tr>
 
         <tr>
             <td>Maintenance</td>
-            <td>${document.getElementById("reportMaintenance").textContent}</td>
-            <td>Active</td>
+            <td>${reportData.maintenance}</td>
+            <td>Recorded</td>
+        </tr>
+
+        <tr>
+            <td>Pending Maintenance</td>
+            <td>${reportData.maintenancePending}</td>
+            <td>Pending</td>
         </tr>
 
     `;
@@ -499,53 +1529,265 @@ function updateReportTable() {
 }
 
 
-// GENERATE REPORT
-function generateReport() {
+/*
+=========================================================
+SHOW MESSAGE
+=========================================================
+*/
 
-    const period =
-        document.getElementById("reportPeriod").value;
+function showMessage(message, type) {
+
+    const box =
+        document.getElementById(
+            "reportMessage"
+        );
 
 
-    let periodName = "This Month";
-
-
-    if (period === "today") {
-        periodName = "Today";
-    }
-
-    if (period === "week") {
-        periodName = "This Week";
-    }
-
-    if (period === "year") {
-        periodName = "This Year";
+    if (!box) {
+        return;
     }
 
 
-    alert(
-        "EDU TECH HOTEL MANAGEMENT SYSTEM\n\n" +
-        "Report Period: " + periodName + "\n\n" +
-        "Total Rooms: " +
-        document.getElementById("reportRooms").textContent +
-        "\nOccupied Rooms: " +
-        document.getElementById("reportOccupied").textContent +
-        "\nTotal Guests: " +
-        document.getElementById("reportGuests").textContent +
-        "\nReservations: " +
-        document.getElementById("reportReservations").textContent +
-        "\nRevenue: " +
-        document.getElementById("reportRevenue").textContent +
-        "\nExpenses: " +
-        document.getElementById("reportExpenses").textContent +
-        "\nNet Income: " +
-        document.getElementById("reportNetIncome").textContent
+    box.textContent =
+        message;
+
+
+    box.className =
+        "report-message " +
+        type;
+
+
+    box.style.display =
+        "block";
+
+
+    setTimeout(
+        function () {
+
+            box.style.display =
+                "none";
+
+        },
+        5000
     );
 
 }
 
 
-// INITIALIZE
-updateReports();
+/*
+=========================================================
+GENERATE REPORT BUTTON
+=========================================================
+*/
+
+document.getElementById(
+    "generateReportBtn"
+).addEventListener(
+    "click",
+    function () {
+
+        loadReport();
+
+    }
+);
+
+
+/*
+=========================================================
+PERIOD CHANGE
+=========================================================
+*/
+
+document.getElementById(
+    "reportPeriod"
+).addEventListener(
+    "change",
+    function () {
+
+        loadReport();
+
+    }
+);
+
+
+/*
+=========================================================
+PRINT REPORT
+=========================================================
+*/
+
+document.getElementById(
+    "printReportBtn"
+).addEventListener(
+    "click",
+    function () {
+
+        window.print();
+
+    }
+);
+
+
+/*
+=========================================================
+DOWNLOAD REPORT
+=========================================================
+*/
+
+document.getElementById(
+    "downloadReportBtn"
+).addEventListener(
+    "click",
+    function () {
+
+        const lines = [
+
+            "EDU TECH HOTEL MANAGEMENT SYSTEM",
+
+            "REPORT",
+
+            "Report Period: " +
+            reportData.periodName,
+
+            "",
+
+            "Total Rooms: " +
+            reportData.rooms,
+
+            "Occupied Rooms: " +
+            reportData.occupied,
+
+            "Total Guests: " +
+            reportData.guests,
+
+            "Reservations: " +
+            reportData.reservations,
+
+            "",
+
+            "Total Revenue: " +
+            formatMoney(
+                reportData.revenue
+            ),
+
+            "Total Expenses: " +
+            formatMoney(
+                reportData.expenses
+            ),
+
+            "Net Income: " +
+            formatMoney(
+                reportData.netIncome
+            ),
+
+            "",
+
+            "Housekeeping Tasks: " +
+            reportData.housekeeping,
+
+            "Completed Cleaning: " +
+            reportData.cleaningCompleted,
+
+            "Maintenance Tasks: " +
+            reportData.maintenance,
+
+            "Pending Maintenance: " +
+            reportData.maintenancePending,
+
+            "",
+
+            "Generated: " +
+            new Date().toLocaleString(
+                "en-KE"
+            )
+
+        ];
+
+
+        const blob =
+            new Blob(
+                [
+                    lines.join("\n")
+                ],
+                {
+                    type:
+                        "text/plain;charset=utf-8"
+                }
+            );
+
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+
+        link.href =
+            url;
+
+
+        link.download =
+            "EDU-TECH-Hotel-Report-" +
+            reportData.period +
+            ".txt";
+
+
+        document.body.appendChild(
+            link
+        );
+
+
+        link.click();
+
+
+        document.body.removeChild(
+            link
+        );
+
+
+        URL.revokeObjectURL(
+            url
+        );
+
+
+        showMessage(
+            "Report downloaded successfully.",
+            "success"
+        );
+
+    }
+);
+
+
+/*
+=========================================================
+INITIALIZE
+=========================================================
+*/
+
+async function initializeReports() {
+
+    const loggedIn =
+        await loadCurrentUser();
+
+
+    if (!loggedIn) {
+        return;
+    }
+
+
+    await loadReport();
+
+}
+
+
+initializeReports();
 
 </script>
 
