@@ -18,21 +18,39 @@
         </div>
 
         <nav>
+
             <a href="./index.html">🏠 Dashboard</a>
+
             <a href="./rooms.html">🛏️ Rooms</a>
+
             <a href="./guests.html">👤 Guests</a>
+
             <a href="./reservations.html">📅 Reservations</a>
+
             <a href="./checkin.html" class="active">🛎️ Check-in</a>
+
             <a href="./checkout.html">🚪 Check-out</a>
+
             <a href="./restaurant.html">🍽️ Restaurant</a>
+
             <a href="./inventory.html">📦 Inventory</a>
+
             <a href="./payments.html">💰 Payments</a>
+
             <a href="./expenses.html">💸 Expenses</a>
+
             <a href="./employees.html">👨‍💼 Employees</a>
+
             <a href="./housekeeping.html">🧹 Housekeeping</a>
+
             <a href="./maintenance.html">🔧 Maintenance</a>
+
             <a href="./reports.html">📊 Reports</a>
+
             <a href="./settings.html">⚙️ Settings</a>
+
+            <a href="./hotels.html">🏨 Hotels</a>
+
         </nav>
 
     </aside>
@@ -265,6 +283,310 @@
     <script src="./script.js"></script>
 
 
+    <!-- =========================================================
+         CHECK-IN PAGE ROLE SIDEBAR PROTECTION
+         This runs independently of the global sidebar code.
+         ========================================================= -->
+
+    <script>
+
+        (function () {
+
+            const ROLE_PERMISSIONS = {
+
+                system_owner: [
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "restaurant",
+                    "inventory",
+                    "payments",
+                    "expenses",
+                    "employees",
+                    "housekeeping",
+                    "maintenance",
+                    "reports",
+                    "settings",
+                    "hotels"
+                ],
+
+                hotel_owner: [
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "restaurant",
+                    "inventory",
+                    "payments",
+                    "expenses",
+                    "employees",
+                    "housekeeping",
+                    "maintenance",
+                    "reports",
+                    "settings"
+                ],
+
+                manager: [
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "restaurant",
+                    "inventory",
+                    "payments",
+                    "expenses",
+                    "employees",
+                    "housekeeping",
+                    "maintenance",
+                    "reports",
+                    "settings"
+                ],
+
+                receptionist: [
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "payments",
+                    "reports"
+                ]
+
+            };
+
+
+            function getRole() {
+
+                const sessionRole =
+                    sessionStorage.getItem("userRole");
+
+                const localRole =
+                    localStorage.getItem("userRole");
+
+                return String(
+                    sessionRole ||
+                    localRole ||
+                    ""
+                )
+                .toLowerCase()
+                .trim();
+
+            }
+
+
+            function getModule(href) {
+
+                const url =
+                    String(href || "")
+                    .toLowerCase();
+
+
+                if (url.includes("rooms.html")) {
+                    return "rooms";
+                }
+
+                if (url.includes("guests.html")) {
+                    return "guests";
+                }
+
+                if (url.includes("reservations.html")) {
+                    return "reservations";
+                }
+
+                if (url.includes("checkin.html")) {
+                    return "checkin";
+                }
+
+                if (url.includes("checkout.html")) {
+                    return "checkout";
+                }
+
+                if (url.includes("restaurant.html")) {
+                    return "restaurant";
+                }
+
+                if (url.includes("inventory.html")) {
+                    return "inventory";
+                }
+
+                if (url.includes("payments.html")) {
+                    return "payments";
+                }
+
+                if (url.includes("expenses.html")) {
+                    return "expenses";
+                }
+
+                if (url.includes("employees.html")) {
+                    return "employees";
+                }
+
+                if (url.includes("housekeeping.html")) {
+                    return "housekeeping";
+                }
+
+                if (url.includes("maintenance.html")) {
+                    return "maintenance";
+                }
+
+                if (url.includes("reports.html")) {
+                    return "reports";
+                }
+
+                if (url.includes("settings.html")) {
+                    return "settings";
+                }
+
+                if (url.includes("hotels.html")) {
+                    return "hotels";
+                }
+
+                return null;
+
+            }
+
+
+            function protectSidebar() {
+
+                const role =
+                    getRole();
+
+
+                if (!role) {
+                    return;
+                }
+
+
+                const allowed =
+                    ROLE_PERMISSIONS[role];
+
+
+                if (!allowed) {
+
+                    document
+                    .querySelectorAll(".sidebar nav a")
+                    .forEach(function (link) {
+
+                        const module =
+                            getModule(
+                                link.getAttribute("href")
+                            );
+
+
+                        if (module) {
+
+                            link.style.display =
+                                "none";
+
+                        }
+
+                    });
+
+                    return;
+
+                }
+
+
+                document
+                .querySelectorAll(".sidebar nav a")
+                .forEach(function (link) {
+
+                    const href =
+                        link.getAttribute("href") || "";
+
+
+                    if (
+                        href.includes("index.html") ||
+                        href === "./" ||
+                        href === "/"
+                    ) {
+
+                        link.style.display = "";
+                        return;
+
+                    }
+
+
+                    const module =
+                        getModule(href);
+
+
+                    if (!module) {
+                        return;
+                    }
+
+
+                    if (
+                        allowed.includes(module)
+                    ) {
+
+                        link.style.display = "";
+
+                    } else {
+
+                        link.style.display =
+                            "none";
+
+                    }
+
+                });
+
+
+                console.log(
+                    "Check-in sidebar protected for role:",
+                    role
+                );
+
+            }
+
+
+            protectSidebar();
+
+
+            if (
+                document.readyState === "loading"
+            ) {
+
+                document.addEventListener(
+                    "DOMContentLoaded",
+                    protectSidebar
+                );
+
+            }
+
+
+            /*
+             * Keep checking briefly because the login/profile
+             * code may set the role after the page begins loading.
+             */
+
+            let attempts = 0;
+
+            const timer =
+                setInterval(function () {
+
+                    protectSidebar();
+
+                    attempts++;
+
+                    if (attempts >= 20) {
+
+                        clearInterval(timer);
+
+                    }
+
+                }, 250);
+
+
+        })();
+
+    </script>
+
+
     <script>
 
         const CHECKIN_STORAGE_KEY = "eduTechCheckins";
@@ -291,10 +613,6 @@
             document.getElementById("checkinFilter");
 
 
-        /* =========================================
-           SAVE CHECK-INS
-        ========================================= */
-
         function saveCheckins() {
 
             localStorage.setItem(
@@ -305,10 +623,6 @@
         }
 
 
-        /* =========================================
-           OPEN FORM
-        ========================================= */
-
         function openCheckinForm() {
 
             document.getElementById(
@@ -318,10 +632,6 @@
         }
 
 
-        /* =========================================
-           CLOSE FORM
-        ========================================= */
-
         function closeCheckinForm() {
 
             document.getElementById(
@@ -330,10 +640,6 @@
 
         }
 
-
-        /* =========================================
-           STATUS CLASS
-        ========================================= */
 
         function getCheckinStatusClass(status) {
 
@@ -353,10 +659,6 @@
 
         }
 
-
-        /* =========================================
-           UPDATE ROOM STATUS
-        ========================================= */
 
         function updateRoomStatus(roomNumber, status) {
 
@@ -390,10 +692,6 @@
 
         }
 
-
-        /* =========================================
-           DISPLAY CHECK-INS
-        ========================================= */
 
         function displayCheckins() {
 
@@ -465,36 +763,22 @@
 
                 row.innerHTML = `
 
-                    <td>
-                        ${checkin.checkinID}
-                    </td>
+                    <td>${checkin.checkinID}</td>
+
+                    <td>${checkin.guest}</td>
+
+                    <td>${checkin.room}</td>
+
+                    <td>${checkin.arrivalDate}</td>
+
+                    <td>${checkin.expectedCheckout}</td>
+
+                    <td>${checkin.numberOfGuests}</td>
 
                     <td>
-                        ${checkin.guest}
-                    </td>
-
-                    <td>
-                        ${checkin.room}
-                    </td>
-
-                    <td>
-                        ${checkin.arrivalDate}
-                    </td>
-
-                    <td>
-                        ${checkin.expectedCheckout}
-                    </td>
-
-                    <td>
-                        ${checkin.numberOfGuests}
-                    </td>
-
-                    <td>
-
                         <span class="room-status ${getCheckinStatusClass(checkin.status)}">
                             ${checkin.status}
                         </span>
-
                     </td>
 
                     <td>
@@ -527,10 +811,6 @@
 
         }
 
-
-        /* =========================================
-           SUMMARY
-        ========================================= */
 
         function updateCheckinSummary() {
 
@@ -591,10 +871,6 @@
         }
 
 
-        /* =========================================
-           SAVE CHECK-IN
-        ========================================= */
-
         checkinForm.addEventListener(
             "submit",
             function(event) {
@@ -638,8 +914,6 @@
                     ).value;
 
 
-                /* EDIT EXISTING */
-
                 if (editingCheckinID !== null) {
 
                     const index =
@@ -658,12 +932,6 @@
                         const oldRoom =
                             checkins[index].room;
 
-
-                        /*
-                           If the room was previously occupied
-                           by this check-in and the room number
-                           changed, make the old room available.
-                        */
 
                         if (
                             oldRoom !== room &&
@@ -719,8 +987,6 @@
                 }
 
 
-                /* NEW CHECK-IN */
-
                 else {
 
                     const checkinID =
@@ -759,10 +1025,6 @@
                     );
 
 
-                    /*
-                       Automatically update room.
-                    */
-
                     updateRoomStatus(
                         room,
                         status === "Checked In"
@@ -792,10 +1054,6 @@
             }
         );
 
-
-        /* =========================================
-           EDIT CHECK-IN
-        ========================================= */
 
         function editCheckinRecord(checkinID) {
 
@@ -860,10 +1118,6 @@
         }
 
 
-        /* =========================================
-           DELETE CHECK-IN
-        ========================================= */
-
         function deleteCheckinRecord(checkinID) {
 
             const confirmed =
@@ -892,11 +1146,6 @@
                 return;
             }
 
-
-            /*
-               If this check-in was occupying a room,
-               return that room to Available.
-            */
 
             if (checkin.status === "Checked In") {
 
@@ -927,29 +1176,17 @@
         }
 
 
-        /* =========================================
-           SEARCH
-        ========================================= */
-
         checkinSearch.addEventListener(
             "input",
             displayCheckins
         );
 
 
-        /* =========================================
-           FILTER
-        ========================================= */
-
         checkinFilter.addEventListener(
             "change",
             displayCheckins
         );
 
-
-        /* =========================================
-           CLOSE MODAL OUTSIDE
-        ========================================= */
 
         document.getElementById(
             "checkinModal"
@@ -971,10 +1208,6 @@
             }
         );
 
-
-        /* =========================================
-           INITIAL DISPLAY
-        ========================================= */
 
         displayCheckins();
 
