@@ -1,117 +1,18 @@
-/* ============================================================
-   GLOBAL ROLE-BASED SIDEBAR CONTROL
+"use strict";
+
+/* =========================================================
    EDU TECH HOTEL MANAGEMENT SYSTEM
-   ============================================================
+   GLOBAL ROLE-BASED SIDEBAR CONTROL
+   ========================================================= */
 
-   SYSTEM OWNER
-   - Full access to all modules
+/* =========================================================
+   ROLE PERMISSIONS
+   ========================================================= */
 
-   HOTEL OWNER
-   - All hotel operational modules
-   - No Hotels management
+const ROLE_PERMISSIONS = {
 
-   MANAGER
-   - All hotel operational modules
-   - No Hotels management
-
-   RECEPTIONIST
-   - Dashboard
-   - Rooms
-   - Guests
-   - Reservations
-   - Check-in
-   - Check-out
-   - Payments
-   - Reports
-
-   IMPORTANT:
-   - Dashboard is always visible.
-   - Logout is always visible.
-   - Unknown/non-module sidebar links are never hidden.
-   - Only protected module links are controlled.
-   ============================================================ */
-
-(function () {
-
-    "use strict";
-
-
-    /* =========================================================
-       ROLE PERMISSIONS
-       ========================================================= */
-
-    const ROLE_PERMISSIONS = {
-
-        system_owner: [
-            "rooms",
-            "guests",
-            "reservations",
-            "checkin",
-            "checkout",
-            "restaurant",
-            "inventory",
-            "payments",
-            "expenses",
-            "employees",
-            "housekeeping",
-            "maintenance",
-            "reports",
-            "settings",
-            "hotels"
-        ],
-
-        hotel_owner: [
-            "rooms",
-            "guests",
-            "reservations",
-            "checkin",
-            "checkout",
-            "restaurant",
-            "inventory",
-            "payments",
-            "expenses",
-            "employees",
-            "housekeeping",
-            "maintenance",
-            "reports",
-            "settings"
-        ],
-
-        manager: [
-            "rooms",
-            "guests",
-            "reservations",
-            "checkin",
-            "checkout",
-            "restaurant",
-            "inventory",
-            "payments",
-            "expenses",
-            "employees",
-            "housekeeping",
-            "maintenance",
-            "reports",
-            "settings"
-        ],
-
-        receptionist: [
-            "rooms",
-            "guests",
-            "reservations",
-            "checkin",
-            "checkout",
-            "payments",
-            "reports"
-        ]
-
-    };
-
-
-    /* =========================================================
-       PROTECTED MODULE NAMES
-       ========================================================= */
-
-    const PROTECTED_MODULES = [
+    system_owner: [
+        "dashboard",
         "rooms",
         "guests",
         "reservations",
@@ -127,788 +28,790 @@
         "reports",
         "settings",
         "hotels"
-    ];
+    ],
+
+    hotel_owner: [
+        "dashboard",
+        "rooms",
+        "guests",
+        "reservations",
+        "checkin",
+        "checkout",
+        "restaurant",
+        "inventory",
+        "payments",
+        "expenses",
+        "employees",
+        "housekeeping",
+        "maintenance",
+        "reports",
+        "settings"
+    ],
+
+    manager: [
+        "dashboard",
+        "rooms",
+        "guests",
+        "reservations",
+        "checkin",
+        "checkout",
+        "restaurant",
+        "inventory",
+        "payments",
+        "expenses",
+        "employees",
+        "housekeeping",
+        "maintenance",
+        "reports",
+        "settings"
+    ],
+
+    receptionist: [
+        "dashboard",
+        "rooms",
+        "guests",
+        "reservations",
+        "checkin",
+        "checkout",
+        "payments",
+        "reports"
+    ]
+
+};
 
 
-    /* =========================================================
-       GET CURRENT USER ROLE
-       ========================================================= */
+/* =========================================================
+   MODULES CONTROLLED BY ROLE
+   ========================================================= */
 
-    function getCurrentUserRole() {
+const PROTECTED_MODULES = [
 
-        const sessionRole =
-            sessionStorage.getItem("userRole");
+    "rooms",
+    "guests",
+    "reservations",
+    "checkin",
+    "checkout",
+    "restaurant",
+    "inventory",
+    "payments",
+    "expenses",
+    "employees",
+    "housekeeping",
+    "maintenance",
+    "reports",
+    "settings",
+    "hotels"
 
-        const localRole =
-            localStorage.getItem("userRole");
-
-        const role =
-            sessionRole ||
-            localRole ||
-            "";
-
-        return String(role)
-            .toLowerCase()
-            .trim();
-
-    }
-
-
-    /* =========================================================
-       IDENTIFY MODULE FROM SIDEBAR LINK
-       ========================================================= */
-
-    function getModuleFromLink(link) {
-
-        if (!link) {
-            return null;
-        }
+];
 
 
-        /* -----------------------------------------------------
-           First check data-module if available
-           ----------------------------------------------------- */
+/* =========================================================
+   GET CURRENT ROLE
+   ========================================================= */
 
-        const dataModule =
-            link.getAttribute("data-module");
+function getCurrentUserRole() {
 
+    const sessionRole =
+        sessionStorage.getItem("userRole");
 
-        if (
-            dataModule &&
-            PROTECTED_MODULES.includes(
-                dataModule.toLowerCase().trim()
-            )
-        ) {
+    const localRole =
+        localStorage.getItem("userRole");
 
-            return dataModule
-                .toLowerCase()
-                .trim();
+    return String(
+        sessionRole ||
+        localRole ||
+        ""
+    )
+    .toLowerCase()
+    .trim();
 
-        }
-
-
-        /* -----------------------------------------------------
-           Otherwise identify module from href
-           ----------------------------------------------------- */
-
-        const href =
-            link.getAttribute("href") || "";
+}
 
 
-        const cleanHref =
-            href
-                .split("?")[0]
-                .split("#")[0]
-                .toLowerCase()
-                .trim();
+/* =========================================================
+   GET MODULE FROM LINK
+   ========================================================= */
 
+function getModuleFromLink(link) {
 
-        if (cleanHref.includes("rooms.html")) {
-            return "rooms";
-        }
+    if (!link) {
 
-        if (cleanHref.includes("guests.html")) {
-            return "guests";
-        }
-
-        if (cleanHref.includes("reservations.html")) {
-            return "reservations";
-        }
-
-        if (cleanHref.includes("checkin.html")) {
-            return "checkin";
-        }
-
-        if (cleanHref.includes("checkout.html")) {
-            return "checkout";
-        }
-
-        if (cleanHref.includes("restaurant.html")) {
-            return "restaurant";
-        }
-
-        if (cleanHref.includes("inventory.html")) {
-            return "inventory";
-        }
-
-        if (cleanHref.includes("payments.html")) {
-            return "payments";
-        }
-
-        if (cleanHref.includes("expenses.html")) {
-            return "expenses";
-        }
-
-        if (cleanHref.includes("employees.html")) {
-            return "employees";
-        }
-
-        if (cleanHref.includes("housekeeping.html")) {
-            return "housekeeping";
-        }
-
-        if (cleanHref.includes("maintenance.html")) {
-            return "maintenance";
-        }
-
-        if (cleanHref.includes("reports.html")) {
-            return "reports";
-        }
-
-        if (cleanHref.includes("settings.html")) {
-            return "settings";
-        }
-
-        if (cleanHref.includes("hotels.html")) {
-            return "hotels";
-        }
-
-
-        return null;
+        return "";
 
     }
 
 
-    /* =========================================================
-       CHECK WHETHER LINK IS DASHBOARD
-       ========================================================= */
+    /* First use data-module */
 
-    function isDashboardLink(link) {
-
-        if (!link) {
-            return false;
-        }
+    const dataModule =
+        link.getAttribute("data-module");
 
 
-        const dataModule =
-            link.getAttribute("data-module");
+    if (dataModule) {
 
-
-        if (
-            dataModule &&
-            dataModule.toLowerCase().trim() ===
-            "dashboard"
-        ) {
-
-            return true;
-
-        }
-
-
-        const href =
-            link.getAttribute("href") || "";
-
-
-        const cleanHref =
-            href
-                .split("?")[0]
-                .split("#")[0]
-                .toLowerCase()
-                .trim();
-
-
-        return (
-            cleanHref === "./" ||
-            cleanHref === "/" ||
-            cleanHref === "index.html" ||
-            cleanHref === "./index.html" ||
-            cleanHref.endsWith("/index.html")
-        );
+        return String(
+            dataModule
+        )
+        .toLowerCase()
+        .trim();
 
     }
 
 
-    /* =========================================================
-       CHECK WHETHER LINK IS LOGOUT
-       ========================================================= */
+    /* Otherwise determine module from href */
 
-    function isLogoutLink(link) {
-
-        if (!link) {
-            return false;
-        }
+    const href =
+        link.getAttribute("href") ||
+        "";
 
 
-        /* -----------------------------------------------------
-           Data attributes
-           ----------------------------------------------------- */
-
-        const action =
-            (
-                link.getAttribute("data-action") ||
-                ""
-            )
-            .toLowerCase()
-            .trim();
-
-
-        if (action === "logout") {
-            return true;
-        }
-
-
-        const module =
-            (
-                link.getAttribute("data-module") ||
-                ""
-            )
-            .toLowerCase()
-            .trim();
-
-
-        if (
-            module === "logout" ||
-            module === "signout"
-        ) {
-
-            return true;
-
-        }
-
-
-        /* -----------------------------------------------------
-           Classes
-           ----------------------------------------------------- */
-
-        const className =
-            (
-                link.className ||
-                ""
-            )
-            .toString()
+    const cleanHref =
+        href
+            .split("?")[0]
+            .split("#")[0]
             .toLowerCase();
 
 
-        if (
-            className.includes("logout") ||
-            className.includes("signout")
-        ) {
-
-            return true;
-
-        }
+    const fileName =
+        cleanHref
+            .substring(
+                cleanHref.lastIndexOf("/") + 1
+            );
 
 
-        /* -----------------------------------------------------
-           ID
-           ----------------------------------------------------- */
-
-        const id =
-            (
-                link.id ||
+    const moduleName =
+        fileName
+            .replace(
+                ".html",
                 ""
             )
-            .toLowerCase();
-
-
-        if (
-            id.includes("logout") ||
-            id.includes("signout")
-        ) {
-
-            return true;
-
-        }
-
-
-        /* -----------------------------------------------------
-           Text
-           ----------------------------------------------------- */
-
-        const text =
-            (
-                link.textContent ||
-                ""
-            )
-            .toLowerCase()
-            .replace(/\s+/g, " ")
             .trim();
 
 
-        if (
-            text === "logout" ||
-            text === "log out" ||
-            text.includes("logout") ||
-            text.includes("log out") ||
-            text.includes("sign out")
-        ) {
+    return moduleName;
 
-            return true;
+}
 
-        }
 
+/* =========================================================
+   DASHBOARD LINK
+   ========================================================= */
+
+function isDashboardLink(link) {
+
+    if (!link) {
 
         return false;
 
     }
 
 
-    /* =========================================================
-       SHOW / HIDE MODULE
-       ========================================================= */
-
-    function setModuleVisibility(
-        link,
-        shouldShow
-    ) {
-
-        if (!link) {
-            return;
-        }
+    const moduleName =
+        getModuleFromLink(link);
 
 
-        /*
-         Use a dedicated class instead of continuously
-         changing the style attribute.
+    const href =
+        (
+            link.getAttribute("href") ||
+            ""
+        )
+        .toLowerCase();
 
-         This prevents MutationObserver loops.
-        */
 
-        if (shouldShow) {
+    return (
+        moduleName === "dashboard" ||
+        moduleName === "index" ||
+        href.endsWith("index.html") ||
+        href === "./" ||
+        href === "/"
+    );
 
-            link.classList.remove(
-                "role-hidden"
-            );
+}
 
-            link.removeAttribute(
-                "aria-hidden"
-            );
 
-        } else {
+/* =========================================================
+   IMPROVED LOGOUT DETECTION
+   ========================================================= */
 
-            link.classList.add(
-                "role-hidden"
-            );
+function isLogoutLink(link) {
 
-            link.setAttribute(
-                "aria-hidden",
-                "true"
-            );
+    if (!link) {
 
-        }
+        return false;
 
     }
 
 
-    /* =========================================================
-       APPLY ROLE SIDEBAR CONTROL
-       ========================================================= */
+    const dataAction =
+        String(
+            link.getAttribute("data-action") ||
+            ""
+        )
+        .toLowerCase()
+        .trim();
 
-    function applyGlobalRoleSidebar() {
 
-        const role =
-            getCurrentUserRole();
+    const dataModule =
+        String(
+            link.getAttribute("data-module") ||
+            ""
+        )
+        .toLowerCase()
+        .trim();
 
 
-        const sidebarLinks =
-            document.querySelectorAll(
-                ".sidebar nav a"
-            );
+    const href =
+        String(
+            link.getAttribute("href") ||
+            ""
+        )
+        .toLowerCase()
+        .trim();
 
 
-        /*
-         No sidebar on this page.
-        */
+    const id =
+        String(
+            link.id ||
+            ""
+        )
+        .toLowerCase()
+        .trim();
 
-        if (!sidebarLinks.length) {
-            return;
-        }
 
+    const className =
+        String(
+            link.className ||
+            ""
+        )
+        .toLowerCase()
+        .trim();
 
-        /*
-         -------------------------------------------------------
-         IMPORTANT
-         -------------------------------------------------------
-         If the role has not loaded yet, do not destroy the
-         sidebar. Leave it alone until the role becomes available.
-         */
 
-        if (!role) {
+    const text =
+        String(
+            link.textContent ||
+            ""
+        )
+        .toLowerCase()
+        .replace(
+            /\s+/g,
+            " "
+        )
+        .trim();
 
-            console.log(
-                "EDU TECH: Waiting for user role..."
-            );
 
-            return;
+    /*
+       IMPORTANT:
+       Check all possible ways the Logout
+       link/button may be identified.
+    */
 
-        }
+    return (
 
+        dataAction === "logout" ||
 
-        const allowedModules =
-            ROLE_PERMISSIONS[role];
+        dataModule === "logout" ||
 
+        dataModule === "signout" ||
 
-        /*
-         Unknown role:
-         hide only recognized protected modules.
-         Never hide Dashboard or Logout.
-        */
+        href.includes("logout") ||
 
-        if (!allowedModules) {
+        href.includes("signout") ||
 
-            sidebarLinks.forEach(
-                function (link) {
+        id.includes("logout") ||
 
-                    if (
-                        isDashboardLink(link) ||
-                        isLogoutLink(link)
-                    ) {
+        id.includes("signout") ||
 
-                        setModuleVisibility(
-                            link,
-                            true
-                        );
+        className.includes("logout") ||
 
-                        return;
+        className.includes("signout") ||
 
-                    }
+        text === "logout" ||
 
+        text === "log out" ||
 
-                    const module =
-                        getModuleFromLink(link);
+        text === "sign out" ||
 
+        text === "signout"
 
-                    if (module) {
+    );
 
-                        setModuleVisibility(
-                            link,
-                            false
-                        );
+}
 
-                    }
 
-                }
-            );
+/* =========================================================
+   CHECK IF LINK IS A PROTECTED MODULE
+   ========================================================= */
 
+function isProtectedModuleLink(link) {
 
-            return;
+    if (!link) {
 
-        }
-
-
-        /* -----------------------------------------------------
-           Apply permissions
-           ----------------------------------------------------- */
-
-        sidebarLinks.forEach(
-            function (link) {
-
-                /*
-                 Dashboard is ALWAYS visible.
-                */
-
-                if (
-                    isDashboardLink(link)
-                ) {
-
-                    setModuleVisibility(
-                        link,
-                        true
-                    );
-
-                    return;
-
-                }
-
-
-                /*
-                 Logout is ALWAYS visible.
-                */
-
-                if (
-                    isLogoutLink(link)
-                ) {
-
-                    setModuleVisibility(
-                        link,
-                        true
-                    );
-
-                    return;
-
-                }
-
-
-                const module =
-                    getModuleFromLink(link);
-
-
-                /*
-                 Unknown/unprotected link.
-
-                 Do NOT hide it.
-                */
-
-                if (!module) {
-
-                    return;
-
-                }
-
-
-                /*
-                 Allowed module.
-                */
-
-                if (
-                    allowedModules.includes(
-                        module
-                    )
-                ) {
-
-                    setModuleVisibility(
-                        link,
-                        true
-                    );
-
-                }
-
-
-                /*
-                 Unauthorized module.
-                */
-
-                else {
-
-                    setModuleVisibility(
-                        link,
-                        false
-                    );
-
-                }
-
-            }
-        );
-
-
-        /*
-         Mark sidebar as ready.
-         */
-
-        const sidebars =
-            document.querySelectorAll(
-                ".sidebar"
-            );
-
-
-        sidebars.forEach(
-            function (sidebar) {
-
-                sidebar.classList.add(
-                    "role-control-ready"
-                );
-
-                sidebar.classList.remove(
-                    "role-control-pending"
-                );
-
-            }
-        );
-
-
-        console.log(
-            "EDU TECH role sidebar applied:",
-            role
-        );
+        return false;
 
     }
 
 
-    /* =========================================================
-       MAKE SIDEBAR CONTROL AVAILABLE GLOBALLY
-       ========================================================= */
-
-    window.applyGlobalRoleSidebar =
-        applyGlobalRoleSidebar;
+    const moduleName =
+        getModuleFromLink(link);
 
 
-    /* =========================================================
-       INITIAL SIDEBAR CONTROL
-       ========================================================= */
+    return PROTECTED_MODULES.includes(
+        moduleName
+    );
 
-    function initializeRoleControl() {
+}
 
-        applyGlobalRoleSidebar();
+
+/* =========================================================
+   SET MODULE VISIBILITY
+   ========================================================= */
+
+function setModuleVisibility(
+    link,
+    shouldShow
+) {
+
+    if (!link) {
+
+        return;
 
     }
 
 
-    /* =========================================================
-       DOM READY
-       ========================================================= */
+    if (shouldShow) {
 
-    if (
-        document.readyState === "loading"
-    ) {
+        link.classList.remove(
+            "role-hidden"
+        );
 
-        document.addEventListener(
-            "DOMContentLoaded",
-            initializeRoleControl
+        link.setAttribute(
+            "aria-hidden",
+            "false"
         );
 
     } else {
 
-        initializeRoleControl();
+        link.classList.add(
+            "role-hidden"
+        );
+
+        link.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   APPLY GLOBAL ROLE SIDEBAR
+   ========================================================= */
+
+function applyGlobalRoleSidebar() {
+
+    const sidebar =
+        document.querySelector(
+            ".sidebar"
+        );
+
+
+    if (!sidebar) {
+
+        return;
 
     }
 
 
-    /* =========================================================
-       MUTATION OBSERVER
-       =========================================================
-
-       IMPORTANT:
-       We deliberately DO NOT observe "style".
-
-       The old version observed:
-
-           style
-           class
-           href
-
-       But the role-control function itself changed the style
-       attribute, which could cause repeated executions.
-
-       We now only watch structural changes to the sidebar.
-       ========================================================= */
-
-    let observerStarted = false;
+    const role =
+        getCurrentUserRole();
 
 
-    function startSidebarObserver() {
+    /*
+       If role has not been loaded yet,
+       DO NOT hide anything.
+       This prevents the global script
+       from breaking the sidebar.
+    */
 
-        if (
-            observerStarted ||
-            !document.body
-        ) {
+    if (!role) {
 
-            return;
+        return;
+
+    }
+
+
+    const allowedModules =
+        ROLE_PERMISSIONS[role] ||
+        [];
+
+
+    const links =
+        sidebar.querySelectorAll(
+            "a"
+        );
+
+
+    links.forEach(
+        function(link) {
+
+            /*
+               NEVER hide Logout.
+            */
+
+            if (
+                isLogoutLink(link)
+            ) {
+
+                link.classList.remove(
+                    "role-hidden"
+                );
+
+                link.removeAttribute(
+                    "aria-hidden"
+                );
+
+                link.style.removeProperty(
+                    "display"
+                );
+
+                return;
+
+            }
+
+
+            /*
+               NEVER hide Dashboard.
+            */
+
+            if (
+                isDashboardLink(link)
+            ) {
+
+                link.classList.remove(
+                    "role-hidden"
+                );
+
+                link.removeAttribute(
+                    "aria-hidden"
+                );
+
+                link.style.removeProperty(
+                    "display"
+                );
+
+                return;
+
+            }
+
+
+            /*
+               Only process recognized
+               protected modules.
+            */
+
+            if (
+                !isProtectedModuleLink(link)
+            ) {
+
+                return;
+
+            }
+
+
+            /*
+               System Owner can access
+               every module.
+            */
+
+            if (
+                role === "system_owner"
+            ) {
+
+                setModuleVisibility(
+                    link,
+                    true
+                );
+
+                return;
+
+            }
+
+
+            /*
+               Check role permission.
+            */
+
+            const moduleName =
+                getModuleFromLink(link);
+
+
+            const allowed =
+                allowedModules.includes(
+                    moduleName
+                );
+
+
+            setModuleVisibility(
+                link,
+                allowed
+            );
 
         }
+    );
 
 
-        observerStarted = true;
+    /*
+       Make sure the Logout button
+       is always visible even if another
+       page has accidentally added
+       role-hidden to it.
+    */
+
+    sidebar
+        .querySelectorAll(
+            "a, button"
+        )
+        .forEach(
+            function(element) {
+
+                if (
+                    isLogoutLink(element)
+                ) {
+
+                    element.classList.remove(
+                        "role-hidden"
+                    );
+
+                    element.removeAttribute(
+                        "aria-hidden"
+                    );
+
+                    element.style.removeProperty(
+                        "display"
+                    );
+
+                }
+
+            }
+        );
 
 
-        const sidebarObserver =
-            new MutationObserver(
-                function (mutations) {
+    /*
+       Tell the page that role control
+       has finished.
+    */
 
-                    let sidebarChanged = false;
+    document.documentElement.classList.add(
+        "role-control-ready"
+    );
+
+    document.documentElement.classList.remove(
+        "role-control-pending"
+    );
+
+}
 
 
-                    mutations.forEach(
-                        function (mutation) {
+/* =========================================================
+   EXPOSE GLOBAL FUNCTION
+   ========================================================= */
 
-                            /*
-                             New sidebar links/elements
-                             added or removed.
-                            */
+window.applyGlobalRoleSidebar =
+    applyGlobalRoleSidebar;
+
+
+/* =========================================================
+   INITIAL LOAD
+   ========================================================= */
+
+function initializeGlobalRoleControl() {
+
+    applyGlobalRoleSidebar();
+
+}
+
+
+/* =========================================================
+   DOM CONTENT LOADED
+   ========================================================= */
+
+if (
+    document.readyState === "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeGlobalRoleControl
+    );
+
+} else {
+
+    initializeGlobalRoleControl();
+
+}
+
+
+/* =========================================================
+   OBSERVE SIDEBAR STRUCTURE ONLY
+   ========================================================= */
+
+let roleObserverStarted =
+    false;
+
+
+function startRoleObserver() {
+
+    if (
+        roleObserverStarted
+    ) {
+
+        return;
+
+    }
+
+
+    roleObserverStarted =
+        true;
+
+
+    const observer =
+        new MutationObserver(
+            function(mutations) {
+
+                let sidebarChanged =
+                    false;
+
+
+                mutations.forEach(
+                    function(mutation) {
+
+                        if (
+                            mutation.type ===
+                            "childList"
+                        ) {
 
                             if (
-                                mutation.type ===
-                                "childList"
+                                mutation.target.closest(
+                                    ".sidebar"
+                                )
                             ) {
 
-                                const target =
-                                    mutation.target;
-
-
-                                if (
-                                    target.closest &&
-                                    target.closest(
-                                        ".sidebar"
-                                    )
-                                ) {
-
-                                    sidebarChanged =
-                                        true;
-
-                                }
-
-
-                                if (
-                                    target.querySelector &&
-                                    target.querySelector(
-                                        ".sidebar"
-                                    )
-                                ) {
-
-                                    sidebarChanged =
-                                        true;
-
-                                }
+                                sidebarChanged =
+                                    true;
 
                             }
 
                         }
-                    );
 
+                    }
+                );
+
+
+                if (
+                    sidebarChanged
+                ) {
+
+                    applyGlobalRoleSidebar();
+
+                }
+
+            }
+        );
+
+
+    observer.observe(
+        document.body,
+        {
+            childList: true,
+            subtree: true
+        }
+    );
+
+}
+
+
+if (
+    document.readyState === "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        startRoleObserver
+    );
+
+} else {
+
+    startRoleObserver();
+
+}
+
+
+/* =========================================================
+   BACKUP CHECK
+   ========================================================= */
+
+setInterval(
+    function() {
+
+        applyGlobalRoleSidebar();
+
+    },
+    2000
+);
+
+
+/* =========================================================
+   EXTRA LOGOUT PROTECTION
+   ========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        const sidebar =
+            document.querySelector(
+                ".sidebar"
+            );
+
+
+        if (!sidebar) {
+
+            return;
+
+        }
+
+
+        sidebar
+            .querySelectorAll(
+                "a, button"
+            )
+            .forEach(
+                function(element) {
 
                     if (
-                        sidebarChanged
+                        isLogoutLink(element)
                     ) {
 
-                        applyGlobalRoleSidebar();
+                        element.classList.remove(
+                            "role-hidden"
+                        );
+
+                        element.removeAttribute(
+                            "aria-hidden"
+                        );
 
                     }
 
                 }
             );
 
-
-        sidebarObserver.observe(
-            document.body,
-            {
-                childList: true,
-                subtree: true
-            }
-        );
-
-
-        applyGlobalRoleSidebar();
-
     }
+);
 
 
-    /* =========================================================
-       START OBSERVER
-       ========================================================= */
-
-    if (
-        document.readyState === "loading"
-    ) {
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            startSidebarObserver
-        );
-
-    } else {
-
-        startSidebarObserver();
-
-    }
-
-
-    /* =========================================================
-       PERIODIC SECURITY CHECK
-       =========================================================
-
-       2 seconds is enough.
-
-       We do NOT need to run this every 1 second because
-       the MutationObserver handles sidebar rebuilding.
-       ========================================================= */
-
-    setInterval(
-        function () {
-
-            applyGlobalRoleSidebar();
-
-        },
-        2000
-    );
-
-
-})();
+/* =========================================================
+   END OF GLOBAL ROLE CONTROL
+   ========================================================= */
