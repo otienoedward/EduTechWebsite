@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Employees - EDU TECH Hotel Management System</title>
+
     <link rel="stylesheet" href="./style.css">
 
     <style>
@@ -20,6 +22,20 @@
         #accessDenied h2 {
             margin-bottom: 10px;
         }
+
+        .sidebar-logout {
+            margin-top: 20px;
+            padding: 0 15px 20px;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
     </style>
 </head>
 
@@ -32,7 +48,7 @@
         <p>HOTEL SYSTEM</p>
     </div>
 
-    <nav>
+    <nav class="sidebar-nav">
 
         <a href="./index.html" data-module="dashboard">
             🏠 Dashboard
@@ -97,6 +113,15 @@
         </a>
 
     </nav>
+
+    <div class="sidebar-logout">
+        <button
+            type="button"
+            class="logout-btn"
+            data-action="logout">
+            🚪 Logout
+        </button>
+    </div>
 
 </aside>
 
@@ -243,8 +268,6 @@
 
     </section>
 
-
-    <!-- ACCESS DENIED -->
 
     <section id="accessDenied">
 
@@ -438,56 +461,130 @@
 </div>
 
 
+<!-- SHARED SYSTEM FILES -->
+
+<script src="./supabase.js"></script>
+<script src="./script.js"></script>
+
+
+<!-- EMPLOYEE PAGE SCRIPT -->
+
 <script>
+
+"use strict";
+
 
 let editingEmployeeRow = null;
 
 
-/* ================================
+/* =========================================
    EMPLOYEE ACCESS
-================================ */
+========================================= */
 
 function getEmployeeUserRole() {
 
-    let role =
-        sessionStorage.getItem("userRole");
+    const role =
+        sessionStorage.getItem("userRole") ||
+        localStorage.getItem("userRole") ||
+        "";
 
-
-    if (!role) {
-
-        role =
-            localStorage.getItem("userRole");
-
-    }
-
-
-    return String(
-        role || ""
-    )
-    .toLowerCase()
-    .trim();
+    return String(role)
+        .toLowerCase()
+        .trim();
 
 }
 
 
 function employeeAccessAllowed() {
 
-    const role =
-        getEmployeeUserRole();
-
-
     return [
         "system_owner",
         "hotel_owner",
         "manager"
-    ].includes(role);
+    ].includes(
+        getEmployeeUserRole()
+    );
 
 }
 
 
-/* ================================
+/* =========================================
+   SHOW ACCESS DENIED
+========================================= */
+
+function showEmployeeAccessDenied() {
+
+    const pageContent =
+        document.querySelector(".page-content");
+
+    const modal =
+        document.getElementById("employeeModal");
+
+    const denied =
+        document.getElementById("accessDenied");
+
+
+    if (pageContent) {
+
+        pageContent.style.display = "none";
+
+    }
+
+
+    if (modal) {
+
+        modal.style.display = "none";
+
+    }
+
+
+    if (denied) {
+
+        denied.style.display = "block";
+
+    }
+
+}
+
+
+/* =========================================
+   PROTECT EMPLOYEE PAGE
+========================================= */
+
+function protectEmployeePage() {
+
+    const role = getEmployeeUserRole();
+
+
+    /*
+       If there is no role yet, do not
+       interfere with the global system.
+    */
+
+    if (!role) {
+
+        return true;
+
+    }
+
+
+    if (!employeeAccessAllowed()) {
+
+        showEmployeeAccessDenied();
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+/* =========================================
    OPEN FORM
-================================ */
+========================================= */
 
 function showEmployeeForm() {
 
@@ -508,35 +605,47 @@ function showEmployeeForm() {
     const form =
         document.getElementById("employeeForm");
 
+
     document.getElementById(
         "employeeModalTitle"
-    ).textContent = "Add Employee";
+    ).textContent =
+        "Add Employee";
+
 
     form.reset();
 
     editingEmployeeRow = null;
 
     modal.style.display = "flex";
+
 }
 
 
-/* ================================
+/* =========================================
    CLOSE FORM
-================================ */
+========================================= */
 
 function hideEmployeeForm() {
 
-    document.getElementById(
-        "employeeModal"
-    ).style.display = "none";
+    const modal =
+        document.getElementById("employeeModal");
+
+
+    if (modal) {
+
+        modal.style.display = "none";
+
+    }
+
 
     editingEmployeeRow = null;
+
 }
 
 
-/* ================================
+/* =========================================
    CREATE EMPLOYEE ID
-================================ */
+========================================= */
 
 function createEmployeeID() {
 
@@ -545,14 +654,18 @@ function createEmployeeID() {
             "#employeeTable tr"
         );
 
+
     return "EMP-" +
-        String(rows.length + 1).padStart(3, "0");
+        String(
+            rows.length + 1
+        ).padStart(3, "0");
+
 }
 
 
-/* ================================
+/* =========================================
    UPDATE SUMMARY
-================================ */
+========================================= */
 
 function updateEmployeeSummary() {
 
@@ -560,6 +673,7 @@ function updateEmployeeSummary() {
         document.querySelectorAll(
             "#employeeTable tr"
         );
+
 
     let active = 0;
     let inactive = 0;
@@ -570,6 +684,7 @@ function updateEmployeeSummary() {
 
         const status =
             row.dataset.status;
+
 
         const salary =
             parseFloat(
@@ -597,17 +712,20 @@ function updateEmployeeSummary() {
 
     document.getElementById(
         "totalEmployees"
-    ).textContent = rows.length;
+    ).textContent =
+        rows.length;
 
 
     document.getElementById(
         "activeEmployees"
-    ).textContent = active;
+    ).textContent =
+        active;
 
 
     document.getElementById(
         "inactiveEmployees"
-    ).textContent = inactive;
+    ).textContent =
+        inactive;
 
 
     document.getElementById(
@@ -619,13 +737,11 @@ function updateEmployeeSummary() {
 }
 
 
-/* ================================
+/* =========================================
    SAVE EMPLOYEE
-================================ */
+========================================= */
 
-document
-.getElementById("employeeForm")
-.addEventListener("submit", function(event) {
+function saveEmployee(event) {
 
     event.preventDefault();
 
@@ -710,6 +826,7 @@ document
             "KSh " +
             salary.toLocaleString();
 
+
         editingEmployeeRow.cells[7].innerHTML =
             '<span class="status ' +
             status.toLowerCase() +
@@ -717,8 +834,10 @@ document
             status +
             '</span>';
 
+
         editingEmployeeRow.dataset.status =
             status;
+
 
         editingEmployeeRow.dataset.salary =
             salary;
@@ -747,23 +866,24 @@ document
         row.dataset.status =
             status;
 
+
         row.dataset.salary =
             salary;
 
 
         row.innerHTML = `
 
-            <td>${employeeID}</td>
+            <td>${escapeEmployeeHtml(employeeID)}</td>
 
-            <td>${name}</td>
+            <td>${escapeEmployeeHtml(name)}</td>
 
-            <td>${phone}</td>
+            <td>${escapeEmployeeHtml(phone)}</td>
 
-            <td>${email}</td>
+            <td>${escapeEmployeeHtml(email)}</td>
 
-            <td>${department}</td>
+            <td>${escapeEmployeeHtml(department)}</td>
 
-            <td>${position}</td>
+            <td>${escapeEmployeeHtml(position)}</td>
 
             <td>
                 KSh ${salary.toLocaleString()}
@@ -772,7 +892,7 @@ document
             <td>
 
                 <span class="status ${status.toLowerCase()}">
-                    ${status}
+                    ${escapeEmployeeHtml(status)}
                 </span>
 
             </td>
@@ -811,14 +931,33 @@ document
 
     hideEmployeeForm();
 
-    alert("Employee saved successfully.");
 
-});
+    alert(
+        "Employee saved successfully."
+    );
+
+}
 
 
-/* ================================
+/* =========================================
+   ESCAPE HTML
+========================================= */
+
+function escapeEmployeeHtml(value) {
+
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================
    EDIT EMPLOYEE
-================================ */
+========================================= */
 
 function editEmployee(button) {
 
@@ -835,6 +974,13 @@ function editEmployee(button) {
 
     const row =
         button.closest("tr");
+
+
+    if (!row) {
+
+        return;
+
+    }
 
 
     editingEmployeeRow = row;
@@ -890,14 +1036,15 @@ function editEmployee(button) {
 
     document.getElementById(
         "employeeModal"
-    ).style.display = "flex";
+    ).style.display =
+        "flex";
 
 }
 
 
-/* ================================
+/* =========================================
    DELETE EMPLOYEE
-================================ */
+========================================= */
 
 function deleteEmployee(button) {
 
@@ -912,62 +1059,79 @@ function deleteEmployee(button) {
     }
 
 
-    if (!confirm("Delete this employee?")) {
+    if (!confirm(
+        "Delete this employee?"
+    )) {
 
         return;
 
     }
 
 
-    button.closest("tr").remove();
+    const row =
+        button.closest("tr");
+
+
+    if (row) {
+
+        row.remove();
+
+    }
+
 
     updateEmployeeSummary();
 
 }
 
 
-/* ================================
-   SEARCH
-================================ */
+/* =========================================
+   SEARCH EMPLOYEES
+========================================= */
 
-document
-.getElementById("employeeSearch")
-.addEventListener("input", function() {
+function searchEmployees() {
 
     const search =
-        this.value.toLowerCase();
+        document.getElementById(
+            "employeeSearch"
+        ).value
+        .toLowerCase()
+        .trim();
 
 
     document
-    .querySelectorAll("#employeeTable tr")
+    .querySelectorAll(
+        "#employeeTable tr"
+    )
     .forEach(function(row) {
 
         row.style.display =
             row.textContent
-            .toLowerCase()
-            .includes(search)
-            ? ""
-            : "none";
+                .toLowerCase()
+                .includes(search)
+                ? ""
+                : "none";
 
     });
 
-});
+}
 
 
-/* ================================
-   FILTER
-================================ */
+/* =========================================
+   FILTER EMPLOYEES
+========================================= */
 
-document
-.getElementById("employeeFilter")
-.addEventListener("change", function() {
+function filterEmployees() {
 
     const filter =
-        this.value;
+        document.getElementById(
+            "employeeFilter"
+        ).value;
 
 
     document
-    .querySelectorAll("#employeeTable tr")
+    .querySelectorAll(
+        "#employeeTable tr"
+    )
     .forEach(function(row) {
 
         if (filter === "All") {
@@ -985,578 +1149,171 @@ document
 
     });
 
-});
+}
 
 
-/* ================================
-   BUTTON EVENTS
-================================ */
+/* =========================================
+   INITIALIZE EMPLOYEE PAGE
+========================================= */
 
-document
-.getElementById("newEmployeeButton")
-.addEventListener(
-    "click",
-    showEmployeeForm
-);
+function initializeEmployeesPage() {
 
+    /*
+       Do not initialize the employee
+       management interface for unauthorized
+       users.
+    */
 
-document
-.getElementById("closeEmployeeButton")
-.addEventListener(
-    "click",
-    hideEmployeeForm
-);
+    if (!protectEmployeePage()) {
 
+        return;
 
-document
-.getElementById("cancelEmployeeButton")
-.addEventListener(
-    "click",
-    hideEmployeeForm
-);
+    }
 
 
-/* ================================
-   CLOSE OUTSIDE MODAL
-================================ */
-
-window.addEventListener("click", function(event) {
-
-    const modal =
+    const form =
         document.getElementById(
-            "employeeModal"
+            "employeeForm"
         );
 
 
-    if (event.target === modal) {
+    const search =
+        document.getElementById(
+            "employeeSearch"
+        );
 
-        hideEmployeeForm();
 
-    }
+    const filter =
+        document.getElementById(
+            "employeeFilter"
+        );
 
-});
 
+    const newButton =
+        document.getElementById(
+            "newEmployeeButton"
+        );
 
-/* ================================
-   INITIAL SUMMARY
-================================ */
 
-updateEmployeeSummary();
+    const closeButton =
+        document.getElementById(
+            "closeEmployeeButton"
+        );
 
-</script>
 
+    const cancelButton =
+        document.getElementById(
+            "cancelEmployeeButton"
+        );
 
-<!-- ROLE ACCESS CONTROL -->
 
-<script>
+    if (form) {
 
-(function () {
-
-    "use strict";
-
-
-    const ROLE_PERMISSIONS = {
-
-        system_owner: [
-
-            "dashboard",
-            "rooms",
-            "guests",
-            "reservations",
-            "checkin",
-            "checkout",
-            "restaurant",
-            "inventory",
-            "payments",
-            "expenses",
-            "employees",
-            "housekeeping",
-            "maintenance",
-            "reports",
-            "settings",
-            "hotels"
-
-        ],
-
-
-        hotel_owner: [
-
-            "dashboard",
-            "rooms",
-            "guests",
-            "reservations",
-            "checkin",
-            "checkout",
-            "restaurant",
-            "inventory",
-            "payments",
-            "expenses",
-            "employees",
-            "housekeeping",
-            "maintenance",
-            "reports",
-            "settings"
-
-        ],
-
-
-        manager: [
-
-            "dashboard",
-            "rooms",
-            "guests",
-            "reservations",
-            "checkin",
-            "checkout",
-            "restaurant",
-            "inventory",
-            "payments",
-            "expenses",
-            "employees",
-            "housekeeping",
-            "maintenance",
-            "reports",
-            "settings"
-
-        ],
-
-
-        receptionist: [
-
-            "dashboard",
-            "rooms",
-            "guests",
-            "reservations",
-            "checkin",
-            "checkout",
-            "payments",
-            "reports"
-
-        ]
-
-    };
-
-
-    /* ================================
-       GET CURRENT ROLE
-    ================================= */
-
-    function getRole() {
-
-        let role =
-            sessionStorage.getItem(
-                "userRole"
-            );
-
-
-        if (!role) {
-
-            role =
-                localStorage.getItem(
-                    "userRole"
-                );
-
-        }
-
-
-        return String(
-            role || ""
-        )
-        .toLowerCase()
-        .trim();
-
-    }
-
-
-    /* ================================
-       GET MODULE FROM LINK
-    ================================= */
-
-    function getModuleFromLink(link) {
-
-        const dataModule =
-            link.getAttribute(
-                "data-module"
-            );
-
-
-        if (dataModule) {
-
-            return String(
-                dataModule
-            )
-            .toLowerCase()
-            .trim();
-
-        }
-
-
-        const href =
-            String(
-                link.getAttribute(
-                    "href"
-                ) || ""
-            )
-            .toLowerCase()
-            .split("?")[0]
-            .split("#")[0]
-            .trim();
-
-
-        if (
-
-            href === "./" ||
-            href === "/" ||
-            href === "index.html" ||
-            href === "./index.html" ||
-            href.endsWith(
-                "/index.html"
-            )
-
-        ) {
-
-            return "dashboard";
-
-        }
-
-
-        const modules = [
-
-            "rooms",
-            "guests",
-            "reservations",
-            "checkin",
-            "checkout",
-            "restaurant",
-            "inventory",
-            "payments",
-            "expenses",
-            "employees",
-            "housekeeping",
-            "maintenance",
-            "reports",
-            "settings",
-            "hotels"
-
-        ];
-
-
-        for (
-            let i = 0;
-            i < modules.length;
-            i++
-        ) {
-
-            if (
-                href.includes(
-                    modules[i] +
-                    ".html"
-                )
-            ) {
-
-                return modules[i];
-
-            }
-
-        }
-
-
-        return null;
-
-    }
-
-
-    /* ================================
-       CURRENT MODULE
-    ================================= */
-
-    function getCurrentModule() {
-
-        const filename =
-            window.location.pathname
-            .split("/")
-            .pop()
-            .toLowerCase();
-
-
-        if (
-            !filename ||
-            filename ===
-            "index.html"
-        ) {
-
-            return "dashboard";
-
-        }
-
-
-        return filename.replace(
-            ".html",
-            ""
+        form.addEventListener(
+            "submit",
+            saveEmployee
         );
 
     }
 
 
-    /* ================================
-       HIDE UNAUTHORIZED LINKS
-    ================================= */
+    if (search) {
 
-    function applyRoleControl() {
+        search.addEventListener(
+            "input",
+            searchEmployees
+        );
 
-        const role =
-            getRole();
-
-
-        if (!role) {
-
-            return;
-
-        }
+    }
 
 
-        const allowed =
-            ROLE_PERMISSIONS[role];
+    if (filter) {
+
+        filter.addEventListener(
+            "change",
+            filterEmployees
+        );
+
+    }
 
 
-        if (!allowed) {
+    if (newButton) {
 
-            return;
+        newButton.addEventListener(
+            "click",
+            showEmployeeForm
+        );
 
-        }
+    }
 
 
-        document
-        .querySelectorAll(
-            ".sidebar nav a"
-        )
-        .forEach(function(link) {
+    if (closeButton) {
 
-            const module =
-                getModuleFromLink(
-                    link
+        closeButton.addEventListener(
+            "click",
+            hideEmployeeForm
+        );
+
+    }
+
+
+    if (cancelButton) {
+
+        cancelButton.addEventListener(
+            "click",
+            hideEmployeeForm
+        );
+
+    }
+
+
+    window.addEventListener(
+        "click",
+        function(event) {
+
+            const modal =
+                document.getElementById(
+                    "employeeModal"
                 );
-
-
-            if (!module) {
-
-                return;
-
-            }
 
 
             if (
-                allowed.includes(
-                    module
-                )
+                modal &&
+                event.target === modal
             ) {
 
-                link.classList.remove(
-                    "role-hidden"
-                );
-
-                link.style.removeProperty(
-                    "display"
-                );
-
-            } else {
-
-                link.classList.add(
-                    "role-hidden"
-                );
-
-                link.style.setProperty(
-                    "display",
-                    "none",
-                    "important"
-                );
+                hideEmployeeForm();
 
             }
 
-        });
-
-    }
-
-
-    /* ================================
-       PROTECT DIRECT PAGE ACCESS
-    ================================= */
-
-    function protectPage() {
-
-        const role =
-            getRole();
-
-
-        if (!role) {
-
-            return;
-
         }
-
-
-        const allowed =
-            ROLE_PERMISSIONS[role];
-
-
-        if (!allowed) {
-
-            return;
-
-        }
-
-
-        const currentModule =
-            getCurrentModule();
-
-
-        if (
-            !allowed.includes(
-                currentModule
-            )
-        ) {
-
-            window.location.href =
-                "./index.html";
-
-        }
-
-    }
-
-
-    /* ================================
-       ACCESS DENIED SCREEN
-    ================================= */
-
-    function showAccessDenied() {
-
-        const denied =
-            document.getElementById(
-                "accessDenied"
-            );
-
-
-        const pageContent =
-            document.querySelector(
-                ".page-content"
-            );
-
-
-        const modal =
-            document.getElementById(
-                "employeeModal"
-            );
-
-
-        if (pageContent) {
-
-            pageContent.style.display =
-                "none";
-
-        }
-
-
-        if (modal) {
-
-            modal.style.display =
-                "none";
-
-        }
-
-
-        if (denied) {
-
-            denied.style.display =
-                "block";
-
-        }
-
-    }
-
-
-    /* ================================
-       PAGE ACCESS CONTROL
-    ================================= */
-
-    function checkEmployeePageAccess() {
-
-        const role =
-            getRole();
-
-
-        if (!role) {
-
-            return;
-
-        }
-
-
-        if (
-            role === "system_owner" ||
-            role === "hotel_owner" ||
-            role === "manager"
-        ) {
-
-            return;
-
-        }
-
-
-        showAccessDenied();
-
-    }
-
-
-    /* ================================
-       RUN ROLE CONTROL
-    ================================= */
-
-    function runRoleControl() {
-
-        applyRoleControl();
-
-        protectPage();
-
-        checkEmployeePageAccess();
-
-    }
-
-
-    if (
-        document.readyState ===
-        "loading"
-    ) {
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            runRoleControl
-        );
-
-    } else {
-
-        runRoleControl();
-
-    }
-
-
-    /* KEEP APPLYING CONTROL */
-
-    setInterval(
-        applyRoleControl,
-        500
     );
 
 
-    setInterval(
-        checkEmployeePageAccess,
-        500
+    updateEmployeeSummary();
+
+}
+
+
+/* =========================================
+   START
+========================================= */
+
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeEmployeesPage
     );
 
+} else {
 
-    window.applyRoleControl =
-        applyRoleControl;
+    initializeEmployeesPage();
 
-})();
+}
 
 </script>
 
