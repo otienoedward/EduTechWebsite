@@ -8,36 +8,30 @@
 
     <link rel="stylesheet" href="./style.css">
 
-    <!-- IMPORTANT: Supabase library MUST load before supabase.js -->
+    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- PDF receipt library -->
+    <!-- jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
-        .sidebar {
-            position: fixed !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 250px !important;
-            height: 100vh !important;
-            z-index: 999999 !important;
-            overflow-y: auto !important;
-        }
-
-        .sidebar a {
-            display: block !important;
-            cursor: pointer !important;
-        }
+        /* =====================================================
+           PAYMENTS PAGE
+           Global sidebar/layout comes from style.css
+           ===================================================== */
 
         .sidebar a.role-hidden {
             display: none !important;
         }
 
         .main-content {
-            margin-left: 250px !important;
             position: relative;
+            min-width: 0;
         }
+
+        /* =====================================================
+           RESTRICTION SCREEN
+           ===================================================== */
 
         #moduleRestrictionScreen {
             display: none;
@@ -105,6 +99,10 @@
         .restriction-back:hover {
             opacity: 0.9;
         }
+
+        /* =====================================================
+           RECEIPT MODAL
+           ===================================================== */
 
         .receipt-modal {
             display: none;
@@ -180,6 +178,7 @@
             justify-content: space-between;
             font-size: 20px;
             font-weight: bold;
+            gap: 15px;
         }
 
         .receipt-footer {
@@ -225,7 +224,12 @@
             color: white;
         }
 
+        /* =====================================================
+           PRINT
+           ===================================================== */
+
         @media print {
+
             body * {
                 visibility: hidden !important;
             }
@@ -254,6 +258,26 @@
                 display: none !important;
             }
         }
+
+        /* =====================================================
+           MOBILE
+           ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .receipt-box {
+                padding: 20px;
+            }
+
+            .receipt-total {
+                flex-direction: column;
+                font-size: 18px;
+            }
+
+            .receipt-details td {
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 
@@ -264,6 +288,7 @@
     <!-- =====================================================
          SIDEBAR
          ===================================================== -->
+
     <aside class="sidebar">
 
         <div class="logo">
@@ -356,6 +381,7 @@
     <!-- =====================================================
          MAIN CONTENT
          ===================================================== -->
+
     <main class="main-content">
 
         <header class="topbar">
@@ -366,6 +392,7 @@
             </div>
 
             <div class="user-info">
+
                 <strong id="loggedUserName">
                     Administrator
                 </strong>
@@ -373,36 +400,61 @@
                 <span id="loggedUserRole">
                     System Admin
                 </span>
+
             </div>
 
         </header>
 
 
         <!-- =================================================
-             NORMAL PAYMENTS CONTENT
+             PAYMENT CONTENT
              ================================================= -->
+
         <div id="paymentModuleContent">
 
             <section class="summary-cards">
 
                 <div class="summary-card">
+
                     <h3>Total Payments</h3>
-                    <p id="totalPayments">0</p>
+
+                    <p id="totalPayments">
+                        0
+                    </p>
+
                 </div>
 
+
                 <div class="summary-card">
+
                     <h3>Completed Payments</h3>
-                    <p id="completedPayments">0</p>
+
+                    <p id="completedPayments">
+                        0
+                    </p>
+
                 </div>
 
+
                 <div class="summary-card">
+
                     <h3>Pending Payments</h3>
-                    <p id="pendingPayments">0</p>
+
+                    <p id="pendingPayments">
+                        0
+                    </p>
+
                 </div>
 
+
                 <div class="summary-card">
+
                     <h3>Total Revenue</h3>
-                    <p id="paymentRevenue">KSh 0</p>
+
+                    <p id="paymentRevenue">
+                        KSh 0
+                    </p>
+
                 </div>
 
             </section>
@@ -413,16 +465,25 @@
                 <div class="section-header">
 
                     <div>
-                        <h2>Hotel Payments</h2>
+
+                        <h2>
+                            Hotel Payments
+                        </h2>
+
                         <p>
                             Record and manage guest payments
                         </p>
+
                     </div>
 
+
                     <button
+                        type="button"
                         class="primary-btn"
                         onclick="openPaymentForm()">
+
                         + New Payment
+
                     </button>
 
                 </div>
@@ -435,6 +496,7 @@
                         id="paymentSearch"
                         placeholder="Search payments..."
                         onkeyup="searchPayments()">
+
 
                     <select
                         id="paymentFilter"
@@ -466,7 +528,9 @@
                     <table id="paymentsTable">
 
                         <thead>
+
                             <tr>
+
                                 <th>Payment ID</th>
                                 <th>Guest</th>
                                 <th>Room</th>
@@ -476,7 +540,9 @@
                                 <th>Date</th>
                                 <th>Status</th>
                                 <th>Actions</th>
+
                             </tr>
+
                         </thead>
 
                         <tbody id="paymentTable"></tbody>
@@ -493,6 +559,7 @@
         <!-- =================================================
              RESTRICTION SCREEN
              ================================================= -->
+
         <div id="moduleRestrictionScreen">
 
             <div class="restriction-card">
@@ -557,7 +624,9 @@
             <button
                 type="button"
                 onclick="closePaymentForm()">
+
                 &times;
+
             </button>
 
         </div>
@@ -718,6 +787,7 @@
 
                 </button>
 
+
                 <button
                     type="submit"
                     class="primary-btn">
@@ -749,11 +819,17 @@
 
         <div class="receipt-header">
 
-            <h1>EDU TECH</h1>
+            <h1>
+                EDU TECH
+            </h1>
 
-            <h2>HOTEL MANAGEMENT</h2>
+            <h2>
+                HOTEL MANAGEMENT
+            </h2>
 
-            <p>Payment Receipt</p>
+            <p>
+                Payment Receipt
+            </p>
 
         </div>
 
@@ -837,6 +913,7 @@
         <div class="receipt-actions">
 
             <button
+                type="button"
                 class="receipt-print-btn"
                 onclick="printReceipt()">
 
@@ -844,7 +921,9 @@
 
             </button>
 
+
             <button
+                type="button"
                 class="receipt-pdf-btn"
                 onclick="downloadReceiptPDF()">
 
@@ -852,7 +931,9 @@
 
             </button>
 
+
             <button
+                type="button"
                 class="receipt-close-btn"
                 onclick="closeReceipt()">
 
@@ -868,7 +949,7 @@
 
 
 <!-- =========================================================
-     IMPORTANT SCRIPT ORDER
+     REQUIRED SCRIPTS
      ========================================================= -->
 
 <script src="./supabase.js"></script>
@@ -884,11 +965,13 @@
 const PAYMENT_STORAGE_KEY = "eduTechPayments";
 
 let editingPaymentId = null;
+
 let currentReceiptPayment = null;
 
 let paymentModuleRestricted = false;
 
 let verifiedHotelId = null;
+
 let verifiedRole = null;
 
 
@@ -896,9 +979,10 @@ let verifiedRole = null;
    ROLE PERMISSIONS
    ========================================================= */
 
-const ROLE_PERMISSIONS = {
+const PAYMENT_ROLE_PERMISSIONS = {
 
     system_owner: [
+        "dashboard",
         "rooms",
         "guests",
         "reservations",
@@ -912,10 +996,12 @@ const ROLE_PERMISSIONS = {
         "housekeeping",
         "maintenance",
         "reports",
-        "settings"
+        "settings",
+        "hotels"
     ],
 
     hotel_owner: [
+        "dashboard",
         "rooms",
         "guests",
         "reservations",
@@ -933,6 +1019,7 @@ const ROLE_PERMISSIONS = {
     ],
 
     manager: [
+        "dashboard",
         "rooms",
         "guests",
         "reservations",
@@ -950,6 +1037,7 @@ const ROLE_PERMISSIONS = {
     ],
 
     receptionist: [
+        "dashboard",
         "rooms",
         "guests",
         "reservations",
@@ -963,30 +1051,57 @@ const ROLE_PERMISSIONS = {
 
 
 /* =========================================================
-   APPLY SIDEBAR ROLE PERMISSIONS
+   GET CURRENT ROLE
+   ========================================================= */
+
+function getCurrentUserRole() {
+
+    return String(
+        verifiedRole ||
+        sessionStorage.getItem("userRole") ||
+        localStorage.getItem("userRole") ||
+        ""
+    )
+    .toLowerCase()
+    .trim();
+
+}
+
+
+/* =========================================================
+   APPLY PAYMENT PAGE ROLE CONTROL
    ========================================================= */
 
 function applyRolePermissions() {
 
     const role =
-        String(
-            verifiedRole ||
-            sessionStorage.getItem("userRole") ||
-            localStorage.getItem("userRole") ||
-            ""
-        )
-        .toLowerCase()
-        .trim();
+        getCurrentUserRole();
+
+
+    if (!role) {
+
+        return;
+
+    }
+
 
     const allowed =
-        ROLE_PERMISSIONS[role] || [];
+        PAYMENT_ROLE_PERMISSIONS[role] ||
+        [];
+
 
     document
         .querySelectorAll("[data-module]")
         .forEach(function(link) {
 
             const moduleName =
-                link.getAttribute("data-module");
+                String(
+                    link.getAttribute("data-module") ||
+                    ""
+                )
+                .toLowerCase()
+                .trim();
+
 
             if (
                 role === "system_owner" ||
@@ -997,10 +1112,20 @@ function applyRolePermissions() {
                     "role-hidden"
                 );
 
+                link.setAttribute(
+                    "aria-hidden",
+                    "false"
+                );
+
             } else {
 
                 link.classList.add(
                     "role-hidden"
+                );
+
+                link.setAttribute(
+                    "aria-hidden",
+                    "true"
                 );
 
             }
@@ -1011,7 +1136,7 @@ function applyRolePermissions() {
 
 
 /* =========================================================
-   GET AUTHENTICATED USER + PROFILE
+   GET AUTHENTICATED PROFILE
    ========================================================= */
 
 async function getAuthenticatedProfile() {
@@ -1019,8 +1144,7 @@ async function getAuthenticatedProfile() {
     try {
 
         if (
-            typeof supabaseClient ===
-            "undefined" ||
+            typeof supabaseClient === "undefined" ||
             !supabaseClient
         ) {
 
@@ -1029,6 +1153,7 @@ async function getAuthenticatedProfile() {
             );
 
             return null;
+
         }
 
 
@@ -1049,16 +1174,18 @@ async function getAuthenticatedProfile() {
             );
 
             return null;
+
         }
 
 
         if (!user) {
 
             console.error(
-                "No authenticated Supabase user found."
+                "No authenticated user found."
             );
 
             return null;
+
         }
 
 
@@ -1086,17 +1213,19 @@ async function getAuthenticatedProfile() {
             );
 
             return null;
+
         }
 
 
         if (!profile) {
 
             console.error(
-                "No profile found for authenticated user:",
+                "No profile found for user.",
                 user.id
             );
 
             return null;
+
         }
 
 
@@ -1114,10 +1243,6 @@ async function getAuthenticatedProfile() {
                 ? String(profile.hotel_id)
                 : "";
 
-
-        /*
-         Synchronize browser session values.
-        */
 
         if (verifiedRole) {
 
@@ -1169,61 +1294,35 @@ async function getAuthenticatedProfile() {
     } catch (error) {
 
         console.error(
-            "Authenticated profile exception:",
+            "Profile exception:",
             error
         );
 
         return null;
+
     }
 
 }
 
 
 /* =========================================================
-   USER DISPLAY
+   USER NAME
    ========================================================= */
-
-function getCurrentUserRole() {
-
-    return String(
-        verifiedRole ||
-        sessionStorage.getItem("userRole") ||
-        localStorage.getItem("userRole") ||
-        ""
-    )
-    .toLowerCase()
-    .trim();
-
-}
-
-
-function getCurrentHotelId() {
-
-    return String(
-        verifiedHotelId ||
-        sessionStorage.getItem("hotelId") ||
-        localStorage.getItem("hotelId") ||
-        ""
-    )
-    .trim();
-
-}
-
 
 function getCurrentUserName() {
 
     return (
-        sessionStorage.getItem(
-            "userName"
-        ) ||
-        localStorage.getItem(
-            "userName"
-        ) ||
+        sessionStorage.getItem("userName") ||
+        localStorage.getItem("userName") ||
         "User"
     );
 
 }
 
+
+/* =========================================================
+   UPDATE USER DISPLAY
+   ========================================================= */
 
 function updateUserDisplay() {
 
@@ -1231,6 +1330,7 @@ function updateUserDisplay() {
         document.getElementById(
             "loggedUserName"
         );
+
 
     const roleElement =
         document.getElementById(
@@ -1274,7 +1374,8 @@ function normalizeModuleRestrictions(value) {
 
         try {
 
-            value = JSON.parse(value);
+            value =
+                JSON.parse(value);
 
         } catch (error) {
 
@@ -1288,6 +1389,7 @@ function normalizeModuleRestrictions(value) {
     if (Array.isArray(value)) {
 
         const result = {};
+
 
         value.forEach(
             function(moduleName) {
@@ -1305,6 +1407,7 @@ function normalizeModuleRestrictions(value) {
             }
         );
 
+
         return result;
 
     }
@@ -1316,6 +1419,7 @@ function normalizeModuleRestrictions(value) {
     ) {
 
         const result = {};
+
 
         Object.keys(value).forEach(
             function(key) {
@@ -1329,6 +1433,7 @@ function normalizeModuleRestrictions(value) {
 
             }
         );
+
 
         return result;
 
@@ -1361,12 +1466,8 @@ async function checkPaymentsModuleRestriction() {
     }
 
 
-    /*
-     Apply sidebar immediately after
-     successful profile verification.
-    */
-
     applyRolePermissions();
+
     updateUserDisplay();
 
 
@@ -1378,13 +1479,30 @@ async function checkPaymentsModuleRestriction() {
         .trim();
 
 
-    /*
-     System Owner has unrestricted access.
-    */
+    if (
+        !PAYMENT_ROLE_PERMISSIONS[role] ||
+        !PAYMENT_ROLE_PERMISSIONS[role].includes(
+            "payments"
+        )
+    ) {
 
-    if (role === "system_owner") {
+        showPaymentAccessError(
+            "You do not have permission to access the Payments module."
+        );
 
-        paymentModuleRestricted = false;
+        return false;
+
+    }
+
+
+    /* System Owner does not need a hotel check */
+
+    if (
+        role === "system_owner"
+    ) {
+
+        paymentModuleRestricted =
+            false;
 
         showPaymentModule();
 
@@ -1433,12 +1551,12 @@ async function checkPaymentsModuleRestriction() {
         if (error) {
 
             console.error(
-                "Hotel restriction check failed:",
+                "Hotel check failed:",
                 error
             );
 
             showPaymentAccessError(
-                "Unable to verify Payments module access. Please contact the system administrator."
+                "Unable to verify Payments module access."
             );
 
             return false;
@@ -1449,7 +1567,7 @@ async function checkPaymentsModuleRestriction() {
         if (!hotel) {
 
             showPaymentAccessError(
-                "Your assigned hotel could not be found. Please contact the system administrator."
+                "Your assigned hotel could not be found."
             );
 
             return false;
@@ -1457,16 +1575,18 @@ async function checkPaymentsModuleRestriction() {
         }
 
 
-        /*
-         Hotel status.
-        */
+        /* Hotel status */
 
-        if (
+        const hotelStatus =
             String(
                 hotel.status || ""
             )
-            .toLowerCase() ===
-            "deactivated"
+            .toLowerCase()
+            .trim();
+
+
+        if (
+            hotelStatus === "deactivated"
         ) {
 
             showPaymentAccessError(
@@ -1478,26 +1598,23 @@ async function checkPaymentsModuleRestriction() {
         }
 
 
-        /*
-         Subscription status.
-        */
+        /* Subscription status */
 
         const subscriptionStatus =
             String(
                 hotel.subscription_status || ""
             )
-            .toLowerCase();
+            .toLowerCase()
+            .trim();
 
 
         if (
-            subscriptionStatus ===
-            "expired" ||
-            subscriptionStatus ===
-            "cancelled"
+            subscriptionStatus === "expired" ||
+            subscriptionStatus === "cancelled"
         ) {
 
             showPaymentAccessError(
-                "Your hotel subscription is not active. Please contact the system administrator."
+                "Your hotel subscription is not active."
             );
 
             return false;
@@ -1505,14 +1622,13 @@ async function checkPaymentsModuleRestriction() {
         }
 
 
-        /*
-         Subscription end date.
-        */
+        /* Subscription end date */
 
         if (hotel.subscription_end) {
 
             const today =
                 new Date();
+
 
             today.setHours(
                 0,
@@ -1537,7 +1653,7 @@ async function checkPaymentsModuleRestriction() {
             ) {
 
                 showPaymentAccessError(
-                    "Your hotel subscription has expired. Please contact the system administrator."
+                    "Your hotel subscription has expired."
                 );
 
                 return false;
@@ -1547,9 +1663,7 @@ async function checkPaymentsModuleRestriction() {
         }
 
 
-        /*
-         Payments-specific restriction.
-        */
+        /* Module restriction */
 
         const restrictions =
             normalizeModuleRestrictions(
@@ -1576,10 +1690,11 @@ async function checkPaymentsModuleRestriction() {
         paymentModuleRestricted =
             false;
 
+
         showPaymentModule();
 
-        return true;
 
+        return true;
 
     } catch (error) {
 
@@ -1600,33 +1715,34 @@ async function checkPaymentsModuleRestriction() {
 
 
 /* =========================================================
-   SHOW NORMAL MODULE
+   SHOW PAYMENT MODULE
    ========================================================= */
 
 function showPaymentModule() {
 
-    const normalContent =
+    const content =
         document.getElementById(
             "paymentModuleContent"
         );
 
-    const restrictionScreen =
+
+    const restriction =
         document.getElementById(
             "moduleRestrictionScreen"
         );
 
 
-    if (normalContent) {
+    if (content) {
 
-        normalContent.style.display =
+        content.style.display =
             "";
 
     }
 
 
-    if (restrictionScreen) {
+    if (restriction) {
 
-        restrictionScreen.style.display =
+        restriction.style.display =
             "none";
 
     }
@@ -1642,15 +1758,17 @@ function showRestrictedPaymentModule(
     hotel
 ) {
 
-    const normalContent =
+    const content =
         document.getElementById(
             "paymentModuleContent"
         );
 
-    const restrictionScreen =
+
+    const restriction =
         document.getElementById(
             "moduleRestrictionScreen"
         );
+
 
     const message =
         document.getElementById(
@@ -1658,17 +1776,17 @@ function showRestrictedPaymentModule(
         );
 
 
-    if (normalContent) {
+    if (content) {
 
-        normalContent.style.display =
+        content.style.display =
             "none";
 
     }
 
 
-    if (restrictionScreen) {
+    if (restriction) {
 
-        restrictionScreen.style.display =
+        restriction.style.display =
             "flex";
 
     }
@@ -1684,13 +1802,14 @@ function showRestrictedPaymentModule(
 
 
     closePaymentForm();
+
     closeReceipt();
 
 }
 
 
 /* =========================================================
-   ACCESS ERROR
+   SHOW ACCESS ERROR
    ========================================================= */
 
 function showPaymentAccessError(
@@ -1701,15 +1820,17 @@ function showPaymentAccessError(
         true;
 
 
-    const normalContent =
+    const content =
         document.getElementById(
             "paymentModuleContent"
         );
 
-    const restrictionScreen =
+
+    const restriction =
         document.getElementById(
             "moduleRestrictionScreen"
         );
+
 
     const message =
         document.getElementById(
@@ -1717,17 +1838,17 @@ function showPaymentAccessError(
         );
 
 
-    if (normalContent) {
+    if (content) {
 
-        normalContent.style.display =
+        content.style.display =
             "none";
 
     }
 
 
-    if (restrictionScreen) {
+    if (restriction) {
 
-        restrictionScreen.style.display =
+        restriction.style.display =
             "flex";
 
     }
@@ -1749,15 +1870,37 @@ function showPaymentAccessError(
 
 function paymentAccessAllowed() {
 
-    if (paymentModuleRestricted) {
+    const role =
+        getCurrentUserRole();
+
+
+    if (
+        !role ||
+        !PAYMENT_ROLE_PERMISSIONS[role] ||
+        !PAYMENT_ROLE_PERMISSIONS[role].includes(
+            "payments"
+        )
+    ) {
 
         alert(
-            "The Payments module is currently restricted for this hotel."
+            "You do not have permission to access Payments."
         );
 
         return false;
 
     }
+
+
+    if (paymentModuleRestricted) {
+
+        alert(
+            "The Payments module is currently restricted."
+        );
+
+        return false;
+
+    }
+
 
     return true;
 
@@ -1787,6 +1930,7 @@ function getStoredPayments() {
 
         const data =
             JSON.parse(saved);
+
 
         return Array.isArray(data)
             ? data
@@ -1819,7 +1963,7 @@ function savePayments(
 
 
 /* =========================================================
-   HTML ESCAPING
+   ESCAPE HTML
    ========================================================= */
 
 function escapePaymentHTML(
@@ -1854,7 +1998,7 @@ function escapePaymentHTML(
 
 
 /* =========================================================
-   PAYMENT FORM
+   OPEN PAYMENT FORM
    ========================================================= */
 
 function openPaymentForm() {
@@ -1871,13 +2015,25 @@ function openPaymentForm() {
             "paymentModal"
         );
 
+
     const form =
         document.getElementById(
             "paymentForm"
         );
 
 
+    if (
+        !modal ||
+        !form
+    ) {
+
+        return;
+
+    }
+
+
     form.reset();
+
 
     editingPaymentId =
         null;
@@ -1906,6 +2062,10 @@ function openPaymentForm() {
 
 }
 
+
+/* =========================================================
+   CLOSE PAYMENT FORM
+   ========================================================= */
 
 function closePaymentForm() {
 
@@ -1943,7 +2103,7 @@ function closePaymentForm() {
 
 
 /* =========================================================
-   PAYMENT STATUS
+   PAYMENT STATUS CLASS
    ========================================================= */
 
 function getPaymentStatusClass(
@@ -1951,8 +2111,7 @@ function getPaymentStatusClass(
 ) {
 
     if (
-        status ===
-        "Completed"
+        status === "Completed"
     ) {
 
         return "status-available";
@@ -1961,8 +2120,7 @@ function getPaymentStatusClass(
 
 
     if (
-        status ===
-        "Pending"
+        status === "Pending"
     ) {
 
         return "status-maintenance";
@@ -1976,7 +2134,7 @@ function getPaymentStatusClass(
 
 
 /* =========================================================
-   PAYMENT ID
+   GENERATE PAYMENT ID
    ========================================================= */
 
 function generatePaymentID() {
@@ -2041,7 +2199,7 @@ function generatePaymentID() {
 
 
 /* =========================================================
-   RECEIPT NUMBER
+   GENERATE RECEIPT NUMBER
    ========================================================= */
 
 function generateReceiptNumber(
@@ -2075,7 +2233,7 @@ function generateReceiptNumber(
 
 function displayPayments() {
 
-    if (paymentModuleRestricted) {
+    if (!paymentAccessAllowed()) {
 
         return;
 
@@ -2167,24 +2325,28 @@ function displayPayments() {
                 <td>
 
                     <button
+                        type="button"
                         class="action-btn view-btn"
                         onclick="viewPaymentRecord(this)">
                         View
                     </button>
 
                     <button
+                        type="button"
                         class="action-btn edit-btn"
                         onclick="editPaymentRecord(this)">
                         Edit
                     </button>
 
                     <button
+                        type="button"
                         class="action-btn receipt-btn"
                         onclick="openPaymentReceipt(this)">
                         Receipt
                     </button>
 
                     <button
+                        type="button"
                         class="action-btn delete-btn"
                         onclick="deletePaymentRecord(this)">
                         Delete
@@ -2207,32 +2369,11 @@ function displayPayments() {
 
     applyPaymentFilters();
 
-
-    if (
-        typeof saveCurrentModuleTablesForReports ===
-        "function"
-    ) {
-
-        try {
-
-            saveCurrentModuleTablesForReports();
-
-        } catch (error) {
-
-            console.warn(
-                "Reports bridge warning:",
-                error
-            );
-
-        }
-
-    }
-
 }
 
 
 /* =========================================================
-   SUMMARY
+   PAYMENT SUMMARY
    ========================================================= */
 
 function updatePaymentSummary() {
@@ -2244,8 +2385,10 @@ function updatePaymentSummary() {
     let completedPayments =
         0;
 
+
     let pendingPayments =
         0;
+
 
     let revenue =
         0;
@@ -2260,6 +2403,7 @@ function updatePaymentSummary() {
             ) {
 
                 completedPayments++;
+
 
                 revenue +=
                     Number(
@@ -2282,37 +2426,69 @@ function updatePaymentSummary() {
     );
 
 
-    document.getElementById(
-        "totalPayments"
-    ).textContent =
-        payments.length;
-
-
-    document.getElementById(
-        "completedPayments"
-    ).textContent =
-        completedPayments;
-
-
-    document.getElementById(
-        "pendingPayments"
-    ).textContent =
-        pendingPayments;
-
-
-    document.getElementById(
-        "paymentRevenue"
-    ).textContent =
-        "KSh " +
-        revenue.toLocaleString(
-            "en-KE"
+    const totalElement =
+        document.getElementById(
+            "totalPayments"
         );
+
+
+    const completedElement =
+        document.getElementById(
+            "completedPayments"
+        );
+
+
+    const pendingElement =
+        document.getElementById(
+            "pendingPayments"
+        );
+
+
+    const revenueElement =
+        document.getElementById(
+            "paymentRevenue"
+        );
+
+
+    if (totalElement) {
+
+        totalElement.textContent =
+            payments.length;
+
+    }
+
+
+    if (completedElement) {
+
+        completedElement.textContent =
+            completedPayments;
+
+    }
+
+
+    if (pendingElement) {
+
+        pendingElement.textContent =
+            pendingPayments;
+
+    }
+
+
+    if (revenueElement) {
+
+        revenueElement.textContent =
+            "KSh " +
+            revenue.toLocaleString(
+                "en-KE"
+            );
+
+    }
 
 }
 
 
 /* =========================================================
-   FIND PAYMENT
+   FIND PAYMENT FROM ROW
    ========================================================= */
 
 function findPaymentFromRow(
@@ -2352,199 +2528,218 @@ function findPaymentFromRow(
 
 
 /* =========================================================
-   SAVE PAYMENT
+   SAVE PAYMENT FORM
    ========================================================= */
 
-document.getElementById(
-    "paymentForm"
-)
-.addEventListener(
-    "submit",
-    function(event) {
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
 
-        event.preventDefault();
+        const paymentForm =
+            document.getElementById(
+                "paymentForm"
+            );
 
 
-        if (!paymentAccessAllowed()) {
+        if (!paymentForm) {
 
             return;
 
         }
 
 
-        const guest =
-            document.getElementById(
-                "paymentGuest"
-            )
-            .value
-            .trim();
+        paymentForm.addEventListener(
+            "submit",
+            function(event) {
+
+                event.preventDefault();
 
 
-        const room =
-            document.getElementById(
-                "paymentRoom"
-            )
-            .value
-            .trim();
+                if (
+                    !paymentAccessAllowed()
+                ) {
+
+                    return;
+
+                }
 
 
-        const description =
-            document.getElementById(
-                "paymentDescription"
-            )
-            .value
-            .trim();
+                const guest =
+                    document.getElementById(
+                        "paymentGuest"
+                    )
+                    .value
+                    .trim();
 
 
-        const amount =
-            Number(
-                document.getElementById(
-                    "paymentAmount"
-                ).value
-            );
+                const room =
+                    document.getElementById(
+                        "paymentRoom"
+                    )
+                    .value
+                    .trim();
 
 
-        const method =
-            document.getElementById(
-                "paymentMethod"
-            ).value;
+                const description =
+                    document.getElementById(
+                        "paymentDescription"
+                    )
+                    .value
+                    .trim();
 
 
-        const date =
-            document.getElementById(
-                "paymentDate"
-            ).value;
+                const amount =
+                    Number(
+                        document.getElementById(
+                            "paymentAmount"
+                        ).value
+                    );
 
 
-        const status =
-            document.getElementById(
-                "paymentStatus"
-            ).value;
+                const method =
+                    document.getElementById(
+                        "paymentMethod"
+                    ).value;
 
 
-        if (
-            !guest ||
-            !room ||
-            !description ||
-            !method ||
-            !date
-        ) {
-
-            alert(
-                "Please fill in all required fields."
-            );
-
-            return;
-
-        }
+                const date =
+                    document.getElementById(
+                        "paymentDate"
+                    ).value;
 
 
-        if (
-            !Number.isFinite(amount) ||
-            amount < 0
-        ) {
-
-            alert(
-                "Please enter a valid payment amount."
-            );
-
-            return;
-
-        }
+                const status =
+                    document.getElementById(
+                        "paymentStatus"
+                    ).value;
 
 
-        const payments =
-            getStoredPayments();
+                if (
+                    !guest ||
+                    !room ||
+                    !description ||
+                    !method ||
+                    !date
+                ) {
+
+                    alert(
+                        "Please fill in all required fields."
+                    );
+
+                    return;
+
+                }
 
 
-        if (editingPaymentId) {
+                if (
+                    !Number.isFinite(amount) ||
+                    amount < 0
+                ) {
 
-            const index =
-                payments.findIndex(
-                    function(payment) {
+                    alert(
+                        "Please enter a valid payment amount."
+                    );
 
-                        return (
-                            payment.id ===
-                            editingPaymentId
+                    return;
+
+                }
+
+
+                const payments =
+                    getStoredPayments();
+
+
+                if (editingPaymentId) {
+
+                    const index =
+                        payments.findIndex(
+                            function(payment) {
+
+                                return (
+                                    payment.id ===
+                                    editingPaymentId
+                                );
+
+                            }
                         );
 
+
+                    if (index !== -1) {
+
+                        payments[index] = {
+
+                            id:
+                                editingPaymentId,
+
+                            guest:
+                                guest,
+
+                            room:
+                                room,
+
+                            description:
+                                description,
+
+                            amount:
+                                amount,
+
+                            method:
+                                method,
+
+                            date:
+                                date,
+
+                            status:
+                                status
+
+                        };
+
                     }
+
+                } else {
+
+                    payments.push({
+
+                        id:
+                            generatePaymentID(),
+
+                        guest:
+                            guest,
+
+                        room:
+                            room,
+
+                        description:
+                            description,
+
+                        amount:
+                            amount,
+
+                        method:
+                            method,
+
+                        date:
+                            date,
+
+                        status:
+                            status
+
+                    });
+
+                }
+
+
+                savePayments(
+                    payments
                 );
 
 
-            if (index !== -1) {
+                displayPayments();
 
-                payments[index] = {
-
-                    id:
-                        editingPaymentId,
-
-                    guest:
-                        guest,
-
-                    room:
-                        room,
-
-                    description:
-                        description,
-
-                    amount:
-                        amount,
-
-                    method:
-                        method,
-
-                    date:
-                        date,
-
-                    status:
-                        status
-
-                };
+                closePaymentForm();
 
             }
-
-        } else {
-
-            payments.push({
-
-                id:
-                    generatePaymentID(),
-
-                guest:
-                    guest,
-
-                room:
-                    room,
-
-                description:
-                    description,
-
-                amount:
-                    amount,
-
-                method:
-                    method,
-
-                date:
-                    date,
-
-                status:
-                    status
-
-            });
-
-        }
-
-
-        savePayments(
-            payments
         );
-
-
-        displayPayments();
-
-        closePaymentForm();
 
     }
 );
@@ -2834,6 +3029,10 @@ function filterPayments() {
 }
 
 
+/* =========================================================
+   APPLY FILTERS
+   ========================================================= */
+
 function applyPaymentFilters() {
 
     const searchElement =
@@ -2911,7 +3110,7 @@ function applyPaymentFilters() {
 
 
 /* =========================================================
-   RECEIPT
+   OPEN RECEIPT
    ========================================================= */
 
 function openPaymentReceipt(
@@ -3023,6 +3222,10 @@ function openPaymentReceipt(
 }
 
 
+/* =========================================================
+   CLOSE RECEIPT
+   ========================================================= */
+
 function closeReceipt() {
 
     const modal =
@@ -3075,7 +3278,7 @@ function printReceipt() {
 
 
 /* =========================================================
-   PDF RECEIPT
+   DOWNLOAD RECEIPT PDF
    ========================================================= */
 
 function downloadReceiptPDF() {
@@ -3136,10 +3339,7 @@ function downloadReceiptPDF() {
         ) || 0;
 
 
-    doc.setFontSize(
-        20
-    );
-
+    doc.setFontSize(20);
 
     doc.setFont(
         "helvetica",
@@ -3152,15 +3352,12 @@ function downloadReceiptPDF() {
         105,
         20,
         {
-            align:
-                "center"
+            align: "center"
         }
     );
 
 
-    doc.setFontSize(
-        14
-    );
+    doc.setFontSize(14);
 
 
     doc.text(
@@ -3168,16 +3365,12 @@ function downloadReceiptPDF() {
         105,
         29,
         {
-            align:
-                "center"
+            align: "center"
         }
     );
 
 
-    doc.setFontSize(
-        12
-    );
-
+    doc.setFontSize(12);
 
     doc.setFont(
         "helvetica",
@@ -3190,8 +3383,7 @@ function downloadReceiptPDF() {
         105,
         40,
         {
-            align:
-                "center"
+            align: "center"
         }
     );
 
@@ -3233,16 +3425,13 @@ function downloadReceiptPDF() {
 
 
         doc.text(
-            String(
-                value ?? ""
-            ),
+            String(value ?? ""),
             80,
             y
         );
 
 
-        y +=
-            10;
+        y += 10;
 
     }
 
@@ -3295,8 +3484,7 @@ function downloadReceiptPDF() {
     );
 
 
-    y +=
-        5;
+    y += 5;
 
 
     doc.line(
@@ -3307,14 +3495,10 @@ function downloadReceiptPDF() {
     );
 
 
-    y +=
-        15;
+    y += 15;
 
 
-    doc.setFontSize(
-        15
-    );
-
+    doc.setFontSize(15);
 
     doc.setFont(
         "helvetica",
@@ -3341,20 +3525,15 @@ function downloadReceiptPDF() {
         185,
         y,
         {
-            align:
-                "right"
+            align: "right"
         }
     );
 
 
-    y +=
-        25;
+    y += 25;
 
 
-    doc.setFontSize(
-        10
-    );
-
+    doc.setFontSize(10);
 
     doc.setFont(
         "helvetica",
@@ -3367,14 +3546,12 @@ function downloadReceiptPDF() {
         105,
         y,
         {
-            align:
-                "center"
+            align: "center"
         }
     );
 
 
-    y +=
-        8;
+    y += 8;
 
 
     doc.text(
@@ -3382,8 +3559,7 @@ function downloadReceiptPDF() {
         105,
         y,
         {
-            align:
-                "center"
+            align: "center"
         }
     );
 
@@ -3397,7 +3573,7 @@ function downloadReceiptPDF() {
 
 
 /* =========================================================
-   OUTSIDE CLICK - RECEIPT
+   CLOSE RECEIPT WHEN CLICKING OUTSIDE
    ========================================================= */
 
 window.addEventListener(
@@ -3424,7 +3600,7 @@ window.addEventListener(
 
 
 /* =========================================================
-   OUTSIDE CLICK - PAYMENT FORM
+   CLOSE PAYMENT FORM WHEN CLICKING OUTSIDE
    ========================================================= */
 
 window.addEventListener(
@@ -3451,7 +3627,7 @@ window.addEventListener(
 
 
 /* =========================================================
-   PAGE START
+   PAGE INITIALIZATION
    ========================================================= */
 
 document.addEventListener(
@@ -3459,8 +3635,8 @@ document.addEventListener(
     async function() {
 
         /*
-         Supabase library has already loaded
-         before supabase.js.
+         First verify the authenticated
+         Supabase profile.
         */
 
         const accessGranted =
@@ -3468,14 +3644,21 @@ document.addEventListener(
 
 
         /*
-         Apply sidebar permissions again
-         after profile verification.
+         Apply role visibility after the
+         verified role has been obtained.
         */
 
         applyRolePermissions();
 
+
         updateUserDisplay();
 
+
+        /*
+         Only load payment data if the
+         user is actually allowed to use
+         the Payments module.
+        */
 
         if (accessGranted) {
 
