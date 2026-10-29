@@ -2,123 +2,285 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>Guests - EDU TECH Hotel Management System</title>
-    <link rel="stylesheet" href="./style.css">
+
+    <link
+        rel="stylesheet"
+        href="./style.css"
+    >
+
 </head>
 
+
 <body>
+
 
     <aside class="sidebar">
 
         <div class="logo">
+
             <h2>EDU TECH</h2>
+
             <span>HOTEL SYSTEM</span>
+
         </div>
 
+
         <nav>
-            <a href="./index.html">🏠 Dashboard</a>
-            <a href="./rooms.html">🛏️ Rooms</a>
-            <a href="./guests.html" class="active">👤 Guests</a>
-            <a href="./reservations.html">📅 Reservations</a>
-            <a href="./checkin.html">🛎️ Check-in</a>
-            <a href="./checkout.html">🚪 Check-out</a>
-            <a href="./restaurant.html">🍽️ Restaurant</a>
-            <a href="./inventory.html">📦 Inventory</a>
-            <a href="./payments.html">💰 Payments</a>
-            <a href="./expenses.html">💸 Expenses</a>
-            <a href="./employees.html">👨‍💼 Employees</a>
-            <a href="./housekeeping.html">🧹 Housekeeping</a>
-            <a href="./maintenance.html">🔧 Maintenance</a>
-            <a href="./reports.html">📊 Reports</a>
-            <a href="./settings.html">⚙️ Settings</a>
+
+            <a href="./index.html">
+                🏠 Dashboard
+            </a>
+
+            <a href="./rooms.html">
+                🛏️ Rooms
+            </a>
+
+            <a
+                href="./guests.html"
+                class="active"
+            >
+                👤 Guests
+            </a>
+
+            <a href="./reservations.html">
+                📅 Reservations
+            </a>
+
+            <a href="./checkin.html">
+                🛎️ Check-in
+            </a>
+
+            <a href="./checkout.html">
+                🚪 Check-out
+            </a>
+
+            <a href="./restaurant.html">
+                🍽️ Restaurant
+            </a>
+
+            <a href="./inventory.html">
+                📦 Inventory
+            </a>
+
+            <a href="./payments.html">
+                💰 Payments
+            </a>
+
+            <a href="./expenses.html">
+                💸 Expenses
+            </a>
+
+            <a href="./employees.html">
+                👨‍💼 Employees
+            </a>
+
+            <a href="./housekeeping.html">
+                🧹 Housekeeping
+            </a>
+
+            <a href="./maintenance.html">
+                🔧 Maintenance
+            </a>
+
+            <a href="./reports.html">
+                📊 Reports
+            </a>
+
+            <a href="./settings.html">
+                ⚙️ Settings
+            </a>
+
         </nav>
 
     </aside>
 
 
+
     <main class="main-content">
+
 
         <header class="topbar">
 
+
             <div>
-                <h1>Guest Management</h1>
-                <p>Register and manage hotel guests</p>
+
+                <h1>
+                    Guest Management
+                </h1>
+
+                <p>
+                    Register and manage hotel guests
+                </p>
+
             </div>
 
+
+
             <div class="user">
+
 
                 <div class="user-icon">
                     A
                 </div>
 
+
                 <div>
-                    <strong>Administrator</strong>
-                    <small>System Admin</small>
+
+                    <strong>
+                        Administrator
+                    </strong>
+
+                    <small>
+                        System Admin
+                    </small>
+
                 </div>
 
+
             </div>
+
 
         </header>
 
 
+
         <section class="cards">
 
-            <div class="card">
-                <div class="card-icon">👥</div>
-                <div>
-                    <h3>Total Guests</h3>
-                    <p id="totalGuests">0</p>
-                </div>
-            </div>
 
             <div class="card">
-                <div class="card-icon">🟢</div>
-                <div>
-                    <h3>Currently Staying</h3>
-                    <p id="stayingGuests">0</p>
+
+                <div class="card-icon">
+                    👥
                 </div>
+
+                <div>
+
+                    <h3>
+                        Total Guests
+                    </h3>
+
+                    <p id="totalGuests">
+                        0
+                    </p>
+
+                </div>
+
             </div>
 
-            <div class="card">
-                <div class="card-icon">📅</div>
-                <div>
-                    <h3>Today's Arrivals</h3>
-                    <p id="arrivalGuests">0</p>
-                </div>
-            </div>
+
 
             <div class="card">
-                <div class="card-icon">🚪</div>
-                <div>
-                    <h3>Today's Departures</h3>
-                    <p id="departureGuests">0</p>
+
+                <div class="card-icon">
+                    🟢
                 </div>
+
+                <div>
+
+                    <h3>
+                        Currently Staying
+                    </h3>
+
+                    <p id="stayingGuests">
+                        0
+                    </p>
+
+                </div>
+
             </div>
+
+
+
+            <div class="card">
+
+                <div class="card-icon">
+                    📅
+                </div>
+
+                <div>
+
+                    <h3>
+                        Today's Arrivals
+                    </h3>
+
+                    <p id="arrivalGuests">
+                        0
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="card">
+
+                <div class="card-icon">
+                    🚪
+                </div>
+
+                <div>
+
+                    <h3>
+                        Today's Departures
+                    </h3>
+
+                    <p id="departureGuests">
+                        0
+                    </p>
+
+                </div>
+
+            </div>
+
 
         </section>
 
 
+
         <section class="room-container">
+
 
             <div class="room-header">
 
+
                 <div>
-                    <h2>Hotel Guests</h2>
-                    <p>View and manage registered guests</p>
+
+                    <h2>
+                        Hotel Guests
+                    </h2>
+
+                    <p>
+                        View and manage registered guests
+                    </p>
+
                 </div>
+
+
 
                 <button
                     class="add-room-btn"
-                    onclick="openGuestForm()">
+                    onclick="openGuestForm()"
+                >
                     + Register New Guest
                 </button>
+
 
             </div>
 
 
+
             <div class="room-tools">
+
 
                 <input
                     type="text"
@@ -126,59 +288,111 @@
                     placeholder="Search guest name or phone..."
                 >
 
+
             </div>
+
 
 
             <div class="table-container">
 
+
                 <table id="guestsTable">
+
 
                     <thead>
 
+
                         <tr>
-                            <th>Full Name</th>
-                            <th>Phone</th>
-                            <th>ID / Passport</th>
-                            <th>Email</th>
-                            <th>Country</th>
-                            <th>Address</th>
-                            <th>Actions</th>
+
+                            <th>
+                                Full Name
+                            </th>
+
+                            <th>
+                                Phone
+                            </th>
+
+                            <th>
+                                ID / Passport
+                            </th>
+
+                            <th>
+                                Email
+                            </th>
+
+                            <th>
+                                Country
+                            </th>
+
+                            <th>
+                                Address
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
                         </tr>
+
 
                     </thead>
 
+
+
                     <tbody id="guestTable">
+
                     </tbody>
+
 
                 </table>
 
+
             </div>
 
+
         </section>
+
 
     </main>
 
 
-    <div id="guestModal" class="modal">
+
+    <div
+        id="guestModal"
+        class="modal"
+    >
+
 
         <div class="modal-content">
 
+
             <div class="modal-header">
 
-                <h2>Register New Guest</h2>
+
+                <h2>
+                    Register New Guest
+                </h2>
+
 
                 <button
                     type="button"
-                    onclick="closeGuestForm()">
+                    onclick="closeGuestForm()"
+                >
                     ×
                 </button>
+
 
             </div>
 
 
+
             <form id="guestForm">
 
-                <label>Full Name</label>
+
+                <label>
+                    Full Name
+                </label>
+
 
                 <input
                     type="text"
@@ -188,7 +402,11 @@
                 >
 
 
-                <label>Phone Number</label>
+
+                <label>
+                    Phone Number
+                </label>
+
 
                 <input
                     type="tel"
@@ -198,7 +416,11 @@
                 >
 
 
-                <label>ID / Passport Number</label>
+
+                <label>
+                    ID / Passport Number
+                </label>
+
 
                 <input
                     type="text"
@@ -208,7 +430,11 @@
                 >
 
 
-                <label>Email Address</label>
+
+                <label>
+                    Email Address
+                </label>
+
 
                 <input
                     type="email"
@@ -217,7 +443,11 @@
                 >
 
 
-                <label>Country</label>
+
+                <label>
+                    Country
+                </label>
+
 
                 <input
                     type="text"
@@ -226,7 +456,11 @@
                 >
 
 
-                <label>Address</label>
+
+                <label>
+                    Address
+                </label>
+
 
                 <input
                     type="text"
@@ -235,111 +469,187 @@
                 >
 
 
+
                 <button
                     type="submit"
-                    class="save-room-btn">
+                    class="save-room-btn"
+                >
                     Register Guest
                 </button>
 
+
             </form>
 
+
         </div>
+
 
     </div>
 
 
+
+    <!-- MAIN SYSTEM SCRIPT -->
+
     <script src="./script.js"></script>
 
 
+
+    <!-- ============================================================
+         GUEST PAGE FUNCTIONS
+         ============================================================ -->
+
     <script>
 
+
         const guestForm =
-            document.getElementById("guestForm");
+            document.getElementById(
+                "guestForm"
+            );
+
 
         const guestTable =
-            document.getElementById("guestTable");
+            document.getElementById(
+                "guestTable"
+            );
+
 
         const guestSearch =
-            document.getElementById("guestSearch");
+            document.getElementById(
+                "guestSearch"
+            );
+
 
 
         function updateGuestSummary() {
 
-            const rows =
-                guestTable.querySelectorAll("tr");
 
-            document.getElementById("totalGuests").textContent =
+            const rows =
+                guestTable.querySelectorAll(
+                    "tr"
+                );
+
+
+            document.getElementById(
+                "totalGuests"
+            ).textContent =
                 rows.length;
 
-            document.getElementById("stayingGuests").textContent =
+
+            document.getElementById(
+                "stayingGuests"
+            ).textContent =
                 0;
 
-            document.getElementById("arrivalGuests").textContent =
+
+            document.getElementById(
+                "arrivalGuests"
+            ).textContent =
                 0;
 
-            document.getElementById("departureGuests").textContent =
+
+            document.getElementById(
+                "departureGuests"
+            ).textContent =
                 0;
+
 
         }
 
 
+
         guestForm.addEventListener(
             "submit",
-            function(event) {
+            function (event) {
+
 
                 event.preventDefault();
 
 
+
                 const name =
                     document
-                        .getElementById("guestName")
+                        .getElementById(
+                            "guestName"
+                        )
                         .value
                         .trim();
+
+
 
                 const phone =
                     document
-                        .getElementById("guestPhone")
+                        .getElementById(
+                            "guestPhone"
+                        )
                         .value
                         .trim();
+
+
 
                 const guestID =
                     document
-                        .getElementById("guestID")
+                        .getElementById(
+                            "guestID"
+                        )
                         .value
                         .trim();
+
+
 
                 const email =
                     document
-                        .getElementById("guestEmail")
+                        .getElementById(
+                            "guestEmail"
+                        )
                         .value
                         .trim();
+
+
 
                 const country =
                     document
-                        .getElementById("guestCountry")
+                        .getElementById(
+                            "guestCountry"
+                        )
                         .value
                         .trim();
+
+
 
                 const address =
                     document
-                        .getElementById("guestAddress")
+                        .getElementById(
+                            "guestAddress"
+                        )
                         .value
                         .trim();
 
 
-                if (!name || !phone || !guestID) {
+
+                if (
+                    !name ||
+                    !phone ||
+                    !guestID
+                ) {
+
 
                     alert(
                         "Please fill in the required guest details."
                     );
 
+
                     return;
+
 
                 }
 
 
+
                 const row =
-                    document.createElement("tr");
+                    document.createElement(
+                        "tr"
+                    );
+
 
 
                 row.innerHTML = `
@@ -360,13 +670,15 @@
 
                         <button
                             class="edit-btn"
-                            onclick="editGuest(this)">
+                            onclick="editGuest(this)"
+                        >
                             Edit
                         </button>
 
                         <button
                             class="delete-btn"
-                            onclick="deleteGuestRecord(this)">
+                            onclick="deleteGuestRecord(this)"
+                        >
                             Delete
                         </button>
 
@@ -375,49 +687,85 @@
                 `;
 
 
-                guestTable.appendChild(row);
+
+                guestTable.appendChild(
+                    row
+                );
+
 
 
                 guestForm.reset();
 
 
-                closeGuestForm();
+
+                if (
+                    typeof closeGuestForm ===
+                    "function"
+                ) {
+
+                    closeGuestForm();
+
+                }
+
 
 
                 updateGuestSummary();
 
+
             }
         );
+
 
 
         guestSearch.addEventListener(
             "input",
-            function() {
+            function () {
+
 
                 const searchText =
-                    guestSearch.value.toLowerCase();
+                    guestSearch.value
+                        .toLowerCase();
+
+
 
                 const rows =
-                    guestTable.querySelectorAll("tr");
+                    guestTable.querySelectorAll(
+                        "tr"
+                    );
 
 
-                rows.forEach(function(row) {
 
-                    const rowText =
-                        row.textContent.toLowerCase();
+                rows.forEach(
+                    function (row) {
 
-                    row.style.display =
-                        rowText.includes(searchText)
-                            ? ""
-                            : "none";
 
-                });
+                        const rowText =
+                            row.textContent
+                                .toLowerCase();
+
+
+
+                        row.style.display =
+                            rowText.includes(
+                                searchText
+                            )
+                                ? ""
+                                : "none";
+
+
+                    }
+                );
+
 
             }
         );
 
 
-        function deleteGuestRecord(button) {
+
+        function deleteGuestRecord(
+            button
+        ) {
+
 
             if (
                 !confirm(
@@ -430,71 +778,857 @@
             }
 
 
+
             const row =
-                button.closest("tr");
+                button.closest(
+                    "tr"
+                );
+
 
 
             if (row) {
 
+
                 row.remove();
+
 
                 updateGuestSummary();
 
+
             }
+
 
         }
 
 
-        function editGuest(button) {
+
+        function editGuest(
+            button
+        ) {
+
 
             const row =
-                button.closest("tr");
+                button.closest(
+                    "tr"
+                );
+
 
 
             if (!row) {
+
                 return;
+
             }
 
 
-            document.getElementById("guestName").value =
+
+            document.getElementById(
+                "guestName"
+            ).value =
                 row.cells[0].textContent;
 
-            document.getElementById("guestPhone").value =
+
+
+            document.getElementById(
+                "guestPhone"
+            ).value =
                 row.cells[1].textContent;
 
-            document.getElementById("guestID").value =
+
+
+            document.getElementById(
+                "guestID"
+            ).value =
                 row.cells[2].textContent;
 
-            document.getElementById("guestEmail").value =
-                row.cells[3].textContent === "-"
+
+
+            document.getElementById(
+                "guestEmail"
+            ).value =
+                row.cells[3].textContent ===
+                "-"
                     ? ""
                     : row.cells[3].textContent;
 
-            document.getElementById("guestCountry").value =
-                row.cells[4].textContent === "-"
+
+
+            document.getElementById(
+                "guestCountry"
+            ).value =
+                row.cells[4].textContent ===
+                "-"
                     ? ""
                     : row.cells[4].textContent;
 
-            document.getElementById("guestAddress").value =
-                row.cells[5].textContent === "-"
+
+
+            document.getElementById(
+                "guestAddress"
+            ).value =
+                row.cells[5].textContent ===
+                "-"
                     ? ""
                     : row.cells[5].textContent;
+
 
 
             row.remove();
 
 
+
             updateGuestSummary();
 
 
-            openGuestForm();
+
+            if (
+                typeof openGuestForm ===
+                "function"
+            ) {
+
+                openGuestForm();
+
+            }
+
 
         }
 
 
+
         updateGuestSummary();
 
+
     </script>
+
+
+
+    <!-- ============================================================
+         FINAL ROLE CONTROL FOR THIS PAGE
+         ============================================================ -->
+
+    <script>
+
+
+        (function () {
+
+
+            "use strict";
+
+
+
+            const ROLE_PERMISSIONS = {
+
+
+                system_owner: [
+
+                    "dashboard",
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "restaurant",
+                    "inventory",
+                    "payments",
+                    "expenses",
+                    "employees",
+                    "housekeeping",
+                    "maintenance",
+                    "reports",
+                    "settings",
+                    "hotels"
+
+                ],
+
+
+
+                hotel_owner: [
+
+                    "dashboard",
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "restaurant",
+                    "inventory",
+                    "payments",
+                    "expenses",
+                    "employees",
+                    "housekeeping",
+                    "maintenance",
+                    "reports",
+                    "settings"
+
+                ],
+
+
+
+                manager: [
+
+                    "dashboard",
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "restaurant",
+                    "inventory",
+                    "payments",
+                    "expenses",
+                    "employees",
+                    "housekeeping",
+                    "maintenance",
+                    "reports",
+                    "settings"
+
+                ],
+
+
+
+                receptionist: [
+
+                    "dashboard",
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "payments",
+                    "reports"
+
+                ]
+
+
+            };
+
+
+
+            function getRole() {
+
+
+                let role =
+                    sessionStorage.getItem(
+                        "userRole"
+                    );
+
+
+
+                if (!role) {
+
+                    role =
+                        localStorage.getItem(
+                            "userRole"
+                        );
+
+                }
+
+
+
+                return String(
+                    role || ""
+                )
+                    .toLowerCase()
+                    .trim();
+
+
+            }
+
+
+
+            function getModuleFromLink(
+                link
+            ) {
+
+
+                if (!link) {
+
+                    return null;
+
+                }
+
+
+
+                const href =
+                    String(
+                        link.getAttribute(
+                            "href"
+                        ) || ""
+                    )
+                        .toLowerCase()
+                        .split("?")[0]
+                        .split("#")[0]
+                        .trim();
+
+
+
+                if (
+                    href === "./" ||
+                    href === "/" ||
+                    href === "index.html" ||
+                    href === "./index.html" ||
+                    href.endsWith(
+                        "/index.html"
+                    )
+                ) {
+
+                    return "dashboard";
+
+                }
+
+
+
+                if (
+                    href.includes(
+                        "rooms.html"
+                    )
+                ) {
+
+                    return "rooms";
+
+                }
+
+
+
+                if (
+                    href.includes(
+                        "guests.html"
+                    )
+                ) {
+
+                    return "guests";
+
+                }
+
+
+
+                if (
+                    href.includes(
+                        "reservations.html"
+                    )
+                ) {
+
+                    return "reservations";
+
+                }
+
+
+
+                if (
+                    href.includes(
+                        "checkin.html"
+                    )
+                ) {
+
+                    return "checkin";
+
+                }
+
+
+
+                if (
+                    href.includes(
+                        "checkout.html"
+                    )
+                ) {
+
+                    return "checkout";
+
+                }
+
+
+
+                if (
+                    href.includes(
+                        "restaurant.html"
+                    )
+                ) {
+
+                    return "restaurant";
+
+                }
+
+
+
+                if (
+                    href.includes(
+                        "inventory.html"
+                    )
+                ) {
+
+                    return "inventory";
+
+                }
+
+
+
+                if (
+                    href.includes(
+                        "payments.html"
+                    )
+                ) {
+
+                    return "payments";
+
+                }
+
+
+
+                if (
+                    href.includes(
+                        "expenses.html"
+                    )
+                ) {
+
+                    return "expenses";
+
+                }
+
+
+
+                if (
+                    href.includes(
+                        "employees.html"
+                    )
+                ) {
+
+                    return "employees";
+
+                }
+
+
+
+                if (
+                    href.includes(
+                        "housekeeping.html"
+                    )
+                ) {
+
+                    return "housekeeping";
+
+                }
+
+
+
+                if (
+                    href.includes(
+                        "maintenance.html"
+                    )
+                ) {
+
+                    return "maintenance";
+
+                }
+
+
+
+                if (
+                    href.includes(
+                        "reports.html"
+                    )
+                ) {
+
+                    return "reports";
+
+                }
+
+
+
+                if (
+                    href.includes(
+                        "settings.html"
+                    )
+                ) {
+
+                    return "settings";
+
+                }
+
+
+
+                if (
+                    href.includes(
+                        "hotels.html"
+                    )
+                ) {
+
+                    return "hotels";
+
+                }
+
+
+
+                return null;
+
+
+            }
+
+
+
+            function applyRoleControl() {
+
+
+                const role =
+                    getRole();
+
+
+
+                if (!role) {
+
+                    return;
+
+                }
+
+
+
+                const allowed =
+                    ROLE_PERMISSIONS[
+                        role
+                    ];
+
+
+
+                if (!allowed) {
+
+                    return;
+
+                }
+
+
+
+                const links =
+                    document.querySelectorAll(
+                        ".sidebar nav a"
+                    );
+
+
+
+                links.forEach(
+                    function (link) {
+
+
+                        const module =
+                            getModuleFromLink(
+                                link
+                            );
+
+
+
+                        if (!module) {
+
+                            return;
+
+                        }
+
+
+
+                        if (
+                            allowed.includes(
+                                module
+                            )
+                        ) {
+
+
+                            link.style.removeProperty(
+                                "display"
+                            );
+
+
+                        }
+
+                        else {
+
+
+                            link.style.setProperty(
+                                "display",
+                                "none",
+                                "important"
+                            );
+
+
+                        }
+
+
+                    }
+                );
+
+
+            }
+
+
+
+            function protectCurrentPage() {
+
+
+                const role =
+                    getRole();
+
+
+
+                if (!role) {
+
+                    return;
+
+                }
+
+
+
+                const allowed =
+                    ROLE_PERMISSIONS[
+                        role
+                    ];
+
+
+
+                if (!allowed) {
+
+                    return;
+
+                }
+
+
+
+                const filename =
+                    window.location
+                        .pathname
+                        .split("/")
+                        .pop()
+                        .toLowerCase();
+
+
+
+                let currentModule =
+                    "dashboard";
+
+
+
+                if (
+                    filename ===
+                    "rooms.html"
+                ) {
+
+                    currentModule =
+                        "rooms";
+
+                }
+
+                else if (
+                    filename ===
+                    "guests.html"
+                ) {
+
+                    currentModule =
+                        "guests";
+
+                }
+
+                else if (
+                    filename ===
+                    "reservations.html"
+                ) {
+
+                    currentModule =
+                        "reservations";
+
+                }
+
+                else if (
+                    filename ===
+                    "checkin.html"
+                ) {
+
+                    currentModule =
+                        "checkin";
+
+                }
+
+                else if (
+                    filename ===
+                    "checkout.html"
+                ) {
+
+                    currentModule =
+                        "checkout";
+
+                }
+
+                else if (
+                    filename ===
+                    "restaurant.html"
+                ) {
+
+                    currentModule =
+                        "restaurant";
+
+                }
+
+                else if (
+                    filename ===
+                    "inventory.html"
+                ) {
+
+                    currentModule =
+                        "inventory";
+
+                }
+
+                else if (
+                    filename ===
+                    "payments.html"
+                ) {
+
+                    currentModule =
+                        "payments";
+
+                }
+
+                else if (
+                    filename ===
+                    "expenses.html"
+                ) {
+
+                    currentModule =
+                        "expenses";
+
+                }
+
+                else if (
+                    filename ===
+                    "employees.html"
+                ) {
+
+                    currentModule =
+                        "employees";
+
+                }
+
+                else if (
+                    filename ===
+                    "housekeeping.html"
+                ) {
+
+                    currentModule =
+                        "housekeeping";
+
+                }
+
+                else if (
+                    filename ===
+                    "maintenance.html"
+                ) {
+
+                    currentModule =
+                        "maintenance";
+
+                }
+
+                else if (
+                    filename ===
+                    "reports.html"
+                ) {
+
+                    currentModule =
+                        "reports";
+
+                }
+
+                else if (
+                    filename ===
+                    "settings.html"
+                ) {
+
+                    currentModule =
+                        "settings";
+
+                }
+
+                else if (
+                    filename ===
+                    "hotels.html"
+                ) {
+
+                    currentModule =
+                        "hotels";
+
+                }
+
+
+
+                if (
+                    !allowed.includes(
+                        currentModule
+                    )
+                ) {
+
+
+                    window.location.href =
+                        "./index.html";
+
+
+                }
+
+
+            }
+
+
+
+            function runRoleControl() {
+
+
+                applyRoleControl();
+
+                protectCurrentPage();
+
+
+            }
+
+
+
+            if (
+                document.readyState ===
+                "loading"
+            ) {
+
+
+                document.addEventListener(
+                    "DOMContentLoaded",
+                    runRoleControl
+                );
+
+
+            }
+
+            else {
+
+
+                runRoleControl();
+
+
+            }
+
+
+
+            /*
+             * Keep checking because another
+             * script may rebuild or modify
+             * the sidebar.
+             */
+
+            setInterval(
+                applyRoleControl,
+                500
+            );
+
+
+            window.applyRoleControl =
+                applyRoleControl;
+
+
+        })();
+
+
+    </script>
+
 
 </body>
 
