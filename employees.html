@@ -841,5 +841,365 @@ updateEmployeeSummary();
 
 </script>
 
+
+<!-- ROLE ACCESS CONTROL -->
+
+<script>
+
+(function () {
+
+    "use strict";
+
+
+    const ROLE_PERMISSIONS = {
+
+        system_owner: [
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings",
+            "hotels"
+        ],
+
+
+        hotel_owner: [
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings"
+        ],
+
+
+        manager: [
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings"
+        ],
+
+
+        receptionist: [
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "payments",
+            "reports"
+        ]
+
+    };
+
+
+    /* GET CURRENT USER ROLE */
+
+    function getRole() {
+
+        let role =
+            sessionStorage.getItem("userRole");
+
+
+        if (!role) {
+
+            role =
+                localStorage.getItem("userRole");
+
+        }
+
+
+        return String(
+            role || ""
+        )
+        .toLowerCase()
+        .trim();
+
+    }
+
+
+    /* IDENTIFY MODULE FROM SIDEBAR LINK */
+
+    function getModuleFromLink(link) {
+
+        const href =
+            String(
+                link.getAttribute("href") || ""
+            )
+            .toLowerCase()
+            .split("?")[0]
+            .split("#")[0]
+            .trim();
+
+
+        if (
+            href === "./" ||
+            href === "/" ||
+            href === "index.html" ||
+            href === "./index.html" ||
+            href.endsWith("/index.html")
+        ) {
+
+            return "dashboard";
+
+        }
+
+
+        const modules = [
+
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings",
+            "hotels"
+
+        ];
+
+
+        for (
+            let i = 0;
+            i < modules.length;
+            i++
+        ) {
+
+            if (
+                href.includes(
+                    modules[i] + ".html"
+                )
+            ) {
+
+                return modules[i];
+
+            }
+
+        }
+
+
+        return null;
+
+    }
+
+
+    /* GET CURRENT PAGE */
+
+    function getCurrentModule() {
+
+        const filename =
+            window.location.pathname
+            .split("/")
+            .pop()
+            .toLowerCase();
+
+
+        if (
+            !filename ||
+            filename === "index.html"
+        ) {
+
+            return "dashboard";
+
+        }
+
+
+        return filename.replace(
+            ".html",
+            ""
+        );
+
+    }
+
+
+    /* HIDE UNAUTHORIZED SIDEBAR LINKS */
+
+    function applyRoleControl() {
+
+        const role =
+            getRole();
+
+
+        if (!role) {
+
+            return;
+
+        }
+
+
+        const allowed =
+            ROLE_PERMISSIONS[role];
+
+
+        if (!allowed) {
+
+            return;
+
+        }
+
+
+        document
+        .querySelectorAll(".sidebar nav a")
+        .forEach(function(link) {
+
+            const module =
+                getModuleFromLink(link);
+
+
+            if (!module) {
+
+                return;
+
+            }
+
+
+            if (
+                allowed.includes(module)
+            ) {
+
+                link.style.removeProperty(
+                    "display"
+                );
+
+            } else {
+
+                link.style.setProperty(
+                    "display",
+                    "none",
+                    "important"
+                );
+
+            }
+
+        });
+
+    }
+
+
+    /* PROTECT DIRECT PAGE ACCESS */
+
+    function protectPage() {
+
+        const role =
+            getRole();
+
+
+        if (!role) {
+
+            return;
+
+        }
+
+
+        const allowed =
+            ROLE_PERMISSIONS[role];
+
+
+        if (!allowed) {
+
+            return;
+
+        }
+
+
+        const currentModule =
+            getCurrentModule();
+
+
+        if (
+            !allowed.includes(
+                currentModule
+            )
+        ) {
+
+            window.location.href =
+                "./index.html";
+
+        }
+
+    }
+
+
+    /* RUN ROLE CONTROL */
+
+    function runRoleControl() {
+
+        applyRoleControl();
+
+        protectPage();
+
+    }
+
+
+    if (
+        document.readyState === "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            runRoleControl
+        );
+
+    } else {
+
+        runRoleControl();
+
+    }
+
+
+    /* KEEP APPLYING CONTROL */
+
+    setInterval(
+        applyRoleControl,
+        500
+    );
+
+
+    window.applyRoleControl =
+        applyRoleControl;
+
+})();
+
+</script>
+
 </body>
 </html>
