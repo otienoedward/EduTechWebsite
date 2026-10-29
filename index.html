@@ -1291,33 +1291,19 @@
             const today =
                 getToday();
 
-
             let query =
                 supabaseClient
                     .from("reservations")
-                    .select(
-                        '"id", "status"'
-                    )
-                    .eq(
-                        "check in date",
-                        today
-                    )
-                    .neq(
-                        "status",
-                        "cancelled"
-                    );
-
+                    .select("*");
 
             query =
                 applyHotelFilter(query);
-
 
             const {
                 data,
                 error
             } =
                 await query;
-
 
             if (error) {
 
@@ -1329,18 +1315,44 @@
                 return 0;
             }
 
-
             const bookings =
-                data
-                    ? data.length
-                    : 0;
+                (data || []).filter(
+                    function (reservation) {
 
+                        const checkInKey =
+                            Object.keys(reservation).find(
+                                function (key) {
+                                    return key
+                                        .replace(/\s+/g, "")
+                                        .toLowerCase() === "checkindate"
+                                        || key
+                                        .replace(/\s+/g, "")
+                                        .toLowerCase() === "checkin";
+                                }
+                            );
+
+                        const statusKey =
+                            Object.keys(reservation).find(
+                                function (key) {
+                                    return key
+                                        .replace(/\s+/g, "")
+                                        .toLowerCase() === "status";
+                                }
+                            );
+
+                        return (
+                            reservation[checkInKey] === today &&
+                            String(
+                                reservation[statusKey] || ""
+                            ).toLowerCase() !== "cancelled"
+                        );
+                    }
+                ).length;
 
             document.getElementById(
                 "dashboardBookings"
             ).textContent =
                 bookings;
-
 
             return bookings;
         }
@@ -1360,9 +1372,7 @@
             let reservationQuery =
                 supabaseClient
                     .from("reservations")
-                    .select(
-                        '"id", "guest id", "room id", "check in date", "check out date", "status"'
-                    );
+                    .select("*");
 
             reservationQuery =
                 applyHotelFilter(reservationQuery);
@@ -1387,19 +1397,79 @@
                 (allReservations || [])
                     .filter(function (reservation) {
 
+                        const checkInKey =
+                            Object.keys(reservation).find(
+                                function (key) {
+                                    const name =
+                                        key
+                                            .replace(/\s+/g, "")
+                                            .toLowerCase();
+
+                                    return (
+                                        name === "checkindate" ||
+                                        name === "checkin"
+                                    );
+                                }
+                            );
+
+                        const checkOutKey =
+                            Object.keys(reservation).find(
+                                function (key) {
+                                    const name =
+                                        key
+                                            .replace(/\s+/g, "")
+                                            .toLowerCase();
+
+                                    return (
+                                        name === "checkoutdate" ||
+                                        name === "checkout"
+                                    );
+                                }
+                            );
+
                         return (
-                            reservation["check in date"] === today ||
-                            reservation["check out date"] === today
+                            reservation[checkInKey] === today ||
+                            reservation[checkOutKey] === today
                         );
 
                     })
                     .sort(function (a, b) {
 
+                        const aKey =
+                            Object.keys(a).find(
+                                function (key) {
+                                    const name =
+                                        key
+                                            .replace(/\s+/g, "")
+                                            .toLowerCase();
+
+                                    return (
+                                        name === "checkindate" ||
+                                        name === "checkin"
+                                    );
+                                }
+                            );
+
+                        const bKey =
+                            Object.keys(b).find(
+                                function (key) {
+                                    const name =
+                                        key
+                                            .replace(/\s+/g, "")
+                                            .toLowerCase();
+
+                                    return (
+                                        name === "checkindate" ||
+                                        name === "checkin"
+                                    );
+                                }
+                            );
+
                         return String(
-                            a["check in date"] || ""
+                            a[aKey] || ""
                         ).localeCompare(
                             String(
-                                b["check in date"] || ""
+                                b[bKey] || ""
                             )
                         );
 
@@ -1423,11 +1493,36 @@
                 return;
             }
 
+            const getReservationKey =
+                function (reservation, wanted) {
+
+                    return Object.keys(reservation).find(
+                        function (key) {
+
+                            const name =
+                                key
+                                    .replace(/\s+/g, "")
+                                    .toLowerCase();
+
+                            return name === wanted;
+                        }
+                    );
+                };
+
             const guestIds =
                 [...new Set(
                     reservations
                         .map(function (reservation) {
-                            return reservation["guest id"];
+
+                            const key =
+                                getReservationKey(
+                                    reservation,
+                                    "guestid"
+                                );
+
+                            return key
+                                ? reservation[key]
+                                : null;
                         })
                         .filter(Boolean)
                 )];
@@ -1436,7 +1531,16 @@
                 [...new Set(
                     reservations
                         .map(function (reservation) {
-                            return reservation["room id"];
+
+                            const key =
+                                getReservationKey(
+                                    reservation,
+                                    "roomid"
+                                );
+
+                            return key
+                                ? reservation[key]
+                                : null;
                         })
                         .filter(Boolean)
                 )];
@@ -1515,11 +1619,53 @@
             reservations.forEach(
                 function (reservation) {
 
+                    const guestKey =
+                        getReservationKey(
+                            reservation,
+                            "guestid"
+                        );
+
+                    const roomKey =
+                        getReservationKey(
+                            reservation,
+                            "roomid"
+                        );
+
+                    const checkInKey =
+                        getReservationKey(
+                            reservation,
+                            "checkindate"
+                        ) ||
+                        getReservationKey(
+                            reservation,
+                            "checkin"
+                        );
+
+                    const checkOutKey =
+                        getReservationKey(
+                            reservation,
+                            "checkoutdate"
+                        ) ||
+                        getReservationKey(
+                            reservation,
+                            "checkout"
+                        );
+
+                    const statusKey =
+                        getReservationKey(
+                            reservation,
+                            "status"
+                        );
+
                     const guestId =
-                        reservation["guest id"];
+                        guestKey
+                            ? reservation[guestKey]
+                            : null;
 
                     const roomId =
-                        reservation["room id"];
+                        roomKey
+                            ? reservation[roomKey]
+                            : null;
 
                     const guestName =
                         guestId &&
@@ -1551,20 +1697,26 @@
 
                             <td>
                                 ${escapeHtml(
-                                    reservation["check in date"]
+                                    checkInKey
+                                        ? reservation[checkInKey]
+                                        : ""
                                 )}
                             </td>
 
                             <td>
                                 ${escapeHtml(
-                                    reservation["check out date"]
+                                    checkOutKey
+                                        ? reservation[checkOutKey]
+                                        : ""
                                 )}
                             </td>
 
                             <td>
                                 <span class="status">
                                     ${escapeHtml(
-                                        reservation.status
+                                        statusKey
+                                            ? reservation[statusKey]
+                                            : ""
                                     )}
                                 </span>
                             </td>
