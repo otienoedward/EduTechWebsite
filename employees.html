@@ -5,6 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employees - EDU TECH Hotel Management System</title>
     <link rel="stylesheet" href="./style.css">
+
+    <style>
+        .role-hidden {
+            display: none !important;
+        }
+
+        #accessDenied {
+            display: none;
+            padding: 40px;
+            text-align: center;
+        }
+
+        #accessDenied h2 {
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 
 <body>
@@ -17,21 +33,69 @@
     </div>
 
     <nav>
-        <a href="./index.html">🏠 Dashboard</a>
-        <a href="./rooms.html">🛏️ Rooms</a>
-        <a href="./guests.html">👤 Guests</a>
-        <a href="./reservations.html">📅 Reservations</a>
-        <a href="./checkin.html">🛎️ Check-in</a>
-        <a href="./checkout.html">🚪 Check-out</a>
-        <a href="./restaurant.html">🍽️ Restaurant</a>
-        <a href="./inventory.html">📦 Inventory</a>
-        <a href="./payments.html">💰 Payments</a>
-        <a href="./expenses.html">💸 Expenses</a>
-        <a href="./employees.html" class="active">👨‍💼 Employees</a>
-        <a href="./housekeeping.html">🧹 Housekeeping</a>
-        <a href="./maintenance.html">🔧 Maintenance</a>
-        <a href="./reports.html">📊 Reports</a>
-        <a href="./settings.html">⚙️ Settings</a>
+
+        <a href="./index.html" data-module="dashboard">
+            🏠 Dashboard
+        </a>
+
+        <a href="./rooms.html" data-module="rooms">
+            🛏️ Rooms
+        </a>
+
+        <a href="./guests.html" data-module="guests">
+            👤 Guests
+        </a>
+
+        <a href="./reservations.html" data-module="reservations">
+            📅 Reservations
+        </a>
+
+        <a href="./checkin.html" data-module="checkin">
+            🛎️ Check-in
+        </a>
+
+        <a href="./checkout.html" data-module="checkout">
+            🚪 Check-out
+        </a>
+
+        <a href="./restaurant.html" data-module="restaurant">
+            🍽️ Restaurant
+        </a>
+
+        <a href="./inventory.html" data-module="inventory">
+            📦 Inventory
+        </a>
+
+        <a href="./payments.html" data-module="payments">
+            💰 Payments
+        </a>
+
+        <a href="./expenses.html" data-module="expenses">
+            💸 Expenses
+        </a>
+
+        <a href="./employees.html"
+           data-module="employees"
+           class="active">
+            👨‍💼 Employees
+        </a>
+
+        <a href="./housekeeping.html" data-module="housekeeping">
+            🧹 Housekeeping
+        </a>
+
+        <a href="./maintenance.html" data-module="maintenance">
+            🔧 Maintenance
+        </a>
+
+        <a href="./reports.html" data-module="reports">
+            📊 Reports
+        </a>
+
+        <a href="./settings.html" data-module="settings">
+            ⚙️ Settings
+        </a>
+
     </nav>
 
 </aside>
@@ -176,6 +240,19 @@
             </div>
 
         </div>
+
+    </section>
+
+
+    <!-- ACCESS DENIED -->
+
+    <section id="accessDenied">
+
+        <h2>Access Denied</h2>
+
+        <p>
+            You do not have permission to access the Employees module.
+        </p>
 
     </section>
 
@@ -366,9 +443,64 @@
 let editingEmployeeRow = null;
 
 
-/* OPEN FORM */
+/* ================================
+   EMPLOYEE ACCESS
+================================ */
+
+function getEmployeeUserRole() {
+
+    let role =
+        sessionStorage.getItem("userRole");
+
+
+    if (!role) {
+
+        role =
+            localStorage.getItem("userRole");
+
+    }
+
+
+    return String(
+        role || ""
+    )
+    .toLowerCase()
+    .trim();
+
+}
+
+
+function employeeAccessAllowed() {
+
+    const role =
+        getEmployeeUserRole();
+
+
+    return [
+        "system_owner",
+        "hotel_owner",
+        "manager"
+    ].includes(role);
+
+}
+
+
+/* ================================
+   OPEN FORM
+================================ */
 
 function showEmployeeForm() {
+
+    if (!employeeAccessAllowed()) {
+
+        alert(
+            "You do not have permission to manage Employees."
+        );
+
+        return;
+
+    }
+
 
     const modal =
         document.getElementById("employeeModal");
@@ -388,7 +520,9 @@ function showEmployeeForm() {
 }
 
 
-/* CLOSE FORM */
+/* ================================
+   CLOSE FORM
+================================ */
 
 function hideEmployeeForm() {
 
@@ -400,7 +534,9 @@ function hideEmployeeForm() {
 }
 
 
-/* CREATE EMPLOYEE ID */
+/* ================================
+   CREATE EMPLOYEE ID
+================================ */
 
 function createEmployeeID() {
 
@@ -414,7 +550,9 @@ function createEmployeeID() {
 }
 
 
-/* UPDATE SUMMARY */
+/* ================================
+   UPDATE SUMMARY
+================================ */
 
 function updateEmployeeSummary() {
 
@@ -427,24 +565,31 @@ function updateEmployeeSummary() {
     let inactive = 0;
     let payroll = 0;
 
+
     rows.forEach(function(row) {
 
         const status =
             row.dataset.status;
 
         const salary =
-            parseFloat(row.dataset.salary) || 0;
+            parseFloat(
+                row.dataset.salary
+            ) || 0;
+
 
         if (status === "Active") {
 
             active++;
 
             payroll += salary;
+
         }
+
 
         if (status === "Inactive") {
 
             inactive++;
+
         }
 
     });
@@ -468,17 +613,34 @@ function updateEmployeeSummary() {
     document.getElementById(
         "totalPayroll"
     ).textContent =
-        "KSh " + payroll.toLocaleString();
+        "KSh " +
+        payroll.toLocaleString();
+
 }
 
 
-/* SAVE EMPLOYEE */
+/* ================================
+   SAVE EMPLOYEE
+================================ */
 
 document
 .getElementById("employeeForm")
 .addEventListener("submit", function(event) {
 
     event.preventDefault();
+
+
+    if (!employeeAccessAllowed()) {
+
+        alert(
+            "You do not have permission to manage Employees."
+        );
+
+        hideEmployeeForm();
+
+        return;
+
+    }
 
 
     const name =
@@ -545,7 +707,8 @@ document
             position;
 
         editingEmployeeRow.cells[6].textContent =
-            "KSh " + salary.toLocaleString();
+            "KSh " +
+            salary.toLocaleString();
 
         editingEmployeeRow.cells[7].innerHTML =
             '<span class="status ' +
@@ -653,9 +816,22 @@ document
 });
 
 
-/* EDIT EMPLOYEE */
+/* ================================
+   EDIT EMPLOYEE
+================================ */
 
 function editEmployee(button) {
+
+    if (!employeeAccessAllowed()) {
+
+        alert(
+            "You do not have permission to edit Employees."
+        );
+
+        return;
+
+    }
+
 
     const row =
         button.closest("tr");
@@ -715,25 +891,44 @@ function editEmployee(button) {
     document.getElementById(
         "employeeModal"
     ).style.display = "flex";
+
 }
 
 
-/* DELETE EMPLOYEE */
+/* ================================
+   DELETE EMPLOYEE
+================================ */
 
 function deleteEmployee(button) {
+
+    if (!employeeAccessAllowed()) {
+
+        alert(
+            "You do not have permission to delete Employees."
+        );
+
+        return;
+
+    }
+
 
     if (!confirm("Delete this employee?")) {
 
         return;
+
     }
+
 
     button.closest("tr").remove();
 
     updateEmployeeSummary();
+
 }
 
 
-/* SEARCH */
+/* ================================
+   SEARCH
+================================ */
 
 document
 .getElementById("employeeSearch")
@@ -759,13 +954,16 @@ document
 });
 
 
-/* FILTER */
+/* ================================
+   FILTER
+================================ */
 
 document
 .getElementById("employeeFilter")
 .addEventListener("change", function() {
 
-    const filter = this.value;
+    const filter =
+        this.value;
 
 
     document
@@ -790,7 +988,9 @@ document
 });
 
 
-/* BUTTON EVENTS */
+/* ================================
+   BUTTON EVENTS
+================================ */
 
 document
 .getElementById("newEmployeeButton")
@@ -816,7 +1016,9 @@ document
 );
 
 
-/* CLOSE OUTSIDE MODAL */
+/* ================================
+   CLOSE OUTSIDE MODAL
+================================ */
 
 window.addEventListener("click", function(event) {
 
@@ -835,7 +1037,9 @@ window.addEventListener("click", function(event) {
 });
 
 
-/* INITIAL SUMMARY */
+/* ================================
+   INITIAL SUMMARY
+================================ */
 
 updateEmployeeSummary();
 
@@ -854,6 +1058,7 @@ updateEmployeeSummary();
     const ROLE_PERMISSIONS = {
 
         system_owner: [
+
             "dashboard",
             "rooms",
             "guests",
@@ -870,10 +1075,12 @@ updateEmployeeSummary();
             "reports",
             "settings",
             "hotels"
+
         ],
 
 
         hotel_owner: [
+
             "dashboard",
             "rooms",
             "guests",
@@ -889,10 +1096,12 @@ updateEmployeeSummary();
             "maintenance",
             "reports",
             "settings"
+
         ],
 
 
         manager: [
+
             "dashboard",
             "rooms",
             "guests",
@@ -908,10 +1117,12 @@ updateEmployeeSummary();
             "maintenance",
             "reports",
             "settings"
+
         ],
 
 
         receptionist: [
+
             "dashboard",
             "rooms",
             "guests",
@@ -920,23 +1131,30 @@ updateEmployeeSummary();
             "checkout",
             "payments",
             "reports"
+
         ]
 
     };
 
 
-    /* GET CURRENT USER ROLE */
+    /* ================================
+       GET CURRENT ROLE
+    ================================= */
 
     function getRole() {
 
         let role =
-            sessionStorage.getItem("userRole");
+            sessionStorage.getItem(
+                "userRole"
+            );
 
 
         if (!role) {
 
             role =
-                localStorage.getItem("userRole");
+                localStorage.getItem(
+                    "userRole"
+                );
 
         }
 
@@ -950,13 +1168,34 @@ updateEmployeeSummary();
     }
 
 
-    /* IDENTIFY MODULE FROM SIDEBAR LINK */
+    /* ================================
+       GET MODULE FROM LINK
+    ================================= */
 
     function getModuleFromLink(link) {
 
+        const dataModule =
+            link.getAttribute(
+                "data-module"
+            );
+
+
+        if (dataModule) {
+
+            return String(
+                dataModule
+            )
+            .toLowerCase()
+            .trim();
+
+        }
+
+
         const href =
             String(
-                link.getAttribute("href") || ""
+                link.getAttribute(
+                    "href"
+                ) || ""
             )
             .toLowerCase()
             .split("?")[0]
@@ -965,11 +1204,15 @@ updateEmployeeSummary();
 
 
         if (
+
             href === "./" ||
             href === "/" ||
             href === "index.html" ||
             href === "./index.html" ||
-            href.endsWith("/index.html")
+            href.endsWith(
+                "/index.html"
+            )
+
         ) {
 
             return "dashboard";
@@ -1006,7 +1249,8 @@ updateEmployeeSummary();
 
             if (
                 href.includes(
-                    modules[i] + ".html"
+                    modules[i] +
+                    ".html"
                 )
             ) {
 
@@ -1022,7 +1266,9 @@ updateEmployeeSummary();
     }
 
 
-    /* GET CURRENT PAGE */
+    /* ================================
+       CURRENT MODULE
+    ================================= */
 
     function getCurrentModule() {
 
@@ -1035,7 +1281,8 @@ updateEmployeeSummary();
 
         if (
             !filename ||
-            filename === "index.html"
+            filename ===
+            "index.html"
         ) {
 
             return "dashboard";
@@ -1051,7 +1298,9 @@ updateEmployeeSummary();
     }
 
 
-    /* HIDE UNAUTHORIZED SIDEBAR LINKS */
+    /* ================================
+       HIDE UNAUTHORIZED LINKS
+    ================================= */
 
     function applyRoleControl() {
 
@@ -1078,11 +1327,15 @@ updateEmployeeSummary();
 
 
         document
-        .querySelectorAll(".sidebar nav a")
+        .querySelectorAll(
+            ".sidebar nav a"
+        )
         .forEach(function(link) {
 
             const module =
-                getModuleFromLink(link);
+                getModuleFromLink(
+                    link
+                );
 
 
             if (!module) {
@@ -1093,14 +1346,24 @@ updateEmployeeSummary();
 
 
             if (
-                allowed.includes(module)
+                allowed.includes(
+                    module
+                )
             ) {
+
+                link.classList.remove(
+                    "role-hidden"
+                );
 
                 link.style.removeProperty(
                     "display"
                 );
 
             } else {
+
+                link.classList.add(
+                    "role-hidden"
+                );
 
                 link.style.setProperty(
                     "display",
@@ -1115,7 +1378,9 @@ updateEmployeeSummary();
     }
 
 
-    /* PROTECT DIRECT PAGE ACCESS */
+    /* ================================
+       PROTECT DIRECT PAGE ACCESS
+    ================================= */
 
     function protectPage() {
 
@@ -1159,7 +1424,92 @@ updateEmployeeSummary();
     }
 
 
-    /* RUN ROLE CONTROL */
+    /* ================================
+       ACCESS DENIED SCREEN
+    ================================= */
+
+    function showAccessDenied() {
+
+        const denied =
+            document.getElementById(
+                "accessDenied"
+            );
+
+
+        const pageContent =
+            document.querySelector(
+                ".page-content"
+            );
+
+
+        const modal =
+            document.getElementById(
+                "employeeModal"
+            );
+
+
+        if (pageContent) {
+
+            pageContent.style.display =
+                "none";
+
+        }
+
+
+        if (modal) {
+
+            modal.style.display =
+                "none";
+
+        }
+
+
+        if (denied) {
+
+            denied.style.display =
+                "block";
+
+        }
+
+    }
+
+
+    /* ================================
+       PAGE ACCESS CONTROL
+    ================================= */
+
+    function checkEmployeePageAccess() {
+
+        const role =
+            getRole();
+
+
+        if (!role) {
+
+            return;
+
+        }
+
+
+        if (
+            role === "system_owner" ||
+            role === "hotel_owner" ||
+            role === "manager"
+        ) {
+
+            return;
+
+        }
+
+
+        showAccessDenied();
+
+    }
+
+
+    /* ================================
+       RUN ROLE CONTROL
+    ================================= */
 
     function runRoleControl() {
 
@@ -1167,11 +1517,14 @@ updateEmployeeSummary();
 
         protectPage();
 
+        checkEmployeePageAccess();
+
     }
 
 
     if (
-        document.readyState === "loading"
+        document.readyState ===
+        "loading"
     ) {
 
         document.addEventListener(
@@ -1190,6 +1543,12 @@ updateEmployeeSummary();
 
     setInterval(
         applyRoleControl,
+        500
+    );
+
+
+    setInterval(
+        checkEmployeePageAccess,
         500
     );
 
