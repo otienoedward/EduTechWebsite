@@ -1,5 +1,5 @@
-```html
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -20,6 +20,7 @@
 
 
     <!-- PDF -->
+
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
     </script>
@@ -30,6 +31,7 @@
 
 
     <!-- EXCEL -->
+
     <script
         src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js">
     </script>
@@ -131,9 +133,7 @@
 <div class="dashboard">
 
 
-    <!-- =====================================================
-         SIDEBAR
-    ====================================================== -->
+    <!-- SIDEBAR -->
 
     <aside class="sidebar">
 
@@ -205,7 +205,9 @@
             <a
                 href="./reports.html"
                 class="active">
+
                 📊 Reports
+
             </a>
 
             <a href="./settings.html">
@@ -217,17 +219,12 @@
     </aside>
 
 
-
-    <!-- =====================================================
-         MAIN CONTENT
-    ====================================================== -->
+    <!-- MAIN CONTENT -->
 
     <main class="main-content">
 
 
-        <!-- =================================================
-             TOP BAR
-        ================================================== -->
+        <!-- TOP BAR -->
 
         <header class="topbar">
 
@@ -300,10 +297,7 @@
         </header>
 
 
-
-        <!-- =================================================
-             MESSAGE
-        ================================================== -->
+        <!-- MESSAGE -->
 
         <div
             id="reportMessage"
@@ -311,10 +305,7 @@
         </div>
 
 
-
-        <!-- =================================================
-             REPORT PERIOD
-        ================================================== -->
+        <!-- REPORT PERIOD -->
 
         <section class="content-card">
 
@@ -366,13 +357,9 @@
         </section>
 
 
-
-        <!-- =================================================
-             SUMMARY CARDS
-        ================================================== -->
+        <!-- SUMMARY CARDS -->
 
         <section class="summary-grid">
-
 
             <div class="summary-card">
 
@@ -441,14 +428,10 @@
 
             </div>
 
-
         </section>
 
 
-
-        <!-- =================================================
-             FINANCIAL REPORT
-        ================================================== -->
+        <!-- FINANCIAL REPORT -->
 
         <section class="content-card">
 
@@ -470,7 +453,6 @@
 
 
             <div class="summary-grid">
-
 
                 <div class="summary-card">
 
@@ -522,16 +504,12 @@
 
                 </div>
 
-
             </div>
 
         </section>
 
 
-
-        <!-- =================================================
-             OPERATIONS REPORT
-        ================================================== -->
+        <!-- OPERATIONS REPORT -->
 
         <section class="content-card">
 
@@ -553,7 +531,6 @@
 
 
             <div class="summary-grid">
-
 
                 <div class="summary-card">
 
@@ -622,16 +599,12 @@
 
                 </div>
 
-
             </div>
 
         </section>
 
 
-
-        <!-- =================================================
-             REPORT DETAILS
-        ================================================== -->
+        <!-- REPORT DETAILS -->
 
         <section class="content-card">
 
@@ -695,23 +668,18 @@
 
         </section>
 
-
     </main>
 
 </div>
 
 
-
-<!-- =========================================================
-     SUPABASE
-========================================================= -->
+<!-- SUPABASE -->
 
 <script
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
 </script>
 
 <script src="./supabase.js"></script>
-
 
 
 <script>
@@ -756,7 +724,6 @@ let reportData = {
 };
 
 
-
 /* =========================================================
    FIND DATABASE COLUMN
 ========================================================= */
@@ -799,7 +766,6 @@ function findKey(row, names) {
 }
 
 
-
 /* =========================================================
    FIND NUMBER
 ========================================================= */
@@ -826,7 +792,6 @@ function findNumber(row, names) {
 }
 
 
-
 /* =========================================================
    FIND DATE
 ========================================================= */
@@ -845,7 +810,6 @@ function findDate(row, names) {
     return row[key];
 
 }
-
 
 
 /* =========================================================
@@ -882,7 +846,6 @@ function isDateInPeriod(value, period) {
 }
 
 
-
 /* =========================================================
    PERIOD
 ========================================================= */
@@ -908,8 +871,6 @@ function getReportPeriod() {
     let end;
 
 
-    /* TODAY */
-
     if (selected === "today") {
 
         start =
@@ -933,8 +894,6 @@ function getReportPeriod() {
 
     }
 
-
-    /* WEEK */
 
     else if (selected === "week") {
 
@@ -970,8 +929,6 @@ function getReportPeriod() {
     }
 
 
-    /* YEAR */
-
     else if (selected === "year") {
 
         start =
@@ -995,8 +952,6 @@ function getReportPeriod() {
 
     }
 
-
-    /* MONTH */
 
     else {
 
@@ -1030,7 +985,6 @@ function getReportPeriod() {
 }
 
 
-
 /* =========================================================
    PERIOD NAME
 ========================================================= */
@@ -1061,7 +1015,6 @@ function getPeriodName() {
     return "This Month";
 
 }
-
 
 
 /* =========================================================
@@ -1108,7 +1061,6 @@ function belongsToCurrentHotel(row) {
     );
 
 }
-
 
 
 /* =========================================================
@@ -1183,7 +1135,6 @@ async function loadCurrentUser() {
     return true;
 
 }
-
 
 
 /* =========================================================
@@ -1262,18 +1213,11 @@ function readLocalStorageArray(key) {
 }
 
 
-
 /* =========================================================
    LOAD TABLE
-   SUPABASE + LOCAL STORAGE
 ========================================================= */
 
 async function loadTable(tableName) {
-
-
-    /*
-     * SUPABASE RECORDS
-     */
 
     let supabaseRows = [];
 
@@ -1311,11 +1255,6 @@ async function loadTable(tableName) {
     }
 
 
-
-    /*
-     * LOCAL STORAGE RECORDS
-     */
-
     let localRows = [];
 
 
@@ -1341,11 +1280,6 @@ async function loadTable(tableName) {
 
     ];
 
-
-
-    /*
-     * FIND ADDITIONAL KEYS
-     */
 
     for (
         let i = 0;
@@ -1389,11 +1323,6 @@ async function loadTable(tableName) {
     }
 
 
-
-    /*
-     * READ ALL POSSIBLE KEYS
-     */
-
     for (
         const key of possibleKeys
     ) {
@@ -1415,11 +1344,6 @@ async function loadTable(tableName) {
     }
 
 
-
-    /*
-     * COMBINE RECORDS
-     */
-
     const combined = [
 
         ...supabaseRows,
@@ -1428,11 +1352,6 @@ async function loadTable(tableName) {
 
     ];
 
-
-
-    /*
-     * REMOVE DUPLICATES
-     */
 
     const uniqueRows = [];
 
@@ -1511,7 +1430,6 @@ async function loadTable(tableName) {
 }
 
 
-
 /* =========================================================
    MONEY
 ========================================================= */
@@ -1532,7 +1450,6 @@ function formatMoney(value) {
 }
 
 
-
 /* =========================================================
    LOAD REPORT
 ========================================================= */
@@ -1549,11 +1466,6 @@ async function loadReport() {
         const period =
             getReportPeriod();
 
-
-
-        /*
-         * LOAD TABLES
-         */
 
         const rooms =
             await loadTable(
@@ -1597,11 +1509,6 @@ async function loadReport() {
             );
 
 
-
-        /*
-         * ROOMS
-         */
-
         const occupiedRooms =
             rooms.filter(
                 row => {
@@ -1638,11 +1545,6 @@ async function loadReport() {
             );
 
 
-
-        /*
-         * RESERVATIONS
-         */
-
         const reservationDateFields = [
 
             "check in",
@@ -1672,11 +1574,6 @@ async function loadReport() {
                         );
 
 
-                    /*
-                     * If there is no date,
-                     * keep the record visible.
-                     */
-
                     if (!date) {
                         return true;
                     }
@@ -1690,11 +1587,6 @@ async function loadReport() {
                 }
             );
 
-
-
-        /*
-         * PAYMENTS
-         */
 
         const paymentDateFields = [
 
@@ -1737,11 +1629,6 @@ async function loadReport() {
             );
 
 
-
-        /*
-         * REVENUE
-         */
-
         let revenue = 0;
 
 
@@ -1767,11 +1654,6 @@ async function loadReport() {
 
         }
 
-
-
-        /*
-         * EXPENSES
-         */
 
         const expenseDateFields = [
 
@@ -1811,11 +1693,6 @@ async function loadReport() {
             );
 
 
-
-        /*
-         * EXPENSE TOTAL
-         */
-
         let expenseTotal = 0;
 
 
@@ -1840,11 +1717,6 @@ async function loadReport() {
 
         }
 
-
-
-        /*
-         * HOUSEKEEPING
-         */
 
         const housekeepingDateFields = [
 
@@ -1883,11 +1755,6 @@ async function loadReport() {
                 }
             );
 
-
-
-        /*
-         * COMPLETED HOUSEKEEPING
-         */
 
         const completedCleaning =
             periodHousekeeping.filter(
@@ -1938,11 +1805,6 @@ async function loadReport() {
             );
 
 
-
-        /*
-         * MAINTENANCE
-         */
-
         const maintenanceDateFields = [
 
             "date",
@@ -1981,11 +1843,6 @@ async function loadReport() {
             );
 
 
-
-        /*
-         * PENDING MAINTENANCE
-         */
-
         const pendingMaintenance =
             periodMaintenance.filter(
                 row => {
@@ -2000,11 +1857,6 @@ async function loadReport() {
                             ]
                         );
 
-
-                    /*
-                     * If no status exists,
-                     * treat it as pending.
-                     */
 
                     if (!statusKey) {
                         return true;
@@ -2043,11 +1895,6 @@ async function loadReport() {
                 }
             );
 
-
-
-        /*
-         * SAVE REPORT DATA
-         */
 
         reportData = {
 
@@ -2096,15 +1943,9 @@ async function loadReport() {
         };
 
 
-
-        /*
-         * UPDATE PAGE
-         */
-
         updateScreen();
 
         updateReportTable();
-
 
 
         document.getElementById(
@@ -2112,7 +1953,6 @@ async function loadReport() {
         ).textContent =
             reportData.periodName +
             " system activity summary";
-
 
 
         showMessage(
@@ -2165,19 +2005,16 @@ async function loadReport() {
 }
 
 
-
 /* =========================================================
    UPDATE SCREEN
 ========================================================= */
 
 function updateScreen() {
 
-
     document.getElementById(
         "reportRooms"
     ).textContent =
         reportData.rooms;
-
 
 
     document.getElementById(
@@ -2186,19 +2023,16 @@ function updateScreen() {
         reportData.occupied;
 
 
-
     document.getElementById(
         "reportReservations"
     ).textContent =
         reportData.reservations;
 
 
-
     document.getElementById(
         "reportGuests"
     ).textContent =
         reportData.guests;
-
 
 
     document.getElementById(
@@ -2209,14 +2043,12 @@ function updateScreen() {
         );
 
 
-
     document.getElementById(
         "reportExpenses"
     ).textContent =
         formatMoney(
             reportData.expenses
         );
-
 
 
     document.getElementById(
@@ -2227,12 +2059,10 @@ function updateScreen() {
         );
 
 
-
     document.getElementById(
         "reportHousekeeping"
     ).textContent =
         reportData.housekeeping;
-
 
 
     document.getElementById(
@@ -2241,12 +2071,10 @@ function updateScreen() {
         reportData.cleaningCompleted;
 
 
-
     document.getElementById(
         "reportMaintenance"
     ).textContent =
         reportData.maintenance;
-
 
 
     document.getElementById(
@@ -2255,7 +2083,6 @@ function updateScreen() {
         reportData.maintenancePending;
 
 }
-
 
 
 /* =========================================================
@@ -2469,7 +2296,6 @@ function updateReportTable() {
 }
 
 
-
 /* =========================================================
    MESSAGE
 ========================================================= */
@@ -2511,7 +2337,6 @@ function showMessage(
 }
 
 
-
 /* =========================================================
    ESCAPE HTML
 ========================================================= */
@@ -2548,7 +2373,6 @@ function escapeHtml(value) {
 }
 
 
-
 /* =========================================================
    PRINT
 ========================================================= */
@@ -2558,7 +2382,6 @@ function printReport() {
     window.print();
 
 }
-
 
 
 /* =========================================================
@@ -2732,7 +2555,6 @@ function downloadPDF() {
     );
 
 }
-
 
 
 /* =========================================================
@@ -2920,7 +2742,6 @@ function downloadExcel() {
     );
 
 }
-
 
 
 /* =========================================================
@@ -3218,7 +3039,6 @@ ${tableRows}
 }
 
 
-
 /* =========================================================
    BUTTON EVENTS
 ========================================================= */
@@ -3283,7 +3103,6 @@ document
     );
 
 
-
 /* =========================================================
    INITIALIZE REPORTS
 ========================================================= */
@@ -3344,7 +3163,409 @@ initializeReports();
 
 </script>
 
+
+<!-- =========================================================
+     ROLE ACCESS CONTROL
+========================================================= -->
+
+<script>
+
+(function () {
+
+    "use strict";
+
+
+    const ROLE_PERMISSIONS = {
+
+        system_owner: [
+
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings",
+            "hotels"
+
+        ],
+
+
+        hotel_owner: [
+
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings"
+
+        ],
+
+
+        manager: [
+
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings"
+
+        ],
+
+
+        receptionist: [
+
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "payments",
+            "reports"
+
+        ]
+
+    };
+
+
+    /* =====================================================
+       GET USER ROLE
+    ===================================================== */
+
+    function getRole() {
+
+        let role =
+            sessionStorage.getItem(
+                "userRole"
+            );
+
+
+        if (!role) {
+
+            role =
+                localStorage.getItem(
+                    "userRole"
+                );
+
+        }
+
+
+        return String(
+            role || ""
+        )
+        .toLowerCase()
+        .trim();
+
+    }
+
+
+    /* =====================================================
+       GET MODULE FROM LINK
+    ===================================================== */
+
+    function getModuleFromLink(link) {
+
+        const href =
+            String(
+                link.getAttribute(
+                    "href"
+                ) || ""
+            )
+            .toLowerCase()
+            .split("?")[0]
+            .split("#")[0]
+            .trim();
+
+
+        if (
+
+            href === "./" ||
+
+            href === "/" ||
+
+            href === "index.html" ||
+
+            href === "./index.html" ||
+
+            href.endsWith(
+                "/index.html"
+            )
+
+        ) {
+
+            return "dashboard";
+
+        }
+
+
+        const modules = [
+
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings",
+            "hotels"
+
+        ];
+
+
+        for (
+            let i = 0;
+            i < modules.length;
+            i++
+        ) {
+
+            if (
+                href.includes(
+                    modules[i] +
+                    ".html"
+                )
+            ) {
+
+                return modules[i];
+
+            }
+
+        }
+
+
+        return null;
+
+    }
+
+
+    /* =====================================================
+       GET CURRENT MODULE
+    ===================================================== */
+
+    function getCurrentModule() {
+
+        const filename =
+            window.location.pathname
+            .split("/")
+            .pop()
+            .toLowerCase();
+
+
+        if (
+            !filename ||
+            filename === "index.html"
+        ) {
+
+            return "dashboard";
+
+        }
+
+
+        return filename.replace(
+            ".html",
+            ""
+        );
+
+    }
+
+
+    /* =====================================================
+       HIDE UNAUTHORIZED LINKS
+    ===================================================== */
+
+    function applyRoleControl() {
+
+        const role =
+            getRole();
+
+
+        if (!role) {
+            return;
+        }
+
+
+        const allowed =
+            ROLE_PERMISSIONS[role];
+
+
+        if (!allowed) {
+            return;
+        }
+
+
+        document
+        .querySelectorAll(
+            ".sidebar nav a, .sidebar-nav a"
+        )
+        .forEach(
+            function (link) {
+
+                const module =
+                    getModuleFromLink(
+                        link
+                    );
+
+
+                if (!module) {
+                    return;
+                }
+
+
+                if (
+                    allowed.includes(
+                        module
+                    )
+                ) {
+
+                    link.style.removeProperty(
+                        "display"
+                    );
+
+                }
+
+                else {
+
+                    link.style.setProperty(
+                        "display",
+                        "none",
+                        "important"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       PROTECT DIRECT PAGE ACCESS
+    ===================================================== */
+
+    function protectPage() {
+
+        const role =
+            getRole();
+
+
+        if (!role) {
+            return;
+        }
+
+
+        const allowed =
+            ROLE_PERMISSIONS[role];
+
+
+        if (!allowed) {
+            return;
+        }
+
+
+        const currentModule =
+            getCurrentModule();
+
+
+        if (
+            !allowed.includes(
+                currentModule
+            )
+        ) {
+
+            window.location.href =
+                "./index.html";
+
+        }
+
+    }
+
+
+    /* =====================================================
+       RUN ROLE CONTROL
+    ===================================================== */
+
+    function runRoleControl() {
+
+        applyRoleControl();
+
+        protectPage();
+
+    }
+
+
+    if (
+        document.readyState ===
+        "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            runRoleControl
+        );
+
+    }
+
+    else {
+
+        runRoleControl();
+
+    }
+
+
+    /* =====================================================
+       KEEP SIDEBAR CONTROL ACTIVE
+    ===================================================== */
+
+    setInterval(
+        applyRoleControl,
+        500
+    );
+
+
+    window.applyRoleControl =
+        applyRoleControl;
+
+})();
+
+</script>
+
+
 </body>
 
 </html>
-```
