@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,9 +8,15 @@
 
     <link rel="stylesheet" href="./style.css">
 
+    <!-- PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- EXCEL -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
     <style>
 
-        /* REPORT ACTIONS */
         .report-actions {
             display: flex;
             gap: 10px;
@@ -28,6 +35,21 @@
         }
 
         .secondary-btn:hover {
+            opacity: 0.9;
+        }
+
+        .download-btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            background: #198754;
+            color: white;
+        }
+
+        .download-btn:hover {
             opacity: 0.9;
         }
 
@@ -76,11 +98,9 @@
             body {
                 background: white !important;
             }
-
         }
 
     </style>
-
 </head>
 
 <body>
@@ -139,25 +159,36 @@
                 <button
                     class="primary-btn"
                     id="generateReportBtn"
-                    type="button"
-                >
+                    type="button">
                     📄 Generate Report
                 </button>
 
                 <button
                     class="secondary-btn"
                     id="printReportBtn"
-                    type="button"
-                >
+                    type="button">
                     🖨️ Print
                 </button>
 
                 <button
-                    class="secondary-btn"
-                    id="downloadReportBtn"
-                    type="button"
-                >
-                    ⬇️ Download
+                    class="download-btn"
+                    id="downloadPdfBtn"
+                    type="button">
+                    📕 PDF
+                </button>
+
+                <button
+                    class="download-btn"
+                    id="downloadExcelBtn"
+                    type="button">
+                    📊 Excel
+                </button>
+
+                <button
+                    class="download-btn"
+                    id="downloadWordBtn"
+                    type="button">
+                    📘 Word
                 </button>
 
             </div>
@@ -168,8 +199,8 @@
         <!-- REPORT MESSAGE -->
         <div
             id="reportMessage"
-            class="report-message"
-        ></div>
+            class="report-message">
+        </div>
 
 
         <!-- REPORT FILTER -->
@@ -220,54 +251,27 @@
         <section class="summary-grid">
 
             <div class="summary-card">
-
                 <h3>Total Rooms</h3>
-
-                <strong id="reportRooms">
-                    0
-                </strong>
-
+                <strong id="reportRooms">0</strong>
                 <p>Hotel rooms</p>
-
             </div>
 
-
             <div class="summary-card">
-
                 <h3>Occupied Rooms</h3>
-
-                <strong id="reportOccupied">
-                    0
-                </strong>
-
+                <strong id="reportOccupied">0</strong>
                 <p>Currently occupied</p>
-
             </div>
 
-
             <div class="summary-card">
-
                 <h3>Reservations</h3>
-
-                <strong id="reportReservations">
-                    0
-                </strong>
-
+                <strong id="reportReservations">0</strong>
                 <p>Recorded reservations</p>
-
             </div>
 
-
             <div class="summary-card">
-
                 <h3>Total Guests</h3>
-
-                <strong id="reportGuests">
-                    0
-                </strong>
-
+                <strong id="reportGuests">0</strong>
                 <p>Registered guests</p>
-
             </div>
 
         </section>
@@ -290,45 +294,24 @@
 
             </div>
 
-
             <div class="summary-grid">
 
                 <div class="summary-card">
-
                     <h3>Total Revenue</h3>
-
-                    <strong id="reportRevenue">
-                        KSh 0
-                    </strong>
-
+                    <strong id="reportRevenue">KSh 0.00</strong>
                     <p>Recorded payments</p>
-
                 </div>
 
-
                 <div class="summary-card">
-
                     <h3>Total Expenses</h3>
-
-                    <strong id="reportExpenses">
-                        KSh 0
-                    </strong>
-
+                    <strong id="reportExpenses">KSh 0.00</strong>
                     <p>Recorded expenses</p>
-
                 </div>
 
-
                 <div class="summary-card">
-
                     <h3>Net Income</h3>
-
-                    <strong id="reportNetIncome">
-                        KSh 0
-                    </strong>
-
+                    <strong id="reportNetIncome">KSh 0.00</strong>
                     <p>Revenue minus expenses</p>
-
                 </div>
 
             </div>
@@ -353,58 +336,30 @@
 
             </div>
 
-
             <div class="summary-grid">
 
                 <div class="summary-card">
-
                     <h3>Housekeeping Tasks</h3>
-
-                    <strong id="reportHousekeeping">
-                        0
-                    </strong>
-
+                    <strong id="reportHousekeeping">0</strong>
                     <p>Total housekeeping tasks</p>
-
                 </div>
 
-
                 <div class="summary-card">
-
                     <h3>Completed Cleaning</h3>
-
-                    <strong id="reportCleaningCompleted">
-                        0
-                    </strong>
-
+                    <strong id="reportCleaningCompleted">0</strong>
                     <p>Completed tasks</p>
-
                 </div>
 
-
                 <div class="summary-card">
-
                     <h3>Maintenance Tasks</h3>
-
-                    <strong id="reportMaintenance">
-                        0
-                    </strong>
-
+                    <strong id="reportMaintenance">0</strong>
                     <p>Total maintenance tasks</p>
-
                 </div>
 
-
                 <div class="summary-card">
-
                     <h3>Pending Maintenance</h3>
-
-                    <strong id="reportMaintenancePending">
-                        0
-                    </strong>
-
+                    <strong id="reportMaintenancePending">0</strong>
                     <p>Tasks still pending</p>
-
                 </div>
 
             </div>
@@ -429,7 +384,6 @@
 
             </div>
 
-
             <div class="table-container">
 
                 <table>
@@ -437,30 +391,19 @@
                     <thead>
 
                         <tr>
-
-                            <th>
-                                Category
-                            </th>
-
-                            <th>
-                                Total
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
+                            <th>Category</th>
+                            <th>Total</th>
+                            <th>Status</th>
                         </tr>
 
                     </thead>
 
-
                     <tbody id="reportTable">
 
                         <tr>
-                            <td>Rooms</td>
-                            <td>0</td>
-                            <td>Loading</td>
+                            <td colspan="3">
+                                Loading report...
+                            </td>
                         </tr>
 
                     </tbody>
@@ -478,17 +421,14 @@
 
 <!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script src="./supabase.js"></script>
 
 
 <script>
 
-/*
-=========================================================
-GLOBAL VARIABLES
-=========================================================
-*/
+/* =====================================================
+   VARIABLES
+===================================================== */
 
 let currentUser = null;
 let currentProfile = null;
@@ -510,26 +450,74 @@ let reportData = {
 };
 
 
-/*
-=========================================================
-GET DATE
-=========================================================
-*/
+/* =====================================================
+   FIND DATABASE COLUMN
+===================================================== */
 
-function getTodayDate() {
+function findKey(row, names) {
 
-    const date = new Date();
+    if (!row) return null;
 
-    return date.toISOString().split("T")[0];
+    const keys = Object.keys(row);
 
+    for (const name of names) {
+
+        const found = keys.find(
+            key =>
+                key.toLowerCase().trim() ===
+                name.toLowerCase().trim()
+        );
+
+        if (found) return found;
+
+    }
+
+    return null;
 }
 
 
-/*
-=========================================================
-GET PERIOD
-=========================================================
-*/
+/* =====================================================
+   FIND NUMBER
+===================================================== */
+
+function findNumber(row, names) {
+
+    const key = findKey(row, names);
+
+    if (!key) return 0;
+
+    const number = Number(row[key]);
+
+    return Number.isFinite(number)
+        ? number
+        : 0;
+}
+
+
+/* =====================================================
+   DATE
+===================================================== */
+
+function isDateInPeriod(value, period) {
+
+    if (!value) return false;
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return false;
+    }
+
+    return (
+        date >= period.start &&
+        date <= period.end
+    );
+}
+
+
+/* =====================================================
+   PERIOD
+===================================================== */
 
 function getReportPeriod() {
 
@@ -538,9 +526,8 @@ function getReportPeriod() {
 
     const now = new Date();
 
-    let start = new Date(now);
-
-    let end = new Date(now);
+    let start;
+    let end;
 
     if (selected === "today") {
 
@@ -550,9 +537,17 @@ function getReportPeriod() {
             now.getDate()
         );
 
-    }
+        end = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+            23,
+            59,
+            59,
+            999
+        );
 
-    if (selected === "week") {
+    } else if (selected === "week") {
 
         const day = now.getDay();
 
@@ -565,19 +560,17 @@ function getReportPeriod() {
             now.getDate() - difference
         );
 
-    }
-
-    if (selected === "month") {
-
-        start = new Date(
+        end = new Date(
             now.getFullYear(),
             now.getMonth(),
-            1
+            now.getDate(),
+            23,
+            59,
+            59,
+            999
         );
 
-    }
-
-    if (selected === "year") {
+    } else if (selected === "year") {
 
         start = new Date(
             now.getFullYear(),
@@ -585,139 +578,65 @@ function getReportPeriod() {
             1
         );
 
+        end = new Date(
+            now.getFullYear(),
+            11,
+            31,
+            23,
+            59,
+            59,
+            999
+        );
+
+    } else {
+
+        start = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            1
+        );
+
+        end = new Date(
+            now.getFullYear(),
+            now.getMonth() + 1,
+            0,
+            23,
+            59,
+            59,
+            999
+        );
+
     }
-
-    start.setHours(0, 0, 0, 0);
-
-    end.setHours(23, 59, 59, 999);
 
     return {
         start,
         end
     };
-
 }
 
 
-/*
-=========================================================
-PERIOD NAME
-=========================================================
-*/
+/* =====================================================
+   PERIOD NAME
+===================================================== */
 
 function getPeriodName() {
 
     const value =
         document.getElementById("reportPeriod").value;
 
-    if (value === "today") {
-        return "Today";
-    }
+    if (value === "today") return "Today";
 
-    if (value === "week") {
-        return "This Week";
-    }
+    if (value === "week") return "This Week";
 
-    if (value === "year") {
-        return "This Year";
-    }
+    if (value === "year") return "This Year";
 
     return "This Month";
-
 }
 
 
-/*
-=========================================================
-DATE FIELD DETECTION
-=========================================================
-*/
-
-function findKey(row, possibleNames) {
-
-    if (!row) {
-        return null;
-    }
-
-    const keys = Object.keys(row);
-
-    for (const name of possibleNames) {
-
-        const exact =
-            keys.find(
-                key =>
-                    key.toLowerCase() ===
-                    name.toLowerCase()
-            );
-
-        if (exact) {
-            return exact;
-        }
-
-    }
-
-    return null;
-
-}
-
-
-/*
-=========================================================
-NUMBER FIELD DETECTION
-=========================================================
-*/
-
-function findNumber(row, possibleNames) {
-
-    const key =
-        findKey(row, possibleNames);
-
-    if (!key) {
-        return 0;
-    }
-
-    const value =
-        Number(row[key]);
-
-    return Number.isFinite(value)
-        ? value
-        : 0;
-
-}
-
-
-/*
-=========================================================
-CHECK IF DATE IS IN PERIOD
-=========================================================
-*/
-
-function isDateInPeriod(value, period) {
-
-    if (!value) {
-        return false;
-    }
-
-    const date =
-        new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
-        return false;
-    }
-
-    return (
-        date >= period.start &&
-        date <= period.end
-    );
-
-}
-
-
-/*
-=========================================================
-HOTEL FILTER
-=========================================================
-*/
+/* =====================================================
+   HOTEL FILTER
+===================================================== */
 
 function belongsToCurrentHotel(row) {
 
@@ -725,20 +644,17 @@ function belongsToCurrentHotel(row) {
         !currentProfile ||
         currentProfile.role === "system_owner"
     ) {
-
         return true;
-
     }
 
-    const hotelKey =
-        findKey(
-            row,
-            [
-                "hotel_id",
-                "hotel id",
-                "hotelId"
-            ]
-        );
+    const hotelKey = findKey(
+        row,
+        [
+            "hotel_id",
+            "hotel id",
+            "hotelId"
+        ]
+    );
 
     if (!hotelKey) {
         return true;
@@ -748,87 +664,79 @@ function belongsToCurrentHotel(row) {
         return true;
     }
 
-    return (
-        String(row[hotelKey]) ===
-        String(currentProfile.hotel_id)
-    );
-
+    return String(row[hotelKey]) ===
+           String(currentProfile.hotel_id);
 }
 
 
-/*
-=========================================================
-LOAD USER
-=========================================================
-*/
+/* =====================================================
+   USER
+===================================================== */
 
 async function loadCurrentUser() {
 
     const {
-        data: sessionData,
-        error: sessionError
+        data,
+        error
     } =
-        await supabaseClient.auth.getSession();
+    await supabaseClient.auth.getSession();
 
+    if (error) {
 
-    if (
-        sessionError ||
-        !sessionData ||
-        !sessionData.session
-    ) {
-
-        window.location.href =
-            "login.html";
-
-        return false;
+        throw new Error(
+            "Unable to check login session: " +
+            error.message
+        );
 
     }
 
+    if (
+        !data ||
+        !data.session ||
+        !data.session.user
+    ) {
+
+        window.location.href =
+            "./login.html";
+
+        return false;
+    }
 
     currentUser =
-        sessionData.session.user;
+        data.session.user;
 
 
     const {
         data: profile,
         error: profileError
     } =
-        await supabaseClient
-            .from("profiles")
-            .select("*")
-            .eq(
-                "id",
-                currentUser.id
-            )
-            .single();
+    await supabaseClient
+        .from("profiles")
+        .select("*")
+        .eq("id", currentUser.id)
+        .single();
 
 
     if (profileError) {
 
-        showMessage(
-            "Unable to load your user profile: " +
-            profileError.message,
-            "error"
+        throw new Error(
+            "Unable to load your profile: " +
+            profileError.message
         );
-
-        return false;
 
     }
 
-
-    currentProfile =
-        profile;
+    currentProfile = profile;
 
     return true;
-
 }
 
 
-/*
-=========================================================
-LOAD TABLE
-=========================================================
-*/
+/* =====================================================
+   LOAD TABLE
+   IMPORTANT:
+   DO NOT HIDE DATABASE ERRORS
+===================================================== */
 
 async function loadTable(tableName) {
 
@@ -836,58 +744,54 @@ async function loadTable(tableName) {
         data,
         error
     } =
-        await supabaseClient
-            .from(tableName)
-            .select("*");
+    await supabaseClient
+        .from(tableName)
+        .select("*");
 
 
     if (error) {
 
-        console.error(
-            "Error loading " +
-            tableName,
-            error
+        throw new Error(
+            "Unable to load " +
+            tableName +
+            ": " +
+            error.message
         );
-
-        return [];
 
     }
 
+    const rows =
+        Array.isArray(data)
+            ? data
+            : [];
 
-    return (data || [])
-        .filter(belongsToCurrentHotel);
 
+    return rows.filter(
+        belongsToCurrentHotel
+    );
 }
 
 
-/*
-=========================================================
-FORMAT MONEY
-=========================================================
-*/
+/* =====================================================
+   MONEY
+===================================================== */
 
 function formatMoney(value) {
 
-    return (
-        "KSh " +
-        Number(value || 0)
-            .toLocaleString(
-                "en-KE",
-                {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                }
-            )
-    );
-
+    return "KSh " +
+        Number(value || 0).toLocaleString(
+            "en-KE",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        );
 }
 
 
-/*
-=========================================================
-LOAD REPORT
-=========================================================
-*/
+/* =====================================================
+   LOAD REPORT
+===================================================== */
 
 async function loadReport() {
 
@@ -897,50 +801,49 @@ async function loadReport() {
             "report-loading"
         );
 
-
         const period =
             getReportPeriod();
 
 
         /*
-        -------------------------------------------------
-        LOAD ALL REQUIRED TABLES
-        -------------------------------------------------
-        */
+         * LOAD ALL TABLES
+         */
 
-        const [
-            rooms,
-            guests,
-            reservations,
-            payments,
-            expenses,
-            housekeeping,
-            maintenance
-        ] =
-        await Promise.all([
+        const rooms =
+            await loadTable("rooms");
 
-            loadTable("rooms"),
+        const guests =
+            await loadTable("guests");
 
-            loadTable("guests"),
+        const reservations =
+            await loadTable("reservations");
 
-            loadTable("reservations"),
+        const payments =
+            await loadTable("payments");
 
-            loadTable("payments"),
+        const expenses =
+            await loadTable("expenses");
 
-            loadTable("expenses"),
+        const housekeeping =
+            await loadTable("housekeeping");
 
-            loadTable("housekeeping"),
+        const maintenance =
+            await loadTable("maintenance");
 
-            loadTable("maintenance")
 
-        ]);
+        console.log("REPORT DATA");
+        console.log("Rooms:", rooms);
+        console.log("Guests:", guests);
+        console.log("Reservations:", reservations);
+        console.log("Payments:", payments);
+        console.log("Expenses:", expenses);
+        console.log("Housekeeping:", housekeeping);
+        console.log("Maintenance:", maintenance);
 
 
         /*
-        -------------------------------------------------
-        ROOMS
-        -------------------------------------------------
-        */
+         * ROOMS
+         */
 
         const occupiedRooms =
             rooms.filter(row => {
@@ -960,17 +863,15 @@ async function loadReport() {
 
                 return String(
                     row[statusKey]
-                ).toLowerCase() ===
-                "occupied";
+                ).toLowerCase().trim()
+                === "occupied";
 
             });
 
 
         /*
-        -------------------------------------------------
-        RESERVATIONS
-        -------------------------------------------------
-        */
+         * RESERVATIONS
+         */
 
         const reservationDateFields = [
 
@@ -994,8 +895,14 @@ async function loadReport() {
                         reservationDateFields
                     );
 
+                /*
+                 * If no date column exists,
+                 * include the reservation rather
+                 * than hiding it.
+                 */
+
                 if (!dateKey) {
-                    return false;
+                    return true;
                 }
 
                 return isDateInPeriod(
@@ -1007,10 +914,8 @@ async function loadReport() {
 
 
         /*
-        -------------------------------------------------
-        PAYMENTS
-        -------------------------------------------------
-        */
+         * PAYMENTS
+         */
 
         const paymentDateFields = [
 
@@ -1035,7 +940,13 @@ async function loadReport() {
                     );
 
                 if (!dateKey) {
-                    return false;
+
+                    console.warn(
+                        "Payment has no recognised date field:",
+                        row
+                    );
+
+                    return true;
                 }
 
                 return isDateInPeriod(
@@ -1068,10 +979,8 @@ async function loadReport() {
 
 
         /*
-        -------------------------------------------------
-        EXPENSES
-        -------------------------------------------------
-        */
+         * EXPENSES
+         */
 
         const expenseDateFields = [
 
@@ -1094,7 +1003,13 @@ async function loadReport() {
                     );
 
                 if (!dateKey) {
-                    return false;
+
+                    console.warn(
+                        "Expense has no recognised date field:",
+                        row
+                    );
+
+                    return true;
                 }
 
                 return isDateInPeriod(
@@ -1126,10 +1041,8 @@ async function loadReport() {
 
 
         /*
-        -------------------------------------------------
-        HOUSEKEEPING
-        -------------------------------------------------
-        */
+         * HOUSEKEEPING
+         */
 
         const housekeepingDateFields = [
 
@@ -1183,7 +1096,8 @@ async function loadReport() {
                 const status =
                     String(
                         row[statusKey]
-                    ).toLowerCase();
+                    ).toLowerCase().trim();
+
 
                 return (
                     status === "completed" ||
@@ -1195,10 +1109,8 @@ async function loadReport() {
 
 
         /*
-        -------------------------------------------------
-        MAINTENANCE
-        -------------------------------------------------
-        */
+         * MAINTENANCE
+         */
 
         const maintenanceDateFields = [
 
@@ -1252,7 +1164,8 @@ async function loadReport() {
                 const status =
                     String(
                         row[statusKey]
-                    ).toLowerCase();
+                    ).toLowerCase().trim();
+
 
                 return !(
                     status === "completed" ||
@@ -1265,10 +1178,8 @@ async function loadReport() {
 
 
         /*
-        -------------------------------------------------
-        SAVE REPORT DATA
-        -------------------------------------------------
-        */
+         * SAVE
+         */
 
         reportData = {
 
@@ -1316,83 +1227,7 @@ async function loadReport() {
         };
 
 
-        /*
-        -------------------------------------------------
-        UPDATE SCREEN
-        -------------------------------------------------
-        */
-
-        document.getElementById(
-            "reportRooms"
-        ).textContent =
-            reportData.rooms;
-
-
-        document.getElementById(
-            "reportOccupied"
-        ).textContent =
-            reportData.occupied;
-
-
-        document.getElementById(
-            "reportReservations"
-        ).textContent =
-            reportData.reservations;
-
-
-        document.getElementById(
-            "reportGuests"
-        ).textContent =
-            reportData.guests;
-
-
-        document.getElementById(
-            "reportRevenue"
-        ).textContent =
-            formatMoney(
-                reportData.revenue
-            );
-
-
-        document.getElementById(
-            "reportExpenses"
-        ).textContent =
-            formatMoney(
-                reportData.expenses
-            );
-
-
-        document.getElementById(
-            "reportNetIncome"
-        ).textContent =
-            formatMoney(
-                reportData.netIncome
-            );
-
-
-        document.getElementById(
-            "reportHousekeeping"
-        ).textContent =
-            reportData.housekeeping;
-
-
-        document.getElementById(
-            "reportCleaningCompleted"
-        ).textContent =
-            reportData.cleaningCompleted;
-
-
-        document.getElementById(
-            "reportMaintenance"
-        ).textContent =
-            reportData.maintenance;
-
-
-        document.getElementById(
-            "reportMaintenancePending"
-        ).textContent =
-            reportData.maintenancePending;
-
+        updateScreen();
 
         updateReportTable();
 
@@ -1406,7 +1241,8 @@ async function loadReport() {
 
         showMessage(
             "Report generated successfully for " +
-            reportData.periodName + ".",
+            reportData.periodName +
+            ".",
             "success"
         );
 
@@ -1414,17 +1250,26 @@ async function loadReport() {
     } catch (error) {
 
         console.error(
-            "Report generation error:",
+            "REPORT ERROR:",
             error
         );
 
 
         showMessage(
-            "Unable to generate report: " +
             error.message,
             "error"
         );
 
+
+        document.getElementById(
+            "reportTable"
+        ).innerHTML = `
+            <tr>
+                <td colspan="3">
+                    ${escapeHtml(error.message)}
+                </td>
+            </tr>
+        `;
 
     } finally {
 
@@ -1437,11 +1282,89 @@ async function loadReport() {
 }
 
 
-/*
-=========================================================
-UPDATE REPORT TABLE
-=========================================================
-*/
+/* =====================================================
+   UPDATE SCREEN
+===================================================== */
+
+function updateScreen() {
+
+    document.getElementById(
+        "reportRooms"
+    ).textContent =
+        reportData.rooms;
+
+
+    document.getElementById(
+        "reportOccupied"
+    ).textContent =
+        reportData.occupied;
+
+
+    document.getElementById(
+        "reportReservations"
+    ).textContent =
+        reportData.reservations;
+
+
+    document.getElementById(
+        "reportGuests"
+    ).textContent =
+        reportData.guests;
+
+
+    document.getElementById(
+        "reportRevenue"
+    ).textContent =
+        formatMoney(
+            reportData.revenue
+        );
+
+
+    document.getElementById(
+        "reportExpenses"
+    ).textContent =
+        formatMoney(
+            reportData.expenses
+        );
+
+
+    document.getElementById(
+        "reportNetIncome"
+    ).textContent =
+        formatMoney(
+            reportData.netIncome
+        );
+
+
+    document.getElementById(
+        "reportHousekeeping"
+    ).textContent =
+        reportData.housekeeping;
+
+
+    document.getElementById(
+        "reportCleaningCompleted"
+    ).textContent =
+        reportData.cleaningCompleted;
+
+
+    document.getElementById(
+        "reportMaintenance"
+    ).textContent =
+        reportData.maintenance;
+
+
+    document.getElementById(
+        "reportMaintenancePending"
+    ).textContent =
+        reportData.maintenancePending;
+
+}
+
+
+/* =====================================================
+   REPORT TABLE
+===================================================== */
 
 function updateReportTable() {
 
@@ -1449,11 +1372,6 @@ function updateReportTable() {
         document.getElementById(
             "reportTable"
         );
-
-
-    if (!table) {
-        return;
-    }
 
 
     table.innerHTML = `
@@ -1529,11 +1447,9 @@ function updateReportTable() {
 }
 
 
-/*
-=========================================================
-SHOW MESSAGE
-=========================================================
-*/
+/* =====================================================
+   MESSAGE
+===================================================== */
 
 function showMessage(message, type) {
 
@@ -1541,11 +1457,6 @@ function showMessage(message, type) {
         document.getElementById(
             "reportMessage"
         );
-
-
-    if (!box) {
-        return;
-    }
 
 
     box.textContent =
@@ -1568,53 +1479,31 @@ function showMessage(message, type) {
                 "none";
 
         },
-        5000
+        7000
     );
 
 }
 
 
-/*
-=========================================================
-GENERATE REPORT BUTTON
-=========================================================
-*/
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
 
-document.getElementById(
-    "generateReportBtn"
-).addEventListener(
-    "click",
-    function () {
+function escapeHtml(value) {
 
-        loadReport();
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
-    }
-);
+}
 
 
-/*
-=========================================================
-PERIOD CHANGE
-=========================================================
-*/
-
-document.getElementById(
-    "reportPeriod"
-).addEventListener(
-    "change",
-    function () {
-
-        loadReport();
-
-    }
-);
-
-
-/*
-=========================================================
-PRINT REPORT
-=========================================================
-*/
+/* =====================================================
+   PRINT
+===================================================== */
 
 document.getElementById(
     "printReportBtn"
@@ -1628,161 +1517,574 @@ document.getElementById(
 );
 
 
-/*
-=========================================================
-DOWNLOAD REPORT
-=========================================================
-*/
+/* =====================================================
+   GENERATE
+===================================================== */
 
 document.getElementById(
-    "downloadReportBtn"
+    "generateReportBtn"
 ).addEventListener(
     "click",
     function () {
 
-        const lines = [
-
-            "EDU TECH HOTEL MANAGEMENT SYSTEM",
-
-            "REPORT",
-
-            "Report Period: " +
-            reportData.periodName,
-
-            "",
-
-            "Total Rooms: " +
-            reportData.rooms,
-
-            "Occupied Rooms: " +
-            reportData.occupied,
-
-            "Total Guests: " +
-            reportData.guests,
-
-            "Reservations: " +
-            reportData.reservations,
-
-            "",
-
-            "Total Revenue: " +
-            formatMoney(
-                reportData.revenue
-            ),
-
-            "Total Expenses: " +
-            formatMoney(
-                reportData.expenses
-            ),
-
-            "Net Income: " +
-            formatMoney(
-                reportData.netIncome
-            ),
-
-            "",
-
-            "Housekeeping Tasks: " +
-            reportData.housekeeping,
-
-            "Completed Cleaning: " +
-            reportData.cleaningCompleted,
-
-            "Maintenance Tasks: " +
-            reportData.maintenance,
-
-            "Pending Maintenance: " +
-            reportData.maintenancePending,
-
-            "",
-
-            "Generated: " +
-            new Date().toLocaleString(
-                "en-KE"
-            )
-
-        ];
-
-
-        const blob =
-            new Blob(
-                [
-                    lines.join("\n")
-                ],
-                {
-                    type:
-                        "text/plain;charset=utf-8"
-                }
-            );
-
-
-        const url =
-            URL.createObjectURL(
-                blob
-            );
-
-
-        const link =
-            document.createElement(
-                "a"
-            );
-
-
-        link.href =
-            url;
-
-
-        link.download =
-            "EDU-TECH-Hotel-Report-" +
-            reportData.period +
-            ".txt";
-
-
-        document.body.appendChild(
-            link
-        );
-
-
-        link.click();
-
-
-        document.body.removeChild(
-            link
-        );
-
-
-        URL.revokeObjectURL(
-            url
-        );
-
-
-        showMessage(
-            "Report downloaded successfully.",
-            "success"
-        );
+        loadReport();
 
     }
 );
 
 
-/*
-=========================================================
-INITIALIZE
-=========================================================
-*/
+/* =====================================================
+   PERIOD
+===================================================== */
 
-async function initializeReports() {
+document.getElementById(
+    "reportPeriod"
+).addEventListener(
+    "change",
+    function () {
 
-    const loggedIn =
-        await loadCurrentUser();
+        loadReport();
+
+    }
+);
 
 
-    if (!loggedIn) {
+/* =====================================================
+   PDF
+===================================================== */
+
+function downloadPDF() {
+
+    if (!window.jspdf) {
+
+        showMessage(
+            "PDF library is still loading. Please try again.",
+            "error"
+        );
+
         return;
     }
 
 
-    await loadReport();
+    const {
+        jsPDF
+    } = window.jspdf;
+
+
+    const doc =
+        new jsPDF();
+
+
+    doc.setFontSize(18);
+
+    doc.text(
+        "EDU TECH HOTEL MANAGEMENT SYSTEM",
+        14,
+        18
+    );
+
+
+    doc.setFontSize(12);
+
+    doc.text(
+        "Hotel Performance Report",
+        14,
+        27
+    );
+
+
+    doc.text(
+        "Period: " +
+        reportData.periodName,
+        14,
+        35
+    );
+
+
+    doc.text(
+        "Generated: " +
+        new Date().toLocaleString("en-KE"),
+        14,
+        42
+    );
+
+
+    doc.autoTable({
+
+        startY: 50,
+
+        head: [
+            [
+                "Category",
+                "Total",
+                "Status"
+            ]
+        ],
+
+        body: [
+
+            [
+                "Total Rooms",
+                reportData.rooms,
+                "Active"
+            ],
+
+            [
+                "Occupied Rooms",
+                reportData.occupied,
+                "Current"
+            ],
+
+            [
+                "Guests",
+                reportData.guests,
+                "Registered"
+            ],
+
+            [
+                "Reservations",
+                reportData.reservations,
+                "Recorded"
+            ],
+
+            [
+                "Revenue",
+                formatMoney(reportData.revenue),
+                "Recorded"
+            ],
+
+            [
+                "Expenses",
+                formatMoney(reportData.expenses),
+                "Recorded"
+            ],
+
+            [
+                "Net Income",
+                formatMoney(reportData.netIncome),
+                "Calculated"
+            ],
+
+            [
+                "Housekeeping",
+                reportData.housekeeping,
+                "Recorded"
+            ],
+
+            [
+                "Completed Cleaning",
+                reportData.cleaningCompleted,
+                "Completed"
+            ],
+
+            [
+                "Maintenance",
+                reportData.maintenance,
+                "Recorded"
+            ],
+
+            [
+                "Pending Maintenance",
+                reportData.maintenancePending,
+                "Pending"
+            ]
+
+        ]
+
+    });
+
+
+    doc.save(
+        "EDU-TECH-Hotel-Report-" +
+        reportData.period +
+        ".pdf"
+    );
+
+
+    showMessage(
+        "PDF report downloaded successfully.",
+        "success"
+    );
+
+}
+
+
+/* =====================================================
+   EXCEL
+===================================================== */
+
+function downloadExcel() {
+
+    if (!window.XLSX) {
+
+        showMessage(
+            "Excel library is still loading. Please try again.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const rows = [
+
+        {
+            Category: "Total Rooms",
+            Total: reportData.rooms,
+            Status: "Active"
+        },
+
+        {
+            Category: "Occupied Rooms",
+            Total: reportData.occupied,
+            Status: "Current"
+        },
+
+        {
+            Category: "Guests",
+            Total: reportData.guests,
+            Status: "Registered"
+        },
+
+        {
+            Category: "Reservations",
+            Total: reportData.reservations,
+            Status: "Recorded"
+        },
+
+        {
+            Category: "Revenue",
+            Total: reportData.revenue,
+            Status: "Recorded"
+        },
+
+        {
+            Category: "Expenses",
+            Total: reportData.expenses,
+            Status: "Recorded"
+        },
+
+        {
+            Category: "Net Income",
+            Total: reportData.netIncome,
+            Status: "Calculated"
+        },
+
+        {
+            Category: "Housekeeping",
+            Total: reportData.housekeeping,
+            Status: "Recorded"
+        },
+
+        {
+            Category: "Completed Cleaning",
+            Total: reportData.cleaningCompleted,
+            Status: "Completed"
+        },
+
+        {
+            Category: "Maintenance",
+            Total: reportData.maintenance,
+            Status: "Recorded"
+        },
+
+        {
+            Category: "Pending Maintenance",
+            Total: reportData.maintenancePending,
+            Status: "Pending"
+        }
+
+    ];
+
+
+    const worksheet =
+        XLSX.utils.json_to_sheet(rows);
+
+
+    const workbook =
+        XLSX.utils.book_new();
+
+
+    XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        "Hotel Report"
+    );
+
+
+    XLSX.writeFile(
+        workbook,
+        "EDU-TECH-Hotel-Report-" +
+        reportData.period +
+        ".xlsx"
+    );
+
+
+    showMessage(
+        "Excel report downloaded successfully.",
+        "success"
+    );
+
+}
+
+
+/* =====================================================
+   WORD
+===================================================== */
+
+function downloadWord() {
+
+    const rows = [
+
+        ["Total Rooms", reportData.rooms],
+
+        ["Occupied Rooms", reportData.occupied],
+
+        ["Total Guests", reportData.guests],
+
+        ["Reservations", reportData.reservations],
+
+        ["Total Revenue", formatMoney(reportData.revenue)],
+
+        ["Total Expenses", formatMoney(reportData.expenses)],
+
+        ["Net Income", formatMoney(reportData.netIncome)],
+
+        ["Housekeeping Tasks", reportData.housekeeping],
+
+        ["Completed Cleaning", reportData.cleaningCompleted],
+
+        ["Maintenance Tasks", reportData.maintenance],
+
+        ["Pending Maintenance", reportData.maintenancePending]
+
+    ];
+
+
+    let tableRows = "";
+
+
+    rows.forEach(row => {
+
+        tableRows += `
+            <tr>
+                <td style="border:1px solid #000;padding:8px;">
+                    ${escapeHtml(row[0])}
+                </td>
+
+                <td style="border:1px solid #000;padding:8px;">
+                    ${escapeHtml(row[1])}
+                </td>
+            </tr>
+        `;
+
+    });
+
+
+    const html = `
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>EDU TECH Hotel Report</title>
+
+</head>
+
+<body>
+
+<h1>
+EDU TECH HOTEL MANAGEMENT SYSTEM
+</h1>
+
+<h2>
+Hotel Performance Report
+</h2>
+
+<p>
+<strong>Report Period:</strong>
+${escapeHtml(reportData.periodName)}
+</p>
+
+<p>
+<strong>Generated:</strong>
+${escapeHtml(
+    new Date().toLocaleString("en-KE")
+)}
+</p>
+
+<table
+    style="
+        border-collapse:collapse;
+        width:100%;
+        font-family:Arial;
+    "
+>
+
+<thead>
+
+<tr>
+
+<th
+    style="
+        border:1px solid #000;
+        padding:8px;
+        text-align:left;
+    "
+>
+Category
+</th>
+
+<th
+    style="
+        border:1px solid #000;
+        padding:8px;
+        text-align:left;
+    "
+>
+Total
+</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+${tableRows}
+
+</tbody>
+
+</table>
+
+</body>
+
+</html>
+`;
+
+
+    const blob =
+        new Blob(
+            [
+                "\ufeff",
+                html
+            ],
+            {
+                type:
+                    "application/msword"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const link =
+        document.createElement("a");
+
+
+    link.href = url;
+
+    link.download =
+        "EDU-TECH-Hotel-Report-" +
+        reportData.period +
+        ".doc";
+
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+
+
+    showMessage(
+        "Word report downloaded successfully.",
+        "success"
+    );
+
+}
+
+
+/* =====================================================
+   DOWNLOAD BUTTONS
+===================================================== */
+
+document.getElementById(
+    "downloadPdfBtn"
+).addEventListener(
+    "click",
+    downloadPDF
+);
+
+
+document.getElementById(
+    "downloadExcelBtn"
+).addEventListener(
+    "click",
+    downloadExcel
+);
+
+
+document.getElementById(
+    "downloadWordBtn"
+).addEventListener(
+    "click",
+    downloadWord
+);
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+async function initializeReports() {
+
+    try {
+
+        const loggedIn =
+            await loadCurrentUser();
+
+
+        if (!loggedIn) {
+            return;
+        }
+
+
+        await loadReport();
+
+    } catch (error) {
+
+        console.error(
+            "REPORT INITIALIZATION ERROR:",
+            error
+        );
+
+
+        showMessage(
+            error.message,
+            "error"
+        );
+
+
+        document.getElementById(
+            "reportTable"
+        ).innerHTML = `
+            <tr>
+                <td colspan="3">
+                    ${escapeHtml(error.message)}
+                </td>
+            </tr>
+        `;
+
+    }
 
 }
 
@@ -1793,3 +2095,4 @@ initializeReports();
 
 </body>
 </html>
+```
