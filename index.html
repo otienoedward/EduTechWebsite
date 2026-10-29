@@ -1358,18 +1358,11 @@
                 getToday();
 
 
-            let query =
+            let reservationQuery =
                 supabaseClient
                     .from("reservations")
                     .select(
-                        `
-                        id,
-                        check_in,
-                        check_out,
-                        status,
-                        guests(full_name),
-                        rooms!reservations_room_id_fkey(room_number)
-                        `
+                        "id, guest_id, room_id, check_in, check_out, status"
                     )
                     .or(
                         "check_in.eq." +
@@ -1385,22 +1378,22 @@
                     );
 
 
-            query =
-                applyHotelFilter(query);
+            reservationQuery =
+                applyHotelFilter(reservationQuery);
 
 
             const {
-                data,
-                error
+                data: reservations,
+                error: reservationError
             } =
-                await query;
+                await reservationQuery;
 
 
-            if (error) {
+            if (reservationError) {
 
                 showDashboardError(
                     "Unable to load today's activity: " +
-                    error.message
+                    reservationError.message
                 );
 
                 return;
@@ -1414,8 +1407,8 @@
 
 
             if (
-                !data ||
-                data.length === 0
+                !reservations ||
+                reservations.length === 0
             ) {
 
                 activityTable.innerHTML = `
@@ -1430,25 +1423,119 @@
             }
 
 
+            const guestIds =
+                [...new Set(
+                    reservations
+                        .map(function (reservation) {
+                            return reservation.guest_id;
+                        })
+                        .filter(Boolean)
+                )];
+
+
+            const roomIds =
+                [...new Set(
+                    reservations
+                        .map(function (reservation) {
+                            return reservation.room_id;
+                        })
+                        .filter(Boolean)
+                )];
+
+
+            let guests = [];
+            let rooms = [];
+
+
+            if (guestIds.length > 0) {
+
+                const {
+                    data: guestData,
+                    error: guestError
+                } =
+                    await supabaseClient
+                        .from("guests")
+                        .select("id, full_name")
+                        .in("id", guestIds);
+
+
+                if (guestError) {
+
+                    showDashboardError(
+                        "Unable to load guests for today's activity: " +
+                        guestError.message
+                    );
+
+                    return;
+                }
+
+                guests = guestData || [];
+            }
+
+
+            if (roomIds.length > 0) {
+
+                const {
+                    data: roomData,
+                    error: roomError
+                } =
+                    await supabaseClient
+                        .from("rooms")
+                        .select("id, room_number")
+                        .in("id", roomIds);
+
+
+                if (roomError) {
+
+                    showDashboardError(
+                        "Unable to load rooms for today's activity: " +
+                        roomError.message
+                    );
+
+                    return;
+                }
+
+                rooms = roomData || [];
+            }
+
+
+            const guestMap = {};
+
+            guests.forEach(
+                function (guest) {
+                    guestMap[guest.id] =
+                        guest.full_name;
+                }
+            );
+
+
+            const roomMap = {};
+
+            rooms.forEach(
+                function (room) {
+                    roomMap[room.id] =
+                        room.room_number;
+                }
+            );
+
+
             activityTable.innerHTML = "";
 
 
-            data.forEach(
+            reservations.forEach(
                 function (reservation) {
 
                     const guestName =
-                        reservation.guests
-                            ? reservation
-                                .guests
-                                .full_name
+                        reservation.guest_id &&
+                        guestMap[reservation.guest_id]
+                            ? guestMap[reservation.guest_id]
                             : "-";
 
 
                     const roomNumber =
-                        reservation.rooms
-                            ? reservation
-                                .rooms
-                                .room_number
+                        reservation.room_id &&
+                        roomMap[reservation.room_id]
+                            ? roomMap[reservation.room_id]
                             : "-";
 
 
@@ -1470,15 +1557,13 @@
 
                             <td>
                                 ${escapeHtml(
-                                    reservation
-                                        .check_in
+                                    reservation.check_in
                                 )}
                             </td>
 
                             <td>
                                 ${escapeHtml(
-                                    reservation
-                                        .check_out
+                                    reservation.check_out
                                 )}
                             </td>
 
@@ -1487,8 +1572,7 @@
                                 <span class="status">
 
                                     ${escapeHtml(
-                                        reservation
-                                            .status
+                                        reservation.status
                                     )}
 
                                 </span>
@@ -1502,6 +1586,7 @@
                 }
             );
         }
+
 
 
         /*
