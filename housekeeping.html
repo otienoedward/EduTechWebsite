@@ -1,46 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Housekeeping - EDU TECH Hotel Management System</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet" href="./style.css">
+    <title>
+        Housekeeping - EDU TECH Hotel Management System
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="./style.css"
+    >
 
     <style>
-
-        /* =====================================================
-           SIDEBAR ROLE CONTROL
-           ===================================================== */
-
-        .sidebar {
-            position: fixed !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 250px !important;
-            height: 100vh !important;
-            z-index: 999999 !important;
-            overflow-y: auto !important;
-        }
-
-        .sidebar a {
-            display: block !important;
-            cursor: pointer !important;
-        }
-
-        .sidebar a.role-hidden {
-            display: none !important;
-        }
-
-        .main-content {
-            margin-left: 250px !important;
-            position: relative;
-        }
-
-        /* =====================================================
-           ACCESS DENIED SCREEN
-           ===================================================== */
 
         #accessDeniedScreen {
             display: none;
@@ -95,129 +74,220 @@
             border-radius: 5px;
         }
 
-        .access-denied-back:hover {
-            opacity: 0.9;
+        .sidebar-logout {
+            margin: 15px 10px;
+        }
+
+        .sidebar-logout button {
+            width: 100%;
+            border: none;
+            padding: 11px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #dc2626;
+            color: white;
+            font-size: 14px;
+        }
+
+        .sidebar-logout button:hover {
+            background: #b91c1c;
+        }
+
+        .housekeeping-empty {
+            text-align: center;
+            padding: 30px;
+            color: #777;
         }
 
     </style>
 
 </head>
 
+
 <body>
+
 
 <div class="dashboard">
 
+
     <!-- =====================================================
          SIDEBAR
-         ===================================================== -->
+    ====================================================== -->
 
     <aside class="sidebar">
+
 
         <div class="logo">
 
             <h2>EDU TECH</h2>
 
-            <p>Hotel Management</p>
+            <p>
+                Hotel Management
+            </p>
 
         </div>
 
 
         <nav class="sidebar-nav">
 
-            <a href="./index.html"
-               data-module="dashboard">
+
+            <a
+                href="./index.html"
+                data-module="dashboard"
+            >
                 🏠 Dashboard
             </a>
 
-            <a href="./rooms.html"
-               data-module="rooms">
+
+            <a
+                href="./rooms.html"
+                data-module="rooms"
+            >
                 🛏️ Rooms
             </a>
 
-            <a href="./guests.html"
-               data-module="guests">
+
+            <a
+                href="./guests.html"
+                data-module="guests"
+            >
                 👤 Guests
             </a>
 
-            <a href="./reservations.html"
-               data-module="reservations">
+
+            <a
+                href="./reservations.html"
+                data-module="reservations"
+            >
                 📅 Reservations
             </a>
 
-            <a href="./checkin.html"
-               data-module="checkin">
+
+            <a
+                href="./checkin.html"
+                data-module="checkin"
+            >
                 🛎️ Check-in
             </a>
 
-            <a href="./checkout.html"
-               data-module="checkout">
+
+            <a
+                href="./checkout.html"
+                data-module="checkout"
+            >
                 🚪 Check-out
             </a>
 
-            <a href="./restaurant.html"
-               data-module="restaurant">
+
+            <a
+                href="./restaurant.html"
+                data-module="restaurant"
+            >
                 🍽️ Restaurant
             </a>
 
-            <a href="./inventory.html"
-               data-module="inventory">
+
+            <a
+                href="./inventory.html"
+                data-module="inventory"
+            >
                 📦 Inventory
             </a>
 
-            <a href="./payments.html"
-               data-module="payments">
+
+            <a
+                href="./payments.html"
+                data-module="payments"
+            >
                 💰 Payments
             </a>
 
-            <a href="./expenses.html"
-               data-module="expenses">
+
+            <a
+                href="./expenses.html"
+                data-module="expenses"
+            >
                 💸 Expenses
             </a>
 
-            <a href="./employees.html"
-               data-module="employees">
+
+            <a
+                href="./employees.html"
+                data-module="employees"
+            >
                 👨‍💼 Employees
             </a>
 
-            <a href="./housekeeping.html"
-               data-module="housekeeping"
-               class="active">
+
+            <a
+                href="./housekeeping.html"
+                data-module="housekeeping"
+                class="active"
+            >
                 🧹 Housekeeping
             </a>
 
-            <a href="./maintenance.html"
-               data-module="maintenance">
+
+            <a
+                href="./maintenance.html"
+                data-module="maintenance"
+            >
                 🔧 Maintenance
             </a>
 
-            <a href="./reports.html"
-               data-module="reports">
+
+            <a
+                href="./reports.html"
+                data-module="reports"
+            >
                 📊 Reports
             </a>
 
-            <a href="./settings.html"
-               data-module="settings">
+
+            <a
+                href="./settings.html"
+                data-module="settings"
+            >
                 ⚙️ Settings
             </a>
 
+
         </nav>
+
+
+        <!-- GLOBAL LOGOUT -->
+
+        <div class="sidebar-logout">
+
+            <button
+                type="button"
+                class="logout-btn"
+                data-action="logout"
+            >
+                🚪 Logout
+            </button>
+
+        </div>
+
 
     </aside>
 
 
     <!-- =====================================================
          MAIN CONTENT
-         ===================================================== -->
+    ====================================================== -->
 
     <main class="main-content">
 
-        <!-- TOP BAR -->
 
         <header class="topbar">
 
+
             <div>
 
-                <h1>Housekeeping</h1>
+                <h1>
+                    Housekeeping
+                </h1>
 
                 <p>
                     Manage room cleaning and housekeeping tasks
@@ -227,175 +297,29 @@
 
 
             <button
+                type="button"
                 class="primary-btn"
-                onclick="openHousekeepingForm()">
-
+                id="addHousekeepingBtn"
+                onclick="openHousekeepingForm()"
+            >
                 + Add Housekeeping Task
-
             </button>
+
 
         </header>
 
 
         <!-- =================================================
-             NORMAL HOUSEKEEPING CONTENT
-             ================================================= -->
-
-        <div id="housekeepingModuleContent">
-
-
-            <!-- SUMMARY CARDS -->
-
-            <section class="summary-grid">
-
-                <div class="summary-card">
-
-                    <h3>Total Tasks</h3>
-
-                    <strong id="totalTasks">
-                        0
-                    </strong>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <h3>Pending</h3>
-
-                    <strong id="pendingTasks">
-                        0
-                    </strong>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <h3>In Progress</h3>
-
-                    <strong id="inProgressTasks">
-                        0
-                    </strong>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <h3>Completed</h3>
-
-                    <strong id="completedTasks">
-                        0
-                    </strong>
-
-                </div>
-
-            </section>
-
-
-            <!-- SEARCH AND FILTER -->
-
-            <section class="content-card">
-
-                <div class="section-header">
-
-                    <div>
-
-                        <h2>
-                            Housekeeping Tasks
-                        </h2>
-
-                        <p>
-                            View and manage room cleaning tasks
-                        </p>
-
-                    </div>
-
-
-                    <div class="filters">
-
-                        <input
-                            type="text"
-                            id="housekeepingSearch"
-                            placeholder="Search room or staff..."
-                            onkeyup="searchHousekeeping()"
-                        >
-
-
-                        <select
-                            id="housekeepingFilter"
-                            onchange="filterHousekeeping()">
-
-                            <option value="all">
-                                All Status
-                            </option>
-
-                            <option value="Pending">
-                                Pending
-                            </option>
-
-                            <option value="In Progress">
-                                In Progress
-                            </option>
-
-                            <option value="Completed">
-                                Completed
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                </div>
-
-
-                <!-- TABLE -->
-
-                <div class="table-container">
-
-                    <table>
-
-                        <thead>
-
-                            <tr>
-
-                                <th>Room</th>
-
-                                <th>Task</th>
-
-                                <th>Staff</th>
-
-                                <th>Date</th>
-
-                                <th>Status</th>
-
-                                <th>Actions</th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody id="housekeepingTableBody">
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </section>
-
-        </div>
-
-
-        <!-- =================================================
-             ACCESS DENIED SCREEN
-             ================================================= -->
-
-        <div id="accessDeniedScreen">
+             ACCESS DENIED
+        ================================================== -->
+
+        <div
+            id="accessDeniedScreen"
+            class="access-denied"
+        >
 
             <div class="access-denied-card">
+
 
                 <div class="access-denied-icon">
                     🔒
@@ -421,32 +345,224 @@
 
                 <a
                     href="./index.html"
-                    class="access-denied-back">
-
+                    class="access-denied-back"
+                >
                     Return to Dashboard
-
                 </a>
+
 
             </div>
 
         </div>
 
+
+        <!-- =================================================
+             HOUSEKEEPING CONTENT
+        ================================================== -->
+
+        <div id="housekeepingModuleContent">
+
+
+            <!-- SUMMARY -->
+
+            <section class="summary-grid">
+
+
+                <div class="summary-card">
+
+                    <h3>
+                        Total Tasks
+                    </h3>
+
+                    <strong id="totalTasks">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>
+                        Pending
+                    </h3>
+
+                    <strong id="pendingTasks">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>
+                        In Progress
+                    </h3>
+
+                    <strong id="inProgressTasks">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>
+                        Completed
+                    </h3>
+
+                    <strong id="completedTasks">
+                        0
+                    </strong>
+
+                </div>
+
+
+            </section>
+
+
+            <!-- SEARCH / FILTER -->
+
+            <section class="content-card">
+
+
+                <div class="section-header">
+
+
+                    <div>
+
+                        <h2>
+                            Housekeeping Tasks
+                        </h2>
+
+                        <p>
+                            View and manage room cleaning tasks
+                        </p>
+
+                    </div>
+
+
+                    <div class="filters">
+
+
+                        <input
+                            type="text"
+                            id="housekeepingSearch"
+                            placeholder="Search room or staff..."
+                        >
+
+
+                        <select
+                            id="housekeepingFilter"
+                        >
+
+                            <option value="all">
+                                All Status
+                            </option>
+
+                            <option value="Pending">
+                                Pending
+                            </option>
+
+                            <option value="In Progress">
+                                In Progress
+                            </option>
+
+                            <option value="Completed">
+                                Completed
+                            </option>
+
+                        </select>
+
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- TABLE -->
+
+                <div class="table-container">
+
+
+                    <table>
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Room
+                                </th>
+
+                                <th>
+                                    Task
+                                </th>
+
+                                <th>
+                                    Staff
+                                </th>
+
+                                <th>
+                                    Date
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Actions
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody
+                            id="housekeepingTableBody"
+                        >
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+            </section>
+
+
+        </div>
+
+
     </main>
+
 
 </div>
 
 
 <!-- =========================================================
      HOUSEKEEPING MODAL
-     ========================================================= -->
+========================================================== -->
 
 <div
     id="housekeepingModal"
-    class="modal">
+    class="modal"
+>
+
 
     <div class="modal-content">
 
+
         <div class="modal-header">
+
 
             <div>
 
@@ -461,21 +577,27 @@
             </div>
 
 
-            <span
-                class="close"
-                onclick="closeHousekeepingForm()">
-
+            <button
+                type="button"
+                class="close-btn"
+                onclick="closeHousekeepingForm()"
+            >
                 &times;
+            </button>
 
-            </span>
 
         </div>
 
 
-        <form id="housekeepingForm">
+        <form
+            id="housekeepingForm"
+        >
+
 
             <div class="form-grid">
 
+
+                <!-- ROOM -->
 
                 <div class="form-group">
 
@@ -493,6 +615,8 @@
                 </div>
 
 
+                <!-- TASK -->
+
                 <div class="form-group">
 
                     <label for="housekeepingTask">
@@ -501,7 +625,8 @@
 
                     <select
                         id="housekeepingTask"
-                        required>
+                        required
+                    >
 
                         <option value="">
                             Select Task
@@ -532,6 +657,8 @@
                 </div>
 
 
+                <!-- STAFF -->
+
                 <div class="form-group">
 
                     <label for="housekeepingStaff">
@@ -548,6 +675,8 @@
                 </div>
 
 
+                <!-- DATE -->
+
                 <div class="form-group">
 
                     <label for="housekeepingDate">
@@ -563,6 +692,8 @@
                 </div>
 
 
+                <!-- STATUS -->
+
                 <div class="form-group">
 
                     <label for="housekeepingStatus">
@@ -571,7 +702,8 @@
 
                     <select
                         id="housekeepingStatus"
-                        required>
+                        required
+                    >
 
                         <option value="Pending">
                             Pending
@@ -589,139 +721,89 @@
 
                 </div>
 
+
             </div>
 
 
             <div class="form-actions">
 
+
                 <button
                     type="button"
                     class="secondary-btn"
-                    onclick="closeHousekeepingForm()">
-
+                    onclick="closeHousekeepingForm()"
+                >
                     Cancel
-
                 </button>
 
 
                 <button
                     type="submit"
-                    class="primary-btn">
-
+                    class="primary-btn"
+                >
                     Save Task
-
                 </button>
+
 
             </div>
 
+
         </form>
 
+
     </div>
+
 
 </div>
 
 
+<!-- =========================================================
+     SUPABASE
+========================================================== -->
+
+<script src="./supabase.js"></script>
+
+
+<!-- =========================================================
+     GLOBAL SCRIPT
+========================================================== -->
+
+<script src="./script.js"></script>
+
+
+<!-- =========================================================
+     HOUSEKEEPING SCRIPT
+========================================================== -->
+
 <script>
 
-/* =========================================================
-   ROLE PERMISSIONS
-   ========================================================= */
+let housekeepingTasks = [];
 
-const ROLE_PERMISSIONS = {
-
-    system_owner: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings",
-        "hotels"
-    ],
-
-    hotel_owner: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings"
-    ],
-
-    manager: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings"
-    ],
-
-    receptionist: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "payments",
-        "reports"
-    ]
-
-};
+let editingHousekeepingIndex = -1;
 
 
-/* =========================================================
+/* ============================================================
    GET CURRENT ROLE
-   ========================================================= */
+============================================================ */
 
-function getCurrentRole() {
+function getHousekeepingRole() {
 
-    let role =
+    return (
+
         sessionStorage.getItem(
             "userRole"
-        );
+        )
 
+        ||
 
-    if (!role) {
+        localStorage.getItem(
+            "userRole"
+        )
 
-        role =
-            localStorage.getItem(
-                "userRole"
-            );
+        ||
 
-    }
+        ""
 
-
-    return String(
-        role || ""
     )
     .toLowerCase()
     .trim();
@@ -729,309 +811,42 @@ function getCurrentRole() {
 }
 
 
-/* =========================================================
-   GET MODULE FROM LINK
-   ========================================================= */
+/* ============================================================
+   CHECK ACCESS
+============================================================ */
 
-function getModuleFromLink(link) {
+function housekeepingAccessAllowed(
+    showMessage = true
+) {
 
-    const href =
-        String(
-            link.getAttribute("href") || ""
-        )
-        .toLowerCase()
-        .split("?")[0]
-        .split("#")[0]
-        .trim();
+    const role =
+        getHousekeepingRole();
 
 
-    if (
-        href === "./" ||
-        href === "/" ||
-        href === "index.html" ||
-        href === "./index.html" ||
-        href.endsWith("/index.html")
-    ) {
+    const allowedRoles = [
 
-        return "dashboard";
+        "system_owner",
 
-    }
+        "hotel_owner",
 
-
-    const modules = [
-
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings",
-        "hotels"
+        "manager"
 
     ];
 
 
-    for (
-        let i = 0;
-        i < modules.length;
-        i++
+    if (
+        !allowedRoles.includes(
+            role
+        )
     ) {
 
-        if (
-            href.includes(
-                modules[i] + ".html"
-            )
-        ) {
+        if (showMessage) {
 
-            return modules[i];
+            alert(
+                "You do not have permission to access the Housekeeping module."
+            );
 
         }
-
-    }
-
-
-    return null;
-
-}
-
-
-/* =========================================================
-   GET CURRENT PAGE MODULE
-   ========================================================= */
-
-function getCurrentModule() {
-
-    const filename =
-        window.location.pathname
-            .split("/")
-            .pop()
-            .toLowerCase();
-
-
-    if (
-        !filename ||
-        filename === "index.html"
-    ) {
-
-        return "dashboard";
-
-    }
-
-
-    return filename.replace(
-        ".html",
-        ""
-    );
-
-}
-
-
-/* =========================================================
-   APPLY SIDEBAR ROLE CONTROL
-   ========================================================= */
-
-function applyRoleControl() {
-
-    const role =
-        getCurrentRole();
-
-
-    if (!role) {
-
-        return;
-
-    }
-
-
-    const allowed =
-        ROLE_PERMISSIONS[role];
-
-
-    if (!allowed) {
-
-        return;
-
-    }
-
-
-    document
-        .querySelectorAll(".sidebar a")
-        .forEach(function(link) {
-
-            const module =
-                getModuleFromLink(link);
-
-
-            if (!module) {
-
-                return;
-
-            }
-
-
-            if (
-                allowed.includes(module)
-            ) {
-
-                link.style.removeProperty(
-                    "display"
-                );
-
-            } else {
-
-                link.style.setProperty(
-                    "display",
-                    "none",
-                    "important"
-                );
-
-            }
-
-        });
-
-}
-
-
-/* =========================================================
-   PROTECT DIRECT PAGE ACCESS
-   ========================================================= */
-
-function protectHousekeepingPage() {
-
-    const role =
-        getCurrentRole();
-
-
-    if (!role) {
-
-        return;
-
-    }
-
-
-    const allowed =
-        ROLE_PERMISSIONS[role];
-
-
-    if (!allowed) {
-
-        return;
-
-    }
-
-
-    const currentModule =
-        getCurrentModule();
-
-
-    if (
-        !allowed.includes(
-            currentModule
-        )
-    ) {
-
-        window.location.href =
-            "./index.html";
-
-    }
-
-}
-
-
-/* =========================================================
-   RUN ROLE CONTROL
-   ========================================================= */
-
-function runRoleControl() {
-
-    applyRoleControl();
-
-    protectHousekeepingPage();
-
-}
-
-
-/* =========================================================
-   START ROLE CONTROL
-   ========================================================= */
-
-if (
-    document.readyState ===
-    "loading"
-) {
-
-    document.addEventListener(
-        "DOMContentLoaded",
-        runRoleControl
-    );
-
-} else {
-
-    runRoleControl();
-
-}
-
-
-/*
- Keep checking because login/session
- values may be written shortly after
- page loading.
-*/
-
-setInterval(
-    applyRoleControl,
-    500
-);
-
-
-/*
- Make function available globally.
-*/
-
-window.applyRoleControl =
-    applyRoleControl;
-
-
-/* =========================================================
-   HOUSEKEEPING DATA
-   ========================================================= */
-
-let housekeepingTasks = [];
-
-let editingHousekeepingIndex = -1;
-
-
-/* =========================================================
-   CHECK HOUSEKEEPING ACCESS
-   ========================================================= */
-
-function housekeepingAccessAllowed() {
-
-    const role =
-        getCurrentRole();
-
-
-    const allowed =
-        ROLE_PERMISSIONS[role] || [];
-
-
-    if (
-        !allowed.includes(
-            "housekeeping"
-        )
-    ) {
-
-        alert(
-            "You do not have permission to access the Housekeeping module."
-        );
 
         return false;
 
@@ -1043,9 +858,119 @@ function housekeepingAccessAllowed() {
 }
 
 
-/* =========================================================
+/* ============================================================
+   PROTECT PAGE
+============================================================ */
+
+function protectHousekeepingPage() {
+
+    const content =
+        document.getElementById(
+            "housekeepingModuleContent"
+        );
+
+
+    const denied =
+        document.getElementById(
+            "accessDeniedScreen"
+        );
+
+
+    const addButton =
+        document.getElementById(
+            "addHousekeepingBtn"
+        );
+
+
+    const role =
+        getHousekeepingRole();
+
+
+    const allowedRoles = [
+
+        "system_owner",
+
+        "hotel_owner",
+
+        "manager"
+
+    ];
+
+
+    if (
+        allowedRoles.includes(
+            role
+        )
+    ) {
+
+        if (content) {
+            content.style.display = "";
+        }
+
+        if (denied) {
+            denied.style.display = "none";
+        }
+
+        if (addButton) {
+            addButton.style.display = "";
+        }
+
+        return true;
+
+    }
+
+
+    if (content) {
+        content.style.display = "none";
+    }
+
+
+    if (addButton) {
+        addButton.style.display = "none";
+    }
+
+
+    if (denied) {
+        denied.style.display = "flex";
+    }
+
+
+    /*
+     * Give the global authentication system
+     * time to finish loading the session.
+     */
+
+    setTimeout(
+        function() {
+
+            const latestRole =
+                getHousekeepingRole();
+
+
+            if (
+                !allowedRoles.includes(
+                    latestRole
+                )
+            ) {
+
+                window.location.href =
+                    "./index.html";
+
+            }
+
+        },
+        1000
+    );
+
+
+    return false;
+
+}
+
+
+/* ============================================================
    OPEN FORM
-   ========================================================= */
+============================================================ */
 
 function openHousekeepingForm() {
 
@@ -1058,15 +983,29 @@ function openHousekeepingForm() {
     }
 
 
-    document.getElementById(
-        "housekeepingModal"
-    ).style.display =
-        "flex";
+    const modal =
+        document.getElementById(
+            "housekeepingModal"
+        );
 
 
-    document.getElementById(
-        "housekeepingForm"
-    ).reset();
+    const form =
+        document.getElementById(
+            "housekeepingForm"
+        );
+
+
+    if (
+        !modal ||
+        !form
+    ) {
+
+        return;
+
+    }
+
+
+    form.reset();
 
 
     editingHousekeepingIndex =
@@ -1076,28 +1015,49 @@ function openHousekeepingForm() {
     document.getElementById(
         "housekeepingDate"
     ).value =
+
         new Date()
             .toISOString()
             .split("T")[0];
 
+
+    modal.style.display =
+        "flex";
+
 }
 
 
-/* =========================================================
+/* ============================================================
    CLOSE FORM
-   ========================================================= */
+============================================================ */
 
 function closeHousekeepingForm() {
 
-    document.getElementById(
-        "housekeepingModal"
-    ).style.display =
-        "none";
+    const modal =
+        document.getElementById(
+            "housekeepingModal"
+        );
 
 
-    document.getElementById(
-        "housekeepingForm"
-    ).reset();
+    const form =
+        document.getElementById(
+            "housekeepingForm"
+        );
+
+
+    if (modal) {
+
+        modal.style.display =
+            "none";
+
+    }
+
+
+    if (form) {
+
+        form.reset();
+
+    }
 
 
     editingHousekeepingIndex =
@@ -1106,126 +1066,116 @@ function closeHousekeepingForm() {
 }
 
 
-/* =========================================================
+/* ============================================================
    SAVE TASK
-   ========================================================= */
+============================================================ */
 
-document.getElementById(
-    "housekeepingForm"
-)
-.addEventListener(
-    "submit",
-    function(event) {
+function saveHousekeepingTask(
+    event
+) {
 
-        event.preventDefault();
+    event.preventDefault();
 
 
-        if (
-            !housekeepingAccessAllowed()
-        ) {
+    if (
+        !housekeepingAccessAllowed()
+    ) {
 
-            return;
-
-        }
-
-
-        const room =
-            document.getElementById(
-                "housekeepingRoom"
-            )
-            .value
-            .trim();
-
-
-        const task =
-            document.getElementById(
-                "housekeepingTask"
-            )
-            .value;
-
-
-        const staff =
-            document.getElementById(
-                "housekeepingStaff"
-            )
-            .value
-            .trim();
-
-
-        const date =
-            document.getElementById(
-                "housekeepingDate"
-            )
-            .value;
-
-
-        const status =
-            document.getElementById(
-                "housekeepingStatus"
-            )
-            .value;
-
-
-        const newTask = {
-
-            room:
-                room,
-
-            task:
-                task,
-
-            staff:
-                staff,
-
-            date:
-                date,
-
-            status:
-                status
-
-        };
-
-
-        if (
-            editingHousekeepingIndex ===
-            -1
-        ) {
-
-            housekeepingTasks.push(
-                newTask
-            );
-
-        } else {
-
-            housekeepingTasks[
-                editingHousekeepingIndex
-            ] =
-                newTask;
-
-        }
-
-
-        displayHousekeepingTasks();
-
-        closeHousekeepingForm();
-
-
-        alert(
-            "Housekeeping task saved successfully."
-        );
+        return;
 
     }
-);
 
 
-/* =========================================================
+    const room =
+        document.getElementById(
+            "housekeepingRoom"
+        )
+        .value
+        .trim();
+
+
+    const task =
+        document.getElementById(
+            "housekeepingTask"
+        )
+        .value;
+
+
+    const staff =
+        document.getElementById(
+            "housekeepingStaff"
+        )
+        .value
+        .trim();
+
+
+    const date =
+        document.getElementById(
+            "housekeepingDate"
+        )
+        .value;
+
+
+    const status =
+        document.getElementById(
+            "housekeepingStatus"
+        )
+        .value;
+
+
+    const newTask = {
+
+        room: room,
+
+        task: task,
+
+        staff: staff,
+
+        date: date,
+
+        status: status
+
+    };
+
+
+    if (
+        editingHousekeepingIndex ===
+        -1
+    ) {
+
+        housekeepingTasks.push(
+            newTask
+        );
+
+    } else {
+
+        housekeepingTasks[
+            editingHousekeepingIndex
+        ] = newTask;
+
+    }
+
+
+    displayHousekeepingTasks();
+
+    closeHousekeepingForm();
+
+
+    alert(
+        "Housekeeping task saved successfully."
+    );
+
+}
+
+
+/* ============================================================
    DISPLAY TASKS
-   ========================================================= */
+============================================================ */
 
 function displayHousekeepingTasks() {
 
     if (
-        !housekeepingAccessAllowed()
+        !housekeepingAccessAllowed(false)
     ) {
 
         return;
@@ -1250,8 +1200,39 @@ function displayHousekeepingTasks() {
         "";
 
 
+    if (
+        housekeepingTasks.length === 0
+    ) {
+
+        tableBody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="housekeeping-empty"
+                >
+                    No housekeeping tasks found.
+                </td>
+
+            </tr>
+
+        `;
+
+
+        updateHousekeepingSummary();
+
+        return;
+
+    }
+
+
     housekeepingTasks.forEach(
-        function(item, index) {
+        function(
+            item,
+            index
+        ) {
+
 
             const row =
                 document.createElement(
@@ -1299,28 +1280,37 @@ function displayHousekeepingTasks() {
             row.innerHTML = `
 
                 <td>
-                    ${item.room}
+                    ${escapeHousekeepingHtml(
+                        item.room
+                    )}
                 </td>
 
                 <td>
-                    ${item.task}
+                    ${escapeHousekeepingHtml(
+                        item.task
+                    )}
                 </td>
 
                 <td>
-                    ${item.staff}
+                    ${escapeHousekeepingHtml(
+                        item.staff
+                    )}
                 </td>
 
                 <td>
-                    ${item.date}
+                    ${escapeHousekeepingHtml(
+                        item.date
+                    )}
                 </td>
 
                 <td>
 
                     <span
-                        class="status ${statusClass}">
-
-                        ${item.status}
-
+                        class="status ${statusClass}"
+                    >
+                        ${escapeHousekeepingHtml(
+                            item.status
+                        )}
                     </span>
 
                 </td>
@@ -1328,20 +1318,20 @@ function displayHousekeepingTasks() {
                 <td>
 
                     <button
+                        type="button"
                         class="action-btn"
-                        onclick="editHousekeeping(${index})">
-
+                        onclick="editHousekeeping(${index})"
+                    >
                         Edit
-
                     </button>
 
 
                     <button
+                        type="button"
                         class="delete-btn"
-                        onclick="deleteHousekeeping(${index})">
-
+                        onclick="deleteHousekeeping(${index})"
+                    >
                         Delete
-
                     </button>
 
                 </td>
@@ -1362,71 +1352,135 @@ function displayHousekeepingTasks() {
 }
 
 
-/* =========================================================
-   UPDATE SUMMARY
-   ========================================================= */
+/* ============================================================
+   ESCAPE HTML
+============================================================ */
 
-function updateHousekeepingSummary() {
+function escapeHousekeepingHtml(
+    value
+) {
 
-    document.getElementById(
-        "totalTasks"
-    ).textContent =
-        housekeepingTasks.length;
-
-
-    document.getElementById(
-        "pendingTasks"
-    ).textContent =
-
-        housekeepingTasks.filter(
-            function(item) {
-
-                return (
-                    item.status ===
-                    "Pending"
-                );
-
-            }
-        ).length;
-
-
-    document.getElementById(
-        "inProgressTasks"
-    ).textContent =
-
-        housekeepingTasks.filter(
-            function(item) {
-
-                return (
-                    item.status ===
-                    "In Progress"
-                );
-
-            }
-        ).length;
-
-
-    document.getElementById(
-        "completedTasks"
-    ).textContent =
-
-        housekeepingTasks.filter(
-            function(item) {
-
-                return (
-                    item.status ===
-                    "Completed"
-                );
-
-            }
-        ).length;
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
 
 }
 
 
-/* =========================================================
+/* ============================================================
+   SUMMARY
+============================================================ */
+
+function updateHousekeepingSummary() {
+
+    const total =
+        document.getElementById(
+            "totalTasks"
+        );
+
+
+    const pending =
+        document.getElementById(
+            "pendingTasks"
+        );
+
+
+    const progress =
+        document.getElementById(
+            "inProgressTasks"
+        );
+
+
+    const completed =
+        document.getElementById(
+            "completedTasks"
+        );
+
+
+    if (total) {
+
+        total.textContent =
+            housekeepingTasks.length;
+
+    }
+
+
+    if (pending) {
+
+        pending.textContent =
+            housekeepingTasks.filter(
+                function(item) {
+
+                    return (
+                        item.status ===
+                        "Pending"
+                    );
+
+                }
+            ).length;
+
+    }
+
+
+    if (progress) {
+
+        progress.textContent =
+            housekeepingTasks.filter(
+                function(item) {
+
+                    return (
+                        item.status ===
+                        "In Progress"
+                    );
+
+                }
+            ).length;
+
+    }
+
+
+    if (completed) {
+
+        completed.textContent =
+            housekeepingTasks.filter(
+                function(item) {
+
+                    return (
+                        item.status ===
+                        "Completed"
+                    );
+
+                }
+            ).length;
+
+    }
+
+}
+
+
+/* ============================================================
    EDIT
-   ========================================================= */
+============================================================ */
 
 function editHousekeeping(
     index
@@ -1494,9 +1548,9 @@ function editHousekeeping(
 }
 
 
-/* =========================================================
+/* ============================================================
    DELETE
-   ========================================================= */
+============================================================ */
 
 function deleteHousekeeping(
     index
@@ -1512,32 +1566,9 @@ function deleteHousekeeping(
 
 
     if (
-        confirm(
+        !confirm(
             "Are you sure you want to delete this task?"
         )
-    ) {
-
-        housekeepingTasks.splice(
-            index,
-            1
-        );
-
-
-        displayHousekeepingTasks();
-
-    }
-
-}
-
-
-/* =========================================================
-   SEARCH
-   ========================================================= */
-
-function searchHousekeeping() {
-
-    if (
-        !housekeepingAccessAllowed()
     ) {
 
         return;
@@ -1545,12 +1576,49 @@ function searchHousekeeping() {
     }
 
 
-    const search =
+    housekeepingTasks.splice(
+        index,
+        1
+    );
+
+
+    displayHousekeepingTasks();
+
+}
+
+
+/* ============================================================
+   SEARCH AND FILTER
+============================================================ */
+
+function applyHousekeepingFilters() {
+
+    const searchInput =
         document.getElementById(
             "housekeepingSearch"
+        );
+
+
+    const filterInput =
+        document.getElementById(
+            "housekeepingFilter"
+        );
+
+
+    const search =
+        (
+            searchInput
+                ? searchInput.value
+                : ""
         )
-        .value
-        .toLowerCase();
+        .toLowerCase()
+        .trim();
+
+
+    const filter =
+        filterInput
+            ? filterInput.value
+            : "all";
 
 
     const rows =
@@ -1567,10 +1635,23 @@ function searchHousekeeping() {
                     .toLowerCase();
 
 
-            row.style.display =
+            const matchesSearch =
+                !search ||
                 text.includes(
                     search
-                )
+                );
+
+
+            const matchesFilter =
+                filter === "all" ||
+                text.includes(
+                    filter.toLowerCase()
+                );
+
+
+            row.style.display =
+                matchesSearch &&
+                matchesFilter
                     ? ""
                     : "none";
 
@@ -1580,14 +1661,14 @@ function searchHousekeeping() {
 }
 
 
-/* =========================================================
-   FILTER
-   ========================================================= */
+/* ============================================================
+   SEARCH
+============================================================ */
 
-function filterHousekeeping() {
+function searchHousekeeping() {
 
     if (
-        !housekeepingAccessAllowed()
+        !housekeepingAccessAllowed(false)
     ) {
 
         return;
@@ -1595,51 +1676,34 @@ function filterHousekeeping() {
     }
 
 
-    const filter =
-        document.getElementById(
-            "housekeepingFilter"
-        ).value;
-
-
-    const rows =
-        document.querySelectorAll(
-            "#housekeepingTableBody tr"
-        );
-
-
-    rows.forEach(
-        function(row) {
-
-            const status =
-                row.cells[4]
-                    .textContent
-                    .trim();
-
-
-            if (
-                filter === "all" ||
-                status === filter
-            ) {
-
-                row.style.display =
-                    "";
-
-            } else {
-
-                row.style.display =
-                    "none";
-
-            }
-
-        }
-    );
+    applyHousekeepingFilters();
 
 }
 
 
-/* =========================================================
-   CLOSE MODAL WHEN CLICKING OUTSIDE
-   ========================================================= */
+/* ============================================================
+   FILTER
+============================================================ */
+
+function filterHousekeeping() {
+
+    if (
+        !housekeepingAccessAllowed(false)
+    ) {
+
+        return;
+
+    }
+
+
+    applyHousekeepingFilters();
+
+}
+
+
+/* ============================================================
+   CLOSE MODAL OUTSIDE
+============================================================ */
 
 window.addEventListener(
     "click",
@@ -1652,8 +1716,8 @@ window.addEventListener(
 
 
         if (
-            event.target ===
-            modal
+            modal &&
+            event.target === modal
         ) {
 
             closeHousekeepingForm();
@@ -1664,20 +1728,125 @@ window.addEventListener(
 );
 
 
-/* =========================================================
-   INITIAL DISPLAY
-   ========================================================= */
+/* ============================================================
+   INITIALIZE
+============================================================ */
 
-if (
-    getCurrentRole() !==
-    "receptionist"
-) {
+function initializeHousekeepingPage() {
 
-    displayHousekeepingTasks();
+    protectHousekeepingPage();
+
+
+    const form =
+        document.getElementById(
+            "housekeepingForm"
+        );
+
+
+    if (form) {
+
+        form.addEventListener(
+            "submit",
+            saveHousekeepingTask
+        );
+
+    }
+
+
+    const search =
+        document.getElementById(
+            "housekeepingSearch"
+        );
+
+
+    if (search) {
+
+        search.addEventListener(
+            "input",
+            searchHousekeeping
+        );
+
+    }
+
+
+    const filter =
+        document.getElementById(
+            "housekeepingFilter"
+        );
+
+
+    if (filter) {
+
+        filter.addEventListener(
+            "change",
+            filterHousekeeping
+        );
+
+    }
+
+
+    if (
+        housekeepingAccessAllowed(false)
+    ) {
+
+        displayHousekeepingTasks();
+
+    }
 
 }
 
+
+/* ============================================================
+   START
+============================================================ */
+
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeHousekeepingPage
+    );
+
+} else {
+
+    initializeHousekeepingPage();
+
+}
+
+
+/* ============================================================
+   GLOBAL FUNCTIONS
+============================================================ */
+
+window.openHousekeepingForm =
+    openHousekeepingForm;
+
+
+window.closeHousekeepingForm =
+    closeHousekeepingForm;
+
+
+window.searchHousekeeping =
+    searchHousekeeping;
+
+
+window.filterHousekeeping =
+    filterHousekeeping;
+
+
+window.editHousekeeping =
+    editHousekeeping;
+
+
+window.deleteHousekeeping =
+    deleteHousekeeping;
+
 </script>
 
+
 </body>
+
 </html>
