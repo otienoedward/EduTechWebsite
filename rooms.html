@@ -4,11 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Rooms - EDU TECH Hotel Management System</title>
+
     <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
+
+    <!-- =========================================================
+         SIDEBAR
+         ========================================================= -->
 
     <aside class="sidebar">
 
@@ -18,34 +24,94 @@
         </div>
 
         <nav>
-            <a href="./index.html">🏠 Dashboard</a>
-            <a href="./rooms.html" class="active">🛏️ Rooms</a>
-            <a href="./guests.html">👤 Guests</a>
-            <a href="./reservations.html">📅 Reservations</a>
-            <a href="./checkin.html">🛎️ Check-in</a>
-            <a href="./checkout.html">🚪 Check-out</a>
-            <a href="./restaurant.html">🍽️ Restaurant</a>
-            <a href="./inventory.html">📦 Inventory</a>
-            <a href="./payments.html">💰 Payments</a>
-            <a href="./expenses.html">💸 Expenses</a>
-            <a href="./employees.html">👨‍💼 Employees</a>
-            <a href="./housekeeping.html">🧹 Housekeeping</a>
-            <a href="./maintenance.html">🔧 Maintenance</a>
-            <a href="./reports.html">📊 Reports</a>
-            <a href="./settings.html">⚙️ Settings</a>
+
+            <a href="./index.html">
+                🏠 Dashboard
+            </a>
+
+            <a href="./rooms.html" class="active">
+                🛏️ Rooms
+            </a>
+
+            <a href="./guests.html">
+                👤 Guests
+            </a>
+
+            <a href="./reservations.html">
+                📅 Reservations
+            </a>
+
+            <a href="./checkin.html">
+                🛎️ Check-in
+            </a>
+
+            <a href="./checkout.html">
+                🚪 Check-out
+            </a>
+
+            <a href="./restaurant.html">
+                🍽️ Restaurant
+            </a>
+
+            <a href="./inventory.html">
+                📦 Inventory
+            </a>
+
+            <a href="./payments.html">
+                💰 Payments
+            </a>
+
+            <a href="./expenses.html">
+                💸 Expenses
+            </a>
+
+            <a href="./employees.html">
+                👨‍💼 Employees
+            </a>
+
+            <a href="./housekeeping.html">
+                🧹 Housekeeping
+            </a>
+
+            <a href="./maintenance.html">
+                🔧 Maintenance
+            </a>
+
+            <a href="./reports.html">
+                📊 Reports
+            </a>
+
+            <a href="./settings.html">
+                ⚙️ Settings
+            </a>
+
         </nav>
 
     </aside>
 
 
+    <!-- =========================================================
+         MAIN CONTENT
+         ========================================================= -->
+
     <main class="main-content">
+
+        <!-- TOP BAR -->
 
         <header class="topbar">
 
             <div>
-                <h1>Room Management</h1>
-                <p>Manage hotel rooms, room types, prices and availability</p>
+
+                <h1>
+                    Room Management
+                </h1>
+
+                <p>
+                    Manage hotel rooms, room types, prices and availability
+                </p>
+
             </div>
+
 
             <div class="user">
 
@@ -54,8 +120,15 @@
                 </div>
 
                 <div>
-                    <strong>Administrator</strong>
-                    <small>System Admin</small>
+
+                    <strong>
+                        Administrator
+                    </strong>
+
+                    <small>
+                        System Admin
+                    </small>
+
                 </div>
 
             </div>
@@ -63,62 +136,150 @@
         </header>
 
 
+        <!-- =====================================================
+             SUMMARY CARDS
+             ===================================================== -->
+
         <section class="cards">
 
-            <div class="card">
-                <div class="card-icon">🛏️</div>
-                <div>
-                    <h3>Total Rooms</h3>
-                    <p>40</p>
-                </div>
-            </div>
+
+            <!-- TOTAL ROOMS -->
 
             <div class="card">
-                <div class="card-icon">✅</div>
-                <div>
-                    <h3>Available</h3>
-                    <p>12</p>
+
+                <div class="card-icon">
+                    🛏️
                 </div>
+
+                <div>
+
+                    <h3>
+                        Total Rooms
+                    </h3>
+
+                    <p>
+                        40
+                    </p>
+
+                </div>
+
             </div>
 
-            <div class="card">
-                <div class="card-icon">👥</div>
-                <div>
-                    <h3>Occupied</h3>
-                    <p>25</p>
-                </div>
-            </div>
+
+            <!-- AVAILABLE -->
 
             <div class="card">
-                <div class="card-icon">🔧</div>
-                <div>
-                    <h3>Maintenance</h3>
-                    <p>3</p>
+
+                <div class="card-icon">
+                    ✅
                 </div>
+
+                <div>
+
+                    <h3>
+                        Available
+                    </h3>
+
+                    <p>
+                        12
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- OCCUPIED -->
+
+            <div class="card">
+
+                <div class="card-icon">
+                    👥
+                </div>
+
+                <div>
+
+                    <h3>
+                        Occupied
+                    </h3>
+
+                    <p>
+                        25
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- MAINTENANCE -->
+
+            <div class="card">
+
+                <div class="card-icon">
+                    🔧
+                </div>
+
+                <div>
+
+                    <h3>
+                        Maintenance
+                    </h3>
+
+                    <p>
+                        3
+                    </p>
+
+                </div>
+
             </div>
 
         </section>
 
 
+        <!-- =====================================================
+             ROOM MANAGEMENT
+             ===================================================== -->
+
         <section class="room-container">
+
+
+            <!-- ROOM HEADER -->
 
             <div class="room-header">
 
                 <div>
-                    <h2>Hotel Rooms</h2>
-                    <p>View and manage all rooms</p>
+
+                    <h2>
+                        Hotel Rooms
+                    </h2>
+
+                    <p>
+                        View and manage all rooms
+                    </p>
+
                 </div>
+
 
                 <button
                     class="add-room-btn"
                     onclick="openRoomForm()">
+
                     + Add New Room
+
                 </button>
 
             </div>
 
 
+            <!-- =================================================
+                 ROOM TOOLS
+                 ================================================= -->
+
             <div class="room-tools">
+
+
+                <!-- SEARCH -->
 
                 <input
                     type="text"
@@ -127,51 +288,109 @@
                     onkeyup="searchRooms()"
                 >
 
+
+                <!-- STATUS FILTER -->
+
                 <select
                     id="statusFilter"
                     onchange="filterRooms()">
 
-                    <option value="all">All Statuses</option>
-                    <option value="Available">Available</option>
-                    <option value="Occupied">Occupied</option>
-                    <option value="Cleaning">Cleaning</option>
-                    <option value="Maintenance">Maintenance</option>
+                    <option value="all">
+                        All Statuses
+                    </option>
+
+                    <option value="Available">
+                        Available
+                    </option>
+
+                    <option value="Occupied">
+                        Occupied
+                    </option>
+
+                    <option value="Cleaning">
+                        Cleaning
+                    </option>
+
+                    <option value="Maintenance">
+                        Maintenance
+                    </option>
 
                 </select>
 
             </div>
 
 
+            <!-- =================================================
+                 ROOMS TABLE
+                 ================================================= -->
+
             <div class="table-container">
 
                 <table id="roomsTable">
 
+
+                    <!-- TABLE HEADER -->
+
                     <thead>
 
                         <tr>
-                            <th>Room No.</th>
-                            <th>Room Type</th>
-                            <th>Price / Night</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+
+                            <th>
+                                Room No.
+                            </th>
+
+                            <th>
+                                Room Type
+                            </th>
+
+                            <th>
+                                Price / Night
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
                         </tr>
 
                     </thead>
 
+
+                    <!-- TABLE BODY -->
+
                     <tbody>
 
+
+                        <!-- ROOM 101 -->
+
                         <tr>
-                            <td>101</td>
-                            <td>Single</td>
-                            <td>KSh 2,500</td>
 
                             <td>
+                                101
+                            </td>
+
+                            <td>
+                                Single
+                            </td>
+
+                            <td>
+                                KSh 2,500
+                            </td>
+
+                            <td>
+
                                 <span class="room-status available-status">
                                     Available
                                 </span>
+
                             </td>
 
                             <td>
+
                                 <button class="edit-btn">
                                     Edit
                                 </button>
@@ -179,22 +398,38 @@
                                 <button class="delete-btn">
                                     Delete
                                 </button>
+
                             </td>
+
                         </tr>
 
 
+                        <!-- ROOM 102 -->
+
                         <tr>
-                            <td>102</td>
-                            <td>Double</td>
-                            <td>KSh 4,000</td>
 
                             <td>
+                                102
+                            </td>
+
+                            <td>
+                                Double
+                            </td>
+
+                            <td>
+                                KSh 4,000
+                            </td>
+
+                            <td>
+
                                 <span class="room-status occupied-status">
                                     Occupied
                                 </span>
+
                             </td>
 
                             <td>
+
                                 <button class="edit-btn">
                                     Edit
                                 </button>
@@ -202,22 +437,38 @@
                                 <button class="delete-btn">
                                     Delete
                                 </button>
+
                             </td>
+
                         </tr>
 
 
+                        <!-- ROOM 103 -->
+
                         <tr>
-                            <td>103</td>
-                            <td>Deluxe</td>
-                            <td>KSh 6,500</td>
 
                             <td>
+                                103
+                            </td>
+
+                            <td>
+                                Deluxe
+                            </td>
+
+                            <td>
+                                KSh 6,500
+                            </td>
+
+                            <td>
+
                                 <span class="room-status cleaning-status">
                                     Cleaning
                                 </span>
+
                             </td>
 
                             <td>
+
                                 <button class="edit-btn">
                                     Edit
                                 </button>
@@ -225,22 +476,38 @@
                                 <button class="delete-btn">
                                     Delete
                                 </button>
+
                             </td>
+
                         </tr>
 
 
+                        <!-- ROOM 104 -->
+
                         <tr>
-                            <td>104</td>
-                            <td>Suite</td>
-                            <td>KSh 10,000</td>
 
                             <td>
+                                104
+                            </td>
+
+                            <td>
+                                Suite
+                            </td>
+
+                            <td>
+                                KSh 10,000
+                            </td>
+
+                            <td>
+
                                 <span class="room-status maintenance-status">
                                     Maintenance
                                 </span>
+
                             </td>
 
                             <td>
+
                                 <button class="edit-btn">
                                     Edit
                                 </button>
@@ -248,8 +515,11 @@
                                 <button class="delete-btn">
                                     Delete
                                 </button>
+
                             </td>
+
                         </tr>
+
 
                     </tbody>
 
@@ -262,26 +532,47 @@
     </main>
 
 
-    <div id="roomModal" class="modal">
+    <!-- =========================================================
+         ADD ROOM MODAL
+         ========================================================= -->
+
+    <div
+        id="roomModal"
+        class="modal">
+
 
         <div class="modal-content">
 
+
+            <!-- MODAL HEADER -->
+
             <div class="modal-header">
 
-                <h2>Add New Room</h2>
+                <h2>
+                    Add New Room
+                </h2>
 
                 <button
                     type="button"
                     onclick="closeRoomForm()">
+
                     ×
+
                 </button>
 
             </div>
 
 
+            <!-- ROOM FORM -->
+
             <form id="roomForm">
 
-                <label>Room Number</label>
+
+                <!-- ROOM NUMBER -->
+
+                <label>
+                    Room Number
+                </label>
 
                 <input
                     type="text"
@@ -291,7 +582,11 @@
                 >
 
 
-                <label>Room Type</label>
+                <!-- ROOM TYPE -->
+
+                <label>
+                    Room Type
+                </label>
 
                 <select
                     id="roomType"
@@ -320,7 +615,11 @@
                 </select>
 
 
-                <label>Price Per Night</label>
+                <!-- ROOM PRICE -->
+
+                <label>
+                    Price Per Night
+                </label>
 
                 <input
                     type="number"
@@ -330,9 +629,14 @@
                 >
 
 
-                <label>Status</label>
+                <!-- ROOM STATUS -->
 
-                <select id="roomStatus">
+                <label>
+                    Status
+                </label>
+
+                <select
+                    id="roomStatus">
 
                     <option value="Available">
                         Available
@@ -353,10 +657,14 @@
                 </select>
 
 
+                <!-- SAVE -->
+
                 <button
                     type="submit"
                     class="save-room-btn">
+
                     Save Room
+
                 </button>
 
             </form>
@@ -366,7 +674,435 @@
     </div>
 
 
+    <!-- =========================================================
+         MAIN JAVASCRIPT
+         ========================================================= -->
+
     <script src="./script.js"></script>
+
+
+    <!-- =========================================================
+         ROOMS PAGE ROLE-BASED SIDEBAR CONTROL
+         ========================================================= -->
+
+    <script>
+
+        (function () {
+
+            /*
+             * Get the logged-in user's role.
+             */
+
+            function getUserRole() {
+
+                const sessionRole =
+                    sessionStorage.getItem("userRole");
+
+                const localRole =
+                    localStorage.getItem("userRole");
+
+                return String(
+                    sessionRole ||
+                    localRole ||
+                    ""
+                )
+                .toLowerCase()
+                .trim();
+
+            }
+
+
+            /*
+             * Permissions for every role.
+             */
+
+            const ROLE_PERMISSIONS = {
+
+                system_owner: [
+
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "restaurant",
+                    "inventory",
+                    "payments",
+                    "expenses",
+                    "employees",
+                    "housekeeping",
+                    "maintenance",
+                    "reports",
+                    "settings"
+
+                ],
+
+
+                hotel_owner: [
+
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "restaurant",
+                    "inventory",
+                    "payments",
+                    "expenses",
+                    "employees",
+                    "housekeeping",
+                    "maintenance",
+                    "reports",
+                    "settings"
+
+                ],
+
+
+                manager: [
+
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "restaurant",
+                    "inventory",
+                    "payments",
+                    "expenses",
+                    "employees",
+                    "housekeeping",
+                    "maintenance",
+                    "reports",
+                    "settings"
+
+                ],
+
+
+                receptionist: [
+
+                    "rooms",
+                    "guests",
+                    "reservations",
+                    "checkin",
+                    "checkout",
+                    "payments",
+                    "reports"
+
+                ]
+
+            };
+
+
+            /*
+             * Identify the module from the link.
+             */
+
+            function getModuleFromLink(link) {
+
+                const href =
+                    (
+                        link.getAttribute("href") ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .split("?")[0]
+                    .split("#")[0]
+                    .trim();
+
+
+                if (
+                    href.includes("rooms.html")
+                ) {
+                    return "rooms";
+                }
+
+
+                if (
+                    href.includes("guests.html")
+                ) {
+                    return "guests";
+                }
+
+
+                if (
+                    href.includes("reservations.html")
+                ) {
+                    return "reservations";
+                }
+
+
+                if (
+                    href.includes("checkin.html")
+                ) {
+                    return "checkin";
+                }
+
+
+                if (
+                    href.includes("checkout.html")
+                ) {
+                    return "checkout";
+                }
+
+
+                if (
+                    href.includes("restaurant.html")
+                ) {
+                    return "restaurant";
+                }
+
+
+                if (
+                    href.includes("inventory.html")
+                ) {
+                    return "inventory";
+                }
+
+
+                if (
+                    href.includes("payments.html")
+                ) {
+                    return "payments";
+                }
+
+
+                if (
+                    href.includes("expenses.html")
+                ) {
+                    return "expenses";
+                }
+
+
+                if (
+                    href.includes("employees.html")
+                ) {
+                    return "employees";
+                }
+
+
+                if (
+                    href.includes("housekeeping.html")
+                ) {
+                    return "housekeeping";
+                }
+
+
+                if (
+                    href.includes("maintenance.html")
+                ) {
+                    return "maintenance";
+                }
+
+
+                if (
+                    href.includes("reports.html")
+                ) {
+                    return "reports";
+                }
+
+
+                if (
+                    href.includes("settings.html")
+                ) {
+                    return "settings";
+                }
+
+
+                return null;
+
+            }
+
+
+            /*
+             * Apply the role permissions.
+             */
+
+            function applyRoomsPermissions() {
+
+                const role =
+                    getUserRole();
+
+
+                /*
+                 * Do nothing until a role exists.
+                 */
+
+                if (!role) {
+                    return;
+                }
+
+
+                const allowedModules =
+                    ROLE_PERMISSIONS[role] || [];
+
+
+                const sidebarLinks =
+                    document.querySelectorAll(
+                        ".sidebar nav a"
+                    );
+
+
+                sidebarLinks.forEach(
+                    function (link) {
+
+                        const href =
+                            (
+                                link.getAttribute("href") ||
+                                ""
+                            )
+                            .toLowerCase()
+                            .trim();
+
+
+                        /*
+                         * Dashboard is always visible.
+                         */
+
+                        if (
+                            href.includes("index.html") ||
+                            href === "./" ||
+                            href === "/"
+                        ) {
+
+                            link.style.display = "";
+
+                            return;
+
+                        }
+
+
+                        const module =
+                            getModuleFromLink(link);
+
+
+                        /*
+                         * Leave unknown/non-module
+                         * links alone.
+                         */
+
+                        if (!module) {
+                            return;
+                        }
+
+
+                        /*
+                         * Show permitted modules.
+                         */
+
+                        if (
+                            allowedModules.includes(module)
+                        ) {
+
+                            link.style.display = "";
+
+                        }
+
+                        /*
+                         * Hide modules the role
+                         * is not allowed to use.
+                         */
+
+                        else {
+
+                            link.style.display = "none";
+
+                        }
+
+                    }
+                );
+
+
+                console.log(
+                    "Rooms page role:",
+                    role
+                );
+
+                console.log(
+                    "Rooms page allowed modules:",
+                    allowedModules
+                );
+
+            }
+
+
+            /*
+             * Apply immediately.
+             */
+
+            applyRoomsPermissions();
+
+
+            /*
+             * Apply when DOM is ready.
+             */
+
+            if (
+                document.readyState === "loading"
+            ) {
+
+                document.addEventListener(
+                    "DOMContentLoaded",
+                    function () {
+
+                        applyRoomsPermissions();
+
+                    }
+                );
+
+            }
+
+            else {
+
+                applyRoomsPermissions();
+
+            }
+
+
+            /*
+             * Keep watching the page.
+             *
+             * If another script changes the sidebar,
+             * permissions are applied again.
+             */
+
+            const observer =
+                new MutationObserver(
+                    function () {
+
+                        applyRoomsPermissions();
+
+                    }
+                );
+
+
+            observer.observe(
+                document.body,
+                {
+                    childList: true,
+                    subtree: true
+                }
+            );
+
+
+            /*
+             * Additional protection against
+             * delayed sidebar changes.
+             */
+
+            setInterval(
+                function () {
+
+                    applyRoomsPermissions();
+
+                },
+                1000
+            );
+
+
+        })();
+
+    </script>
+
 
 </body>
 
