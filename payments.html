@@ -32,8 +32,6 @@
             position: relative;
         }
 
-        /* MODULE RESTRICTION */
-
         #moduleRestrictionScreen {
             display: none;
             min-height: calc(100vh - 100px);
@@ -100,8 +98,6 @@
         .restriction-back:hover {
             opacity: 0.9;
         }
-
-        /* RECEIPT */
 
         .receipt-modal {
             display: none;
@@ -285,7 +281,6 @@
 
     </aside>
 
-
     <main class="main-content">
 
         <header class="topbar">
@@ -301,9 +296,6 @@
             </div>
 
         </header>
-
-
-        <!-- NORMAL PAYMENT CONTENT -->
 
         <div id="paymentModuleContent">
 
@@ -331,7 +323,6 @@
 
             </section>
 
-
             <section class="content-section">
 
                 <div class="section-header">
@@ -349,7 +340,6 @@
 
                 </div>
 
-
                 <div class="table-controls">
 
                     <input
@@ -360,7 +350,7 @@
 
                     <select
                         id="paymentFilter"
-                        onchange="filterPayments">
+                        onchange="filterPayments()">
 
                         <option value="all">All Status</option>
                         <option value="Completed">Completed</option>
@@ -370,7 +360,6 @@
                     </select>
 
                 </div>
-
 
                 <div class="table-container">
 
@@ -401,9 +390,6 @@
             </section>
 
         </div>
-
-
-        <!-- RESTRICTED PAYMENT CONTENT -->
 
         <div id="moduleRestrictionScreen">
 
@@ -445,9 +431,6 @@
 
 </div>
 
-
-<!-- PAYMENT FORM MODAL -->
-
 <div id="paymentModal" class="modal">
 
     <div class="modal-content">
@@ -463,7 +446,6 @@
             </button>
 
         </div>
-
 
         <form id="paymentForm">
 
@@ -481,7 +463,6 @@
 
             </div>
 
-
             <div class="form-group">
 
                 <label for="paymentRoom">
@@ -496,7 +477,6 @@
 
             </div>
 
-
             <div class="form-group">
 
                 <label for="paymentDescription">
@@ -510,7 +490,6 @@
                     required>
 
             </div>
-
 
             <div class="form-group">
 
@@ -527,7 +506,6 @@
                     required>
 
             </div>
-
 
             <div class="form-group">
 
@@ -567,7 +545,6 @@
 
             </div>
 
-
             <div class="form-group">
 
                 <label for="paymentDate">
@@ -580,7 +557,6 @@
                     required>
 
             </div>
-
 
             <div class="form-group">
 
@@ -608,7 +584,6 @@
 
             </div>
 
-
             <div class="form-actions">
 
                 <button
@@ -632,9 +607,6 @@
 
 </div>
 
-
-<!-- RECEIPT MODAL -->
-
 <div
     id="receiptModal"
     class="receipt-modal">
@@ -653,11 +625,9 @@
 
         </div>
 
-
         <div class="receipt-title">
             OFFICIAL PAYMENT RECEIPT
         </div>
-
 
         <table class="receipt-details">
 
@@ -703,7 +673,6 @@
 
         </table>
 
-
         <div class="receipt-total">
 
             <span>AMOUNT PAID</span>
@@ -713,7 +682,6 @@
             </span>
 
         </div>
-
 
         <div class="receipt-footer">
 
@@ -726,7 +694,6 @@
             </p>
 
         </div>
-
 
         <div class="receipt-actions">
 
@@ -754,56 +721,179 @@
 
 </div>
 
-
-<!-- SUPABASE MUST LOAD BEFORE THE PAGE LOGIC -->
-
 <script src="./supabase.js"></script>
-
 <script src="./script.js"></script>
 
-
 <script>
-
-/* =========================================================
-   EDU TECH HOTEL MANAGEMENT SYSTEM
-   PAYMENTS MODULE
-   ========================================================= */
-
-
-/* =========================================================
-   VARIABLES
-   ========================================================= */
 
 const PAYMENT_STORAGE_KEY = "eduTechPayments";
 
 let editingPaymentId = null;
-
 let currentReceiptPayment = null;
-
 let paymentModuleRestricted = false;
+
+let verifiedHotelId = null;
+let verifiedRole = null;
 
 
 /* =========================================================
-   GET SESSION USER INFORMATION
+   AUTHENTICATED USER / PROFILE
+   ========================================================= */
+
+async function getAuthenticatedProfile() {
+
+    try {
+
+        const {
+            data: {
+                user
+            },
+            error: userError
+        } = await supabaseClient.auth.getUser();
+
+        if (userError) {
+
+            console.error(
+                "Authenticated user error:",
+                userError
+            );
+
+            return null;
+        }
+
+        if (!user) {
+
+            console.error(
+                "No authenticated Supabase user found."
+            );
+
+            return null;
+        }
+
+        const {
+            data: profile,
+            error: profileError
+        } = await supabaseClient
+            .from("profiles")
+            .select("id, full_name, role, hotel_id")
+            .eq("id", user.id)
+            .maybeSingle();
+
+        if (profileError) {
+
+            console.error(
+                "Profile lookup failed:",
+                profileError
+            );
+
+            return null;
+        }
+
+        if (!profile) {
+
+            console.error(
+                "No profile found for authenticated user."
+            );
+
+            return null;
+        }
+
+        verifiedRole =
+            String(
+                profile.role || ""
+            )
+            .toLowerCase()
+            .trim();
+
+        verifiedHotelId =
+            profile.hotel_id !== null &&
+            profile.hotel_id !== undefined
+                ? String(profile.hotel_id)
+                : "";
+
+        /*
+           Keep browser session values synchronized.
+        */
+
+        if (verifiedRole) {
+
+            sessionStorage.setItem(
+                "userRole",
+                verifiedRole
+            );
+
+            localStorage.setItem(
+                "userRole",
+                verifiedRole
+            );
+        }
+
+        if (verifiedHotelId) {
+
+            sessionStorage.setItem(
+                "hotelId",
+                verifiedHotelId
+            );
+
+            localStorage.setItem(
+                "hotelId",
+                verifiedHotelId
+            );
+        }
+
+        if (profile.full_name) {
+
+            sessionStorage.setItem(
+                "userName",
+                profile.full_name
+            );
+
+            localStorage.setItem(
+                "userName",
+                profile.full_name
+            );
+        }
+
+        return profile;
+
+    } catch (error) {
+
+        console.error(
+            "Authenticated profile exception:",
+            error
+        );
+
+        return null;
+    }
+}
+
+
+/* =========================================================
+   USER DISPLAY
    ========================================================= */
 
 function getCurrentUserRole() {
 
     return (
+        verifiedRole ||
         sessionStorage.getItem("userRole") ||
         localStorage.getItem("userRole") ||
         ""
-    ).toLowerCase().trim();
+    )
+    .toLowerCase()
+    .trim();
 }
 
 
 function getCurrentHotelId() {
 
     return (
+        verifiedHotelId ||
         sessionStorage.getItem("hotelId") ||
         localStorage.getItem("hotelId") ||
         ""
-    ).trim();
+    )
+    .trim();
 }
 
 
@@ -817,17 +907,17 @@ function getCurrentUserName() {
 }
 
 
-/* =========================================================
-   UPDATE USER DISPLAY
-   ========================================================= */
-
 function updateUserDisplay() {
 
     const nameElement =
-        document.getElementById("loggedUserName");
+        document.getElementById(
+            "loggedUserName"
+        );
 
     const roleElement =
-        document.getElementById("loggedUserRole");
+        document.getElementById(
+            "loggedUserRole"
+        );
 
     if (nameElement) {
 
@@ -844,7 +934,7 @@ function updateUserDisplay() {
 
 
 /* =========================================================
-   NORMALIZE MODULE RESTRICTIONS
+   NORMALIZE RESTRICTIONS
    ========================================================= */
 
 function normalizeModuleRestrictions(value) {
@@ -852,7 +942,6 @@ function normalizeModuleRestrictions(value) {
     if (!value) {
         return {};
     }
-
 
     if (typeof value === "string") {
 
@@ -865,7 +954,6 @@ function normalizeModuleRestrictions(value) {
             return {};
         }
     }
-
 
     if (Array.isArray(value)) {
 
@@ -887,7 +975,6 @@ function normalizeModuleRestrictions(value) {
         return result;
     }
 
-
     if (
         typeof value === "object" &&
         value !== null
@@ -908,22 +995,45 @@ function normalizeModuleRestrictions(value) {
         return result;
     }
 
-
     return {};
 }
 
 
 /* =========================================================
-   CHECK PAYMENTS MODULE RESTRICTION
+   CHECK PAYMENTS ACCESS
    ========================================================= */
 
 async function checkPaymentsModuleRestriction() {
 
-    const role = getCurrentUserRole();
+    /*
+       First obtain the real authenticated user
+       and profile from Supabase.
+    */
+
+    const profile =
+        await getAuthenticatedProfile();
+
+
+    if (!profile) {
+
+        showPaymentAccessError(
+            "Your account profile could not be verified. Please log out and log in again."
+        );
+
+        return;
+    }
+
+
+    const role =
+        String(
+            profile.role || ""
+        )
+        .toLowerCase()
+        .trim();
+
 
     /*
-       System Owner is never restricted by hotel module
-       restrictions.
+       System Owner has unrestricted access.
     */
 
     if (role === "system_owner") {
@@ -936,14 +1046,19 @@ async function checkPaymentsModuleRestriction() {
     }
 
 
-    const hotelId = getCurrentHotelId();
+    const hotelId =
+        profile.hotel_id;
 
 
-    if (!hotelId) {
+    if (
+        hotelId === null ||
+        hotelId === undefined ||
+        hotelId === ""
+    ) {
 
-        paymentModuleRestricted = false;
-
-        showPaymentModule();
+        showPaymentAccessError(
+            "Your account is not assigned to a hotel. Please contact the system administrator."
+        );
 
         return;
     }
@@ -970,11 +1085,6 @@ async function checkPaymentsModuleRestriction() {
                 error
             );
 
-            /*
-               If the restriction cannot be read, do not
-               accidentally expose a restricted module.
-            */
-
             showPaymentAccessError(
                 "Unable to verify Payments module access. Please contact the system administrator."
             );
@@ -986,7 +1096,7 @@ async function checkPaymentsModuleRestriction() {
         if (!hotel) {
 
             showPaymentAccessError(
-                "Your hotel account could not be found. Please contact the system administrator."
+                "Your assigned hotel could not be found. Please contact the system administrator."
             );
 
             return;
@@ -994,7 +1104,7 @@ async function checkPaymentsModuleRestriction() {
 
 
         /*
-           Hotel deactivated.
+           Check hotel status.
         */
 
         if (
@@ -1011,14 +1121,14 @@ async function checkPaymentsModuleRestriction() {
 
 
         /*
-           Subscription expired or cancelled.
+           Check subscription status.
         */
 
         const subscriptionStatus =
             String(
                 hotel.subscription_status || ""
             )
-                .toLowerCase();
+            .toLowerCase();
 
 
         if (
@@ -1075,7 +1185,7 @@ async function checkPaymentsModuleRestriction() {
 
 
         /*
-           Module restrictions.
+           Check Payments-specific restriction.
         */
 
         const restrictions =
@@ -1084,11 +1194,9 @@ async function checkPaymentsModuleRestriction() {
             );
 
 
-        const paymentsRestricted =
-            restrictions.payments === true;
-
-
-        if (paymentsRestricted) {
+        if (
+            restrictions.payments === true
+        ) {
 
             paymentModuleRestricted = true;
 
@@ -1107,7 +1215,7 @@ async function checkPaymentsModuleRestriction() {
     } catch (error) {
 
         console.error(
-            "Payments access error:",
+            "Payments access exception:",
             error
         );
 
@@ -1119,7 +1227,7 @@ async function checkPaymentsModuleRestriction() {
 
 
 /* =========================================================
-   SHOW NORMAL PAYMENT MODULE
+   SHOW NORMAL MODULE
    ========================================================= */
 
 function showPaymentModule() {
@@ -1134,22 +1242,22 @@ function showPaymentModule() {
             "moduleRestrictionScreen"
         );
 
-
     if (normalContent) {
 
-        normalContent.style.display = "";
+        normalContent.style.display =
+            "";
     }
-
 
     if (restrictionScreen) {
 
-        restrictionScreen.style.display = "none";
+        restrictionScreen.style.display =
+            "none";
     }
 }
 
 
 /* =========================================================
-   SHOW RESTRICTED PAYMENT MODULE
+   SHOW RESTRICTED MODULE
    ========================================================= */
 
 function showRestrictedPaymentModule(hotel) {
@@ -1172,9 +1280,9 @@ function showRestrictedPaymentModule(hotel) {
 
     if (normalContent) {
 
-        normalContent.style.display = "none";
+        normalContent.style.display =
+            "none";
     }
-
 
     if (restrictionScreen) {
 
@@ -1182,30 +1290,20 @@ function showRestrictedPaymentModule(hotel) {
             "flex";
     }
 
-
     if (message) {
 
-        const warningMessage =
+        message.textContent =
             hotel.warning_message ||
             "The Payments module has been temporarily restricted by the system owner.";
-
-        message.textContent =
-            warningMessage;
     }
 
-
-    /*
-       Prevent any open payment modal.
-    */
-
     closePaymentForm();
-
     closeReceipt();
 }
 
 
 /* =========================================================
-   SHOW ACCESS ERROR
+   ACCESS ERROR
    ========================================================= */
 
 function showPaymentAccessError(messageText) {
@@ -1228,16 +1326,15 @@ function showPaymentAccessError(messageText) {
 
     if (normalContent) {
 
-        normalContent.style.display = "none";
+        normalContent.style.display =
+            "none";
     }
-
 
     if (restrictionScreen) {
 
         restrictionScreen.style.display =
             "flex";
     }
-
 
     if (message) {
 
@@ -1248,7 +1345,7 @@ function showPaymentAccessError(messageText) {
 
 
 /* =========================================================
-   PROTECT PAYMENT ACTIONS
+   PAYMENT ACCESS
    ========================================================= */
 
 function paymentAccessAllowed() {
@@ -1277,12 +1374,10 @@ function getStoredPayments() {
             PAYMENT_STORAGE_KEY
         );
 
-
     if (!saved) {
 
         return [];
     }
-
 
     try {
 
@@ -1321,31 +1416,16 @@ function savePayments(payments) {
 function escapePaymentHTML(value) {
 
     return String(value ?? "")
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 
 /* =========================================================
-   OPEN PAYMENT FORM
+   PAYMENT FORM
    ========================================================= */
 
 function openPaymentForm() {
@@ -1355,7 +1435,6 @@ function openPaymentForm() {
         return;
     }
 
-
     const modal =
         document.getElementById(
             "paymentModal"
@@ -1366,38 +1445,29 @@ function openPaymentForm() {
             "paymentForm"
         );
 
-
     form.reset();
 
     editingPaymentId = null;
-
 
     document.getElementById(
         "paymentModalTitle"
     ).textContent =
         "New Payment";
 
-
     const today =
         new Date()
             .toISOString()
             .split("T")[0];
-
 
     document.getElementById(
         "paymentDate"
     ).value =
         today;
 
-
     modal.style.display =
         "flex";
 }
 
-
-/* =========================================================
-   CLOSE PAYMENT FORM
-   ========================================================= */
 
 function closePaymentForm() {
 
@@ -1406,32 +1476,28 @@ function closePaymentForm() {
             "paymentModal"
         );
 
-
     if (modal) {
 
         modal.style.display =
             "none";
     }
 
-
     const form =
         document.getElementById(
             "paymentForm"
         );
-
 
     if (form) {
 
         form.reset();
     }
 
-
     editingPaymentId = null;
 }
 
 
 /* =========================================================
-   PAYMENT STATUS CLASS
+   PAYMENT STATUS
    ========================================================= */
 
 function getPaymentStatusClass(status) {
@@ -1441,19 +1507,17 @@ function getPaymentStatusClass(status) {
         return "status-available";
     }
 
-
     if (status === "Pending") {
 
         return "status-maintenance";
     }
-
 
     return "status-occupied";
 }
 
 
 /* =========================================================
-   GENERATE PAYMENT ID
+   PAYMENT ID
    ========================================================= */
 
 function generatePaymentID() {
@@ -1462,7 +1526,6 @@ function generatePaymentID() {
         getStoredPayments();
 
     let highestNumber = 0;
-
 
     payments.forEach(
         function(payment) {
@@ -1474,7 +1537,6 @@ function generatePaymentID() {
                     /^PAY-(\d+)$/
                 );
 
-
             if (match) {
 
                 const number =
@@ -1482,7 +1544,6 @@ function generatePaymentID() {
                         match[1],
                         10
                     );
-
 
                 if (
                     number >
@@ -1496,7 +1557,6 @@ function generatePaymentID() {
         }
     );
 
-
     return (
         "PAY-" +
         String(
@@ -1507,7 +1567,7 @@ function generatePaymentID() {
 
 
 /* =========================================================
-   GENERATE RECEIPT NUMBER
+   RECEIPT NUMBER
    ========================================================= */
 
 function generateReceiptNumber(paymentId) {
@@ -1519,7 +1579,6 @@ function generateReceiptNumber(paymentId) {
             /^PAY-/,
             ""
         );
-
 
     return (
         "REC-" +
@@ -1542,7 +1601,6 @@ function displayPayments() {
         return;
     }
 
-
     const payments =
         getStoredPayments();
 
@@ -1551,15 +1609,12 @@ function displayPayments() {
             "paymentTable"
         );
 
-
     if (!tableBody) {
 
         return;
     }
 
-
     tableBody.innerHTML = "";
-
 
     payments.forEach(
         function(payment) {
@@ -1569,45 +1624,31 @@ function displayPayments() {
                     "tr"
                 );
 
-
             row.dataset.id =
                 payment.id;
 
             row.dataset.status =
                 payment.status;
 
-
             const statusClass =
                 getPaymentStatusClass(
                     payment.status
                 );
 
-
             row.innerHTML = `
                 <td>${escapePaymentHTML(payment.id)}</td>
-
                 <td>${escapePaymentHTML(payment.guest)}</td>
-
                 <td>${escapePaymentHTML(payment.room)}</td>
-
                 <td>${escapePaymentHTML(payment.description)}</td>
-
-                <td>
-                    KSh ${Number(payment.amount || 0).toLocaleString("en-KE")}
-                </td>
-
+                <td>KSh ${Number(payment.amount || 0).toLocaleString("en-KE")}</td>
                 <td>${escapePaymentHTML(payment.method)}</td>
-
                 <td>${escapePaymentHTML(payment.date)}</td>
-
                 <td>
                     <span class="status ${statusClass}">
                         ${escapePaymentHTML(payment.status)}
                     </span>
                 </td>
-
                 <td>
-
                     <button
                         class="action-btn view-btn"
                         onclick="viewPaymentRecord(this)">
@@ -1631,22 +1672,16 @@ function displayPayments() {
                         onclick="deletePaymentRecord(this)">
                         Delete
                     </button>
-
                 </td>
             `;
 
-
-            tableBody.appendChild(
-                row
-            );
+            tableBody.appendChild(row);
         }
     );
-
 
     updatePaymentSummary();
 
     applyPaymentFilters();
-
 
     if (
         typeof saveCurrentModuleTablesForReports ===
@@ -1669,7 +1704,7 @@ function displayPayments() {
 
 
 /* =========================================================
-   PAYMENT SUMMARY
+   SUMMARY
    ========================================================= */
 
 function updatePaymentSummary() {
@@ -1678,11 +1713,8 @@ function updatePaymentSummary() {
         getStoredPayments();
 
     let completedPayments = 0;
-
     let pendingPayments = 0;
-
     let revenue = 0;
-
 
     payments.forEach(
         function(payment) {
@@ -1700,7 +1732,6 @@ function updatePaymentSummary() {
                     ) || 0;
             }
 
-
             if (
                 payment.status ===
                 "Pending"
@@ -1711,24 +1742,20 @@ function updatePaymentSummary() {
         }
     );
 
-
     document.getElementById(
         "totalPayments"
     ).textContent =
         payments.length;
-
 
     document.getElementById(
         "completedPayments"
     ).textContent =
         completedPayments;
 
-
     document.getElementById(
         "pendingPayments"
     ).textContent =
         pendingPayments;
-
 
     document.getElementById(
         "paymentRevenue"
@@ -1741,7 +1768,7 @@ function updatePaymentSummary() {
 
 
 /* =========================================================
-   FIND PAYMENT FROM ROW
+   FIND PAYMENT
    ========================================================= */
 
 function findPaymentFromRow(row) {
@@ -1751,14 +1778,11 @@ function findPaymentFromRow(row) {
         return null;
     }
 
-
     const paymentId =
         row.dataset.id;
 
-
     const payments =
         getStoredPayments();
-
 
     return (
         payments.find(
@@ -1784,30 +1808,25 @@ document.getElementById(
 
         event.preventDefault();
 
-
         if (!paymentAccessAllowed()) {
 
             return;
         }
-
 
         const guest =
             document.getElementById(
                 "paymentGuest"
             ).value.trim();
 
-
         const room =
             document.getElementById(
                 "paymentRoom"
             ).value.trim();
 
-
         const description =
             document.getElementById(
                 "paymentDescription"
             ).value.trim();
-
 
         const amount =
             Number(
@@ -1816,24 +1835,20 @@ document.getElementById(
                 ).value
             );
 
-
         const method =
             document.getElementById(
                 "paymentMethod"
             ).value;
-
 
         const date =
             document.getElementById(
                 "paymentDate"
             ).value;
 
-
         const status =
             document.getElementById(
                 "paymentStatus"
             ).value;
-
 
         if (
             !guest ||
@@ -1850,7 +1865,6 @@ document.getElementById(
             return;
         }
 
-
         if (
             !Number.isFinite(amount) ||
             amount < 0
@@ -1863,10 +1877,8 @@ document.getElementById(
             return;
         }
 
-
         const payments =
             getStoredPayments();
-
 
         if (editingPaymentId) {
 
@@ -1878,7 +1890,6 @@ document.getElementById(
                             editingPaymentId;
                     }
                 );
-
 
             if (index !== -1) {
 
@@ -1940,11 +1951,9 @@ document.getElementById(
             });
         }
 
-
         savePayments(
             payments
         );
-
 
         displayPayments();
 
@@ -1964,14 +1973,11 @@ function viewPaymentRecord(button) {
         return;
     }
 
-
     const row =
         button.closest("tr");
 
-
     const payment =
         findPaymentFromRow(row);
-
 
     if (!payment) {
 
@@ -1981,7 +1987,6 @@ function viewPaymentRecord(button) {
 
         return;
     }
-
 
     alert(
         "Payment Details\n\n" +
@@ -2025,14 +2030,11 @@ function editPaymentRecord(button) {
         return;
     }
 
-
     const row =
         button.closest("tr");
 
-
     const payment =
         findPaymentFromRow(row);
-
 
     if (!payment) {
 
@@ -2043,58 +2045,48 @@ function editPaymentRecord(button) {
         return;
     }
 
-
     editingPaymentId =
         payment.id;
-
 
     document.getElementById(
         "paymentGuest"
     ).value =
         payment.guest;
 
-
     document.getElementById(
         "paymentRoom"
     ).value =
         payment.room;
-
 
     document.getElementById(
         "paymentDescription"
     ).value =
         payment.description;
 
-
     document.getElementById(
         "paymentAmount"
     ).value =
         payment.amount;
-
 
     document.getElementById(
         "paymentMethod"
     ).value =
         payment.method;
 
-
     document.getElementById(
         "paymentDate"
     ).value =
         payment.date;
-
 
     document.getElementById(
         "paymentStatus"
     ).value =
         payment.status;
 
-
     document.getElementById(
         "paymentModalTitle"
     ).textContent =
         "Edit Payment";
-
 
     document.getElementById(
         "paymentModal"
@@ -2114,20 +2106,16 @@ function deletePaymentRecord(button) {
         return;
     }
 
-
     const row =
         button.closest("tr");
-
 
     if (!row) {
 
         return;
     }
 
-
     const paymentId =
         row.dataset.id;
-
 
     const confirmed =
         confirm(
@@ -2136,16 +2124,13 @@ function deletePaymentRecord(button) {
             "?"
         );
 
-
     if (!confirmed) {
 
         return;
     }
 
-
     let payments =
         getStoredPayments();
-
 
     payments =
         payments.filter(
@@ -2156,11 +2141,9 @@ function deletePaymentRecord(button) {
             }
         );
 
-
     savePayments(
         payments
     );
-
 
     displayPayments();
 }
@@ -2177,7 +2160,6 @@ function searchPayments() {
         return;
     }
 
-
     applyPaymentFilters();
 }
 
@@ -2193,7 +2175,6 @@ function filterPayments() {
         return;
     }
 
-
     applyPaymentFilters();
 }
 
@@ -2205,12 +2186,10 @@ function applyPaymentFilters() {
             "paymentSearch"
         );
 
-
     const filterElement =
         document.getElementById(
             "paymentFilter"
         );
-
 
     if (
         !searchElement ||
@@ -2220,22 +2199,18 @@ function applyPaymentFilters() {
         return;
     }
 
-
     const search =
         searchElement.value
             .toLowerCase()
             .trim();
 
-
     const filter =
         filterElement.value;
-
 
     const rows =
         document.querySelectorAll(
             "#paymentTable tr"
         );
-
 
     rows.forEach(
         function(row) {
@@ -2244,22 +2219,18 @@ function applyPaymentFilters() {
                 row.textContent
                     .toLowerCase();
 
-
             const status =
                 row.dataset.status ||
                 "";
-
 
             const matchesSearch =
                 rowText.includes(
                     search
                 );
 
-
             const matchesFilter =
                 filter === "all" ||
                 status === filter;
-
 
             row.style.display =
                 matchesSearch &&
@@ -2272,7 +2243,7 @@ function applyPaymentFilters() {
 
 
 /* =========================================================
-   OPEN RECEIPT
+   RECEIPT
    ========================================================= */
 
 function openPaymentReceipt(button) {
@@ -2282,14 +2253,11 @@ function openPaymentReceipt(button) {
         return;
     }
 
-
     const row =
         button.closest("tr");
 
-
     const payment =
         findPaymentFromRow(row);
-
 
     if (!payment) {
 
@@ -2300,10 +2268,8 @@ function openPaymentReceipt(button) {
         return;
     }
 
-
     currentReceiptPayment =
         payment;
-
 
     document.getElementById(
         "receiptNumber"
@@ -2312,48 +2278,40 @@ function openPaymentReceipt(button) {
             payment.id
         );
 
-
     document.getElementById(
         "receiptPaymentId"
     ).textContent =
         payment.id;
-
 
     document.getElementById(
         "receiptGuest"
     ).textContent =
         payment.guest;
 
-
     document.getElementById(
         "receiptRoom"
     ).textContent =
         payment.room;
-
 
     document.getElementById(
         "receiptDescription"
     ).textContent =
         payment.description;
 
-
     document.getElementById(
         "receiptMethod"
     ).textContent =
         payment.method;
-
 
     document.getElementById(
         "receiptDate"
     ).textContent =
         payment.date;
 
-
     document.getElementById(
         "receiptStatus"
     ).textContent =
         payment.status;
-
 
     document.getElementById(
         "receiptAmount"
@@ -2369,17 +2327,12 @@ function openPaymentReceipt(button) {
             }
         );
 
-
     document.getElementById(
         "receiptModal"
     ).style.display =
         "flex";
 }
 
-
-/* =========================================================
-   CLOSE RECEIPT
-   ========================================================= */
 
 function closeReceipt() {
 
@@ -2388,13 +2341,11 @@ function closeReceipt() {
             "receiptModal"
         );
 
-
     if (modal) {
 
         modal.style.display =
             "none";
     }
-
 
     currentReceiptPayment =
         null;
@@ -2412,7 +2363,6 @@ function printReceipt() {
         return;
     }
 
-
     if (!currentReceiptPayment) {
 
         alert(
@@ -2422,13 +2372,12 @@ function printReceipt() {
         return;
     }
 
-
     window.print();
 }
 
 
 /* =========================================================
-   DOWNLOAD RECEIPT PDF
+   PDF RECEIPT
    ========================================================= */
 
 function downloadReceiptPDF() {
@@ -2438,7 +2387,6 @@ function downloadReceiptPDF() {
         return;
     }
 
-
     if (!currentReceiptPayment) {
 
         alert(
@@ -2447,7 +2395,6 @@ function downloadReceiptPDF() {
 
         return;
     }
-
 
     if (
         !window.jspdf ||
@@ -2461,30 +2408,24 @@ function downloadReceiptPDF() {
         return;
     }
 
-
     const payment =
         currentReceiptPayment;
-
 
     const jsPDF =
         window.jspdf.jsPDF;
 
-
     const doc =
         new jsPDF();
-
 
     const receiptNumber =
         generateReceiptNumber(
             payment.id
         );
 
-
     const amount =
         Number(
             payment.amount
         ) || 0;
-
 
     doc.setFontSize(20);
 
@@ -2492,7 +2433,6 @@ function downloadReceiptPDF() {
         "helvetica",
         "bold"
     );
-
 
     doc.text(
         "EDU TECH",
@@ -2503,9 +2443,7 @@ function downloadReceiptPDF() {
         }
     );
 
-
     doc.setFontSize(14);
-
 
     doc.text(
         "HOTEL MANAGEMENT",
@@ -2516,14 +2454,12 @@ function downloadReceiptPDF() {
         }
     );
 
-
     doc.setFontSize(12);
 
     doc.setFont(
         "helvetica",
         "normal"
     );
-
 
     doc.text(
         "PAYMENT RECEIPT",
@@ -2534,7 +2470,6 @@ function downloadReceiptPDF() {
         }
     );
 
-
     doc.line(
         20,
         47,
@@ -2542,9 +2477,7 @@ function downloadReceiptPDF() {
         47
     );
 
-
     let y = 62;
-
 
     function addPDFLine(
         label,
@@ -2556,19 +2489,16 @@ function downloadReceiptPDF() {
             "bold"
         );
 
-
         doc.text(
             String(label),
             25,
             y
         );
 
-
         doc.setFont(
             "helvetica",
             "normal"
         );
-
 
         doc.text(
             String(value ?? ""),
@@ -2576,61 +2506,50 @@ function downloadReceiptPDF() {
             y
         );
 
-
         y += 10;
     }
-
 
     addPDFLine(
         "Receipt Number:",
         receiptNumber
     );
 
-
     addPDFLine(
         "Payment ID:",
         payment.id
     );
-
 
     addPDFLine(
         "Guest Name:",
         payment.guest
     );
 
-
     addPDFLine(
         "Room Number:",
         payment.room
     );
-
 
     addPDFLine(
         "Description:",
         payment.description
     );
 
-
     addPDFLine(
         "Payment Method:",
         payment.method
     );
-
 
     addPDFLine(
         "Payment Date:",
         payment.date
     );
 
-
     addPDFLine(
         "Status:",
         payment.status
     );
 
-
     y += 5;
-
 
     doc.line(
         20,
@@ -2639,9 +2558,7 @@ function downloadReceiptPDF() {
         y
     );
 
-
     y += 15;
-
 
     doc.setFontSize(15);
 
@@ -2650,13 +2567,11 @@ function downloadReceiptPDF() {
         "bold"
     );
 
-
     doc.text(
         "AMOUNT PAID:",
         25,
         y
     );
-
 
     doc.text(
         "KSh " +
@@ -2674,9 +2589,7 @@ function downloadReceiptPDF() {
         }
     );
 
-
     y += 25;
-
 
     doc.setFontSize(10);
 
@@ -2684,7 +2597,6 @@ function downloadReceiptPDF() {
         "helvetica",
         "normal"
     );
-
 
     doc.text(
         "Thank you for choosing EDU TECH HOTEL.",
@@ -2695,9 +2607,7 @@ function downloadReceiptPDF() {
         }
     );
 
-
     y += 8;
-
 
     doc.text(
         "This is an electronically generated receipt.",
@@ -2708,7 +2618,6 @@ function downloadReceiptPDF() {
         }
     );
 
-
     doc.save(
         receiptNumber +
         ".pdf"
@@ -2717,7 +2626,7 @@ function downloadReceiptPDF() {
 
 
 /* =========================================================
-   OUTSIDE CLICK - RECEIPT
+   OUTSIDE CLICK
    ========================================================= */
 
 window.addEventListener(
@@ -2728,7 +2637,6 @@ window.addEventListener(
             document.getElementById(
                 "receiptModal"
             );
-
 
         if (
             modal &&
@@ -2741,10 +2649,6 @@ window.addEventListener(
 );
 
 
-/* =========================================================
-   OUTSIDE CLICK - PAYMENT FORM
-   ========================================================= */
-
 window.addEventListener(
     "click",
     function(event) {
@@ -2753,7 +2657,6 @@ window.addEventListener(
             document.getElementById(
                 "paymentModal"
             );
-
 
         if (
             modal &&
@@ -2774,15 +2677,14 @@ document.addEventListener(
     "DOMContentLoaded",
     async function() {
 
-        updateUserDisplay();
-
         /*
-           First check hotel/module access.
-           Payment data is only displayed after access
-           has been verified.
+           Wait for the authenticated Supabase
+           profile before checking hotel access.
         */
 
         await checkPaymentsModuleRestriction();
+
+        updateUserDisplay();
 
         if (!paymentModuleRestricted) {
 
