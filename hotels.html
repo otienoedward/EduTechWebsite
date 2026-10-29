@@ -43,12 +43,13 @@
 
         .hotel-search {
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
             padding: 11px 14px;
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 14px;
             margin-bottom: 20px;
+            box-sizing: border-box;
         }
 
         .hotels-table-wrapper {
@@ -61,7 +62,7 @@
         .hotels-table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 850px;
+            min-width: 1250px;
         }
 
         .hotels-table th,
@@ -69,6 +70,7 @@
             padding: 13px 15px;
             border-bottom: 1px solid #eee;
             text-align: left;
+            vertical-align: middle;
         }
 
         .hotels-table th {
@@ -76,13 +78,61 @@
             font-weight: 600;
         }
 
-        .hotel-status {
+        .status-badge,
+        .warning-badge,
+        .subscription-badge {
             display: inline-block;
-            padding: 5px 10px;
+            padding: 5px 9px;
             border-radius: 20px;
             font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .status-active {
             background: #e8f7ed;
             color: #187a3d;
+        }
+
+        .status-deactivated,
+        .status-suspended {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .subscription-active {
+            background: #e8f7ed;
+            color: #187a3d;
+        }
+
+        .subscription-expired {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .subscription-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .warning-none {
+            color: #777;
+        }
+
+        .warning-active {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .restriction-active {
+            background: #f8d7da;
+            color: #842029;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .restriction-none {
+            color: #777;
         }
 
         .hotel-buttons {
@@ -109,7 +159,22 @@
             color: #856404;
         }
 
-        .delete-btn {
+        .subscription-btn {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .issue-btn {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .activate-btn {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .deactivate-btn {
             background: #f8d7da;
             color: #842029;
         }
@@ -128,11 +193,12 @@
         .hotel-modal-content {
             background: #fff;
             width: 100%;
-            max-width: 600px;
+            max-width: 650px;
             max-height: 90vh;
             overflow-y: auto;
             border-radius: 10px;
             padding: 25px;
+            box-sizing: border-box;
         }
 
         .hotel-modal-header {
@@ -162,12 +228,20 @@
             font-weight: 600;
         }
 
-        .hotel-form-group input {
+        .hotel-form-group input,
+        .hotel-form-group select,
+        .hotel-form-group textarea {
             width: 100%;
             padding: 11px 12px;
             border: 1px solid #ddd;
             border-radius: 6px;
             box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .hotel-form-group textarea {
+            min-height: 90px;
+            resize: vertical;
         }
 
         .hotel-form-actions {
@@ -175,6 +249,7 @@
             justify-content: flex-end;
             gap: 10px;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
 
         .hotel-form-actions button {
@@ -210,6 +285,11 @@
             color: #842029;
         }
 
+        .hotel-message.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
         .empty-hotels {
             text-align: center;
             padding: 35px;
@@ -222,7 +302,20 @@
 
         .hotel-details strong {
             display: inline-block;
-            min-width: 120px;
+            min-width: 160px;
+        }
+
+        .section-title {
+            margin-top: 22px;
+            margin-bottom: 12px;
+            padding-bottom: 7px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .expiry-note {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #777;
         }
     </style>
 </head>
@@ -271,7 +364,7 @@
         <div class="hotels-header">
             <div>
                 <h2>Hotel Management</h2>
-                <p>View and manage individual hotels.</p>
+                <p>Manage hotel subscriptions, warnings, restrictions and access.</p>
             </div>
 
             <div class="hotel-actions">
@@ -297,13 +390,17 @@
                         <th>Phone</th>
                         <th>Email</th>
                         <th>Status</th>
+                        <th>Subscription</th>
+                        <th>Expiry</th>
+                        <th>Warning</th>
+                        <th>Restriction</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
 
                 <tbody id="hotelsTableBody">
                     <tr>
-                        <td colspan="7" class="empty-hotels">
+                        <td colspan="11" class="empty-hotels">
                             Loading hotels...
                         </td>
                     </tr>
@@ -314,7 +411,7 @@
     </div>
 </div>
 
-<!-- ADD / EDIT HOTEL MODAL -->
+<!-- ADD / EDIT HOTEL -->
 <div id="hotelModal" class="hotel-modal">
 
     <div class="hotel-modal-content">
@@ -327,6 +424,8 @@
         <form id="hotelForm">
 
             <input type="hidden" id="hotelId">
+
+            <h4 class="section-title">Hotel Information</h4>
 
             <div class="hotel-form-group">
                 <label for="hotelName">Hotel Name</label>
@@ -348,6 +447,31 @@
                 <input type="email" id="hotelEmail">
             </div>
 
+            <h4 class="section-title">Subscription</h4>
+
+            <div class="hotel-form-group">
+                <label for="subscriptionStart">Subscription Start</label>
+                <input type="date" id="subscriptionStart">
+            </div>
+
+            <div class="hotel-form-group">
+                <label for="subscriptionEnd">Subscription End</label>
+                <input type="date" id="subscriptionEnd">
+                <div class="expiry-note">
+                    When this date passes, the hotel will later be automatically suspended by the central access-control system.
+                </div>
+            </div>
+
+            <div class="hotel-form-group">
+                <label for="subscriptionStatus">Subscription Status</label>
+                <select id="subscriptionStatus">
+                    <option value="active">Active</option>
+                    <option value="warning">Expiring Soon</option>
+                    <option value="expired">Expired</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
+
             <div class="hotel-form-actions">
                 <button type="button" class="cancel-hotel-btn" onclick="closeHotelModal()">
                     Cancel
@@ -363,7 +487,7 @@
     </div>
 </div>
 
-<!-- VIEW HOTEL MODAL -->
+<!-- VIEW HOTEL -->
 <div id="viewHotelModal" class="hotel-modal">
 
     <div class="hotel-modal-content">
@@ -384,18 +508,139 @@
     </div>
 </div>
 
+<!-- MANAGE ISSUE -->
+<div id="issueModal" class="hotel-modal">
+
+    <div class="hotel-modal-content">
+
+        <div class="hotel-modal-header">
+            <h3>Manage Hotel Warning / Issue</h3>
+            <span class="close-hotel-modal" onclick="closeIssueModal()">&times;</span>
+        </div>
+
+        <input type="hidden" id="issueHotelId">
+
+        <div class="hotel-form-group">
+            <label for="warningType">Warning / Issue Type</label>
+
+            <select id="warningType">
+                <option value="">No Warning</option>
+                <option value="payment">Payment Issue</option>
+                <option value="account">Account Issue</option>
+                <option value="technical">Technical Issue</option>
+                <option value="subscription">Subscription Issue</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+
+        <div class="hotel-form-group">
+            <label for="warningMessage">Warning Message</label>
+
+            <textarea
+                id="warningMessage"
+                placeholder="Enter the issue or warning..."
+            ></textarea>
+        </div>
+
+        <div class="hotel-form-group">
+            <label for="moduleRestriction">Module Restriction</label>
+
+            <select id="moduleRestriction">
+                <option value="">No Module Restriction</option>
+                <option value="payments">Payments</option>
+                <option value="reservations">Reservations</option>
+                <option value="checkin">Check-in</option>
+                <option value="checkout">Check-out</option>
+                <option value="restaurant">Restaurant</option>
+                <option value="inventory">Inventory</option>
+                <option value="employees">Employees</option>
+                <option value="housekeeping">Housekeeping</option>
+                <option value="maintenance">Maintenance</option>
+                <option value="reports">Reports</option>
+                <option value="rooms">Rooms</option>
+                <option value="guests">Guests</option>
+            </select>
+        </div>
+
+        <div class="hotel-form-actions">
+
+            <button
+                type="button"
+                class="cancel-hotel-btn"
+                onclick="closeIssueModal()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="save-hotel-btn"
+                onclick="saveHotelIssue()">
+                Save Issue
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- SUBSCRIPTION RENEWAL -->
+<div id="subscriptionModal" class="hotel-modal">
+
+    <div class="hotel-modal-content">
+
+        <div class="hotel-modal-header">
+            <h3>Renew Subscription</h3>
+            <span class="close-hotel-modal" onclick="closeSubscriptionModal()">&times;</span>
+        </div>
+
+        <input type="hidden" id="subscriptionHotelId">
+
+        <div class="hotel-form-group">
+            <label for="renewStart">New Subscription Start</label>
+            <input type="date" id="renewStart">
+        </div>
+
+        <div class="hotel-form-group">
+            <label for="renewEnd">New Subscription End</label>
+            <input type="date" id="renewEnd">
+        </div>
+
+        <div class="hotel-form-actions">
+
+            <button
+                type="button"
+                class="cancel-hotel-btn"
+                onclick="closeSubscriptionModal()">
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="save-hotel-btn"
+                onclick="renewSubscription()">
+                Renew Subscription
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
 <script>
 
 let hotelsData = [];
 let editingHotelId = null;
 
+
 document.addEventListener("DOMContentLoaded", async function () {
 
     await checkSystemOwner();
 
-    document.getElementById("hotelForm").addEventListener("submit", saveHotel);
+    document.getElementById("hotelForm")
+        .addEventListener("submit", saveHotel);
 
     await loadHotels();
+
 });
 
 
@@ -403,12 +648,16 @@ async function checkSystemOwner() {
 
     try {
 
-        const { data: { session }, error: sessionError } =
-            await supabaseClient.auth.getSession();
+        const {
+            data: { session },
+            error: sessionError
+        } = await supabaseClient.auth.getSession();
 
         if (sessionError || !session) {
+
             window.location.href = "login.html";
             return;
+
         }
 
         const userId = session.user.id;
@@ -419,18 +668,24 @@ async function checkSystemOwner() {
             .eq("id", userId)
             .single();
 
-        if (error) {
-            console.error("Profile error:", error);
-            showHotelMessage("Unable to load your user profile.", "error");
+        if (error || !profile) {
+
+            showHotelMessage(
+                "Unable to load your user profile.",
+                "error"
+            );
+
             return;
         }
 
-        if (!profile || profile.role !== "system_owner") {
+        if (profile.role !== "system_owner") {
 
-            alert("Only the System Owner can access the Hotels management page.");
+            alert(
+                "Only the System Owner can access the Hotels management page."
+            );
 
             window.location.href = "index.html";
-            return;
+
         }
 
     } catch (error) {
@@ -438,17 +693,20 @@ async function checkSystemOwner() {
         console.error(error);
 
         window.location.href = "login.html";
+
     }
+
 }
 
 
 async function loadHotels() {
 
-    const tbody = document.getElementById("hotelsTableBody");
+    const tbody =
+        document.getElementById("hotelsTableBody");
 
     tbody.innerHTML = `
         <tr>
-            <td colspan="7" class="empty-hotels">
+            <td colspan="11" class="empty-hotels">
                 Loading hotels...
             </td>
         </tr>
@@ -463,22 +721,27 @@ async function loadHotels() {
 
         if (error) {
 
-            console.error("Hotels loading error:", error);
+            console.error(error);
+
+            showHotelMessage(
+                error.message,
+                "error"
+            );
 
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="7" class="empty-hotels">
+                    <td colspan="11" class="empty-hotels">
                         Unable to load hotels.
                     </td>
                 </tr>
             `;
 
-            showHotelMessage(error.message, "error");
-
             return;
         }
 
         hotelsData = data || [];
+
+        applySubscriptionDisplayRules();
 
         displayHotels(hotelsData);
 
@@ -486,28 +749,49 @@ async function loadHotels() {
 
         console.error(error);
 
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="7" class="empty-hotels">
-                    An unexpected error occurred.
-                </td>
-            </tr>
-        `;
+        showHotelMessage(
+            "Unable to load hotels.",
+            "error"
+        );
 
-        showHotelMessage("An unexpected error occurred.", "error");
     }
+
+}
+
+
+function applySubscriptionDisplayRules() {
+
+    const today =
+        new Date().toISOString().split("T")[0];
+
+    hotelsData.forEach(hotel => {
+
+        if (
+            hotel.subscription_end &&
+            hotel.subscription_end < today &&
+            hotel.status !== "deactivated"
+        ) {
+
+            hotel.subscription_status = "expired";
+            hotel.status = "suspended";
+
+        }
+
+    });
+
 }
 
 
 function displayHotels(hotels) {
 
-    const tbody = document.getElementById("hotelsTableBody");
+    const tbody =
+        document.getElementById("hotelsTableBody");
 
     if (!hotels || hotels.length === 0) {
 
         tbody.innerHTML = `
             <tr>
-                <td colspan="7" class="empty-hotels">
+                <td colspan="11" class="empty-hotels">
                     No hotels have been registered yet.
                 </td>
             </tr>
@@ -518,12 +802,110 @@ function displayHotels(hotels) {
 
     tbody.innerHTML = hotels.map((hotel, index) => {
 
-        const hotelName = hotel.hotel_name || "Unnamed Hotel";
-        const location = hotel.location || "-";
-        const phone = hotel.phone || "-";
-        const email = hotel.email || "-";
+        const status =
+            String(hotel.status || "active").toLowerCase();
 
-        const hotelId = hotel.id;
+        const subscription =
+            String(
+                hotel.subscription_status || "active"
+            ).toLowerCase();
+
+        const expiry =
+            hotel.subscription_end || "-";
+
+        let statusClass = "status-active";
+        let statusText = "🟢 Active";
+
+        if (status === "deactivated") {
+
+            statusClass = "status-deactivated";
+            statusText = "🔴 Deactivated";
+
+        } else if (status === "suspended") {
+
+            statusClass = "status-suspended";
+            statusText = "🔴 Suspended";
+
+        }
+
+        let subscriptionClass =
+            "subscription-active";
+
+        let subscriptionText =
+            "Active";
+
+        if (subscription === "expired") {
+
+            subscriptionClass =
+                "subscription-expired";
+
+            subscriptionText =
+                "Expired";
+
+        } else if (subscription === "warning") {
+
+            subscriptionClass =
+                "subscription-warning";
+
+            subscriptionText =
+                "Expiring Soon";
+
+        } else if (subscription === "cancelled") {
+
+            subscriptionClass =
+                "subscription-expired";
+
+            subscriptionText =
+                "Cancelled";
+
+        }
+
+        let warningHtml =
+            '<span class="warning-none">—</span>';
+
+        if (hotel.warning_type || hotel.warning_message) {
+
+            warningHtml = `
+                <span class="warning-badge warning-active">
+                    ⚠️ ${escapeHotelHtml(
+                        hotel.warning_type || "Warning"
+                    )}
+                </span>
+            `;
+
+        }
+
+        let restrictionHtml =
+            '<span class="restriction-none">None</span>';
+
+        if (hotel.module_restriction) {
+
+            restrictionHtml = `
+                <span class="restriction-active">
+                    ⚠️ ${escapeHotelHtml(
+                        hotel.module_restriction
+                    )}
+                </span>
+            `;
+
+        }
+
+        const toggleButton =
+            status === "active"
+                ? `
+                    <button
+                        class="deactivate-btn"
+                        onclick="changeHotelStatus(${hotel.id}, 'deactivated')">
+                        Deactivate
+                    </button>
+                `
+                : `
+                    <button
+                        class="activate-btn"
+                        onclick="changeHotelStatus(${hotel.id}, 'active')">
+                        Activate
+                    </button>
+                `;
 
         return `
             <tr>
@@ -531,17 +913,53 @@ function displayHotels(hotels) {
                 <td>${index + 1}</td>
 
                 <td>
-                    <strong>${escapeHotelHtml(hotelName)}</strong>
+                    <strong>
+                        ${escapeHotelHtml(
+                            hotel.hotel_name || "Unnamed Hotel"
+                        )}
+                    </strong>
                 </td>
 
-                <td>${escapeHotelHtml(location)}</td>
-
-                <td>${escapeHotelHtml(phone)}</td>
-
-                <td>${escapeHotelHtml(email)}</td>
+                <td>
+                    ${escapeHotelHtml(
+                        hotel.location || "-"
+                    )}
+                </td>
 
                 <td>
-                    <span class="hotel-status">Active</span>
+                    ${escapeHotelHtml(
+                        hotel.phone || "-"
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHotelHtml(
+                        hotel.email || "-"
+                    )}
+                </td>
+
+                <td>
+                    <span class="status-badge ${statusClass}">
+                        ${statusText}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="subscription-badge ${subscriptionClass}">
+                        ${escapeHotelHtml(subscriptionText)}
+                    </span>
+                </td>
+
+                <td>
+                    ${escapeHotelHtml(expiry)}
+                </td>
+
+                <td>
+                    ${warningHtml}
+                </td>
+
+                <td>
+                    ${restrictionHtml}
                 </td>
 
                 <td>
@@ -550,21 +968,29 @@ function displayHotels(hotels) {
 
                         <button
                             class="view-btn"
-                            onclick="viewHotel(${hotelId})">
+                            onclick="viewHotel(${hotel.id})">
                             View
                         </button>
 
                         <button
                             class="edit-btn"
-                            onclick="editHotel(${hotelId})">
+                            onclick="editHotel(${hotel.id})">
                             Edit
                         </button>
 
                         <button
-                            class="delete-btn"
-                            onclick="deleteHotel(${hotelId})">
-                            Delete
+                            class="subscription-btn"
+                            onclick="openSubscriptionModal(${hotel.id})">
+                            Renew
                         </button>
+
+                        <button
+                            class="issue-btn"
+                            onclick="openIssueModal(${hotel.id})">
+                            ⚠️ Issue
+                        </button>
+
+                        ${toggleButton}
 
                     </div>
 
@@ -574,33 +1000,44 @@ function displayHotels(hotels) {
         `;
 
     }).join("");
+
 }
 
 
 function filterHotels() {
 
     const search =
-        document.getElementById("hotelSearch").value
+        document.getElementById("hotelSearch")
+        .value
         .toLowerCase()
         .trim();
 
-    const filtered = hotelsData.filter(hotel => {
+    const filtered =
+        hotelsData.filter(hotel => {
 
-        const name = String(hotel.hotel_name || "").toLowerCase();
-        const location = String(hotel.location || "").toLowerCase();
-        const phone = String(hotel.phone || "").toLowerCase();
-        const email = String(hotel.email || "").toLowerCase();
+            return (
+                String(hotel.hotel_name || "")
+                    .toLowerCase()
+                    .includes(search) ||
 
-        return (
-            name.includes(search) ||
-            location.includes(search) ||
-            phone.includes(search) ||
-            email.includes(search)
-        );
+                String(hotel.location || "")
+                    .toLowerCase()
+                    .includes(search) ||
 
-    });
+                String(hotel.phone || "")
+                    .toLowerCase()
+                    .includes(search) ||
+
+                String(hotel.email || "")
+                    .toLowerCase()
+                    .includes(search)
+
+            );
+
+        });
 
     displayHotels(filtered);
+
 }
 
 
@@ -608,55 +1045,83 @@ function openAddHotelModal() {
 
     editingHotelId = null;
 
-    document.getElementById("hotelModalTitle").textContent =
-        "Add Hotel";
+    document.getElementById("hotelModalTitle")
+        .textContent = "Add Hotel";
 
-    document.getElementById("hotelForm").reset();
+    document.getElementById("hotelForm")
+        .reset();
 
-    document.getElementById("hotelId").value = "";
+    document.getElementById("hotelId")
+        .value = "";
 
-    document.getElementById("hotelModal").style.display = "flex";
+    document.getElementById("subscriptionStatus")
+        .value = "active";
+
+    document.getElementById("hotelModal")
+        .style.display = "flex";
+
 }
 
 
 function closeHotelModal() {
 
-    document.getElementById("hotelModal").style.display = "none";
+    document.getElementById("hotelModal")
+        .style.display = "none";
+
 }
 
 
 function editHotel(id) {
 
-    const hotel = hotelsData.find(
-        item => String(item.id) === String(id)
-    );
+    const hotel =
+        hotelsData.find(
+            item => String(item.id) === String(id)
+        );
 
     if (!hotel) {
-        showHotelMessage("Hotel could not be found.", "error");
+
+        showHotelMessage(
+            "Hotel could not be found.",
+            "error"
+        );
+
         return;
+
     }
 
     editingHotelId = hotel.id;
 
-    document.getElementById("hotelModalTitle").textContent =
-        "Edit Hotel";
+    document.getElementById("hotelModalTitle")
+        .textContent = "Edit Hotel";
 
-    document.getElementById("hotelId").value =
-        hotel.id || "";
+    document.getElementById("hotelId")
+        .value = hotel.id || "";
 
-    document.getElementById("hotelName").value =
-        hotel.hotel_name || "";
+    document.getElementById("hotelName")
+        .value = hotel.hotel_name || "";
 
-    document.getElementById("hotelLocation").value =
-        hotel.location || "";
+    document.getElementById("hotelLocation")
+        .value = hotel.location || "";
 
-    document.getElementById("hotelPhone").value =
-        hotel.phone || "";
+    document.getElementById("hotelPhone")
+        .value = hotel.phone || "";
 
-    document.getElementById("hotelEmail").value =
-        hotel.email || "";
+    document.getElementById("hotelEmail")
+        .value = hotel.email || "";
 
-    document.getElementById("hotelModal").style.display = "flex";
+    document.getElementById("subscriptionStart")
+        .value = hotel.subscription_start || "";
+
+    document.getElementById("subscriptionEnd")
+        .value = hotel.subscription_end || "";
+
+    document.getElementById("subscriptionStatus")
+        .value =
+            hotel.subscription_status || "active";
+
+    document.getElementById("hotelModal")
+        .style.display = "flex";
+
 }
 
 
@@ -665,16 +1130,9 @@ async function saveHotel(event) {
     event.preventDefault();
 
     const hotelName =
-        document.getElementById("hotelName").value.trim();
-
-    const location =
-        document.getElementById("hotelLocation").value.trim();
-
-    const phone =
-        document.getElementById("hotelPhone").value.trim();
-
-    const email =
-        document.getElementById("hotelEmail").value.trim();
+        document.getElementById("hotelName")
+        .value
+        .trim();
 
     if (!hotelName) {
 
@@ -684,13 +1142,40 @@ async function saveHotel(event) {
         );
 
         return;
+
     }
 
-    const hotelRecord = {
+    const record = {
+
         hotel_name: hotelName,
-        location: location,
-        phone: phone,
-        email: email
+
+        location:
+            document.getElementById("hotelLocation")
+            .value
+            .trim(),
+
+        phone:
+            document.getElementById("hotelPhone")
+            .value
+            .trim(),
+
+        email:
+            document.getElementById("hotelEmail")
+            .value
+            .trim(),
+
+        subscription_start:
+            document.getElementById("subscriptionStart")
+            .value || null,
+
+        subscription_end:
+            document.getElementById("subscriptionEnd")
+            .value || null,
+
+        subscription_status:
+            document.getElementById("subscriptionStatus")
+            .value
+
     };
 
     try {
@@ -699,22 +1184,24 @@ async function saveHotel(event) {
 
         if (editingHotelId) {
 
-            result = await supabaseClient
-                .from("hotels")
-                .update(hotelRecord)
-                .eq("id", editingHotelId);
+            result =
+                await supabaseClient
+                    .from("hotels")
+                    .update(record)
+                    .eq("id", editingHotelId);
 
         } else {
 
-            result = await supabaseClient
-                .from("hotels")
-                .insert([hotelRecord]);
+            result =
+                await supabaseClient
+                    .from("hotels")
+                    .insert([record]);
 
         }
 
         if (result.error) {
 
-            console.error("Save hotel error:", result.error);
+            console.error(result.error);
 
             showHotelMessage(
                 result.error.message,
@@ -722,6 +1209,7 @@ async function saveHotel(event) {
             );
 
             return;
+
         }
 
         closeHotelModal();
@@ -745,15 +1233,18 @@ async function saveHotel(event) {
             "Unable to save hotel.",
             "error"
         );
+
     }
+
 }
 
 
 function viewHotel(id) {
 
-    const hotel = hotelsData.find(
-        item => String(item.id) === String(id)
-    );
+    const hotel =
+        hotelsData.find(
+            item => String(item.id) === String(id)
+        );
 
     if (!hotel) {
 
@@ -763,12 +1254,14 @@ function viewHotel(id) {
         );
 
         return;
+
     }
 
-    const hotelName = hotel.hotel_name || "-";
-    const location = hotel.location || "-";
-    const phone = hotel.phone || "-";
-    const email = hotel.email || "-";
+    const status =
+        hotel.status || "active";
+
+    const subscription =
+        hotel.subscription_status || "active";
 
     document.getElementById("hotelDetails").innerHTML = `
 
@@ -779,45 +1272,91 @@ function viewHotel(id) {
 
         <p>
             <strong>Hotel Name:</strong>
-            ${escapeHotelHtml(hotelName)}
+            ${escapeHotelHtml(hotel.hotel_name || "-")}
         </p>
 
         <p>
             <strong>Location:</strong>
-            ${escapeHotelHtml(location)}
+            ${escapeHotelHtml(hotel.location || "-")}
         </p>
 
         <p>
             <strong>Phone:</strong>
-            ${escapeHotelHtml(phone)}
+            ${escapeHotelHtml(hotel.phone || "-")}
         </p>
 
         <p>
             <strong>Email:</strong>
-            ${escapeHotelHtml(email)}
+            ${escapeHotelHtml(hotel.email || "-")}
         </p>
 
         <p>
-            <strong>Status:</strong>
-            <span class="hotel-status">Active</span>
+            <strong>Hotel Status:</strong>
+            ${escapeHotelHtml(status)}
         </p>
+
+        <p>
+            <strong>Subscription Status:</strong>
+            ${escapeHotelHtml(subscription)}
+        </p>
+
+        <p>
+            <strong>Subscription Start:</strong>
+            ${escapeHotelHtml(
+                hotel.subscription_start || "-"
+            )}
+        </p>
+
+        <p>
+            <strong>Subscription End:</strong>
+            ${escapeHotelHtml(
+                hotel.subscription_end || "-"
+            )}
+        </p>
+
+        <p>
+            <strong>Warning Type:</strong>
+            ${escapeHotelHtml(
+                hotel.warning_type || "None"
+            )}
+        </p>
+
+        <p>
+            <strong>Warning Message:</strong>
+            ${escapeHotelHtml(
+                hotel.warning_message || "None"
+            )}
+        </p>
+
+        <p>
+            <strong>Module Restriction:</strong>
+            ${escapeHotelHtml(
+                hotel.module_restriction || "None"
+            )}
+        </p>
+
     `;
 
-    document.getElementById("viewHotelModal").style.display = "flex";
+    document.getElementById("viewHotelModal")
+        .style.display = "flex";
+
 }
 
 
 function closeViewHotelModal() {
 
-    document.getElementById("viewHotelModal").style.display = "none";
+    document.getElementById("viewHotelModal")
+        .style.display = "none";
+
 }
 
 
-async function deleteHotel(id) {
+function openIssueModal(id) {
 
-    const hotel = hotelsData.find(
-        item => String(item.id) === String(id)
-    );
+    const hotel =
+        hotelsData.find(
+            item => String(item.id) === String(id)
+        );
 
     if (!hotel) {
 
@@ -827,40 +1366,99 @@ async function deleteHotel(id) {
         );
 
         return;
+
     }
 
-    const hotelName =
-        hotel.hotel_name || "this hotel";
+    document.getElementById("issueHotelId")
+        .value = hotel.id;
 
-    const confirmed = confirm(
-        `Are you sure you want to delete "${hotelName}"?`
-    );
+    document.getElementById("warningType")
+        .value = hotel.warning_type || "";
 
-    if (!confirmed) {
-        return;
-    }
+    document.getElementById("warningMessage")
+        .value = hotel.warning_message || "";
+
+    document.getElementById("moduleRestriction")
+        .value = hotel.module_restriction || "";
+
+    document.getElementById("issueModal")
+        .style.display = "flex";
+
+}
+
+
+function closeIssueModal() {
+
+    document.getElementById("issueModal")
+        .style.display = "none";
+
+}
+
+
+async function saveHotelIssue() {
+
+    const id =
+        document.getElementById("issueHotelId")
+        .value;
+
+    const warningType =
+        document.getElementById("warningType")
+        .value;
+
+    const warningMessage =
+        document.getElementById("warningMessage")
+        .value
+        .trim();
+
+    const moduleRestriction =
+        document.getElementById("moduleRestriction")
+        .value;
 
     try {
 
-        const { error } = await supabaseClient
-            .from("hotels")
-            .delete()
-            .eq("id", id);
+        const { error } =
+            await supabaseClient
+                .from("hotels")
+                .update({
+
+                    warning:
+                        warningType || null,
+
+                    warning_type:
+                        warningType || null,
+
+                    warning_message:
+                        warningMessage || null,
+
+                    warning_active:
+                        Boolean(
+                            warningType ||
+                            warningMessage
+                        ),
+
+                    module_restriction:
+                        moduleRestriction || null
+
+                })
+                .eq("id", id);
 
         if (error) {
 
-            console.error("Delete hotel error:", error);
+            console.error(error);
 
             showHotelMessage(
-                "Unable to delete hotel: " + error.message,
+                error.message,
                 "error"
             );
 
             return;
+
         }
 
+        closeIssueModal();
+
         showHotelMessage(
-            "Hotel deleted successfully.",
+            "Hotel warning/restriction updated.",
             "success"
         );
 
@@ -871,16 +1469,222 @@ async function deleteHotel(id) {
         console.error(error);
 
         showHotelMessage(
-            "Unable to delete hotel.",
+            "Unable to update hotel issue.",
             "error"
         );
+
     }
+
+}
+
+
+function openSubscriptionModal(id) {
+
+    const hotel =
+        hotelsData.find(
+            item => String(item.id) === String(id)
+        );
+
+    if (!hotel) return;
+
+    document.getElementById("subscriptionHotelId")
+        .value = hotel.id;
+
+    document.getElementById("renewStart")
+        .value =
+            hotel.subscription_start ||
+            new Date().toISOString().split("T")[0];
+
+    document.getElementById("renewEnd")
+        .value =
+            hotel.subscription_end || "";
+
+    document.getElementById("subscriptionModal")
+        .style.display = "flex";
+
+}
+
+
+function closeSubscriptionModal() {
+
+    document.getElementById("subscriptionModal")
+        .style.display = "none";
+
+}
+
+
+async function renewSubscription() {
+
+    const id =
+        document.getElementById("subscriptionHotelId")
+        .value;
+
+    const start =
+        document.getElementById("renewStart")
+        .value;
+
+    const end =
+        document.getElementById("renewEnd")
+        .value;
+
+    if (!start || !end) {
+
+        showHotelMessage(
+            "Please enter both subscription dates.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    if (end < start) {
+
+        showHotelMessage(
+            "Subscription end date cannot be before the start date.",
+            "error"
+        );
+
+        return;
+
+    }
+
+    try {
+
+        const { error } =
+            await supabaseClient
+                .from("hotels")
+                .update({
+
+                    subscription_start: start,
+
+                    subscription_end: end,
+
+                    subscription_status: "active",
+
+                    status: "active"
+
+                })
+                .eq("id", id);
+
+        if (error) {
+
+            console.error(error);
+
+            showHotelMessage(
+                error.message,
+                "error"
+            );
+
+            return;
+
+        }
+
+        closeSubscriptionModal();
+
+        showHotelMessage(
+            "Subscription renewed and hotel activated.",
+            "success"
+        );
+
+        await loadHotels();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showHotelMessage(
+            "Unable to renew subscription.",
+            "error"
+        );
+
+    }
+
+}
+
+
+async function changeHotelStatus(id, newStatus) {
+
+    const hotel =
+        hotelsData.find(
+            item => String(item.id) === String(id)
+        );
+
+    if (!hotel) return;
+
+    const name =
+        hotel.hotel_name || "this hotel";
+
+    if (newStatus === "deactivated") {
+
+        const confirmed =
+            confirm(
+                `Deactivate "${name}"? Hotel users will later be blocked from accessing the system while the System Owner can still manage the hotel.`
+            );
+
+        if (!confirmed) return;
+
+    } else {
+
+        const confirmed =
+            confirm(
+                `Activate "${name}"?`
+            );
+
+        if (!confirmed) return;
+
+    }
+
+    try {
+
+        const { error } =
+            await supabaseClient
+                .from("hotels")
+                .update({
+                    status: newStatus
+                })
+                .eq("id", id);
+
+        if (error) {
+
+            console.error(error);
+
+            showHotelMessage(
+                error.message,
+                "error"
+            );
+
+            return;
+
+        }
+
+        showHotelMessage(
+            newStatus === "active"
+                ? "Hotel activated."
+                : "Hotel deactivated.",
+            "success"
+        );
+
+        await loadHotels();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showHotelMessage(
+            "Unable to change hotel status.",
+            "error"
+        );
+
+    }
+
 }
 
 
 function showHotelMessage(message, type) {
 
-    const box = document.getElementById("hotelMessage");
+    const box =
+        document.getElementById("hotelMessage");
 
     box.textContent = message;
 
@@ -894,6 +1698,7 @@ function showHotelMessage(message, type) {
         box.style.display = "none";
 
     }, 5000);
+
 }
 
 
@@ -905,6 +1710,7 @@ function escapeHotelHtml(value) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+
 }
 
 
@@ -916,12 +1722,26 @@ window.addEventListener("click", function(event) {
     const viewModal =
         document.getElementById("viewHotelModal");
 
+    const issueModal =
+        document.getElementById("issueModal");
+
+    const subscriptionModal =
+        document.getElementById("subscriptionModal");
+
     if (event.target === hotelModal) {
         closeHotelModal();
     }
 
     if (event.target === viewModal) {
         closeViewHotelModal();
+    }
+
+    if (event.target === issueModal) {
+        closeIssueModal();
+    }
+
+    if (event.target === subscriptionModal) {
+        closeSubscriptionModal();
     }
 
 });
