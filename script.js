@@ -3250,4 +3250,382 @@ function attachRoomButtons() {
             }
         );
 
-}
+}```javascript
+/* ============================================================
+   GLOBAL ROLE-BASED SIDEBAR CONTROL
+   EDU TECH HOTEL MANAGEMENT SYSTEM
+   ============================================================
+
+   This runs on EVERY page that loads script.js.
+
+   Receptionist:
+   Dashboard
+   Rooms
+   Guests
+   Reservations
+   Check-in
+   Check-out
+   Payments
+   Reports
+
+   Manager:
+   All hotel operational modules except Hotels management
+
+   Hotel Owner:
+   All hotel operational modules except Hotels management
+
+   System Owner:
+   All modules including Hotels
+   ============================================================ */
+
+(function () {
+
+    const ROLE_PERMISSIONS = {
+
+        system_owner: [
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings",
+            "hotels"
+        ],
+
+        hotel_owner: [
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings"
+        ],
+
+        manager: [
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings"
+        ],
+
+        receptionist: [
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "payments",
+            "reports"
+        ]
+
+    };
+
+
+    function getCurrentUserRole() {
+
+        let role =
+            sessionStorage.getItem("userRole") ||
+            localStorage.getItem("userRole") ||
+            "";
+
+        return String(role)
+            .toLowerCase()
+            .trim();
+    }
+
+
+    function getModuleFromLink(link) {
+
+        const href =
+            link.getAttribute("href") || "";
+
+        const cleanHref =
+            href
+                .split("?")[0]
+                .split("#")[0]
+                .toLowerCase()
+                .trim();
+
+
+        if (cleanHref.includes("rooms.html")) {
+            return "rooms";
+        }
+
+        if (cleanHref.includes("guests.html")) {
+            return "guests";
+        }
+
+        if (cleanHref.includes("reservations.html")) {
+            return "reservations";
+        }
+
+        if (cleanHref.includes("checkin.html")) {
+            return "checkin";
+        }
+
+        if (cleanHref.includes("checkout.html")) {
+            return "checkout";
+        }
+
+        if (cleanHref.includes("restaurant.html")) {
+            return "restaurant";
+        }
+
+        if (cleanHref.includes("inventory.html")) {
+            return "inventory";
+        }
+
+        if (cleanHref.includes("payments.html")) {
+            return "payments";
+        }
+
+        if (cleanHref.includes("expenses.html")) {
+            return "expenses";
+        }
+
+        if (cleanHref.includes("employees.html")) {
+            return "employees";
+        }
+
+        if (cleanHref.includes("housekeeping.html")) {
+            return "housekeeping";
+        }
+
+        if (cleanHref.includes("maintenance.html")) {
+            return "maintenance";
+        }
+
+        if (cleanHref.includes("reports.html")) {
+            return "reports";
+        }
+
+        if (cleanHref.includes("settings.html")) {
+            return "settings";
+        }
+
+        if (cleanHref.includes("hotels.html")) {
+            return "hotels";
+        }
+
+        return null;
+    }
+
+
+    function applyGlobalRoleSidebar() {
+
+        const role =
+            getCurrentUserRole();
+
+
+        /*
+         -------------------------------------------------------
+         If there is no role yet, do not change the sidebar.
+         This prevents the page from disappearing while the
+         login/profile information is still loading.
+         -------------------------------------------------------
+        */
+
+        if (!role) {
+            return;
+        }
+
+
+        const allowedModules =
+            ROLE_PERMISSIONS[role];
+
+
+        /*
+         -------------------------------------------------------
+         Unknown role:
+         Hide protected module links rather than showing
+         everything.
+         -------------------------------------------------------
+        */
+
+        if (!allowedModules) {
+
+            document
+                .querySelectorAll(".sidebar nav a")
+                .forEach(function (link) {
+
+                    const module =
+                        getModuleFromLink(link);
+
+
+                    if (module) {
+
+                        link.style.display =
+                            "none";
+
+                    }
+
+                });
+
+            return;
+        }
+
+
+        /*
+         -------------------------------------------------------
+         Apply permissions to EVERY sidebar link.
+         -------------------------------------------------------
+        */
+
+        document
+            .querySelectorAll(".sidebar nav a")
+            .forEach(function (link) {
+
+                const module =
+                    getModuleFromLink(link);
+
+
+                /*
+                 Dashboard is always allowed.
+                */
+
+                if (
+                    link.href.toLowerCase()
+                    .includes("index.html")
+                    ||
+                    link.getAttribute("href") === "./"
+                    ||
+                    link.getAttribute("href") === "/"
+                ) {
+
+                    link.style.display = "";
+                    return;
+
+                }
+
+
+                /*
+                 If the link is not one of the protected
+                 modules, leave its appearance unchanged.
+                */
+
+                if (!module) {
+                    return;
+                }
+
+
+                /*
+                 Show only modules allowed for this role.
+                */
+
+                if (
+                    allowedModules.includes(module)
+                ) {
+
+                    link.style.display = "";
+
+                } else {
+
+                    link.style.display =
+                        "none";
+
+                }
+
+            });
+
+
+        console.log(
+            "Global sidebar permissions applied for role:",
+            role
+        );
+
+    }
+
+
+    /*
+     -----------------------------------------------------------
+     Run immediately if the page has already loaded.
+     -----------------------------------------------------------
+    */
+
+    applyGlobalRoleSidebar();
+
+
+    /*
+     -----------------------------------------------------------
+     Run again when the page DOM is ready.
+     -----------------------------------------------------------
+    */
+
+    if (
+        document.readyState === "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            applyGlobalRoleSidebar
+        );
+
+    } else {
+
+        applyGlobalRoleSidebar();
+
+    }
+
+
+    /*
+     -----------------------------------------------------------
+     Small retry period.
+
+     This is important because some pages load the user's
+     role/profile slightly after the HTML appears.
+
+     It does NOT change the page design.
+     -----------------------------------------------------------
+    */
+
+    let sidebarAttempts = 0;
+
+    const sidebarTimer =
+        setInterval(function () {
+
+            applyGlobalRoleSidebar();
+
+            sidebarAttempts++;
+
+
+            if (
+                sidebarAttempts >= 10
+            ) {
+
+                clearInterval(
+                    sidebarTimer
+                );
+
+            }
+
+        }, 500);
+
+
+})();
+```
