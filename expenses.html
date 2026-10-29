@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Expenses - EDU TECH Hotel Management System</title>
+
     <link rel="stylesheet" href="./style.css">
 
     <style>
@@ -34,37 +37,62 @@
 
 <div class="app">
 
+    <!-- SIDEBAR -->
     <aside class="sidebar">
 
         <h2>EDU TECH</h2>
-        <p class="system-title">Hotel Management</p>
+
+        <p class="system-title">
+            Hotel Management
+        </p>
 
         <nav>
+
             <a href="./index.html">Dashboard</a>
+
             <a href="./rooms.html">Rooms</a>
+
             <a href="./guests.html">Guests</a>
+
             <a href="./reservations.html">Reservations</a>
+
             <a href="./checkin.html">Check-in</a>
+
             <a href="./checkout.html">Check-out</a>
+
             <a href="./restaurant.html">Restaurant</a>
+
             <a href="./inventory.html">Inventory</a>
+
             <a href="./payments.html">Payments</a>
-            <a href="./expenses.html" class="active">Expenses</a>
+
+            <a href="./expenses.html" class="active">
+                Expenses
+            </a>
+
             <a href="./employees.html">Employees</a>
+
             <a href="./housekeeping.html">Housekeeping</a>
+
             <a href="./maintenance.html">Maintenance</a>
+
             <a href="./reports.html">Reports</a>
+
             <a href="./settings.html">Settings</a>
+
         </nav>
 
     </aside>
 
 
+    <!-- MAIN CONTENT -->
     <main class="main-content">
 
         <header class="topbar">
 
-            <h1>Expenses</h1>
+            <h1>
+                Expenses
+            </h1>
 
             <div class="user-info">
                 Administrator
@@ -78,9 +106,17 @@
             <div class="page-header">
 
                 <div>
-                    <h2>Expense Management</h2>
-                    <p>Record and manage hotel expenses.</p>
+
+                    <h2>
+                        Expense Management
+                    </h2>
+
+                    <p>
+                        Record and manage hotel expenses.
+                    </p>
+
                 </div>
+
 
                 <button
                     type="button"
@@ -94,31 +130,64 @@
             </div>
 
 
+            <!-- SUMMARY -->
             <div class="summary-grid">
 
                 <div class="summary-card">
-                    <h3>Total Expenses</h3>
-                    <strong id="totalExpenses">0</strong>
+
+                    <h3>
+                        Total Expenses
+                    </h3>
+
+                    <strong id="totalExpenses">
+                        0
+                    </strong>
+
                 </div>
 
-                <div class="summary-card">
-                    <h3>Paid</h3>
-                    <strong id="paidExpenses">0</strong>
-                </div>
 
                 <div class="summary-card">
-                    <h3>Pending</h3>
-                    <strong id="pendingExpenses">0</strong>
+
+                    <h3>
+                        Paid
+                    </h3>
+
+                    <strong id="paidExpenses">
+                        0
+                    </strong>
+
                 </div>
 
+
                 <div class="summary-card">
-                    <h3>Total Amount</h3>
-                    <strong id="expenseTotal">KSh 0</strong>
+
+                    <h3>
+                        Pending
+                    </h3>
+
+                    <strong id="pendingExpenses">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>
+                        Total Amount
+                    </h3>
+
+                    <strong id="expenseTotal">
+                        KSh 0
+                    </strong>
+
                 </div>
 
             </div>
 
 
+            <!-- EXPENSE TABLE -->
             <div class="table-card">
 
                 <div class="table-tools">
@@ -129,12 +198,24 @@
                         placeholder="Search expenses..."
                     >
 
+
                     <select id="expenseFilter">
 
-                        <option value="All">All Status</option>
-                        <option value="Paid">Paid</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Cancelled">Cancelled</option>
+                        <option value="All">
+                            All Status
+                        </option>
+
+                        <option value="Paid">
+                            Paid
+                        </option>
+
+                        <option value="Pending">
+                            Pending
+                        </option>
+
+                        <option value="Cancelled">
+                            Cancelled
+                        </option>
 
                     </select>
 
@@ -148,19 +229,47 @@
                         <thead>
 
                             <tr>
-                                <th>Expense ID</th>
-                                <th>Date</th>
-                                <th>Category</th>
-                                <th>Description</th>
-                                <th>Amount</th>
-                                <th>Payment Method</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+
+                                <th>
+                                    Expense ID
+                                </th>
+
+                                <th>
+                                    Date
+                                </th>
+
+                                <th>
+                                    Category
+                                </th>
+
+                                <th>
+                                    Description
+                                </th>
+
+                                <th>
+                                    Amount
+                                </th>
+
+                                <th>
+                                    Payment Method
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Actions
+                                </th>
+
                             </tr>
 
                         </thead>
 
-                        <tbody id="expenseTable"></tbody>
+
+                        <tbody id="expenseTable">
+
+                        </tbody>
 
                     </table>
 
@@ -187,6 +296,7 @@
                 New Expense
             </h2>
 
+
             <button
                 type="button"
                 class="close-btn"
@@ -203,12 +313,15 @@
 
             <div class="form-group">
 
-                <label for="expenseDate">Date</label>
+                <label for="expenseDate">
+                    Date
+                </label>
 
                 <input
                     type="date"
                     id="expenseDate"
-                    required>
+                    required
+                >
 
             </div>
 
@@ -227,15 +340,41 @@
                         Select Category
                     </option>
 
-                    <option value="Utilities">Utilities</option>
-                    <option value="Food Supplies">Food Supplies</option>
-                    <option value="Maintenance">Maintenance</option>
-                    <option value="Salaries">Salaries</option>
-                    <option value="Transport">Transport</option>
-                    <option value="Cleaning">Cleaning</option>
-                    <option value="Security">Security</option>
-                    <option value="Marketing">Marketing</option>
-                    <option value="Other">Other</option>
+                    <option value="Utilities">
+                        Utilities
+                    </option>
+
+                    <option value="Food Supplies">
+                        Food Supplies
+                    </option>
+
+                    <option value="Maintenance">
+                        Maintenance
+                    </option>
+
+                    <option value="Salaries">
+                        Salaries
+                    </option>
+
+                    <option value="Transport">
+                        Transport
+                    </option>
+
+                    <option value="Cleaning">
+                        Cleaning
+                    </option>
+
+                    <option value="Security">
+                        Security
+                    </option>
+
+                    <option value="Marketing">
+                        Marketing
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
 
                 </select>
 
@@ -252,7 +391,8 @@
                     type="text"
                     id="expenseDescription"
                     placeholder="Enter expense description"
-                    required>
+                    required
+                >
 
             </div>
 
@@ -269,7 +409,8 @@
                     min="0"
                     step="0.01"
                     placeholder="Enter amount"
-                    required>
+                    required
+                >
 
             </div>
 
@@ -288,11 +429,25 @@
                         Select Payment Method
                     </option>
 
-                    <option value="Cash">Cash</option>
-                    <option value="M-Pesa">M-Pesa</option>
-                    <option value="Bank">Bank</option>
-                    <option value="Card">Card</option>
-                    <option value="Other">Other</option>
+                    <option value="Cash">
+                        Cash
+                    </option>
+
+                    <option value="M-Pesa">
+                        M-Pesa
+                    </option>
+
+                    <option value="Bank">
+                        Bank
+                    </option>
+
+                    <option value="Card">
+                        Card
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
 
                 </select>
 
@@ -309,9 +464,17 @@
                     id="expenseStatus"
                     required>
 
-                    <option value="Paid">Paid</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Cancelled">Cancelled</option>
+                    <option value="Paid">
+                        Paid
+                    </option>
+
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="Cancelled">
+                        Cancelled
+                    </option>
 
                 </select>
 
@@ -328,6 +491,7 @@
                     Cancel
 
                 </button>
+
 
                 <button
                     type="submit"
@@ -346,9 +510,12 @@
 </div>
 
 
+<!-- EXPENSE JAVASCRIPT -->
+
 <script>
 
-const EXPENSE_STORAGE_KEY = "eduTechExpenses";
+const EXPENSE_STORAGE_KEY =
+    "eduTechExpenses";
 
 let editingExpenseID = null;
 
@@ -360,16 +527,22 @@ let editingExpenseID = null;
 function getStoredExpenses() {
 
     const saved =
-        localStorage.getItem(EXPENSE_STORAGE_KEY);
+        localStorage.getItem(
+            EXPENSE_STORAGE_KEY
+        );
 
     if (!saved) {
         return [];
     }
 
     try {
+
         return JSON.parse(saved);
+
     } catch (error) {
+
         return [];
+
     }
 
 }
@@ -392,14 +565,20 @@ function saveExpenses(expenses) {
 function showExpenseForm() {
 
     const modal =
-        document.getElementById("expenseModal");
+        document.getElementById(
+            "expenseModal"
+        );
 
     const form =
-        document.getElementById("expenseForm");
+        document.getElementById(
+            "expenseForm"
+        );
+
 
     form.reset();
 
     editingExpenseID = null;
+
 
     document.getElementById(
         "expenseModalTitle"
@@ -430,12 +609,15 @@ function showExpenseForm() {
     document.getElementById(
         "expenseDate"
     ).value =
-        year + "-" +
-        month + "-" +
+        year +
+        "-" +
+        month +
+        "-" +
         day;
 
 
-    modal.style.display = "flex";
+    modal.style.display =
+        "flex";
 
 }
 
@@ -476,12 +658,17 @@ function createExpenseID() {
 
 
     while (
-        expenses.some(function(expense) {
-            return expense.id === id;
-        })
+        expenses.some(
+            function(expense) {
+
+                return expense.id === id;
+
+            }
+        )
     ) {
 
         number++;
+
 
         id =
             "EXP-" +
@@ -514,76 +701,126 @@ function displayExpenses() {
     table.innerHTML = "";
 
 
-    expenses.forEach(function(expense) {
+    if (expenses.length === 0) {
 
-        const row =
-            document.createElement("tr");
+        table.innerHTML = `
 
+            <tr>
 
-        row.dataset.id =
-            expense.id;
+                <td
+                    colspan="8"
+                    style="
+                        text-align:center;
+                        padding:25px;
+                    "
+                >
 
+                    No expenses recorded.
 
-        row.dataset.status =
-            expense.status;
+                </td>
 
-
-        row.dataset.amount =
-            expense.amount;
-
-
-        row.innerHTML = `
-
-            <td>${expense.id}</td>
-
-            <td>${expense.date}</td>
-
-            <td>${expense.category}</td>
-
-            <td>${expense.description}</td>
-
-            <td>
-                KSh ${Number(expense.amount).toLocaleString()}
-            </td>
-
-            <td>${expense.method}</td>
-
-            <td>
-
-                <span class="status ${expense.status.toLowerCase()}">
-                    ${expense.status}
-                </span>
-
-            </td>
-
-            <td>
-
-                <button
-                    type="button"
-                    class="action-btn"
-                    onclick="editExpense(this)">
-
-                    Edit
-
-                </button>
-
-                <button
-                    type="button"
-                    class="action-btn delete"
-                    onclick="deleteExpense(this)">
-
-                    Delete
-
-                </button>
-
-            </td>
+            </tr>
 
         `;
 
+    }
 
-        table.appendChild(row);
 
-    });
+    expenses.forEach(
+        function(expense) {
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.dataset.id =
+                expense.id;
+
+
+            row.dataset.status =
+                expense.status;
+
+
+            row.dataset.amount =
+                expense.amount;
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${expense.id}
+                </td>
+
+                <td>
+                    ${expense.date}
+                </td>
+
+                <td>
+                    ${expense.category}
+                </td>
+
+                <td>
+                    ${expense.description}
+                </td>
+
+                <td>
+                    KSh ${Number(
+                        expense.amount
+                    ).toLocaleString()}
+                </td>
+
+                <td>
+                    ${expense.method}
+                </td>
+
+                <td>
+
+                    <span
+                        class="status ${String(
+                            expense.status
+                        ).toLowerCase()}"
+                    >
+
+                        ${expense.status}
+
+                    </span>
+
+                </td>
+
+                <td>
+
+                    <button
+                        type="button"
+                        class="action-btn"
+                        onclick="editExpense(this)"
+                    >
+
+                        Edit
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="action-btn delete"
+                        onclick="deleteExpense(this)"
+                    >
+
+                        Delete
+
+                    </button>
+
+                </td>
+
+            `;
+
+
+            table.appendChild(row);
+
+        }
+    );
 
 
     updateExpenseSummary();
@@ -594,7 +831,7 @@ function displayExpenses() {
 
 
 /* ================================
-   UPDATE SUMMARY
+   SUMMARY
 ================================ */
 
 function updateExpenseSummary() {
@@ -603,40 +840,50 @@ function updateExpenseSummary() {
         getStoredExpenses();
 
 
-    let paid =
-        0;
+    let paid = 0;
 
-    let pending =
-        0;
+    let pending = 0;
 
-    let total =
-        0;
+    let total = 0;
 
 
-    expenses.forEach(function(expense) {
+    expenses.forEach(
+        function(expense) {
 
-        if (expense.status === "Paid") {
+            if (
+                expense.status ===
+                "Paid"
+            ) {
 
-            paid++;
+                paid++;
+
+            }
+
+
+            if (
+                expense.status ===
+                "Pending"
+            ) {
+
+                pending++;
+
+            }
+
+
+            if (
+                expense.status !==
+                "Cancelled"
+            ) {
+
+                total +=
+                    Number(
+                        expense.amount
+                    ) || 0;
+
+            }
 
         }
-
-
-        if (expense.status === "Pending") {
-
-            pending++;
-
-        }
-
-
-        if (expense.status !== "Cancelled") {
-
-            total +=
-                Number(expense.amount) || 0;
-
-        }
-
-    });
+    );
 
 
     document.getElementById(
@@ -731,8 +978,10 @@ document.getElementById(
                 expenses.findIndex(
                     function(expense) {
 
-                        return expense.id ===
-                            editingExpenseID;
+                        return (
+                            expense.id ===
+                            editingExpenseID
+                        );
 
                     }
                 );
@@ -742,13 +991,26 @@ document.getElementById(
 
                 expenses[index] = {
 
-                    id: editingExpenseID,
-                    date: date,
-                    category: category,
-                    description: description,
-                    amount: amount,
-                    method: method,
-                    status: status
+                    id:
+                        editingExpenseID,
+
+                    date:
+                        date,
+
+                    category:
+                        category,
+
+                    description:
+                        description,
+
+                    amount:
+                        amount,
+
+                    method:
+                        method,
+
+                    status:
+                        status
 
                 };
 
@@ -763,20 +1025,36 @@ document.getElementById(
 
             expenses.push({
 
-                id: createExpenseID(),
-                date: date,
-                category: category,
-                description: description,
-                amount: amount,
-                method: method,
-                status: status
+                id:
+                    createExpenseID(),
+
+                date:
+                    date,
+
+                category:
+                    category,
+
+                description:
+                    description,
+
+                amount:
+                    amount,
+
+                method:
+                    method,
+
+                status:
+                    status
 
             });
 
         }
 
 
-        saveExpenses(expenses);
+        saveExpenses(
+            expenses
+        );
+
 
         displayExpenses();
 
@@ -808,8 +1086,10 @@ function editExpense(button) {
         expenses.find(
             function(item) {
 
-                return item.id ===
-                    editingExpenseID;
+                return (
+                    item.id ===
+                    editingExpenseID
+                );
 
             }
         );
@@ -903,14 +1183,19 @@ function deleteExpense(button) {
         expenses.filter(
             function(expense) {
 
-                return expense.id !==
-                    expenseID;
+                return (
+                    expense.id !==
+                    expenseID
+                );
 
             }
         );
 
 
-    saveExpenses(expenses);
+    saveExpenses(
+        expenses
+    );
+
 
     displayExpenses();
 
@@ -957,11 +1242,14 @@ function applyExpenseFilters() {
 
 
             const status =
-                row.dataset.status || "";
+                row.dataset.status ||
+                "";
 
 
             const matchesSearch =
-                text.includes(search);
+                text.includes(
+                    search
+                );
 
 
             const matchesFilter =
@@ -972,8 +1260,8 @@ function applyExpenseFilters() {
             row.style.display =
                 matchesSearch &&
                 matchesFilter
-                ? ""
-                : "none";
+                    ? ""
+                    : "none";
 
         }
     );
@@ -1035,7 +1323,9 @@ document.getElementById(
     "click",
     function(event) {
 
-        if (event.target === this) {
+        if (
+            event.target === this
+        ) {
 
             hideExpenseForm();
 
@@ -1046,12 +1336,409 @@ document.getElementById(
 
 
 /* ================================
-   START PAGE
+   INITIAL LOAD
 ================================ */
 
 displayExpenses();
 
 </script>
 
+
+<!-- ROLE CONTROL -->
+
+<script>
+
+(function () {
+
+    "use strict";
+
+
+    const ROLE_PERMISSIONS = {
+
+        system_owner: [
+
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings",
+            "hotels"
+
+        ],
+
+
+        hotel_owner: [
+
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings"
+
+        ],
+
+
+        manager: [
+
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings"
+
+        ],
+
+
+        receptionist: [
+
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "payments",
+            "reports"
+
+        ]
+
+    };
+
+
+    /* ================================
+       GET CURRENT ROLE
+    ================================= */
+
+    function getRole() {
+
+        let role =
+            sessionStorage.getItem(
+                "userRole"
+            );
+
+
+        if (!role) {
+
+            role =
+                localStorage.getItem(
+                    "userRole"
+                );
+
+        }
+
+
+        return String(
+            role || ""
+        )
+        .toLowerCase()
+        .trim();
+
+    }
+
+
+    /* ================================
+       GET MODULE FROM LINK
+    ================================= */
+
+    function getModuleFromLink(link) {
+
+        const href =
+            String(
+                link.getAttribute(
+                    "href"
+                ) || ""
+            )
+            .toLowerCase()
+            .split("?")[0]
+            .split("#")[0]
+            .trim();
+
+
+        if (
+
+            href === "./" ||
+            href === "/" ||
+            href === "index.html" ||
+            href === "./index.html" ||
+            href.endsWith(
+                "/index.html"
+            )
+
+        ) {
+
+            return "dashboard";
+
+        }
+
+
+        const modules = [
+
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings",
+            "hotels"
+
+        ];
+
+
+        for (
+            let i = 0;
+            i < modules.length;
+            i++
+        ) {
+
+            if (
+                href.includes(
+                    modules[i] +
+                    ".html"
+                )
+            ) {
+
+                return modules[i];
+
+            }
+
+        }
+
+
+        return null;
+
+    }
+
+
+    /* ================================
+       CURRENT MODULE
+    ================================= */
+
+    function getCurrentModule() {
+
+        const filename =
+            window.location.pathname
+            .split("/")
+            .pop()
+            .toLowerCase();
+
+
+        if (
+            !filename ||
+            filename ===
+            "index.html"
+        ) {
+
+            return "dashboard";
+
+        }
+
+
+        return filename.replace(
+            ".html",
+            ""
+        );
+
+    }
+
+
+    /* ================================
+       HIDE UNAUTHORIZED LINKS
+    ================================= */
+
+    function applyRoleControl() {
+
+        const role =
+            getRole();
+
+
+        if (!role) {
+            return;
+        }
+
+
+        const allowed =
+            ROLE_PERMISSIONS[role];
+
+
+        if (!allowed) {
+            return;
+        }
+
+
+        document
+            .querySelectorAll(
+                ".sidebar nav a"
+            )
+            .forEach(
+                function(link) {
+
+                    const module =
+                        getModuleFromLink(
+                            link
+                        );
+
+
+                    if (!module) {
+                        return;
+                    }
+
+
+                    if (
+                        allowed.includes(
+                            module
+                        )
+                    ) {
+
+                        link.style.removeProperty(
+                            "display"
+                        );
+
+                    } else {
+
+                        link.style.setProperty(
+                            "display",
+                            "none",
+                            "important"
+                        );
+
+                    }
+
+                }
+            );
+
+    }
+
+
+    /* ================================
+       PROTECT DIRECT PAGE ACCESS
+    ================================= */
+
+    function protectPage() {
+
+        const role =
+            getRole();
+
+
+        if (!role) {
+            return;
+        }
+
+
+        const allowed =
+            ROLE_PERMISSIONS[role];
+
+
+        if (!allowed) {
+            return;
+        }
+
+
+        const currentModule =
+            getCurrentModule();
+
+
+        if (
+            !allowed.includes(
+                currentModule
+            )
+        ) {
+
+            window.location.href =
+                "./index.html";
+
+        }
+
+    }
+
+
+    /* ================================
+       RUN ROLE CONTROL
+    ================================= */
+
+    function runRoleControl() {
+
+        applyRoleControl();
+
+        protectPage();
+
+    }
+
+
+    if (
+        document.readyState ===
+        "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            runRoleControl
+        );
+
+    } else {
+
+        runRoleControl();
+
+    }
+
+
+    /*
+       Re-apply the sidebar control
+       periodically so other scripts
+       cannot restore hidden links.
+    */
+
+    setInterval(
+        applyRoleControl,
+        500
+    );
+
+
+    window.applyRoleControl =
+        applyRoleControl;
+
+
+})();
+
+</script>
+
 </body>
+
 </html>
