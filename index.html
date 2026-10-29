@@ -80,6 +80,10 @@
             border-radius: 6px;
             display: none;
         }
+
+        .system-owner-hotel-link {
+            display: none;
+        }
     </style>
 </head>
 
@@ -96,6 +100,14 @@
 
             <a href="./index.html" class="active">
                 🏠 Dashboard
+            </a>
+
+            <a
+                href="./hotels.html"
+                id="hotelsNavigation"
+                class="system-owner-hotel-link"
+            >
+                🏨 Hotels
             </a>
 
             <a href="./rooms.html">
@@ -167,7 +179,7 @@
 
                 <h1>Dashboard</h1>
 
-                <p>
+                <p id="dashboardWelcomeMessage">
                     Welcome to EDU TECH Hotel Management System
                 </p>
 
@@ -199,15 +211,11 @@
         </header>
 
 
-        <!-- ERROR MESSAGE -->
-
         <div
             id="dashboardError"
             class="dashboard-error"
         ></div>
 
-
-        <!-- DASHBOARD CARDS -->
 
         <section class="cards">
 
@@ -301,8 +309,6 @@
         </section>
 
 
-        <!-- ROOM STATUS -->
-
         <section class="dashboard-section">
 
             <div class="table-container">
@@ -322,25 +328,15 @@
 
                         <tr>
 
-                            <th>
-                                Room
-                            </th>
+                            <th>Room</th>
 
-                            <th>
-                                Type
-                            </th>
+                            <th>Type</th>
 
-                            <th>
-                                Price
-                            </th>
+                            <th>Price</th>
 
-                            <th>
-                                Status
-                            </th>
+                            <th>Status</th>
 
-                            <th>
-                                Guest
-                            </th>
+                            <th>Guest</th>
 
                         </tr>
 
@@ -366,8 +362,6 @@
         </section>
 
 
-        <!-- TODAY'S ACTIVITY -->
-
         <section class="dashboard-section">
 
             <div class="table-container">
@@ -387,25 +381,15 @@
 
                         <tr>
 
-                            <th>
-                                Guest
-                            </th>
+                            <th>Guest</th>
 
-                            <th>
-                                Room
-                            </th>
+                            <th>Room</th>
 
-                            <th>
-                                Check-in
-                            </th>
+                            <th>Check-in</th>
 
-                            <th>
-                                Check-out
-                            </th>
+                            <th>Check-out</th>
 
-                            <th>
-                                Status
-                            </th>
+                            <th>Status</th>
 
                         </tr>
 
@@ -433,63 +417,48 @@
     </main>
 
 
-    <!-- SUPABASE JAVASCRIPT LIBRARY -->
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-
-    <!-- OUR SUPABASE CONNECTION -->
 
     <script src="./supabase.js"></script>
 
 
     <script>
 
-        /*
-        =====================================================
-        GLOBAL VARIABLES
-        =====================================================
-        */
-
         let currentUser = null;
         let currentProfile = null;
         let currentHotel = null;
 
 
-        /*
-        =====================================================
-        HELPER: TODAY
-        =====================================================
-        */
-
         function getToday() {
 
             const date = new Date();
 
-            const year = date.getFullYear();
+            const year =
+                date.getFullYear();
 
-            const month = String(
-                date.getMonth() + 1
-            ).padStart(2, "0");
+            const month =
+                String(
+                    date.getMonth() + 1
+                ).padStart(2, "0");
 
-            const day = String(
-                date.getDate()
-            ).padStart(2, "0");
+            const day =
+                String(
+                    date.getDate()
+                ).padStart(2, "0");
 
             return `${year}-${month}-${day}`;
         }
 
 
-        /*
-        =====================================================
-        HELPER: ESCAPE HTML
-        =====================================================
-        */
-
         function escapeHtml(value) {
 
-            if (value === null || value === undefined) {
+            if (
+                value === null ||
+                value === undefined
+            ) {
+
                 return "";
+
             }
 
             return String(value)
@@ -501,39 +470,32 @@
         }
 
 
-        /*
-        =====================================================
-        HELPER: SHOW ERROR
-        =====================================================
-        */
-
         function showDashboardError(message) {
 
             const errorBox =
-                document.getElementById("dashboardError");
+                document.getElementById(
+                    "dashboardError"
+                );
 
-            errorBox.textContent = message;
+            errorBox.textContent =
+                message;
 
-            errorBox.style.display = "block";
+            errorBox.style.display =
+                "block";
         }
 
-
-        /*
-        =====================================================
-        HELPER: HOTEL FILTER
-        =====================================================
-        */
 
         function applyHotelFilter(query) {
 
             if (
                 currentProfile &&
-                currentProfile.role === "system_owner"
+                currentProfile.role ===
+                    "system_owner"
             ) {
 
                 return query;
-
             }
+
 
             if (
                 currentProfile &&
@@ -544,38 +506,28 @@
                     "hotel_id",
                     currentProfile.hotel_id
                 );
-
             }
+
 
             return query;
         }
 
 
-        /*
-        =====================================================
-        CHECK PASSWORD RECOVERY
-        =====================================================
-        */
-
         supabaseClient.auth.onAuthStateChange(
-            function (event) {
+            function(event) {
 
-                if (event === "PASSWORD_RECOVERY") {
+                if (
+                    event ===
+                    "PASSWORD_RECOVERY"
+                ) {
 
                     window.location.href =
                         "reset-password.html";
-
                 }
 
             }
         );
 
-
-        /*
-        =====================================================
-        LOAD CURRENT USER
-        =====================================================
-        */
 
         async function loadCurrentUser() {
 
@@ -602,12 +554,6 @@
             currentUser =
                 sessionData.session.user;
 
-
-            /*
-            -------------------------------------------------
-            LOAD PROFILE
-            -------------------------------------------------
-            */
 
             const {
                 data: profile,
@@ -643,16 +589,11 @@
                 profile;
 
 
-            /*
-            -------------------------------------------------
-            SAVE SESSION INFORMATION
-            -------------------------------------------------
-            */
-
             sessionStorage.setItem(
                 "userRole",
                 profile.role
             );
+
 
             sessionStorage.setItem(
                 "userName",
@@ -676,12 +617,6 @@
             }
 
 
-            /*
-            -------------------------------------------------
-            DISPLAY USER
-            -------------------------------------------------
-            */
-
             document.getElementById(
                 "dashboardUserName"
             ).textContent =
@@ -694,52 +629,56 @@
                 profile.role;
 
 
-            /*
-            -------------------------------------------------
-            SYSTEM OWNER DOES NOT REQUIRE HOTEL
-            -------------------------------------------------
-            */
+            const hotelsNavigation =
+                document.getElementById(
+                    "hotelsNavigation"
+                );
+
 
             if (
-                profile.role === "system_owner"
+                profile.role ===
+                "system_owner"
             ) {
+
+                hotelsNavigation.style.display =
+                    "block";
+
 
                 document.getElementById(
                     "dashboardHotelName"
                 ).textContent =
                     "All Hotels";
 
+
                 document.getElementById(
                     "dashboardHotelLocation"
                 ).textContent =
                     "";
 
+
+                document.getElementById(
+                    "dashboardWelcomeMessage"
+                ).textContent =
+                    "Welcome to EDU TECH Hotel Management System — All Hotels";
+
+
                 return true;
             }
 
 
-            /*
-            -------------------------------------------------
-            OTHER USERS MUST HAVE A HOTEL
-            -------------------------------------------------
-            */
+            hotelsNavigation.style.display =
+                "none";
+
 
             if (!profile.hotel_id) {
 
-                await supabaseClient.auth.signOut();
-
-                window.location.href =
-                    "login.html";
+                showDashboardError(
+                    "Your account has not been assigned to a hotel yet."
+                );
 
                 return false;
             }
 
-
-            /*
-            -------------------------------------------------
-            LOAD HOTEL
-            -------------------------------------------------
-            */
 
             const {
                 data: hotel,
@@ -774,6 +713,12 @@
                 hotel;
 
 
+            sessionStorage.setItem(
+                "hotelName",
+                hotel.hotel_name
+            );
+
+
             document.getElementById(
                 "dashboardHotelName"
             ).textContent =
@@ -784,19 +729,22 @@
                 "dashboardHotelLocation"
             ).textContent =
                 hotel.location
-                    ? " — " + hotel.location
+                    ? " — " +
+                      hotel.location
                     : "";
+
+
+            document.getElementById(
+                "dashboardWelcomeMessage"
+            ).textContent =
+                "Welcome to " +
+                hotel.hotel_name +
+                " Management System";
 
 
             return true;
         }
 
-
-        /*
-        =====================================================
-        LOAD ROOMS
-        =====================================================
-        */
 
         async function loadRooms() {
 
@@ -846,7 +794,7 @@
 
 
             roomList.forEach(
-                function (room) {
+                function(room) {
 
                     const status =
                         String(
@@ -855,29 +803,29 @@
 
 
                     if (
-                        status === "occupied"
+                        status ===
+                        "occupied"
                     ) {
 
                         occupiedRooms++;
-
                     }
 
 
                     if (
-                        status === "available"
+                        status ===
+                        "available"
                     ) {
 
                         availableRooms++;
-
                     }
 
 
                     if (
-                        status === "maintenance"
+                        status ===
+                        "maintenance"
                     ) {
 
                         maintenanceRooms++;
-
                     }
 
                 }
@@ -914,15 +862,7 @@
         }
 
 
-        /*
-        =====================================================
-        DISPLAY ROOM TABLE
-        =====================================================
-        */
-
-        async function displayRoomTable(
-            rooms
-        ) {
+        async function displayRoomTable(rooms) {
 
             const roomTable =
                 document.getElementById(
@@ -973,7 +913,6 @@
 
                     statusClass =
                         "status-occupied";
-
                 }
 
 
@@ -984,7 +923,6 @@
 
                     statusClass =
                         "status-maintenance";
-
                 }
 
 
@@ -995,18 +933,11 @@
 
                     statusClass =
                         "status-cleaning";
-
                 }
 
 
                 let guestName = "-";
 
-
-                /*
-                -------------------------------------------------
-                FIND ACTIVE RESERVATION / GUEST
-                -------------------------------------------------
-                */
 
                 if (
                     statusLower ===
@@ -1017,15 +948,7 @@
                         supabaseClient
                             .from("reservations")
                             .select(
-                                `
-                                id,
-                                guest_id,
-                                room_id,
-                                check_in,
-                                check_out,
-                                status,
-                                guests(full_name)
-                                `
+                                "id, guest_id, room_id, check_in, check_out, status"
                             )
                             .eq(
                                 "room_id",
@@ -1056,9 +979,23 @@
 
                     const {
                         data:
-                            reservations
+                            reservations,
+                        error:
+                            reservationError
                     } =
                         await reservationQuery;
+
+
+                    if (
+                        reservationError
+                    ) {
+
+                        console.error(
+                            "Unable to load room reservation:",
+                            reservationError
+                        );
+
+                    }
 
 
                     if (
@@ -1071,14 +1008,31 @@
 
 
                         if (
-                            reservation.guests
+                            reservation.guest_id
                         ) {
 
-                            guestName =
-                                reservation
-                                    .guests
-                                    .full_name ||
-                                "-";
+                            const {
+                                data:
+                                    guest
+                            } =
+                                await supabaseClient
+                                    .from("guests")
+                                    .select(
+                                        "id, full_name"
+                                    )
+                                    .eq(
+                                        "id",
+                                        reservation.guest_id
+                                    )
+                                    .maybeSingle();
+
+
+                            if (guest) {
+
+                                guestName =
+                                    guest.full_name ||
+                                    "-";
+                            }
 
                         }
 
@@ -1136,12 +1090,6 @@
         }
 
 
-        /*
-        =====================================================
-        LOAD TODAY'S REVENUE
-        =====================================================
-        */
-
         async function loadTodayRevenue() {
 
             const today =
@@ -1186,7 +1134,7 @@
 
 
             (data || []).forEach(
-                function (payment) {
+                function(payment) {
 
                     revenue +=
                         Number(
@@ -1207,12 +1155,6 @@
             return revenue;
         }
 
-
-        /*
-        =====================================================
-        LOAD TODAY'S EXPENSES
-        =====================================================
-        */
 
         async function loadTodayExpenses() {
 
@@ -1258,7 +1200,7 @@
 
 
             (data || []).forEach(
-                function (expense) {
+                function(expense) {
 
                     expenses +=
                         Number(
@@ -1280,30 +1222,28 @@
         }
 
 
-        /*
-        =====================================================
-        LOAD TODAY'S BOOKINGS
-        =====================================================
-        */
-
         async function loadTodayBookings() {
 
             const today =
                 getToday();
+
 
             let query =
                 supabaseClient
                     .from("reservations")
                     .select("*");
 
+
             query =
                 applyHotelFilter(query);
+
 
             const {
                 data,
                 error
             } =
                 await query;
+
 
             if (error) {
 
@@ -1315,73 +1255,111 @@
                 return 0;
             }
 
+
             const bookings =
                 (data || []).filter(
-                    function (reservation) {
+                    function(reservation) {
 
                         const checkInKey =
-                            Object.keys(reservation).find(
-                                function (key) {
-                                    return key
-                                        .replace(/\s+/g, "")
-                                        .toLowerCase() === "checkindate"
-                                        || key
-                                        .replace(/\s+/g, "")
-                                        .toLowerCase() === "checkin";
+                            Object.keys(
+                                reservation
+                            ).find(
+                                function(key) {
+
+                                    const name =
+                                        key
+                                            .replace(
+                                                /\s+/g,
+                                                ""
+                                            )
+                                            .toLowerCase();
+
+
+                                    return (
+                                        name ===
+                                            "checkindate" ||
+                                        name ===
+                                            "checkin"
+                                    );
                                 }
                             );
+
 
                         const statusKey =
-                            Object.keys(reservation).find(
-                                function (key) {
-                                    return key
-                                        .replace(/\s+/g, "")
-                                        .toLowerCase() === "status";
+                            Object.keys(
+                                reservation
+                            ).find(
+                                function(key) {
+
+                                    const name =
+                                        key
+                                            .replace(
+                                                /\s+/g,
+                                                ""
+                                            )
+                                            .toLowerCase();
+
+
+                                    return (
+                                        name ===
+                                        "status"
+                                    );
                                 }
                             );
 
+
                         return (
-                            reservation[checkInKey] === today &&
+                            reservation[
+                                checkInKey
+                            ] === today &&
                             String(
-                                reservation[statusKey] || ""
-                            ).toLowerCase() !== "cancelled"
+                                reservation[
+                                    statusKey
+                                ] || ""
+                            ).toLowerCase() !==
+                                "cancelled"
                         );
+
                     }
                 ).length;
+
 
             document.getElementById(
                 "dashboardBookings"
             ).textContent =
                 bookings;
 
+
             return bookings;
         }
 
-
-        /*
-        =====================================================
-        LOAD TODAY'S ACTIVITY
-        =====================================================
-        */
 
         async function loadTodayActivity() {
 
             const today =
                 getToday();
 
+
             let reservationQuery =
                 supabaseClient
                     .from("reservations")
                     .select("*");
 
+
             reservationQuery =
-                applyHotelFilter(reservationQuery);
+                applyHotelFilter(
+                    reservationQuery
+                );
+
 
             const {
-                data: allReservations,
-                error: reservationError
+                data:
+                    allReservations,
+                error:
+                    reservationError
             } =
                 await reservationQuery;
+
 
             if (reservationError) {
 
@@ -1393,94 +1371,86 @@
                 return;
             }
 
+
             const reservations =
                 (allReservations || [])
-                    .filter(function (reservation) {
+                    .filter(
+                        function(reservation) {
 
-                        const checkInKey =
-                            Object.keys(reservation).find(
-                                function (key) {
-                                    const name =
-                                        key
-                                            .replace(/\s+/g, "")
-                                            .toLowerCase();
+                            const checkInKey =
+                                Object.keys(
+                                    reservation
+                                ).find(
+                                    function(key) {
 
-                                    return (
-                                        name === "checkindate" ||
-                                        name === "checkin"
-                                    );
-                                }
+                                        const name =
+                                            key
+                                                .replace(
+                                                    /\s+/g,
+                                                    ""
+                                                )
+                                                .toLowerCase();
+
+
+                                        return (
+                                            name ===
+                                                "checkindate" ||
+                                            name ===
+                                                "checkin"
+                                        );
+
+                                    }
+                                );
+
+
+                            const checkOutKey =
+                                Object.keys(
+                                    reservation
+                                ).find(
+                                    function(key) {
+
+                                        const name =
+                                            key
+                                                .replace(
+                                                    /\s+/g,
+                                                    ""
+                                                )
+                                                .toLowerCase();
+
+
+                                        return (
+                                            name ===
+                                                "checkoutdate" ||
+                                            name ===
+                                                "checkout"
+                                        );
+
+                                    }
+                                );
+
+
+                            return (
+                                reservation[
+                                    checkInKey
+                                ] === today ||
+                                reservation[
+                                    checkOutKey
+                                ] === today
                             );
 
-                        const checkOutKey =
-                            Object.keys(reservation).find(
-                                function (key) {
-                                    const name =
-                                        key
-                                            .replace(/\s+/g, "")
-                                            .toLowerCase();
+                        }
+                    );
 
-                                    return (
-                                        name === "checkoutdate" ||
-                                        name === "checkout"
-                                    );
-                                }
-                            );
-
-                        return (
-                            reservation[checkInKey] === today ||
-                            reservation[checkOutKey] === today
-                        );
-
-                    })
-                    .sort(function (a, b) {
-
-                        const aKey =
-                            Object.keys(a).find(
-                                function (key) {
-                                    const name =
-                                        key
-                                            .replace(/\s+/g, "")
-                                            .toLowerCase();
-
-                                    return (
-                                        name === "checkindate" ||
-                                        name === "checkin"
-                                    );
-                                }
-                            );
-
-                        const bKey =
-                            Object.keys(b).find(
-                                function (key) {
-                                    const name =
-                                        key
-                                            .replace(/\s+/g, "")
-                                            .toLowerCase();
-
-                                    return (
-                                        name === "checkindate" ||
-                                        name === "checkin"
-                                    );
-                                }
-                            );
-
-                        return String(
-                            a[aKey] || ""
-                        ).localeCompare(
-                            String(
-                                b[bKey] || ""
-                            )
-                        );
-
-                    });
 
             const activityTable =
                 document.getElementById(
                     "dashboardActivityTable"
                 );
 
-            if (reservations.length === 0) {
+
+            if (
+                reservations.length === 0
+            ) {
 
                 activityTable.innerHTML = `
                     <tr>
@@ -1493,71 +1463,119 @@
                 return;
             }
 
-            const getReservationKey =
-                function (reservation, wanted) {
 
-                    return Object.keys(reservation).find(
-                        function (key) {
+            const getReservationKey =
+                function(
+                    reservation,
+                    wanted
+                ) {
+
+                    return Object.keys(
+                        reservation
+                    ).find(
+                        function(key) {
 
                             const name =
                                 key
-                                    .replace(/\s+/g, "")
+                                    .replace(
+                                        /\s+/g,
+                                        ""
+                                    )
                                     .toLowerCase();
 
-                            return name === wanted;
+
+                            return (
+                                name === wanted
+                            );
+
                         }
                     );
+
                 };
 
+
             const guestIds =
-                [...new Set(
-                    reservations
-                        .map(function (reservation) {
+                [
+                    ...new Set(
+                        reservations
+                            .map(
+                                function(
+                                    reservation
+                                ) {
 
-                            const key =
-                                getReservationKey(
-                                    reservation,
-                                    "guestid"
-                                );
+                                    const key =
+                                        getReservationKey(
+                                            reservation,
+                                            "guestid"
+                                        );
 
-                            return key
-                                ? reservation[key]
-                                : null;
-                        })
-                        .filter(Boolean)
-                )];
+
+                                    return key
+                                        ? reservation[
+                                            key
+                                        ]
+                                        : null;
+
+                                }
+                            )
+                            .filter(Boolean)
+                    )
+                ];
+
 
             const roomIds =
-                [...new Set(
-                    reservations
-                        .map(function (reservation) {
+                [
+                    ...new Set(
+                        reservations
+                            .map(
+                                function(
+                                    reservation
+                                ) {
 
-                            const key =
-                                getReservationKey(
-                                    reservation,
-                                    "roomid"
-                                );
+                                    const key =
+                                        getReservationKey(
+                                            reservation,
+                                            "roomid"
+                                        );
 
-                            return key
-                                ? reservation[key]
-                                : null;
-                        })
-                        .filter(Boolean)
-                )];
+
+                                    return key
+                                        ? reservation[
+                                            key
+                                        ]
+                                        : null;
+
+                                }
+                            )
+                            .filter(Boolean)
+                    )
+                ];
+
 
             let guests = [];
             let rooms = [];
 
-            if (guestIds.length > 0) {
+
+            if (
+                guestIds.length > 0
+            ) {
 
                 const {
-                    data: guestData,
-                    error: guestError
+                    data:
+                        guestData,
+                    error:
+                        guestError
                 } =
                     await supabaseClient
                         .from("guests")
-                        .select("id, full_name")
-                        .in("id", guestIds);
+                        .select(
+                            "id, full_name"
+                        )
+                        .in(
+                            "id",
+                            guestIds
+                        );
+
 
                 if (guestError) {
 
@@ -1569,19 +1587,32 @@
                     return;
                 }
 
-                guests = guestData || [];
+
+                guests =
+                    guestData || [];
             }
 
-            if (roomIds.length > 0) {
+
+            if (
+                roomIds.length > 0
+            ) {
 
                 const {
-                    data: roomData,
-                    error: roomError
+                    data:
+                        roomData,
+                    error:
+                        roomError
                 } =
                     await supabaseClient
                         .from("rooms")
-                        .select("id, room_number")
-                        .in("id", roomIds);
+                        .select(
+                            "id, room_number"
+                        )
+                        .in(
+                            "id",
+                            roomIds
+                        );
+
 
                 if (roomError) {
 
@@ -1593,31 +1624,47 @@
                     return;
                 }
 
-                rooms = roomData || [];
+
+                rooms =
+                    roomData || [];
             }
+
 
             const guestMap = {};
 
+
             guests.forEach(
-                function (guest) {
-                    guestMap[guest.id] =
+                function(guest) {
+
+                    guestMap[
+                        guest.id
+                    ] =
                         guest.full_name;
+
                 }
             );
+
 
             const roomMap = {};
 
+
             rooms.forEach(
-                function (room) {
-                    roomMap[room.id] =
+                function(room) {
+
+                    roomMap[
+                        room.id
+                    ] =
                         room.room_number;
+
                 }
             );
 
+
             activityTable.innerHTML = "";
 
+
             reservations.forEach(
-                function (reservation) {
+                function(reservation) {
 
                     const guestKey =
                         getReservationKey(
@@ -1625,11 +1672,13 @@
                             "guestid"
                         );
 
+
                     const roomKey =
                         getReservationKey(
                             reservation,
                             "roomid"
                         );
+
 
                     const checkInKey =
                         getReservationKey(
@@ -1641,6 +1690,7 @@
                             "checkin"
                         );
 
+
                     const checkOutKey =
                         getReservationKey(
                             reservation,
@@ -1651,33 +1701,51 @@
                             "checkout"
                         );
 
+
                     const statusKey =
                         getReservationKey(
                             reservation,
                             "status"
                         );
 
+
                     const guestId =
                         guestKey
-                            ? reservation[guestKey]
+                            ? reservation[
+                                guestKey
+                            ]
                             : null;
+
 
                     const roomId =
                         roomKey
-                            ? reservation[roomKey]
+                            ? reservation[
+                                roomKey
+                            ]
                             : null;
+
 
                     const guestName =
                         guestId &&
-                        guestMap[guestId]
-                            ? guestMap[guestId]
+                        guestMap[
+                            guestId
+                        ]
+                            ? guestMap[
+                                guestId
+                            ]
                             : "-";
+
 
                     const roomNumber =
                         roomId &&
-                        roomMap[roomId]
-                            ? roomMap[roomId]
+                        roomMap[
+                            roomId
+                        ]
+                            ? roomMap[
+                                roomId
+                            ]
                             : "-";
+
 
                     activityTable.innerHTML += `
 
@@ -1698,7 +1766,9 @@
                             <td>
                                 ${escapeHtml(
                                     checkInKey
-                                        ? reservation[checkInKey]
+                                        ? reservation[
+                                            checkInKey
+                                        ]
                                         : ""
                                 )}
                             </td>
@@ -1706,19 +1776,27 @@
                             <td>
                                 ${escapeHtml(
                                     checkOutKey
-                                        ? reservation[checkOutKey]
+                                        ? reservation[
+                                            checkOutKey
+                                        ]
                                         : ""
                                 )}
                             </td>
 
                             <td>
+
                                 <span class="status">
+
                                     ${escapeHtml(
                                         statusKey
-                                            ? reservation[statusKey]
+                                            ? reservation[
+                                                statusKey
+                                            ]
                                             : ""
                                     )}
+
                                 </span>
+
                             </td>
 
                         </tr>
@@ -1728,12 +1806,6 @@
             );
         }
 
-
-        /*
-        =====================================================
-        LOAD PROFIT
-        =====================================================
-        */
 
         async function loadProfit() {
 
@@ -1745,21 +1817,13 @@
                 await loadTodayExpenses();
 
 
-            const safeRevenue =
+            const profit =
                 Number(
                     revenue || 0
-                );
-
-
-            const safeExpenses =
+                ) -
                 Number(
                     expenses || 0
                 );
-
-
-            const profit =
-                safeRevenue -
-                safeExpenses;
 
 
             document.getElementById(
@@ -1769,12 +1833,6 @@
                 profit.toLocaleString();
         }
 
-
-        /*
-        =====================================================
-        LOAD ENTIRE DASHBOARD
-        =====================================================
-        */
 
         async function loadDashboard() {
 
@@ -1797,12 +1855,6 @@
             await loadTodayActivity();
         }
 
-
-        /*
-        =====================================================
-        START DASHBOARD
-        =====================================================
-        */
 
         loadDashboard();
 
