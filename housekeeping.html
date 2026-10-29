@@ -3,166 +3,471 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Housekeeping - EDU TECH Hotel Management System</title>
+
     <link rel="stylesheet" href="./style.css">
+
+    <style>
+
+        /* =====================================================
+           SIDEBAR ROLE CONTROL
+           ===================================================== */
+
+        .sidebar {
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 250px !important;
+            height: 100vh !important;
+            z-index: 999999 !important;
+            overflow-y: auto !important;
+        }
+
+        .sidebar a {
+            display: block !important;
+            cursor: pointer !important;
+        }
+
+        .sidebar a.role-hidden {
+            display: none !important;
+        }
+
+        .main-content {
+            margin-left: 250px !important;
+            position: relative;
+        }
+
+        /* =====================================================
+           ACCESS DENIED SCREEN
+           ===================================================== */
+
+        #accessDeniedScreen {
+            display: none;
+            min-height: calc(100vh - 100px);
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .access-denied-card {
+            width: 100%;
+            max-width: 650px;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 45px 35px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            border: 1px solid #e5e5e5;
+        }
+
+        .access-denied-icon {
+            width: 75px;
+            height: 75px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: #fff1f1;
+            color: #c62828;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+        }
+
+        .access-denied-card h2 {
+            margin: 0 0 12px;
+            color: #c62828;
+        }
+
+        .access-denied-card p {
+            color: #555;
+            line-height: 1.7;
+            margin: 8px 0;
+        }
+
+        .access-denied-back {
+            margin-top: 25px;
+            display: inline-block;
+            padding: 11px 22px;
+            background: #333;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .access-denied-back:hover {
+            opacity: 0.9;
+        }
+
+    </style>
+
 </head>
 
 <body>
 
 <div class="dashboard">
 
-    <!-- SIDEBAR -->
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
+
     <aside class="sidebar">
 
         <div class="logo">
+
             <h2>EDU TECH</h2>
+
             <p>Hotel Management</p>
+
         </div>
+
 
         <nav class="sidebar-nav">
 
-            <a href="./index.html">🏠 Dashboard</a>
-            <a href="./rooms.html">🛏️ Rooms</a>
-            <a href="./guests.html">👤 Guests</a>
-            <a href="./reservations.html">📅 Reservations</a>
-            <a href="./checkin.html">🛎️ Check-in</a>
-            <a href="./checkout.html">🚪 Check-out</a>
-            <a href="./restaurant.html">🍽️ Restaurant</a>
-            <a href="./inventory.html">📦 Inventory</a>
-            <a href="./payments.html">💰 Payments</a>
-            <a href="./expenses.html">💸 Expenses</a>
-            <a href="./employees.html">👨‍💼 Employees</a>
-            <a href="./housekeeping.html" class="active">🧹 Housekeeping</a>
-            <a href="./maintenance.html">🔧 Maintenance</a>
-            <a href="./reports.html">📊 Reports</a>
-            <a href="./settings.html">⚙️ Settings</a>
+            <a href="./index.html"
+               data-module="dashboard">
+                🏠 Dashboard
+            </a>
+
+            <a href="./rooms.html"
+               data-module="rooms">
+                🛏️ Rooms
+            </a>
+
+            <a href="./guests.html"
+               data-module="guests">
+                👤 Guests
+            </a>
+
+            <a href="./reservations.html"
+               data-module="reservations">
+                📅 Reservations
+            </a>
+
+            <a href="./checkin.html"
+               data-module="checkin">
+                🛎️ Check-in
+            </a>
+
+            <a href="./checkout.html"
+               data-module="checkout">
+                🚪 Check-out
+            </a>
+
+            <a href="./restaurant.html"
+               data-module="restaurant">
+                🍽️ Restaurant
+            </a>
+
+            <a href="./inventory.html"
+               data-module="inventory">
+                📦 Inventory
+            </a>
+
+            <a href="./payments.html"
+               data-module="payments">
+                💰 Payments
+            </a>
+
+            <a href="./expenses.html"
+               data-module="expenses">
+                💸 Expenses
+            </a>
+
+            <a href="./employees.html"
+               data-module="employees">
+                👨‍💼 Employees
+            </a>
+
+            <a href="./housekeeping.html"
+               data-module="housekeeping"
+               class="active">
+                🧹 Housekeeping
+            </a>
+
+            <a href="./maintenance.html"
+               data-module="maintenance">
+                🔧 Maintenance
+            </a>
+
+            <a href="./reports.html"
+               data-module="reports">
+                📊 Reports
+            </a>
+
+            <a href="./settings.html"
+               data-module="settings">
+                ⚙️ Settings
+            </a>
 
         </nav>
 
     </aside>
 
 
-    <!-- MAIN CONTENT -->
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
+
     <main class="main-content">
 
         <!-- TOP BAR -->
+
         <header class="topbar">
 
             <div>
+
                 <h1>Housekeeping</h1>
-                <p>Manage room cleaning and housekeeping tasks</p>
+
+                <p>
+                    Manage room cleaning and housekeeping tasks
+                </p>
+
             </div>
 
-            <button class="primary-btn" onclick="openHousekeepingForm()">
+
+            <button
+                class="primary-btn"
+                onclick="openHousekeepingForm()">
+
                 + Add Housekeeping Task
+
             </button>
 
         </header>
 
 
-        <!-- SUMMARY CARDS -->
-        <section class="summary-grid">
+        <!-- =================================================
+             NORMAL HOUSEKEEPING CONTENT
+             ================================================= -->
 
-            <div class="summary-card">
-                <h3>Total Tasks</h3>
-                <strong id="totalTasks">0</strong>
-            </div>
-
-            <div class="summary-card">
-                <h3>Pending</h3>
-                <strong id="pendingTasks">0</strong>
-            </div>
-
-            <div class="summary-card">
-                <h3>In Progress</h3>
-                <strong id="inProgressTasks">0</strong>
-            </div>
-
-            <div class="summary-card">
-                <h3>Completed</h3>
-                <strong id="completedTasks">0</strong>
-            </div>
-
-        </section>
+        <div id="housekeepingModuleContent">
 
 
-        <!-- SEARCH AND FILTER -->
-        <section class="content-card">
+            <!-- SUMMARY CARDS -->
 
-            <div class="section-header">
+            <section class="summary-grid">
 
-                <div>
-                    <h2>Housekeeping Tasks</h2>
-                    <p>View and manage room cleaning tasks</p>
-                </div>
+                <div class="summary-card">
 
-                <div class="filters">
+                    <h3>Total Tasks</h3>
 
-                    <input
-                        type="text"
-                        id="housekeepingSearch"
-                        placeholder="Search room or staff..."
-                        onkeyup="searchHousekeeping()"
-                    >
-
-                    <select
-                        id="housekeepingFilter"
-                        onchange="filterHousekeeping()"
-                    >
-                        <option value="all">All Status</option>
-                        <option value="Pending">Pending</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Completed">Completed</option>
-                    </select>
+                    <strong id="totalTasks">
+                        0
+                    </strong>
 
                 </div>
 
+
+                <div class="summary-card">
+
+                    <h3>Pending</h3>
+
+                    <strong id="pendingTasks">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>In Progress</h3>
+
+                    <strong id="inProgressTasks">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>Completed</h3>
+
+                    <strong id="completedTasks">
+                        0
+                    </strong>
+
+                </div>
+
+            </section>
+
+
+            <!-- SEARCH AND FILTER -->
+
+            <section class="content-card">
+
+                <div class="section-header">
+
+                    <div>
+
+                        <h2>
+                            Housekeeping Tasks
+                        </h2>
+
+                        <p>
+                            View and manage room cleaning tasks
+                        </p>
+
+                    </div>
+
+
+                    <div class="filters">
+
+                        <input
+                            type="text"
+                            id="housekeepingSearch"
+                            placeholder="Search room or staff..."
+                            onkeyup="searchHousekeeping()"
+                        >
+
+
+                        <select
+                            id="housekeepingFilter"
+                            onchange="filterHousekeeping()">
+
+                            <option value="all">
+                                All Status
+                            </option>
+
+                            <option value="Pending">
+                                Pending
+                            </option>
+
+                            <option value="In Progress">
+                                In Progress
+                            </option>
+
+                            <option value="Completed">
+                                Completed
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TABLE -->
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Room</th>
+
+                                <th>Task</th>
+
+                                <th>Staff</th>
+
+                                <th>Date</th>
+
+                                <th>Status</th>
+
+                                <th>Actions</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="housekeepingTableBody">
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- =================================================
+             ACCESS DENIED SCREEN
+             ================================================= -->
+
+        <div id="accessDeniedScreen">
+
+            <div class="access-denied-card">
+
+                <div class="access-denied-icon">
+                    🔒
+                </div>
+
+
+                <h2>
+                    Access Restricted
+                </h2>
+
+
+                <p>
+                    You do not have permission to access
+                    the Housekeeping module.
+                </p>
+
+
+                <p>
+                    Please contact your hotel administrator
+                    if you believe you should have access.
+                </p>
+
+
+                <a
+                    href="./index.html"
+                    class="access-denied-back">
+
+                    Return to Dashboard
+
+                </a>
+
             </div>
 
-
-            <!-- TABLE -->
-            <div class="table-container">
-
-                <table>
-
-                    <thead>
-                        <tr>
-                            <th>Room</th>
-                            <th>Task</th>
-                            <th>Staff</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="housekeepingTableBody">
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </section>
+        </div>
 
     </main>
 
 </div>
 
 
-<!-- HOUSEKEEPING MODAL -->
-<div id="housekeepingModal" class="modal">
+<!-- =========================================================
+     HOUSEKEEPING MODAL
+     ========================================================= -->
+
+<div
+    id="housekeepingModal"
+    class="modal">
 
     <div class="modal-content">
 
         <div class="modal-header">
 
             <div>
-                <h2>Add Housekeeping Task</h2>
-                <p>Create a new room cleaning task</p>
+
+                <h2>
+                    Add Housekeeping Task
+                </h2>
+
+                <p>
+                    Create a new room cleaning task
+                </p>
+
             </div>
 
-            <span class="close" onclick="closeHousekeepingForm()">&times;</span>
+
+            <span
+                class="close"
+                onclick="closeHousekeepingForm()">
+
+                &times;
+
+            </span>
 
         </div>
 
@@ -170,6 +475,7 @@
         <form id="housekeepingForm">
 
             <div class="form-grid">
+
 
                 <div class="form-group">
 
@@ -193,7 +499,9 @@
                         Task
                     </label>
 
-                    <select id="housekeepingTask" required>
+                    <select
+                        id="housekeepingTask"
+                        required>
 
                         <option value="">
                             Select Task
@@ -261,7 +569,9 @@
                         Status
                     </label>
 
-                    <select id="housekeepingStatus" required>
+                    <select
+                        id="housekeepingStatus"
+                        required>
 
                         <option value="Pending">
                             Pending
@@ -287,16 +597,19 @@
                 <button
                     type="button"
                     class="secondary-btn"
-                    onclick="closeHousekeepingForm()"
-                >
+                    onclick="closeHousekeepingForm()">
+
                     Cancel
+
                 </button>
+
 
                 <button
                     type="submit"
-                    class="primary-btn"
-                >
+                    class="primary-btn">
+
                     Save Task
+
                 </button>
 
             </div>
@@ -310,159 +623,738 @@
 
 <script>
 
+/* =========================================================
+   ROLE PERMISSIONS
+   ========================================================= */
+
+const ROLE_PERMISSIONS = {
+
+    system_owner: [
+        "dashboard",
+        "rooms",
+        "guests",
+        "reservations",
+        "checkin",
+        "checkout",
+        "restaurant",
+        "inventory",
+        "payments",
+        "expenses",
+        "employees",
+        "housekeeping",
+        "maintenance",
+        "reports",
+        "settings",
+        "hotels"
+    ],
+
+    hotel_owner: [
+        "dashboard",
+        "rooms",
+        "guests",
+        "reservations",
+        "checkin",
+        "checkout",
+        "restaurant",
+        "inventory",
+        "payments",
+        "expenses",
+        "employees",
+        "housekeeping",
+        "maintenance",
+        "reports",
+        "settings"
+    ],
+
+    manager: [
+        "dashboard",
+        "rooms",
+        "guests",
+        "reservations",
+        "checkin",
+        "checkout",
+        "restaurant",
+        "inventory",
+        "payments",
+        "expenses",
+        "employees",
+        "housekeeping",
+        "maintenance",
+        "reports",
+        "settings"
+    ],
+
+    receptionist: [
+        "dashboard",
+        "rooms",
+        "guests",
+        "reservations",
+        "checkin",
+        "checkout",
+        "payments",
+        "reports"
+    ]
+
+};
+
+
+/* =========================================================
+   GET CURRENT ROLE
+   ========================================================= */
+
+function getCurrentRole() {
+
+    let role =
+        sessionStorage.getItem(
+            "userRole"
+        );
+
+
+    if (!role) {
+
+        role =
+            localStorage.getItem(
+                "userRole"
+            );
+
+    }
+
+
+    return String(
+        role || ""
+    )
+    .toLowerCase()
+    .trim();
+
+}
+
+
+/* =========================================================
+   GET MODULE FROM LINK
+   ========================================================= */
+
+function getModuleFromLink(link) {
+
+    const href =
+        String(
+            link.getAttribute("href") || ""
+        )
+        .toLowerCase()
+        .split("?")[0]
+        .split("#")[0]
+        .trim();
+
+
+    if (
+        href === "./" ||
+        href === "/" ||
+        href === "index.html" ||
+        href === "./index.html" ||
+        href.endsWith("/index.html")
+    ) {
+
+        return "dashboard";
+
+    }
+
+
+    const modules = [
+
+        "rooms",
+        "guests",
+        "reservations",
+        "checkin",
+        "checkout",
+        "restaurant",
+        "inventory",
+        "payments",
+        "expenses",
+        "employees",
+        "housekeeping",
+        "maintenance",
+        "reports",
+        "settings",
+        "hotels"
+
+    ];
+
+
+    for (
+        let i = 0;
+        i < modules.length;
+        i++
+    ) {
+
+        if (
+            href.includes(
+                modules[i] + ".html"
+            )
+        ) {
+
+            return modules[i];
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =========================================================
+   GET CURRENT PAGE MODULE
+   ========================================================= */
+
+function getCurrentModule() {
+
+    const filename =
+        window.location.pathname
+            .split("/")
+            .pop()
+            .toLowerCase();
+
+
+    if (
+        !filename ||
+        filename === "index.html"
+    ) {
+
+        return "dashboard";
+
+    }
+
+
+    return filename.replace(
+        ".html",
+        ""
+    );
+
+}
+
+
+/* =========================================================
+   APPLY SIDEBAR ROLE CONTROL
+   ========================================================= */
+
+function applyRoleControl() {
+
+    const role =
+        getCurrentRole();
+
+
+    if (!role) {
+
+        return;
+
+    }
+
+
+    const allowed =
+        ROLE_PERMISSIONS[role];
+
+
+    if (!allowed) {
+
+        return;
+
+    }
+
+
+    document
+        .querySelectorAll(".sidebar a")
+        .forEach(function(link) {
+
+            const module =
+                getModuleFromLink(link);
+
+
+            if (!module) {
+
+                return;
+
+            }
+
+
+            if (
+                allowed.includes(module)
+            ) {
+
+                link.style.removeProperty(
+                    "display"
+                );
+
+            } else {
+
+                link.style.setProperty(
+                    "display",
+                    "none",
+                    "important"
+                );
+
+            }
+
+        });
+
+}
+
+
+/* =========================================================
+   PROTECT DIRECT PAGE ACCESS
+   ========================================================= */
+
+function protectHousekeepingPage() {
+
+    const role =
+        getCurrentRole();
+
+
+    if (!role) {
+
+        return;
+
+    }
+
+
+    const allowed =
+        ROLE_PERMISSIONS[role];
+
+
+    if (!allowed) {
+
+        return;
+
+    }
+
+
+    const currentModule =
+        getCurrentModule();
+
+
+    if (
+        !allowed.includes(
+            currentModule
+        )
+    ) {
+
+        window.location.href =
+            "./index.html";
+
+    }
+
+}
+
+
+/* =========================================================
+   RUN ROLE CONTROL
+   ========================================================= */
+
+function runRoleControl() {
+
+    applyRoleControl();
+
+    protectHousekeepingPage();
+
+}
+
+
+/* =========================================================
+   START ROLE CONTROL
+   ========================================================= */
+
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        runRoleControl
+    );
+
+} else {
+
+    runRoleControl();
+
+}
+
+
+/*
+ Keep checking because login/session
+ values may be written shortly after
+ page loading.
+*/
+
+setInterval(
+    applyRoleControl,
+    500
+);
+
+
+/*
+ Make function available globally.
+*/
+
+window.applyRoleControl =
+    applyRoleControl;
+
+
+/* =========================================================
+   HOUSEKEEPING DATA
+   ========================================================= */
+
 let housekeepingTasks = [];
 
 let editingHousekeepingIndex = -1;
 
 
-/* OPEN FORM */
+/* =========================================================
+   CHECK HOUSEKEEPING ACCESS
+   ========================================================= */
 
-function openHousekeepingForm() {
+function housekeepingAccessAllowed() {
 
-    document.getElementById("housekeepingModal").style.display = "flex";
-
-    document.getElementById("housekeepingForm").reset();
-
-    editingHousekeepingIndex = -1;
-
-    document.getElementById("housekeepingDate").value =
-        new Date().toISOString().split("T")[0];
-}
+    const role =
+        getCurrentRole();
 
 
-/* CLOSE FORM */
-
-function closeHousekeepingForm() {
-
-    document.getElementById("housekeepingModal").style.display = "none";
-
-    document.getElementById("housekeepingForm").reset();
-
-    editingHousekeepingIndex = -1;
-}
+    const allowed =
+        ROLE_PERMISSIONS[role] || [];
 
 
-/* SAVE TASK */
+    if (
+        !allowed.includes(
+            "housekeeping"
+        )
+    ) {
 
-document.getElementById("housekeepingForm").addEventListener("submit", function(event) {
+        alert(
+            "You do not have permission to access the Housekeeping module."
+        );
 
-    event.preventDefault();
-
-    const room =
-        document.getElementById("housekeepingRoom").value.trim();
-
-    const task =
-        document.getElementById("housekeepingTask").value;
-
-    const staff =
-        document.getElementById("housekeepingStaff").value.trim();
-
-    const date =
-        document.getElementById("housekeepingDate").value;
-
-    const status =
-        document.getElementById("housekeepingStatus").value;
-
-
-    const newTask = {
-        room: room,
-        task: task,
-        staff: staff,
-        date: date,
-        status: status
-    };
-
-
-    if (editingHousekeepingIndex === -1) {
-
-        housekeepingTasks.push(newTask);
-
-    } else {
-
-        housekeepingTasks[editingHousekeepingIndex] = newTask;
+        return false;
 
     }
 
 
-    displayHousekeepingTasks();
+    return true;
 
-    closeHousekeepingForm();
-
-    alert("Housekeeping task saved successfully.");
-
-});
+}
 
 
-/* DISPLAY TASKS */
+/* =========================================================
+   OPEN FORM
+   ========================================================= */
+
+function openHousekeepingForm() {
+
+    if (
+        !housekeepingAccessAllowed()
+    ) {
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "housekeepingModal"
+    ).style.display =
+        "flex";
+
+
+    document.getElementById(
+        "housekeepingForm"
+    ).reset();
+
+
+    editingHousekeepingIndex =
+        -1;
+
+
+    document.getElementById(
+        "housekeepingDate"
+    ).value =
+        new Date()
+            .toISOString()
+            .split("T")[0];
+
+}
+
+
+/* =========================================================
+   CLOSE FORM
+   ========================================================= */
+
+function closeHousekeepingForm() {
+
+    document.getElementById(
+        "housekeepingModal"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "housekeepingForm"
+    ).reset();
+
+
+    editingHousekeepingIndex =
+        -1;
+
+}
+
+
+/* =========================================================
+   SAVE TASK
+   ========================================================= */
+
+document.getElementById(
+    "housekeepingForm"
+)
+.addEventListener(
+    "submit",
+    function(event) {
+
+        event.preventDefault();
+
+
+        if (
+            !housekeepingAccessAllowed()
+        ) {
+
+            return;
+
+        }
+
+
+        const room =
+            document.getElementById(
+                "housekeepingRoom"
+            )
+            .value
+            .trim();
+
+
+        const task =
+            document.getElementById(
+                "housekeepingTask"
+            )
+            .value;
+
+
+        const staff =
+            document.getElementById(
+                "housekeepingStaff"
+            )
+            .value
+            .trim();
+
+
+        const date =
+            document.getElementById(
+                "housekeepingDate"
+            )
+            .value;
+
+
+        const status =
+            document.getElementById(
+                "housekeepingStatus"
+            )
+            .value;
+
+
+        const newTask = {
+
+            room:
+                room,
+
+            task:
+                task,
+
+            staff:
+                staff,
+
+            date:
+                date,
+
+            status:
+                status
+
+        };
+
+
+        if (
+            editingHousekeepingIndex ===
+            -1
+        ) {
+
+            housekeepingTasks.push(
+                newTask
+            );
+
+        } else {
+
+            housekeepingTasks[
+                editingHousekeepingIndex
+            ] =
+                newTask;
+
+        }
+
+
+        displayHousekeepingTasks();
+
+        closeHousekeepingForm();
+
+
+        alert(
+            "Housekeeping task saved successfully."
+        );
+
+    }
+);
+
+
+/* =========================================================
+   DISPLAY TASKS
+   ========================================================= */
 
 function displayHousekeepingTasks() {
 
+    if (
+        !housekeepingAccessAllowed()
+    ) {
+
+        return;
+
+    }
+
+
     const tableBody =
-        document.getElementById("housekeepingTableBody");
-
-    tableBody.innerHTML = "";
-
-
-    housekeepingTasks.forEach(function(item, index) {
-
-        const row = document.createElement("tr");
+        document.getElementById(
+            "housekeepingTableBody"
+        );
 
 
-        let statusClass = "";
+    if (!tableBody) {
 
-        if (item.status === "Pending") {
-            statusClass = "status-pending";
+        return;
+
+    }
+
+
+    tableBody.innerHTML =
+        "";
+
+
+    housekeepingTasks.forEach(
+        function(item, index) {
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            let statusClass =
+                "";
+
+
+            if (
+                item.status ===
+                "Pending"
+            ) {
+
+                statusClass =
+                    "status-pending";
+
+            }
+
+
+            if (
+                item.status ===
+                "In Progress"
+            ) {
+
+                statusClass =
+                    "status-progress";
+
+            }
+
+
+            if (
+                item.status ===
+                "Completed"
+            ) {
+
+                statusClass =
+                    "status-completed";
+
+            }
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${item.room}
+                </td>
+
+                <td>
+                    ${item.task}
+                </td>
+
+                <td>
+                    ${item.staff}
+                </td>
+
+                <td>
+                    ${item.date}
+                </td>
+
+                <td>
+
+                    <span
+                        class="status ${statusClass}">
+
+                        ${item.status}
+
+                    </span>
+
+                </td>
+
+                <td>
+
+                    <button
+                        class="action-btn"
+                        onclick="editHousekeeping(${index})">
+
+                        Edit
+
+                    </button>
+
+
+                    <button
+                        class="delete-btn"
+                        onclick="deleteHousekeeping(${index})">
+
+                        Delete
+
+                    </button>
+
+                </td>
+
+            `;
+
+
+            tableBody.appendChild(
+                row
+            );
+
         }
-
-        if (item.status === "In Progress") {
-            statusClass = "status-progress";
-        }
-
-        if (item.status === "Completed") {
-            statusClass = "status-completed";
-        }
-
-
-        row.innerHTML = `
-
-            <td>${item.room}</td>
-
-            <td>${item.task}</td>
-
-            <td>${item.staff}</td>
-
-            <td>${item.date}</td>
-
-            <td>
-                <span class="status ${statusClass}">
-                    ${item.status}
-                </span>
-            </td>
-
-            <td>
-
-                <button
-                    class="action-btn"
-                    onclick="editHousekeeping(${index})"
-                >
-                    Edit
-                </button>
-
-                <button
-                    class="delete-btn"
-                    onclick="deleteHousekeeping(${index})"
-                >
-                    Delete
-                </button>
-
-            </td>
-
-        `;
-
-
-        tableBody.appendChild(row);
-
-    });
+    );
 
 
     updateHousekeepingSummary();
@@ -470,77 +1362,166 @@ function displayHousekeepingTasks() {
 }
 
 
-/* UPDATE SUMMARY */
+/* =========================================================
+   UPDATE SUMMARY
+   ========================================================= */
 
 function updateHousekeepingSummary() {
 
-    document.getElementById("totalTasks").textContent =
+    document.getElementById(
+        "totalTasks"
+    ).textContent =
         housekeepingTasks.length;
 
 
-    document.getElementById("pendingTasks").textContent =
-        housekeepingTasks.filter(function(item) {
+    document.getElementById(
+        "pendingTasks"
+    ).textContent =
 
-            return item.status === "Pending";
+        housekeepingTasks.filter(
+            function(item) {
 
-        }).length;
+                return (
+                    item.status ===
+                    "Pending"
+                );
+
+            }
+        ).length;
 
 
-    document.getElementById("inProgressTasks").textContent =
-        housekeepingTasks.filter(function(item) {
+    document.getElementById(
+        "inProgressTasks"
+    ).textContent =
 
-            return item.status === "In Progress";
+        housekeepingTasks.filter(
+            function(item) {
 
-        }).length;
+                return (
+                    item.status ===
+                    "In Progress"
+                );
+
+            }
+        ).length;
 
 
-    document.getElementById("completedTasks").textContent =
-        housekeepingTasks.filter(function(item) {
+    document.getElementById(
+        "completedTasks"
+    ).textContent =
 
-            return item.status === "Completed";
+        housekeepingTasks.filter(
+            function(item) {
 
-        }).length;
+                return (
+                    item.status ===
+                    "Completed"
+                );
+
+            }
+        ).length;
 
 }
 
 
-/* EDIT */
+/* =========================================================
+   EDIT
+   ========================================================= */
 
-function editHousekeeping(index) {
+function editHousekeeping(
+    index
+) {
 
-    const item = housekeepingTasks[index];
+    if (
+        !housekeepingAccessAllowed()
+    ) {
 
-    document.getElementById("housekeepingRoom").value =
+        return;
+
+    }
+
+
+    const item =
+        housekeepingTasks[index];
+
+
+    if (!item) {
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "housekeepingRoom"
+    ).value =
         item.room;
 
-    document.getElementById("housekeepingTask").value =
+
+    document.getElementById(
+        "housekeepingTask"
+    ).value =
         item.task;
 
-    document.getElementById("housekeepingStaff").value =
+
+    document.getElementById(
+        "housekeepingStaff"
+    ).value =
         item.staff;
 
-    document.getElementById("housekeepingDate").value =
+
+    document.getElementById(
+        "housekeepingDate"
+    ).value =
         item.date;
 
-    document.getElementById("housekeepingStatus").value =
+
+    document.getElementById(
+        "housekeepingStatus"
+    ).value =
         item.status;
 
 
-    editingHousekeepingIndex = index;
+    editingHousekeepingIndex =
+        index;
 
-    document.getElementById("housekeepingModal").style.display =
+
+    document.getElementById(
+        "housekeepingModal"
+    ).style.display =
         "flex";
 
 }
 
 
-/* DELETE */
+/* =========================================================
+   DELETE
+   ========================================================= */
 
-function deleteHousekeeping(index) {
+function deleteHousekeeping(
+    index
+) {
 
-    if (confirm("Are you sure you want to delete this task?")) {
+    if (
+        !housekeepingAccessAllowed()
+    ) {
 
-        housekeepingTasks.splice(index, 1);
+        return;
+
+    }
+
+
+    if (
+        confirm(
+            "Are you sure you want to delete this task?"
+        )
+    ) {
+
+        housekeepingTasks.splice(
+            index,
+            1
+        );
+
 
         displayHousekeepingTasks();
 
@@ -549,82 +1530,152 @@ function deleteHousekeeping(index) {
 }
 
 
-/* SEARCH */
+/* =========================================================
+   SEARCH
+   ========================================================= */
 
 function searchHousekeeping() {
 
-    const search =
-        document.getElementById("housekeepingSearch").value
-        .toLowerCase();
+    if (
+        !housekeepingAccessAllowed()
+    ) {
 
-    const rows =
-        document.querySelectorAll("#housekeepingTableBody tr");
-
-
-    rows.forEach(function(row) {
-
-        const text =
-            row.textContent.toLowerCase();
-
-        row.style.display =
-            text.includes(search) ? "" : "none";
-
-    });
-
-}
-
-
-/* FILTER */
-
-function filterHousekeeping() {
-
-    const filter =
-        document.getElementById("housekeepingFilter").value;
-
-    const rows =
-        document.querySelectorAll("#housekeepingTableBody tr");
-
-
-    rows.forEach(function(row) {
-
-        const status =
-            row.cells[4].textContent.trim();
-
-
-        if (filter === "all" || status === filter) {
-
-            row.style.display = "";
-
-        } else {
-
-            row.style.display = "none";
-
-        }
-
-    });
-
-}
-
-
-/* CLOSE MODAL WHEN CLICKING OUTSIDE */
-
-window.addEventListener("click", function(event) {
-
-    const modal =
-        document.getElementById("housekeepingModal");
-
-    if (event.target === modal) {
-
-        closeHousekeepingForm();
+        return;
 
     }
 
-});
+
+    const search =
+        document.getElementById(
+            "housekeepingSearch"
+        )
+        .value
+        .toLowerCase();
 
 
-/* INITIAL DISPLAY */
+    const rows =
+        document.querySelectorAll(
+            "#housekeepingTableBody tr"
+        );
 
-displayHousekeepingTasks();
+
+    rows.forEach(
+        function(row) {
+
+            const text =
+                row.textContent
+                    .toLowerCase();
+
+
+            row.style.display =
+                text.includes(
+                    search
+                )
+                    ? ""
+                    : "none";
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   FILTER
+   ========================================================= */
+
+function filterHousekeeping() {
+
+    if (
+        !housekeepingAccessAllowed()
+    ) {
+
+        return;
+
+    }
+
+
+    const filter =
+        document.getElementById(
+            "housekeepingFilter"
+        ).value;
+
+
+    const rows =
+        document.querySelectorAll(
+            "#housekeepingTableBody tr"
+        );
+
+
+    rows.forEach(
+        function(row) {
+
+            const status =
+                row.cells[4]
+                    .textContent
+                    .trim();
+
+
+            if (
+                filter === "all" ||
+                status === filter
+            ) {
+
+                row.style.display =
+                    "";
+
+            } else {
+
+                row.style.display =
+                    "none";
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   CLOSE MODAL WHEN CLICKING OUTSIDE
+   ========================================================= */
+
+window.addEventListener(
+    "click",
+    function(event) {
+
+        const modal =
+            document.getElementById(
+                "housekeepingModal"
+            );
+
+
+        if (
+            event.target ===
+            modal
+        ) {
+
+            closeHousekeepingForm();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   INITIAL DISPLAY
+   ========================================================= */
+
+if (
+    getCurrentRole() !==
+    "receptionist"
+) {
+
+    displayHousekeepingTasks();
+
+}
 
 </script>
 
