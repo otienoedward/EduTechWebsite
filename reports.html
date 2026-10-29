@@ -801,7 +801,9 @@
 </div>
 
 
-<!-- SUPABASE -->
+<!-- =========================================================
+     SUPABASE
+========================================================= -->
 
 <script
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
@@ -809,83 +811,14 @@
 
 <script src="./supabase.js"></script>
 
+<!-- =========================================================
+     GLOBAL ROLE CONTROL + GLOBAL LOGOUT
+========================================================= -->
+
+<script src="./script.js"></script>
+
 
 <script>
-
-/* =========================================================
-   ROLE PERMISSIONS
-========================================================= */
-
-const ROLE_PERMISSIONS = {
-
-    system_owner: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings",
-        "hotels"
-    ],
-
-    hotel_owner: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings"
-    ],
-
-    manager: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings"
-    ],
-
-    receptionist: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "payments",
-        "reports"
-    ]
-
-};
-
 
 /* =========================================================
    GET CURRENT ROLE
@@ -913,119 +846,12 @@ function reportsAccessAllowed() {
     const role =
         getCurrentRole();
 
-
     return [
         "system_owner",
         "hotel_owner",
         "manager",
         "receptionist"
     ].includes(role);
-
-}
-
-
-/* =========================================================
-   APPLY ROLE CONTROL
-========================================================= */
-
-function applyRoleControl() {
-
-    const role =
-        getCurrentRole();
-
-
-    const allowedModules =
-        ROLE_PERMISSIONS[role] || [];
-
-
-    const sidebarLinks =
-        document.querySelectorAll(
-            ".sidebar-nav a[data-module]"
-        );
-
-
-    sidebarLinks.forEach(
-        function(link) {
-
-            const module =
-                link.getAttribute(
-                    "data-module"
-                );
-
-
-            if (
-                allowedModules.includes(
-                    module
-                )
-            ) {
-
-                link.classList.remove(
-                    "role-hidden"
-                );
-
-                link.style.setProperty(
-                    "display",
-                    "",
-                    "important"
-                );
-
-            }
-
-            else {
-
-                link.classList.add(
-                    "role-hidden"
-                );
-
-                link.style.setProperty(
-                    "display",
-                    "none",
-                    "important"
-                );
-
-            }
-
-        }
-    );
-
-
-    const content =
-        document.getElementById(
-            "reportsContent"
-        );
-
-
-    const denied =
-        document.getElementById(
-            "reportsAccessDenied"
-        );
-
-
-    if (
-        reportsAccessAllowed()
-    ) {
-
-        if (content) {
-            content.style.display = "";
-        }
-
-        if (denied) {
-            denied.style.display = "none";
-        }
-
-    }
-
-    else {
-
-        if (content) {
-            content.style.display = "none";
-        }
-
-        if (denied) {
-            denied.style.display = "block";
-        }
-
-    }
 
 }
 
@@ -1039,14 +865,12 @@ function protectReportsPage() {
     const role =
         getCurrentRole();
 
-
     const allowedRoles = [
         "system_owner",
         "hotel_owner",
         "manager",
         "receptionist"
     ];
-
 
     if (!allowedRoles.includes(role)) {
 
@@ -1055,29 +879,24 @@ function protectReportsPage() {
                 "reportsContent"
             );
 
-
         const denied =
             document.getElementById(
                 "reportsAccessDenied"
             );
 
-
         if (content) {
             content.style.display = "none";
         }
 
-
         if (denied) {
             denied.style.display = "block";
         }
-
 
         setTimeout(
             function() {
 
                 const latestRole =
                     getCurrentRole();
-
 
                 if (
                     ![
@@ -1154,10 +973,8 @@ function findKey(row, names) {
         return null;
     }
 
-
     const keys =
         Object.keys(row);
-
 
     for (const name of names) {
 
@@ -1173,13 +990,11 @@ function findKey(row, names) {
                         .trim()
             );
 
-
         if (found) {
             return found;
         }
 
     }
-
 
     return null;
 
@@ -1195,15 +1010,12 @@ function findNumber(row, names) {
     const key =
         findKey(row, names);
 
-
     if (!key) {
         return 0;
     }
 
-
     const number =
         Number(row[key]);
-
 
     return Number.isFinite(number)
         ? number
@@ -1221,11 +1033,9 @@ function findDate(row, names) {
     const key =
         findKey(row, names);
 
-
     if (!key) {
         return null;
     }
-
 
     return row[key];
 
@@ -1242,10 +1052,8 @@ function isDateInPeriod(value, period) {
         return false;
     }
 
-
     const date =
         new Date(value);
-
 
     if (
         Number.isNaN(
@@ -1256,7 +1064,6 @@ function isDateInPeriod(value, period) {
         return false;
 
     }
-
 
     return (
         date >= period.start &&
@@ -1277,14 +1084,11 @@ function getReportPeriod() {
             "reportPeriod"
         );
 
-
     const selected =
         select.value;
 
-
     const now =
         new Date();
-
 
     let start;
 
@@ -1299,7 +1103,6 @@ function getReportPeriod() {
                 now.getMonth(),
                 now.getDate()
             );
-
 
         end =
             new Date(
@@ -1319,12 +1122,10 @@ function getReportPeriod() {
         const day =
             now.getDay();
 
-
         const difference =
             day === 0
                 ? 6
                 : day - 1;
-
 
         start =
             new Date(
@@ -1332,7 +1133,6 @@ function getReportPeriod() {
                 now.getMonth(),
                 now.getDate() - difference
             );
-
 
         end =
             new Date(
@@ -1356,7 +1156,6 @@ function getReportPeriod() {
                 1
             );
 
-
         end =
             new Date(
                 now.getFullYear(),
@@ -1378,7 +1177,6 @@ function getReportPeriod() {
                 now.getMonth(),
                 1
             );
-
 
         end =
             new Date(
@@ -1413,21 +1211,17 @@ function getPeriodName() {
             "reportPeriod"
         ).value;
 
-
     if (value === "today") {
         return "Today";
     }
-
 
     if (value === "week") {
         return "This Week";
     }
 
-
     if (value === "year") {
         return "This Year";
     }
-
 
     return "This Month";
 
@@ -1449,7 +1243,6 @@ function belongsToCurrentHotel(row) {
 
     }
 
-
     const hotelKey =
         findKey(
             row,
@@ -1460,16 +1253,13 @@ function belongsToCurrentHotel(row) {
             ]
         );
 
-
     if (!hotelKey) {
         return true;
     }
 
-
     if (!currentProfile.hotel_id) {
         return true;
     }
-
 
     return String(
         row[hotelKey]
@@ -1492,7 +1282,6 @@ async function loadCurrentUser() {
     } =
     await supabaseClient.auth.getSession();
 
-
     if (error) {
 
         throw new Error(
@@ -1501,7 +1290,6 @@ async function loadCurrentUser() {
         );
 
     }
-
 
     if (
         !data ||
@@ -1516,10 +1304,8 @@ async function loadCurrentUser() {
 
     }
 
-
     currentUser =
         data.session.user;
-
 
     const {
         data: profile,
@@ -1534,7 +1320,6 @@ async function loadCurrentUser() {
         )
         .single();
 
-
     if (profileError) {
 
         throw new Error(
@@ -1544,10 +1329,8 @@ async function loadCurrentUser() {
 
     }
 
-
     currentProfile =
         profile;
-
 
     return true;
 
@@ -1565,22 +1348,18 @@ function readLocalStorageArray(key) {
         const value =
             localStorage.getItem(key);
 
-
         if (!value) {
             return [];
         }
 
-
         const parsed =
             JSON.parse(value);
-
 
         if (Array.isArray(parsed)) {
 
             return parsed;
 
         }
-
 
         if (
             parsed &&
@@ -1600,7 +1379,6 @@ function readLocalStorageArray(key) {
                 parsed.rows
 
             ];
-
 
             for (
                 const possible of possibleArrays
@@ -1624,7 +1402,6 @@ function readLocalStorageArray(key) {
 
     }
 
-
     return [];
 
 }
@@ -1638,7 +1415,6 @@ async function loadTable(tableName) {
 
     let supabaseRows = [];
 
-
     try {
 
         const {
@@ -1648,7 +1424,6 @@ async function loadTable(tableName) {
         await supabaseClient
             .from(tableName)
             .select("*");
-
 
         if (
             !error &&
@@ -1673,7 +1448,6 @@ async function loadTable(tableName) {
 
 
     let localRows = [];
-
 
     const possibleKeys = [
 
@@ -1707,19 +1481,15 @@ async function loadTable(tableName) {
         const key =
             localStorage.key(i);
 
-
         if (!key) {
             continue;
         }
 
-
         const lowerKey =
             key.toLowerCase();
 
-
         const lowerTable =
             tableName.toLowerCase();
-
 
         if (
             lowerKey.includes(
@@ -1746,7 +1516,6 @@ async function loadTable(tableName) {
 
         const rows =
             readLocalStorageArray(key);
-
 
         if (
             Array.isArray(rows) &&
@@ -1788,7 +1557,6 @@ async function loadTable(tableName) {
 
         }
 
-
         const idKey =
             findKey(
                 row,
@@ -1806,9 +1574,7 @@ async function loadTable(tableName) {
                 ]
             );
 
-
         let identifier;
-
 
         if (idKey) {
 
@@ -1829,7 +1595,6 @@ async function loadTable(tableName) {
                 JSON.stringify(row);
 
         }
-
 
         if (
             !seen.has(identifier)
@@ -1879,53 +1644,44 @@ async function loadReport() {
         return;
     }
 
-
     try {
 
         document.body.classList.add(
             "report-loading"
         );
 
-
         const period =
             getReportPeriod();
-
 
         const rooms =
             await loadTable(
                 "rooms"
             );
 
-
         const guests =
             await loadTable(
                 "guests"
             );
-
 
         const reservations =
             await loadTable(
                 "reservations"
             );
 
-
         const payments =
             await loadTable(
                 "payments"
             );
-
 
         const expenses =
             await loadTable(
                 "expenses"
             );
 
-
         const housekeeping =
             await loadTable(
                 "housekeeping"
             );
-
 
         const maintenance =
             await loadTable(
@@ -1946,11 +1702,9 @@ async function loadReport() {
                             ]
                         );
 
-
                     if (!statusKey) {
                         return false;
                     }
-
 
                     const status =
                         String(
@@ -1958,7 +1712,6 @@ async function loadReport() {
                         )
                         .toLowerCase()
                         .trim();
-
 
                     return (
                         status ===
@@ -1997,11 +1750,9 @@ async function loadReport() {
                             reservationDateFields
                         );
 
-
                     if (!date) {
                         return true;
                     }
-
 
                     return isDateInPeriod(
                         date,
@@ -2038,11 +1789,9 @@ async function loadReport() {
                             paymentDateFields
                         );
 
-
                     if (!date) {
                         return true;
                     }
-
 
                     return isDateInPeriod(
                         date,
@@ -2102,11 +1851,9 @@ async function loadReport() {
                             expenseDateFields
                         );
 
-
                     if (!date) {
                         return true;
                     }
-
 
                     return isDateInPeriod(
                         date,
@@ -2165,11 +1912,9 @@ async function loadReport() {
                             housekeepingDateFields
                         );
 
-
                     if (!date) {
                         return true;
                     }
-
 
                     return isDateInPeriod(
                         date,
@@ -2194,11 +1939,9 @@ async function loadReport() {
                             ]
                         );
 
-
                     if (!statusKey) {
                         return false;
                     }
-
 
                     const status =
                         String(
@@ -2206,7 +1949,6 @@ async function loadReport() {
                         )
                         .toLowerCase()
                         .trim();
-
 
                     return (
 
@@ -2252,11 +1994,9 @@ async function loadReport() {
                             maintenanceDateFields
                         );
 
-
                     if (!date) {
                         return true;
                     }
-
 
                     return isDateInPeriod(
                         date,
@@ -2281,11 +2021,9 @@ async function loadReport() {
                             ]
                         );
 
-
                     if (!statusKey) {
                         return true;
                     }
-
 
                     const status =
                         String(
@@ -2293,7 +2031,6 @@ async function loadReport() {
                         )
                         .toLowerCase()
                         .trim();
-
 
                     return !(
                         status ===
@@ -2400,23 +2137,30 @@ async function loadReport() {
         );
 
 
-        document.getElementById(
-            "reportTable"
-        ).innerHTML = `
+        const reportTable =
+            document.getElementById(
+                "reportTable"
+            );
 
-            <tr>
+        if (reportTable) {
 
-                <td colspan="3">
+            reportTable.innerHTML = `
 
-                    ${escapeHtml(
-                        error.message
-                    )}
+                <tr>
 
-                </td>
+                    <td colspan="3">
 
-            </tr>
+                        ${escapeHtml(
+                            error.message
+                        )}
 
-        `;
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
 
     } finally {
 
@@ -2520,7 +2264,6 @@ function updateReportTable() {
             "reportTable"
         );
 
-
     table.innerHTML = `
 
         <tr>
@@ -2605,15 +2348,16 @@ function showMessage(message, type) {
             "reportMessage"
         );
 
+    if (!box) {
+        return;
+    }
 
     box.textContent =
         message;
 
-
     box.className =
         "report-message " +
         type;
-
 
     box.style.display =
         "block";
@@ -3367,8 +3111,6 @@ async function initializeReports() {
         }
 
 
-        applyRoleControl();
-
         protectReportsPage();
 
 
@@ -3393,23 +3135,31 @@ async function initializeReports() {
         );
 
 
-        document.getElementById(
-            "reportTable"
-        ).innerHTML = `
+        const reportTable =
+            document.getElementById(
+                "reportTable"
+            );
 
-            <tr>
 
-                <td colspan="3">
+        if (reportTable) {
 
-                    ${escapeHtml(
-                        error.message
-                    )}
+            reportTable.innerHTML = `
 
-                </td>
+                <tr>
 
-            </tr>
+                    <td colspan="3">
 
-        `;
+                        ${escapeHtml(
+                            error.message
+                        )}
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
 
     }
 
@@ -3417,34 +3167,8 @@ async function initializeReports() {
 
 
 /* =========================================================
-   INITIAL ROLE CONTROL
+   START REPORTS
 ========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
-
-        applyRoleControl();
-
-        protectReportsPage();
-
-    }
-);
-
-
-/* =========================================================
-   CONTINUOUS ROLE CHECK
-========================================================= */
-
-setInterval(
-    applyRoleControl,
-    500
-);
-
-
-window.applyRoleControl =
-    applyRoleControl;
-
 
 initializeReports();
 
