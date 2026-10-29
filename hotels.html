@@ -1,0 +1,933 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotels - EDU TECH Hotel Management System</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="script.js"></script>
+
+    <style>
+        .hotels-page {
+            padding: 24px;
+        }
+
+        .hotels-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .hotels-header h2 {
+            margin: 0;
+        }
+
+        .hotels-header p {
+            margin: 5px 0 0;
+            color: #777;
+        }
+
+        .hotel-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .hotel-search {
+            width: 100%;
+            max-width: 400px;
+            padding: 11px 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .hotels-table-wrapper {
+            background: #fff;
+            border-radius: 8px;
+            overflow-x: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .hotels-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        .hotels-table th,
+        .hotels-table td {
+            padding: 13px 15px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+
+        .hotels-table th {
+            background: #f7f7f7;
+            font-weight: 600;
+        }
+
+        .hotel-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            background: #e8f7ed;
+            color: #187a3d;
+        }
+
+        .hotel-buttons {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .hotel-buttons button {
+            border: none;
+            padding: 7px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .view-btn {
+            background: #e8f0fe;
+            color: #1a5bb8;
+        }
+
+        .edit-btn {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .delete-btn {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .hotel-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .hotel-modal-content {
+            background: #fff;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 10px;
+            padding: 25px;
+        }
+
+        .hotel-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .hotel-modal-header h3 {
+            margin: 0;
+        }
+
+        .close-hotel-modal {
+            font-size: 26px;
+            cursor: pointer;
+            color: #777;
+        }
+
+        .hotel-form-group {
+            margin-bottom: 15px;
+        }
+
+        .hotel-form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .hotel-form-group input {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        .hotel-form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .hotel-form-actions button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .cancel-hotel-btn {
+            background: #eee;
+        }
+
+        .save-hotel-btn {
+            background: #1f6feb;
+            color: white;
+        }
+
+        .hotel-message {
+            display: none;
+            padding: 11px 14px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .hotel-message.success {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .hotel-message.error {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .empty-hotels {
+            text-align: center;
+            padding: 35px;
+            color: #777;
+        }
+
+        .hotel-details {
+            line-height: 1.8;
+        }
+
+        .hotel-details strong {
+            display: inline-block;
+            min-width: 120px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h2>EDU TECH</h2>
+        <p>HOTEL SYSTEM</p>
+    </div>
+
+    <ul class="sidebar-menu">
+        <li><a href="index.html">Dashboard</a></li>
+        <li><a href="rooms.html">Rooms</a></li>
+        <li><a href="guests.html">Guests</a></li>
+        <li><a href="reservations.html">Reservations</a></li>
+        <li><a href="checkin.html">Check-in</a></li>
+        <li><a href="checkout.html">Check-out</a></li>
+        <li><a href="restaurant.html">Restaurant</a></li>
+        <li><a href="inventory.html">Inventory</a></li>
+        <li><a href="payments.html">Payments</a></li>
+        <li><a href="expenses.html">Expenses</a></li>
+        <li><a href="employees.html">Employees</a></li>
+        <li><a href="housekeeping.html">Housekeeping</a></li>
+        <li><a href="maintenance.html">Maintenance</a></li>
+        <li><a href="reports.html">Reports</a></li>
+        <li><a href="hotels.html" class="active">🏨 Hotels</a></li>
+        <li><a href="settings.html">Settings</a></li>
+    </ul>
+</div>
+
+<div class="main-content">
+
+    <div class="topbar">
+        <div>
+            <h1>Hotels</h1>
+            <p>Manage hotels registered in EDU TECH Hotel Management System</p>
+        </div>
+    </div>
+
+    <div class="hotels-page">
+
+        <div id="hotelMessage" class="hotel-message"></div>
+
+        <div class="hotels-header">
+            <div>
+                <h2>Hotel Management</h2>
+                <p>View and manage individual hotels.</p>
+            </div>
+
+            <div class="hotel-actions">
+                <button onclick="openAddHotelModal()">+ Add Hotel</button>
+            </div>
+        </div>
+
+        <input
+            type="text"
+            id="hotelSearch"
+            class="hotel-search"
+            placeholder="Search hotel by name, location, phone or email..."
+            oninput="filterHotels()"
+        >
+
+        <div class="hotels-table-wrapper">
+            <table class="hotels-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Hotel Name</th>
+                        <th>Location</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="hotelsTableBody">
+                    <tr>
+                        <td colspan="7" class="empty-hotels">
+                            Loading hotels...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<!-- ADD / EDIT HOTEL MODAL -->
+<div id="hotelModal" class="hotel-modal">
+
+    <div class="hotel-modal-content">
+
+        <div class="hotel-modal-header">
+            <h3 id="hotelModalTitle">Add Hotel</h3>
+            <span class="close-hotel-modal" onclick="closeHotelModal()">&times;</span>
+        </div>
+
+        <form id="hotelForm">
+
+            <input type="hidden" id="hotelId">
+
+            <div class="hotel-form-group">
+                <label for="hotelName">Hotel Name</label>
+                <input type="text" id="hotelName" required>
+            </div>
+
+            <div class="hotel-form-group">
+                <label for="hotelLocation">Location</label>
+                <input type="text" id="hotelLocation">
+            </div>
+
+            <div class="hotel-form-group">
+                <label for="hotelPhone">Phone</label>
+                <input type="text" id="hotelPhone">
+            </div>
+
+            <div class="hotel-form-group">
+                <label for="hotelEmail">Email</label>
+                <input type="email" id="hotelEmail">
+            </div>
+
+            <div class="hotel-form-actions">
+                <button type="button" class="cancel-hotel-btn" onclick="closeHotelModal()">
+                    Cancel
+                </button>
+
+                <button type="submit" class="save-hotel-btn">
+                    Save Hotel
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<!-- VIEW HOTEL MODAL -->
+<div id="viewHotelModal" class="hotel-modal">
+
+    <div class="hotel-modal-content">
+
+        <div class="hotel-modal-header">
+            <h3>Hotel Details</h3>
+            <span class="close-hotel-modal" onclick="closeViewHotelModal()">&times;</span>
+        </div>
+
+        <div id="hotelDetails" class="hotel-details"></div>
+
+        <div class="hotel-form-actions">
+            <button type="button" class="cancel-hotel-btn" onclick="closeViewHotelModal()">
+                Close
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+let hotelsData = [];
+let editingHotelId = null;
+
+document.addEventListener("DOMContentLoaded", async function () {
+
+    await checkSystemOwner();
+
+    document.getElementById("hotelForm").addEventListener("submit", saveHotel);
+
+    await loadHotels();
+});
+
+
+async function checkSystemOwner() {
+
+    try {
+
+        const { data: { session }, error: sessionError } =
+            await supabaseClient.auth.getSession();
+
+        if (sessionError || !session) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        const userId = session.user.id;
+
+        const { data: profile, error } = await supabaseClient
+            .from("profiles")
+            .select("id, full_name, role, hotel_id")
+            .eq("id", userId)
+            .single();
+
+        if (error) {
+            console.error("Profile error:", error);
+            showHotelMessage("Unable to load your user profile.", "error");
+            return;
+        }
+
+        if (!profile || profile.role !== "system_owner") {
+
+            alert("Only the System Owner can access the Hotels management page.");
+
+            window.location.href = "index.html";
+            return;
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        window.location.href = "login.html";
+    }
+}
+
+
+async function loadHotels() {
+
+    const tbody = document.getElementById("hotelsTableBody");
+
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="7" class="empty-hotels">
+                Loading hotels...
+            </td>
+        </tr>
+    `;
+
+    try {
+
+        const { data, error } = await supabaseClient
+            .from("hotels")
+            .select("*")
+            .order("id", { ascending: true });
+
+        if (error) {
+
+            console.error("Hotels loading error:", error);
+
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="empty-hotels">
+                        Unable to load hotels.
+                    </td>
+                </tr>
+            `;
+
+            showHotelMessage(error.message, "error");
+
+            return;
+        }
+
+        hotelsData = data || [];
+
+        displayHotels(hotelsData);
+
+    } catch (error) {
+
+        console.error(error);
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="empty-hotels">
+                    An unexpected error occurred.
+                </td>
+            </tr>
+        `;
+
+        showHotelMessage("An unexpected error occurred.", "error");
+    }
+}
+
+
+function displayHotels(hotels) {
+
+    const tbody = document.getElementById("hotelsTableBody");
+
+    if (!hotels || hotels.length === 0) {
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="empty-hotels">
+                    No hotels have been registered yet.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    tbody.innerHTML = hotels.map((hotel, index) => {
+
+        const hotelName = hotel.hotel_name || "Unnamed Hotel";
+        const location = hotel.location || "-";
+        const phone = hotel.phone || "-";
+        const email = hotel.email || "-";
+
+        const hotelId = hotel.id;
+
+        return `
+            <tr>
+
+                <td>${index + 1}</td>
+
+                <td>
+                    <strong>${escapeHotelHtml(hotelName)}</strong>
+                </td>
+
+                <td>${escapeHotelHtml(location)}</td>
+
+                <td>${escapeHotelHtml(phone)}</td>
+
+                <td>${escapeHotelHtml(email)}</td>
+
+                <td>
+                    <span class="hotel-status">Active</span>
+                </td>
+
+                <td>
+
+                    <div class="hotel-buttons">
+
+                        <button
+                            class="view-btn"
+                            onclick="viewHotel(${hotelId})">
+                            View
+                        </button>
+
+                        <button
+                            class="edit-btn"
+                            onclick="editHotel(${hotelId})">
+                            Edit
+                        </button>
+
+                        <button
+                            class="delete-btn"
+                            onclick="deleteHotel(${hotelId})">
+                            Delete
+                        </button>
+
+                    </div>
+
+                </td>
+
+            </tr>
+        `;
+
+    }).join("");
+}
+
+
+function filterHotels() {
+
+    const search =
+        document.getElementById("hotelSearch").value
+        .toLowerCase()
+        .trim();
+
+    const filtered = hotelsData.filter(hotel => {
+
+        const name = String(hotel.hotel_name || "").toLowerCase();
+        const location = String(hotel.location || "").toLowerCase();
+        const phone = String(hotel.phone || "").toLowerCase();
+        const email = String(hotel.email || "").toLowerCase();
+
+        return (
+            name.includes(search) ||
+            location.includes(search) ||
+            phone.includes(search) ||
+            email.includes(search)
+        );
+
+    });
+
+    displayHotels(filtered);
+}
+
+
+function openAddHotelModal() {
+
+    editingHotelId = null;
+
+    document.getElementById("hotelModalTitle").textContent =
+        "Add Hotel";
+
+    document.getElementById("hotelForm").reset();
+
+    document.getElementById("hotelId").value = "";
+
+    document.getElementById("hotelModal").style.display = "flex";
+}
+
+
+function closeHotelModal() {
+
+    document.getElementById("hotelModal").style.display = "none";
+}
+
+
+function editHotel(id) {
+
+    const hotel = hotelsData.find(
+        item => String(item.id) === String(id)
+    );
+
+    if (!hotel) {
+        showHotelMessage("Hotel could not be found.", "error");
+        return;
+    }
+
+    editingHotelId = hotel.id;
+
+    document.getElementById("hotelModalTitle").textContent =
+        "Edit Hotel";
+
+    document.getElementById("hotelId").value =
+        hotel.id || "";
+
+    document.getElementById("hotelName").value =
+        hotel.hotel_name || "";
+
+    document.getElementById("hotelLocation").value =
+        hotel.location || "";
+
+    document.getElementById("hotelPhone").value =
+        hotel.phone || "";
+
+    document.getElementById("hotelEmail").value =
+        hotel.email || "";
+
+    document.getElementById("hotelModal").style.display = "flex";
+}
+
+
+async function saveHotel(event) {
+
+    event.preventDefault();
+
+    const hotelName =
+        document.getElementById("hotelName").value.trim();
+
+    const location =
+        document.getElementById("hotelLocation").value.trim();
+
+    const phone =
+        document.getElementById("hotelPhone").value.trim();
+
+    const email =
+        document.getElementById("hotelEmail").value.trim();
+
+    if (!hotelName) {
+
+        showHotelMessage(
+            "Please enter the hotel name.",
+            "error"
+        );
+
+        return;
+    }
+
+    const hotelRecord = {
+        hotel_name: hotelName,
+        location: location,
+        phone: phone,
+        email: email
+    };
+
+    try {
+
+        let result;
+
+        if (editingHotelId) {
+
+            result = await supabaseClient
+                .from("hotels")
+                .update(hotelRecord)
+                .eq("id", editingHotelId);
+
+        } else {
+
+            result = await supabaseClient
+                .from("hotels")
+                .insert([hotelRecord]);
+
+        }
+
+        if (result.error) {
+
+            console.error("Save hotel error:", result.error);
+
+            showHotelMessage(
+                result.error.message,
+                "error"
+            );
+
+            return;
+        }
+
+        closeHotelModal();
+
+        showHotelMessage(
+            editingHotelId
+                ? "Hotel information updated successfully."
+                : "Hotel added successfully.",
+            "success"
+        );
+
+        editingHotelId = null;
+
+        await loadHotels();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showHotelMessage(
+            "Unable to save hotel.",
+            "error"
+        );
+    }
+}
+
+
+function viewHotel(id) {
+
+    const hotel = hotelsData.find(
+        item => String(item.id) === String(id)
+    );
+
+    if (!hotel) {
+
+        showHotelMessage(
+            "Hotel could not be found.",
+            "error"
+        );
+
+        return;
+    }
+
+    const hotelName = hotel.hotel_name || "-";
+    const location = hotel.location || "-";
+    const phone = hotel.phone || "-";
+    const email = hotel.email || "-";
+
+    document.getElementById("hotelDetails").innerHTML = `
+
+        <p>
+            <strong>Hotel ID:</strong>
+            ${escapeHotelHtml(String(hotel.id || "-"))}
+        </p>
+
+        <p>
+            <strong>Hotel Name:</strong>
+            ${escapeHotelHtml(hotelName)}
+        </p>
+
+        <p>
+            <strong>Location:</strong>
+            ${escapeHotelHtml(location)}
+        </p>
+
+        <p>
+            <strong>Phone:</strong>
+            ${escapeHotelHtml(phone)}
+        </p>
+
+        <p>
+            <strong>Email:</strong>
+            ${escapeHotelHtml(email)}
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+            <span class="hotel-status">Active</span>
+        </p>
+    `;
+
+    document.getElementById("viewHotelModal").style.display = "flex";
+}
+
+
+function closeViewHotelModal() {
+
+    document.getElementById("viewHotelModal").style.display = "none";
+}
+
+
+async function deleteHotel(id) {
+
+    const hotel = hotelsData.find(
+        item => String(item.id) === String(id)
+    );
+
+    if (!hotel) {
+
+        showHotelMessage(
+            "Hotel could not be found.",
+            "error"
+        );
+
+        return;
+    }
+
+    const hotelName =
+        hotel.hotel_name || "this hotel";
+
+    const confirmed = confirm(
+        `Are you sure you want to delete "${hotelName}"?`
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        const { error } = await supabaseClient
+            .from("hotels")
+            .delete()
+            .eq("id", id);
+
+        if (error) {
+
+            console.error("Delete hotel error:", error);
+
+            showHotelMessage(
+                "Unable to delete hotel: " + error.message,
+                "error"
+            );
+
+            return;
+        }
+
+        showHotelMessage(
+            "Hotel deleted successfully.",
+            "success"
+        );
+
+        await loadHotels();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showHotelMessage(
+            "Unable to delete hotel.",
+            "error"
+        );
+    }
+}
+
+
+function showHotelMessage(message, type) {
+
+    const box = document.getElementById("hotelMessage");
+
+    box.textContent = message;
+
+    box.className =
+        "hotel-message " + type;
+
+    box.style.display = "block";
+
+    setTimeout(() => {
+
+        box.style.display = "none";
+
+    }, 5000);
+}
+
+
+function escapeHotelHtml(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+window.addEventListener("click", function(event) {
+
+    const hotelModal =
+        document.getElementById("hotelModal");
+
+    const viewModal =
+        document.getElementById("viewHotelModal");
+
+    if (event.target === hotelModal) {
+        closeHotelModal();
+    }
+
+    if (event.target === viewModal) {
+        closeViewHotelModal();
+    }
+
+});
+
+</script>
+
+</body>
+</html>
+```
