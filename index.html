@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -84,6 +85,26 @@
         .system-owner-hotel-link {
             display: none;
         }
+
+        /* Logout button */
+        .logout-button {
+            display: block;
+            width: calc(100% - 20px);
+            margin: 20px 10px 10px 10px;
+            padding: 11px 15px;
+            border: none;
+            border-radius: 6px;
+            background: #dc3545;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .logout-button:hover {
+            background: #c82333;
+        }
     </style>
 </head>
 
@@ -168,6 +189,14 @@
 
         </nav>
 
+        <button
+            type="button"
+            class="logout-button"
+            id="logoutButton"
+        >
+            🚪 Logout
+        </button>
+
     </aside>
 
 
@@ -220,90 +249,43 @@
         <section class="cards">
 
             <div class="card">
-
                 <h3>Total Rooms</h3>
-
-                <h2 id="dashboardTotalRooms">
-                    0
-                </h2>
-
+                <h2 id="dashboardTotalRooms">0</h2>
             </div>
 
-
             <div class="card">
-
                 <h3>Occupied Rooms</h3>
-
-                <h2 id="dashboardOccupiedRooms">
-                    0
-                </h2>
-
+                <h2 id="dashboardOccupiedRooms">0</h2>
             </div>
 
-
             <div class="card">
-
                 <h3>Available Rooms</h3>
-
-                <h2 id="dashboardAvailableRooms">
-                    0
-                </h2>
-
+                <h2 id="dashboardAvailableRooms">0</h2>
             </div>
 
-
             <div class="card">
-
                 <h3>Maintenance</h3>
-
-                <h2 id="dashboardMaintenanceRooms">
-                    0
-                </h2>
-
+                <h2 id="dashboardMaintenanceRooms">0</h2>
             </div>
 
-
             <div class="card">
-
                 <h3>Today's Revenue</h3>
-
-                <h2 id="dashboardRevenue">
-                    KSh 0
-                </h2>
-
+                <h2 id="dashboardRevenue">KSh 0</h2>
             </div>
 
-
             <div class="card">
-
                 <h3>Today's Expenses</h3>
-
-                <h2 id="dashboardExpenses">
-                    KSh 0
-                </h2>
-
+                <h2 id="dashboardExpenses">KSh 0</h2>
             </div>
 
-
             <div class="card">
-
                 <h3>Today's Profit</h3>
-
-                <h2 id="dashboardProfit">
-                    KSh 0
-                </h2>
-
+                <h2 id="dashboardProfit">KSh 0</h2>
             </div>
 
-
             <div class="card">
-
                 <h3>Today's Bookings</h3>
-
-                <h2 id="dashboardBookings">
-                    0
-                </h2>
-
+                <h2 id="dashboardBookings">0</h2>
             </div>
 
         </section>
@@ -314,43 +296,27 @@
             <div class="table-container">
 
                 <div class="room-header">
-
-                    <h2>
-                        Room Status
-                    </h2>
-
+                    <h2>Room Status</h2>
                 </div>
-
 
                 <table class="dashboard-table">
 
                     <thead>
-
                         <tr>
-
                             <th>Room</th>
-
                             <th>Type</th>
-
                             <th>Price</th>
-
                             <th>Status</th>
-
                             <th>Guest</th>
-
                         </tr>
-
                     </thead>
-
 
                     <tbody id="dashboardRoomTable">
 
                         <tr>
-
                             <td colspan="5">
                                 Loading room information...
                             </td>
-
                         </tr>
 
                     </tbody>
@@ -367,43 +333,27 @@
             <div class="table-container">
 
                 <div class="room-header">
-
-                    <h2>
-                        Today's Activity
-                    </h2>
-
+                    <h2>Today's Activity</h2>
                 </div>
-
 
                 <table class="dashboard-table">
 
                     <thead>
-
                         <tr>
-
                             <th>Guest</th>
-
                             <th>Room</th>
-
                             <th>Check-in</th>
-
                             <th>Check-out</th>
-
                             <th>Status</th>
-
                         </tr>
-
                     </thead>
-
 
                     <tbody id="dashboardActivityTable">
 
                         <tr>
-
                             <td colspan="5">
                                 Loading today's activity...
                             </td>
-
                         </tr>
 
                     </tbody>
@@ -427,6 +377,77 @@
         let currentUser = null;
         let currentProfile = null;
         let currentHotel = null;
+
+
+        /* ================================
+           LOGOUT
+        ================================= */
+
+        document
+            .getElementById("logoutButton")
+            .addEventListener(
+                "click",
+                async function() {
+
+                    const logoutButton =
+                        document.getElementById(
+                            "logoutButton"
+                        );
+
+                    logoutButton.disabled = true;
+
+                    logoutButton.textContent =
+                        "⏳ Logging out...";
+
+                    try {
+
+                        const {
+                            error
+                        } =
+                            await supabaseClient.auth.signOut();
+
+                        if (error) {
+
+                            console.error(
+                                "Logout error:",
+                                error
+                            );
+
+                        }
+
+                    } catch (error) {
+
+                        console.error(
+                            "Logout exception:",
+                            error
+                        );
+
+                    } finally {
+
+                        sessionStorage.clear();
+
+                        localStorage.removeItem(
+                            "userRole"
+                        );
+
+                        localStorage.removeItem(
+                            "userName"
+                        );
+
+                        localStorage.removeItem(
+                            "hotelId"
+                        );
+
+                        localStorage.removeItem(
+                            "hotelName"
+                        );
+
+                        window.location.href =
+                            "login.html";
+                    }
+
+                }
+            );
 
 
         function getToday() {
@@ -1862,3 +1883,4 @@
 
 </body>
 </html>
+```
