@@ -44,6 +44,21 @@
         #accessDenied h2 {
             margin-bottom: 10px;
         }
+
+        .sidebar-logout {
+            margin-top: 20px;
+            padding: 15px;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+        }
     </style>
 </head>
 
@@ -51,7 +66,10 @@
 
 <div class="app">
 
-    <!-- SIDEBAR -->
+    <!-- ================================
+         SIDEBAR
+    ================================= -->
+
     <aside class="sidebar">
 
         <h2>EDU TECH</h2>
@@ -126,11 +144,31 @@
 
         </nav>
 
+        <!-- GLOBAL LOGOUT -->
+
+        <div class="sidebar-logout">
+
+            <button
+                type="button"
+                class="logout-btn"
+                data-action="logout">
+
+                🚪 Logout
+
+            </button>
+
+        </div>
+
     </aside>
 
 
-    <!-- MAIN CONTENT -->
+    <!-- ================================
+         MAIN CONTENT
+    ================================= -->
+
     <main class="main-content">
+
+        <!-- TOP BAR -->
 
         <header class="topbar">
 
@@ -144,6 +182,8 @@
 
         </header>
 
+
+        <!-- PAGE CONTENT -->
 
         <section class="page-content">
 
@@ -174,7 +214,10 @@
             </div>
 
 
-            <!-- SUMMARY -->
+            <!-- ================================
+                 SUMMARY
+            ================================= -->
+
             <div class="summary-grid">
 
                 <div class="summary-card">
@@ -231,7 +274,10 @@
             </div>
 
 
-            <!-- EXPENSE TABLE -->
+            <!-- ================================
+                 EXPENSE TABLE
+            ================================= -->
+
             <div class="table-card">
 
                 <div class="table-tools">
@@ -312,7 +358,6 @@
 
 
                         <tbody id="expenseTable">
-
                         </tbody>
 
                     </table>
@@ -324,7 +369,10 @@
         </section>
 
 
-        <!-- ACCESS DENIED -->
+        <!-- ================================
+             ACCESS DENIED
+        ================================= -->
+
         <section id="accessDenied">
 
             <h2>
@@ -342,7 +390,9 @@
 </div>
 
 
-<!-- EXPENSE MODAL -->
+<!-- ================================
+     EXPENSE MODAL
+================================= -->
 
 <div id="expenseModal" class="modal">
 
@@ -369,6 +419,8 @@
 
         <form id="expenseForm">
 
+            <!-- DATE -->
+
             <div class="form-group">
 
                 <label for="expenseDate">
@@ -383,6 +435,8 @@
 
             </div>
 
+
+            <!-- CATEGORY -->
 
             <div class="form-group">
 
@@ -439,6 +493,8 @@
             </div>
 
 
+            <!-- DESCRIPTION -->
+
             <div class="form-group">
 
                 <label for="expenseDescription">
@@ -454,6 +510,8 @@
 
             </div>
 
+
+            <!-- AMOUNT -->
 
             <div class="form-group">
 
@@ -472,6 +530,8 @@
 
             </div>
 
+
+            <!-- PAYMENT METHOD -->
 
             <div class="form-group">
 
@@ -512,6 +572,8 @@
             </div>
 
 
+            <!-- STATUS -->
+
             <div class="form-group">
 
                 <label for="expenseStatus">
@@ -538,6 +600,8 @@
 
             </div>
 
+
+            <!-- FORM BUTTONS -->
 
             <div class="form-actions">
 
@@ -568,19 +632,30 @@
 </div>
 
 
-<!-- EXPENSE JAVASCRIPT -->
+<!-- ================================
+     SUPABASE
+================================= -->
+
+<script src="./supabase.js"></script>
+
+
+<!-- ================================
+     EXPENSE JAVASCRIPT
+================================= -->
 
 <script>
 
-const EXPENSE_STORAGE_KEY =
-    "eduTechExpenses";
+"use strict";
+
+
+const EXPENSE_STORAGE_KEY = "eduTechExpenses";
 
 let editingExpenseID = null;
 
 
-/* ================================
-   STORAGE
-================================ */
+/* =================================
+   GET STORED EXPENSES
+================================= */
 
 function getStoredExpenses() {
 
@@ -595,9 +670,19 @@ function getStoredExpenses() {
 
     try {
 
-        return JSON.parse(saved);
+        const expenses =
+            JSON.parse(saved);
+
+        return Array.isArray(expenses)
+            ? expenses
+            : [];
 
     } catch (error) {
+
+        console.error(
+            "Unable to read expenses:",
+            error
+        );
 
         return [];
 
@@ -605,6 +690,10 @@ function getStoredExpenses() {
 
 }
 
+
+/* =================================
+   SAVE EXPENSES
+================================= */
 
 function saveExpenses(expenses) {
 
@@ -616,9 +705,9 @@ function saveExpenses(expenses) {
 }
 
 
-/* ================================
-   EXPENSE ACCESS CHECK
-================================ */
+/* =================================
+   GET CURRENT USER ROLE
+================================= */
 
 function getCurrentUserRole() {
 
@@ -647,31 +736,167 @@ function getCurrentUserRole() {
 }
 
 
+/* =================================
+   EXPENSE ACCESS
+================================= */
+
 function expenseAccessAllowed() {
 
     const role =
         getCurrentUserRole();
 
 
-    const allowedRoles = [
+    return [
 
         "system_owner",
         "hotel_owner",
         "manager"
 
-    ];
-
-
-    return allowedRoles.includes(
-        role
-    );
+    ].includes(role);
 
 }
 
 
-/* ================================
-   OPEN FORM
-================================ */
+/* =================================
+   PAGE ACCESS
+================================= */
+
+function checkExpenseAccess() {
+
+    const role =
+        getCurrentUserRole();
+
+
+    /*
+       If there is no role yet, allow
+       the global script to handle the
+       authentication/role process.
+    */
+
+    if (!role) {
+        return;
+    }
+
+
+    if (
+        role === "system_owner" ||
+        role === "hotel_owner" ||
+        role === "manager"
+    ) {
+
+        return;
+
+    }
+
+
+    showExpenseAccessDenied();
+
+}
+
+
+/* =================================
+   ACCESS DENIED
+================================= */
+
+function showExpenseAccessDenied() {
+
+    const accessDenied =
+        document.getElementById(
+            "accessDenied"
+        );
+
+
+    const pageContent =
+        document.querySelector(
+            ".page-content"
+        );
+
+
+    const modal =
+        document.getElementById(
+            "expenseModal"
+        );
+
+
+    if (accessDenied) {
+
+        accessDenied.style.display =
+            "block";
+
+    }
+
+
+    if (pageContent) {
+
+        pageContent.style.display =
+            "none";
+
+    }
+
+
+    if (modal) {
+
+        modal.style.display =
+            "none";
+
+    }
+
+}
+
+
+/* =================================
+   CREATE EXPENSE ID
+================================= */
+
+function createExpenseID() {
+
+    const expenses =
+        getStoredExpenses();
+
+
+    let number =
+        expenses.length + 1;
+
+
+    let id =
+        "EXP-" +
+        String(number).padStart(
+            3,
+            "0"
+        );
+
+
+    while (
+        expenses.some(
+            function(expense) {
+
+                return expense.id === id;
+
+            }
+        )
+    ) {
+
+        number++;
+
+
+        id =
+            "EXP-" +
+            String(number).padStart(
+                3,
+                "0"
+            );
+
+    }
+
+
+    return id;
+
+}
+
+
+/* =================================
+   SHOW EXPENSE FORM
+================================= */
 
 function showExpenseForm() {
 
@@ -690,6 +915,7 @@ function showExpenseForm() {
         document.getElementById(
             "expenseModal"
         );
+
 
     const form =
         document.getElementById(
@@ -719,23 +945,25 @@ function showExpenseForm() {
     const month =
         String(
             today.getMonth() + 1
-        ).padStart(2, "0");
+        ).padStart(
+            2,
+            "0"
+        );
 
 
     const day =
         String(
             today.getDate()
-        ).padStart(2, "0");
+        ).padStart(
+            2,
+            "0"
+        );
 
 
     document.getElementById(
         "expenseDate"
     ).value =
-        year +
-        "-" +
-        month +
-        "-" +
-        day;
+        `${year}-${month}-${day}`;
 
 
     modal.style.display =
@@ -744,69 +972,67 @@ function showExpenseForm() {
 }
 
 
-/* ================================
-   CLOSE FORM
-================================ */
+/* =================================
+   HIDE EXPENSE FORM
+================================= */
 
 function hideExpenseForm() {
 
-    document.getElementById(
-        "expenseModal"
-    ).style.display =
-        "none";
+    const modal =
+        document.getElementById(
+            "expenseModal"
+        );
+
+
+    if (modal) {
+
+        modal.style.display =
+            "none";
+
+    }
+
 
     editingExpenseID = null;
 
 }
 
 
-/* ================================
-   CREATE EXPENSE ID
-================================ */
+/* =================================
+   ESCAPE HTML
+================================= */
 
-function createExpenseID() {
+function escapeExpenseHtml(value) {
 
-    const expenses =
-        getStoredExpenses();
-
-
-    let number =
-        expenses.length + 1;
-
-
-    let id =
-        "EXP-" +
-        String(number).padStart(3, "0");
-
-
-    while (
-        expenses.some(
-            function(expense) {
-
-                return expense.id === id;
-
-            }
-        )
-    ) {
-
-        number++;
-
-
-        id =
-            "EXP-" +
-            String(number).padStart(3, "0");
-
-    }
-
-
-    return id;
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
 
 }
 
 
-/* ================================
+/* =================================
    DISPLAY EXPENSES
-================================ */
+================================= */
 
 function displayExpenses() {
 
@@ -818,6 +1044,11 @@ function displayExpenses() {
         document.getElementById(
             "expenseTable"
         );
+
+
+    if (!table) {
+        return;
+    }
 
 
     table.innerHTML = "";
@@ -845,6 +1076,10 @@ function displayExpenses() {
 
         `;
 
+        updateExpenseSummary();
+
+        return;
+
     }
 
 
@@ -858,54 +1093,74 @@ function displayExpenses() {
 
 
             row.dataset.id =
-                expense.id;
+                expense.id || "";
 
 
             row.dataset.status =
-                expense.status;
+                expense.status || "";
 
 
             row.dataset.amount =
-                expense.amount;
+                expense.amount || 0;
+
+
+            const amount =
+                Number(
+                    expense.amount
+                ) || 0;
 
 
             row.innerHTML = `
 
                 <td>
-                    ${expense.id}
+                    ${escapeExpenseHtml(
+                        expense.id
+                    )}
                 </td>
 
                 <td>
-                    ${expense.date}
+                    ${escapeExpenseHtml(
+                        expense.date
+                    )}
                 </td>
 
                 <td>
-                    ${expense.category}
+                    ${escapeExpenseHtml(
+                        expense.category
+                    )}
                 </td>
 
                 <td>
-                    ${expense.description}
+                    ${escapeExpenseHtml(
+                        expense.description
+                    )}
                 </td>
 
                 <td>
-                    KSh ${Number(
-                        expense.amount
-                    ).toLocaleString()}
+                    KSh ${amount.toLocaleString(
+                        "en-KE"
+                    )}
                 </td>
 
                 <td>
-                    ${expense.method}
+                    ${escapeExpenseHtml(
+                        expense.method
+                    )}
                 </td>
 
                 <td>
 
                     <span
-                        class="status ${String(
-                            expense.status
-                        ).toLowerCase()}"
+                        class="status ${escapeExpenseHtml(
+                            String(
+                                expense.status || ""
+                            ).toLowerCase()
+                        )}"
                     >
 
-                        ${expense.status}
+                        ${escapeExpenseHtml(
+                            expense.status
+                        )}
 
                     </span>
 
@@ -952,9 +1207,9 @@ function displayExpenses() {
 }
 
 
-/* ================================
-   SUMMARY
-================================ */
+/* =================================
+   UPDATE SUMMARY
+================================= */
 
 function updateExpenseSummary() {
 
@@ -1008,160 +1263,172 @@ function updateExpenseSummary() {
     );
 
 
-    document.getElementById(
-        "totalExpenses"
-    ).textContent =
-        expenses.length;
-
-
-    document.getElementById(
-        "paidExpenses"
-    ).textContent =
-        paid;
-
-
-    document.getElementById(
-        "pendingExpenses"
-    ).textContent =
-        pending;
-
-
-    document.getElementById(
-        "expenseTotal"
-    ).textContent =
-        "KSh " +
-        total.toLocaleString(
-            "en-KE"
+    const totalExpenses =
+        document.getElementById(
+            "totalExpenses"
         );
+
+
+    const paidExpenses =
+        document.getElementById(
+            "paidExpenses"
+        );
+
+
+    const pendingExpenses =
+        document.getElementById(
+            "pendingExpenses"
+        );
+
+
+    const expenseTotal =
+        document.getElementById(
+            "expenseTotal"
+        );
+
+
+    if (totalExpenses) {
+
+        totalExpenses.textContent =
+            expenses.length;
+
+    }
+
+
+    if (paidExpenses) {
+
+        paidExpenses.textContent =
+            paid;
+
+    }
+
+
+    if (pendingExpenses) {
+
+        pendingExpenses.textContent =
+            pending;
+
+    }
+
+
+    if (expenseTotal) {
+
+        expenseTotal.textContent =
+            "KSh " +
+            total.toLocaleString(
+                "en-KE"
+            );
+
+    }
 
 }
 
 
-/* ================================
+/* =================================
    SAVE EXPENSE
-================================ */
+================================= */
 
-document.getElementById(
-    "expenseForm"
-).addEventListener(
-    "submit",
-    function(event) {
+function handleExpenseSubmit(event) {
 
-        event.preventDefault();
+    event.preventDefault();
 
 
-        if (!expenseAccessAllowed()) {
+    if (!expenseAccessAllowed()) {
 
-            alert(
-                "You do not have permission to manage Expenses."
+        alert(
+            "You do not have permission to manage Expenses."
+        );
+
+        hideExpenseForm();
+
+        return;
+
+    }
+
+
+    const date =
+        document.getElementById(
+            "expenseDate"
+        ).value;
+
+
+    const category =
+        document.getElementById(
+            "expenseCategory"
+        ).value;
+
+
+    const description =
+        document.getElementById(
+            "expenseDescription"
+        ).value.trim();
+
+
+    const amount =
+        Number(
+            document.getElementById(
+                "expenseAmount"
+            ).value
+        ) || 0;
+
+
+    const method =
+        document.getElementById(
+            "expenseMethod"
+        ).value;
+
+
+    const status =
+        document.getElementById(
+            "expenseStatus"
+        ).value;
+
+
+    if (
+        !date ||
+        !category ||
+        !description ||
+        amount <= 0 ||
+        !method ||
+        !status
+    ) {
+
+        alert(
+            "Please complete all expense fields."
+        );
+
+        return;
+
+    }
+
+
+    let expenses =
+        getStoredExpenses();
+
+
+    /* EDIT EXISTING EXPENSE */
+
+    if (editingExpenseID) {
+
+        const index =
+            expenses.findIndex(
+                function(expense) {
+
+                    return (
+                        expense.id ===
+                        editingExpenseID
+                    );
+
+                }
             );
 
-            hideExpenseForm();
 
-            return;
+        if (index !== -1) {
 
-        }
-
-
-        const date =
-            document.getElementById(
-                "expenseDate"
-            ).value;
-
-
-        const category =
-            document.getElementById(
-                "expenseCategory"
-            ).value;
-
-
-        const description =
-            document.getElementById(
-                "expenseDescription"
-            ).value.trim();
-
-
-        const amount =
-            Number(
-                document.getElementById(
-                    "expenseAmount"
-                ).value
-            ) || 0;
-
-
-        const method =
-            document.getElementById(
-                "expenseMethod"
-            ).value;
-
-
-        const status =
-            document.getElementById(
-                "expenseStatus"
-            ).value;
-
-
-        let expenses =
-            getStoredExpenses();
-
-
-        /* EDIT */
-
-        if (editingExpenseID) {
-
-            const index =
-                expenses.findIndex(
-                    function(expense) {
-
-                        return (
-                            expense.id ===
-                            editingExpenseID
-                        );
-
-                    }
-                );
-
-
-            if (index !== -1) {
-
-                expenses[index] = {
-
-                    id:
-                        editingExpenseID,
-
-                    date:
-                        date,
-
-                    category:
-                        category,
-
-                    description:
-                        description,
-
-                    amount:
-                        amount,
-
-                    method:
-                        method,
-
-                    status:
-                        status
-
-                };
-
-            }
-
-        }
-
-
-        /* NEW */
-
-        else {
-
-            expenses.push({
+            expenses[index] = {
 
                 id:
-                    createExpenseID(),
+                    editingExpenseID,
 
                 date:
                     date,
@@ -1181,27 +1448,60 @@ document.getElementById(
                 status:
                     status
 
-            });
+            };
 
         }
 
-
-        saveExpenses(
-            expenses
-        );
+    }
 
 
-        displayExpenses();
+    /* CREATE NEW EXPENSE */
 
-        hideExpenseForm();
+    else {
+
+        expenses.push({
+
+            id:
+                createExpenseID(),
+
+            date:
+                date,
+
+            category:
+                category,
+
+            description:
+                description,
+
+            amount:
+                amount,
+
+            method:
+                method,
+
+            status:
+                status
+
+        });
 
     }
-);
 
 
-/* ================================
+    saveExpenses(
+        expenses
+    );
+
+
+    displayExpenses();
+
+    hideExpenseForm();
+
+}
+
+
+/* =================================
    EDIT EXPENSE
-================================ */
+================================= */
 
 function editExpense(button) {
 
@@ -1218,6 +1518,11 @@ function editExpense(button) {
 
     const row =
         button.closest("tr");
+
+
+    if (!row) {
+        return;
+    }
 
 
     editingExpenseID =
@@ -1242,7 +1547,11 @@ function editExpense(button) {
 
 
     if (!expense) {
+
+        editingExpenseID = null;
+
         return;
+
     }
 
 
@@ -1255,37 +1564,37 @@ function editExpense(button) {
     document.getElementById(
         "expenseDate"
     ).value =
-        expense.date;
+        expense.date || "";
 
 
     document.getElementById(
         "expenseCategory"
     ).value =
-        expense.category;
+        expense.category || "";
 
 
     document.getElementById(
         "expenseDescription"
     ).value =
-        expense.description;
+        expense.description || "";
 
 
     document.getElementById(
         "expenseAmount"
     ).value =
-        expense.amount;
+        expense.amount || "";
 
 
     document.getElementById(
         "expenseMethod"
     ).value =
-        expense.method;
+        expense.method || "";
 
 
     document.getElementById(
         "expenseStatus"
     ).value =
-        expense.status;
+        expense.status || "Paid";
 
 
     document.getElementById(
@@ -1296,9 +1605,9 @@ function editExpense(button) {
 }
 
 
-/* ================================
+/* =================================
    DELETE EXPENSE
-================================ */
+================================= */
 
 function deleteExpense(button) {
 
@@ -1315,6 +1624,11 @@ function deleteExpense(button) {
 
     const row =
         button.closest("tr");
+
+
+    if (!row) {
+        return;
+    }
 
 
     const expenseID =
@@ -1359,9 +1673,9 @@ function deleteExpense(button) {
 }
 
 
-/* ================================
+/* =================================
    SEARCH
-================================ */
+================================= */
 
 function searchExpenses() {
 
@@ -1370,21 +1684,42 @@ function searchExpenses() {
 }
 
 
+/* =================================
+   FILTER
+================================= */
+
 function applyExpenseFilters() {
 
-    const search =
+    const searchInput =
         document.getElementById(
             "expenseSearch"
-        )
-        .value
-        .toLowerCase()
-        .trim();
+        );
+
+
+    const filterInput =
+        document.getElementById(
+            "expenseFilter"
+        );
+
+
+    if (
+        !searchInput ||
+        !filterInput
+    ) {
+
+        return;
+
+    }
+
+
+    const search =
+        searchInput.value
+            .toLowerCase()
+            .trim();
 
 
     const filter =
-        document.getElementById(
-            "expenseFilter"
-        ).value;
+        filterInput.value;
 
 
     document.querySelectorAll(
@@ -1395,7 +1730,7 @@ function applyExpenseFilters() {
 
             const text =
                 row.textContent
-                .toLowerCase();
+                    .toLowerCase();
 
 
             const status =
@@ -1415,10 +1750,12 @@ function applyExpenseFilters() {
 
 
             row.style.display =
-                matchesSearch &&
-                matchesFilter
-                    ? ""
-                    : "none";
+                (
+                    matchesSearch &&
+                    matchesFilter
+                )
+                ? ""
+                : "none";
 
         }
     );
@@ -1426,598 +1763,182 @@ function applyExpenseFilters() {
 }
 
 
-document.getElementById(
-    "expenseSearch"
-).addEventListener(
-    "input",
-    searchExpenses
-);
-
-
-document.getElementById(
-    "expenseFilter"
-).addEventListener(
-    "change",
-    applyExpenseFilters
-);
-
-
-/* ================================
-   BUTTON EVENTS
-================================ */
-
-document.getElementById(
-    "newExpenseButton"
-).addEventListener(
-    "click",
-    showExpenseForm
-);
-
-
-document.getElementById(
-    "closeExpenseButton"
-).addEventListener(
-    "click",
-    hideExpenseForm
-);
-
-
-document.getElementById(
-    "cancelExpenseButton"
-).addEventListener(
-    "click",
-    hideExpenseForm
-);
-
-
-/* ================================
-   CLOSE OUTSIDE MODAL
-================================ */
-
-document.getElementById(
-    "expenseModal"
-).addEventListener(
-    "click",
-    function(event) {
-
-        if (
-            event.target === this
-        ) {
-
-            hideExpenseForm();
-
-        }
-
-    }
-);
-
-
-/* ================================
-   INITIAL LOAD
-================================ */
-
-displayExpenses();
-
-</script>
-
-
-<!-- ROLE CONTROL -->
-
-<script>
-
-(function () {
-
-    "use strict";
-
-
-    const ROLE_PERMISSIONS = {
-
-        system_owner: [
-
-            "dashboard",
-            "rooms",
-            "guests",
-            "reservations",
-            "checkin",
-            "checkout",
-            "restaurant",
-            "inventory",
-            "payments",
-            "expenses",
-            "employees",
-            "housekeeping",
-            "maintenance",
-            "reports",
-            "settings",
-            "hotels"
-
-        ],
-
-
-        hotel_owner: [
-
-            "dashboard",
-            "rooms",
-            "guests",
-            "reservations",
-            "checkin",
-            "checkout",
-            "restaurant",
-            "inventory",
-            "payments",
-            "expenses",
-            "employees",
-            "housekeeping",
-            "maintenance",
-            "reports",
-            "settings"
-
-        ],
-
-
-        manager: [
-
-            "dashboard",
-            "rooms",
-            "guests",
-            "reservations",
-            "checkin",
-            "checkout",
-            "restaurant",
-            "inventory",
-            "payments",
-            "expenses",
-            "employees",
-            "housekeeping",
-            "maintenance",
-            "reports",
-            "settings"
-
-        ],
-
-
-        receptionist: [
-
-            "dashboard",
-            "rooms",
-            "guests",
-            "reservations",
-            "checkin",
-            "checkout",
-            "payments",
-            "reports"
-
-        ]
-
-    };
-
-
-    /* ================================
-       GET CURRENT ROLE
-    ================================= */
-
-    function getRole() {
-
-        let role =
-            sessionStorage.getItem(
-                "userRole"
-            );
-
-
-        if (!role) {
-
-            role =
-                localStorage.getItem(
-                    "userRole"
-                );
-
-        }
-
-
-        return String(
-            role || ""
-        )
-        .toLowerCase()
-        .trim();
-
-    }
-
-
-    /* ================================
-       GET MODULE FROM LINK
-    ================================= */
-
-    function getModuleFromLink(link) {
-
-        const dataModule =
-            link.getAttribute(
-                "data-module"
-            );
-
-
-        if (dataModule) {
-
-            return String(
-                dataModule
-            )
-            .toLowerCase()
-            .trim();
-
-        }
-
-
-        const href =
-            String(
-                link.getAttribute(
-                    "href"
-                ) || ""
-            )
-            .toLowerCase()
-            .split("?")[0]
-            .split("#")[0]
-            .trim();
-
-
-        if (
-
-            href === "./" ||
-            href === "/" ||
-            href === "index.html" ||
-            href === "./index.html" ||
-            href.endsWith(
-                "/index.html"
-            )
-
-        ) {
-
-            return "dashboard";
-
-        }
-
-
-        const modules = [
-
-            "rooms",
-            "guests",
-            "reservations",
-            "checkin",
-            "checkout",
-            "restaurant",
-            "inventory",
-            "payments",
-            "expenses",
-            "employees",
-            "housekeeping",
-            "maintenance",
-            "reports",
-            "settings",
-            "hotels"
-
-        ];
-
-
-        for (
-            let i = 0;
-            i < modules.length;
-            i++
-        ) {
-
-            if (
-                href.includes(
-                    modules[i] +
-                    ".html"
-                )
-            ) {
-
-                return modules[i];
-
-            }
-
-        }
-
-
-        return null;
-
-    }
-
-
-    /* ================================
-       CURRENT MODULE
-    ================================= */
-
-    function getCurrentModule() {
-
-        const filename =
-            window.location.pathname
-            .split("/")
-            .pop()
-            .toLowerCase();
-
-
-        if (
-            !filename ||
-            filename ===
-            "index.html"
-        ) {
-
-            return "dashboard";
-
-        }
-
-
-        return filename.replace(
-            ".html",
-            ""
+/* =================================
+   CLOSE MODAL
+================================= */
+
+function closeExpenseModalOnOutsideClick(event) {
+
+    const modal =
+        document.getElementById(
+            "expenseModal"
         );
-
-    }
-
-
-    /* ================================
-       HIDE UNAUTHORIZED LINKS
-    ================================= */
-
-    function applyRoleControl() {
-
-        const role =
-            getRole();
-
-
-        if (!role) {
-            return;
-        }
-
-
-        const allowed =
-            ROLE_PERMISSIONS[role];
-
-
-        if (!allowed) {
-            return;
-        }
-
-
-        document
-            .querySelectorAll(
-                ".sidebar nav a"
-            )
-            .forEach(
-                function(link) {
-
-                    const module =
-                        getModuleFromLink(
-                            link
-                        );
-
-
-                    if (!module) {
-                        return;
-                    }
-
-
-                    if (
-                        allowed.includes(
-                            module
-                        )
-                    ) {
-
-                        link.classList.remove(
-                            "role-hidden"
-                        );
-
-                        link.style.removeProperty(
-                            "display"
-                        );
-
-                    } else {
-
-                        link.classList.add(
-                            "role-hidden"
-                        );
-
-                        link.style.setProperty(
-                            "display",
-                            "none",
-                            "important"
-                        );
-
-                    }
-
-                }
-            );
-
-    }
-
-
-    /* ================================
-       PROTECT DIRECT PAGE ACCESS
-    ================================= */
-
-    function protectPage() {
-
-        const role =
-            getRole();
-
-
-        if (!role) {
-            return;
-        }
-
-
-        const allowed =
-            ROLE_PERMISSIONS[role];
-
-
-        if (!allowed) {
-            return;
-        }
-
-
-        const currentModule =
-            getCurrentModule();
-
-
-        if (
-            !allowed.includes(
-                currentModule
-            )
-        ) {
-
-            window.location.href =
-                "./index.html";
-
-        }
-
-    }
-
-
-    /* ================================
-       ACCESS DENIED SCREEN
-    ================================= */
-
-    function showAccessDenied() {
-
-        const denied =
-            document.getElementById(
-                "accessDenied"
-            );
-
-
-        const pageContent =
-            document.querySelector(
-                ".page-content"
-            );
-
-
-        if (denied) {
-
-            denied.style.display =
-                "block";
-
-        }
-
-
-        if (pageContent) {
-
-            pageContent.style.display =
-                "none";
-
-        }
-
-
-        const modal =
-            document.getElementById(
-                "expenseModal"
-            );
-
-
-        if (modal) {
-
-            modal.style.display =
-                "none";
-
-        }
-
-    }
-
-
-    /* ================================
-       PAGE ACCESS CONTROL
-    ================================= */
-
-    function checkExpensePageAccess() {
-
-        const role =
-            getRole();
-
-
-        if (!role) {
-            return;
-        }
-
-
-        if (
-            role === "receptionist"
-        ) {
-
-            showAccessDenied();
-
-            return;
-
-        }
-
-
-        if (
-            role === "system_owner" ||
-            role === "hotel_owner" ||
-            role === "manager"
-        ) {
-
-            return;
-
-        }
-
-
-        showAccessDenied();
-
-    }
-
-
-    /* ================================
-       RUN ROLE CONTROL
-    ================================= */
-
-    function runRoleControl() {
-
-        applyRoleControl();
-
-        protectPage();
-
-        checkExpensePageAccess();
-
-    }
 
 
     if (
-        document.readyState ===
-        "loading"
+        event.target === modal
     ) {
 
-        document.addEventListener(
-            "DOMContentLoaded",
-            runRoleControl
+        hideExpenseForm();
+
+    }
+
+}
+
+
+/* =================================
+   INITIALIZE EXPENSE PAGE
+================================= */
+
+function initializeExpensesPage() {
+
+    const expenseForm =
+        document.getElementById(
+            "expenseForm"
         );
 
-    } else {
 
-        runRoleControl();
+    const expenseSearch =
+        document.getElementById(
+            "expenseSearch"
+        );
+
+
+    const expenseFilter =
+        document.getElementById(
+            "expenseFilter"
+        );
+
+
+    const newExpenseButton =
+        document.getElementById(
+            "newExpenseButton"
+        );
+
+
+    const closeExpenseButton =
+        document.getElementById(
+            "closeExpenseButton"
+        );
+
+
+    const cancelExpenseButton =
+        document.getElementById(
+            "cancelExpenseButton"
+        );
+
+
+    const expenseModal =
+        document.getElementById(
+            "expenseModal"
+        );
+
+
+    if (expenseForm) {
+
+        expenseForm.addEventListener(
+            "submit",
+            handleExpenseSubmit
+        );
 
     }
 
 
-    /*
-       Re-apply role control periodically.
-    */
+    if (expenseSearch) {
 
-    setInterval(
-        applyRoleControl,
-        500
+        expenseSearch.addEventListener(
+            "input",
+            searchExpenses
+        );
+
+    }
+
+
+    if (expenseFilter) {
+
+        expenseFilter.addEventListener(
+            "change",
+            applyExpenseFilters
+        );
+
+    }
+
+
+    if (newExpenseButton) {
+
+        newExpenseButton.addEventListener(
+            "click",
+            showExpenseForm
+        );
+
+    }
+
+
+    if (closeExpenseButton) {
+
+        closeExpenseButton.addEventListener(
+            "click",
+            hideExpenseForm
+        );
+
+    }
+
+
+    if (cancelExpenseButton) {
+
+        cancelExpenseButton.addEventListener(
+            "click",
+            hideExpenseForm
+        );
+
+    }
+
+
+    if (expenseModal) {
+
+        expenseModal.addEventListener(
+            "click",
+            closeExpenseModalOnOutsideClick
+        );
+
+    }
+
+
+    displayExpenses();
+
+    checkExpenseAccess();
+
+}
+
+
+/* =================================
+   START
+================================= */
+
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeExpensesPage
     );
 
+} else {
 
-    setInterval(
-        checkExpensePageAccess,
-        500
-    );
+    initializeExpensesPage();
 
-
-    window.applyRoleControl =
-        applyRoleControl;
-
-
-})();
+}
 
 </script>
+
+
+<!-- ================================
+     GLOBAL SCRIPT
+================================= -->
+
+<script src="./script.js"></script>
 
 </body>
 
