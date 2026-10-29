@@ -85,12 +85,12 @@
             display: none;
         }
 
-        /* Role controlled navigation */
-        .role-hidden {
-            display: none !important;
-        }
+        /*
+         * IMPORTANT:
+         * Role control is now handled by the GLOBAL script.js.
+         * Dashboard does not contain a second sidebar role controller.
+         */
 
-        /* Logout button */
         .logout-button {
             display: block;
             width: calc(100% - 20px);
@@ -109,6 +109,11 @@
         .logout-button:hover {
             background: #c82333;
         }
+
+        .logout-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 
@@ -123,7 +128,11 @@
 
         <nav>
 
-            <a href="./index.html" class="active">
+            <a
+                href="./index.html"
+                class="active"
+                data-module="dashboard"
+            >
                 🏠 Dashboard
             </a>
 
@@ -131,6 +140,7 @@
                 href="./hotels.html"
                 id="hotelsNavigation"
                 class="system-owner-hotel-link"
+                data-module="hotels"
             >
                 🏨 Hotels
             </a>
@@ -239,6 +249,7 @@
             type="button"
             class="logout-button"
             id="logoutButton"
+            data-action="logout"
         >
             🚪 Logout
         </button>
@@ -425,172 +436,19 @@
         let currentHotel = null;
 
 
-        /* ================================
-           ROLE PERMISSIONS
-        ================================= */
-
-        const ROLE_PERMISSIONS = {
-
-            system_owner: [
-                "rooms",
-                "guests",
-                "reservations",
-                "checkin",
-                "checkout",
-                "restaurant",
-                "inventory",
-                "payments",
-                "expenses",
-                "employees",
-                "housekeeping",
-                "maintenance",
-                "reports",
-                "settings"
-            ],
-
-            hotel_owner: [
-                "rooms",
-                "guests",
-                "reservations",
-                "checkin",
-                "checkout",
-                "restaurant",
-                "inventory",
-                "payments",
-                "expenses",
-                "employees",
-                "housekeeping",
-                "maintenance",
-                "reports",
-                "settings"
-            ],
-
-            manager: [
-                "rooms",
-                "guests",
-                "reservations",
-                "checkin",
-                "checkout",
-                "restaurant",
-                "inventory",
-                "payments",
-                "expenses",
-                "employees",
-                "housekeeping",
-                "maintenance",
-                "reports",
-                "settings"
-            ],
-
-            receptionist: [
-                "rooms",
-                "guests",
-                "reservations",
-                "checkin",
-                "checkout",
-                "payments",
-                "reports"
-            ]
-
-        };
-
-
-        function applyRolePermissions() {
-
-            if (!currentProfile) {
-                return;
-            }
-
-
-            const role =
-                String(
-                    currentProfile.role || ""
-                ).toLowerCase();
-
-
-            const allowedModules =
-                ROLE_PERMISSIONS[role] || [];
-
-
-            const moduleLinks =
-                document.querySelectorAll(
-                    "[data-module]"
-                );
-
-
-            moduleLinks.forEach(
-                function(link) {
-
-                    const module =
-                        link.getAttribute(
-                            "data-module"
-                        );
-
-
-                    if (
-                        role === "system_owner" ||
-                        allowedModules.includes(module)
-                    ) {
-
-                        link.classList.remove(
-                            "role-hidden"
-                        );
-
-                    } else {
-
-                        link.classList.add(
-                            "role-hidden"
-                        );
-
-                    }
-
-                }
-            );
-
-
-            const hotelsNavigation =
-                document.getElementById(
-                    "hotelsNavigation"
-                );
-
-
-            if (
-                hotelsNavigation
-            ) {
-
-                if (
-                    role === "system_owner"
-                ) {
-
-                    hotelsNavigation.style.display =
-                        "block";
-
-                } else {
-
-                    hotelsNavigation.style.display =
-                        "none";
-
-                }
-
-            }
-
-        }
-
-
-        /* ================================
+        /* =========================================================
            LOGOUT
-        ================================= */
+           ========================================================= */
 
-        document
-            .getElementById("logoutButton")
-            .addEventListener(
+        const logoutButton =
+            document.getElementById("logoutButton");
+
+
+        if (logoutButton) {
+
+            logoutButton.addEventListener(
                 "click",
                 async function() {
-
-                    const logoutButton =
-                        document.getElementById(
-                            "logoutButton"
-                        );
 
                     logoutButton.disabled = true;
 
@@ -647,6 +505,12 @@
                 }
             );
 
+        }
+
+
+        /* =========================================================
+           DATE
+           ========================================================= */
 
         function getToday() {
 
@@ -669,6 +533,10 @@
         }
 
 
+        /* =========================================================
+           HTML ESCAPE
+           ========================================================= */
+
         function escapeHtml(value) {
 
             if (
@@ -689,12 +557,20 @@
         }
 
 
+        /* =========================================================
+           ERROR MESSAGE
+           ========================================================= */
+
         function showDashboardError(message) {
 
             const errorBox =
                 document.getElementById(
                     "dashboardError"
                 );
+
+            if (!errorBox) {
+                return;
+            }
 
             errorBox.textContent =
                 message;
@@ -703,6 +579,10 @@
                 "block";
         }
 
+
+        /* =========================================================
+           HOTEL FILTER
+           ========================================================= */
 
         function applyHotelFilter(query) {
 
@@ -732,6 +612,10 @@
         }
 
 
+        /* =========================================================
+           AUTH STATE
+           ========================================================= */
+
         supabaseClient.auth.onAuthStateChange(
             function(event) {
 
@@ -747,6 +631,10 @@
             }
         );
 
+
+        /* =========================================================
+           LOAD CURRENT USER
+           ========================================================= */
 
         async function loadCurrentUser() {
 
@@ -808,6 +696,11 @@
                 profile;
 
 
+            /*
+             * Keep the role information available to the
+             * GLOBAL script.js.
+             */
+
             sessionStorage.setItem(
                 "userRole",
                 profile.role
@@ -836,6 +729,22 @@
             }
 
 
+            /*
+             * IMPORTANT:
+             * The Dashboard no longer controls the sidebar.
+             * The global script.js controls it.
+             */
+
+            if (
+                typeof window.applyGlobalRoleSidebar ===
+                "function"
+            ) {
+
+                window.applyGlobalRoleSidebar();
+
+            }
+
+
             document.getElementById(
                 "dashboardUserName"
             ).textContent =
@@ -846,9 +755,6 @@
                 "dashboardUserRole"
             ).textContent =
                 profile.role;
-
-
-            applyRolePermissions();
 
 
             const hotelsNavigation =
@@ -862,8 +768,13 @@
                 "system_owner"
             ) {
 
-                hotelsNavigation.style.display =
-                    "block";
+                if (hotelsNavigation) {
+
+                    hotelsNavigation.classList.remove(
+                        "role-hidden"
+                    );
+
+                }
 
 
                 document.getElementById(
@@ -888,8 +799,13 @@
             }
 
 
-            hotelsNavigation.style.display =
-                "none";
+            if (hotelsNavigation) {
+
+                hotelsNavigation.classList.add(
+                    "role-hidden"
+                );
+
+            }
 
 
             if (!profile.hotel_id) {
@@ -967,6 +883,10 @@
             return true;
         }
 
+
+        /* =========================================================
+           LOAD ROOMS
+           ========================================================= */
 
         async function loadRooms() {
 
@@ -1083,6 +1003,10 @@
             );
         }
 
+
+        /* =========================================================
+           ROOM TABLE
+           ========================================================= */
 
         async function displayRoomTable(rooms) {
 
@@ -1312,6 +1236,10 @@
         }
 
 
+        /* =========================================================
+           TODAY'S REVENUE
+           ========================================================= */
+
         async function loadTodayRevenue() {
 
             const today =
@@ -1378,6 +1306,10 @@
         }
 
 
+        /* =========================================================
+           TODAY'S EXPENSES
+           ========================================================= */
+
         async function loadTodayExpenses() {
 
             const today =
@@ -1443,6 +1375,10 @@
             return expenses;
         }
 
+
+        /* =========================================================
+           TODAY'S BOOKINGS
+           ========================================================= */
 
         async function loadTodayBookings() {
 
@@ -1555,6 +1491,10 @@
             return bookings;
         }
 
+
+        /* =========================================================
+           TODAY'S ACTIVITY
+           ========================================================= */
 
         async function loadTodayActivity() {
 
@@ -2029,6 +1969,10 @@
         }
 
 
+        /* =========================================================
+           PROFIT
+           ========================================================= */
+
         async function loadProfit() {
 
             const revenue =
@@ -2056,6 +2000,10 @@
         }
 
 
+        /* =========================================================
+           DASHBOARD
+           ========================================================= */
+
         async function loadDashboard() {
 
             const authenticated =
@@ -2081,6 +2029,9 @@
         loadDashboard();
 
     </script>
+
+    <!-- GLOBAL ROLE CONTROL MUST LOAD LAST -->
+    <script src="./script.js"></script>
 
 </body>
 </html>
