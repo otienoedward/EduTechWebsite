@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,93 +63,376 @@
     <script src="supabase.js"></script>
 
     <script>
-        const loginForm = document.getElementById("loginForm");
-        const loginMessage = document.getElementById("loginMessage");
 
-        loginForm.addEventListener("submit", async function (event) {
-            event.preventDefault();
+        const loginForm =
+            document.getElementById("loginForm");
 
-            const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value;
+        const loginMessage =
+            document.getElementById("loginMessage");
 
-            loginMessage.style.display = "none";
-            loginMessage.textContent = "";
 
-            const { data, error } =
-                await supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
+        function showLoginError(message) {
 
-            if (error) {
-                loginMessage.className = "alert alert-danger";
-                loginMessage.textContent = error.message;
-                loginMessage.style.display = "block";
-                return;
-            }
+            loginMessage.className =
+                "alert alert-danger";
 
-            const user = data.user;
+            loginMessage.textContent =
+                message;
 
-            if (!user) {
-                loginMessage.className = "alert alert-danger";
+            loginMessage.style.display =
+                "block";
+
+        }
+
+
+        loginForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+                const email =
+                    document.getElementById("email")
+                    .value
+                    .trim();
+
+                const password =
+                    document.getElementById("password")
+                    .value;
+
+                loginMessage.style.display =
+                    "none";
+
                 loginMessage.textContent =
-                    "Login failed. User account was not found.";
-                loginMessage.style.display = "block";
-                return;
-            }
+                    "";
 
-            const { data: profile, error: profileError } =
-                await supabaseClient
+
+                /*
+                 * STEP 1
+                 * Authenticate the user.
+                 */
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient.auth
+                    .signInWithPassword({
+
+                        email: email,
+
+                        password: password
+
+                    });
+
+
+                if (error) {
+
+                    showLoginError(
+                        error.message
+                    );
+
+                    return;
+
+                }
+
+
+                const user =
+                    data.user;
+
+
+                if (!user) {
+
+                    await supabaseClient.auth.signOut();
+
+                    showLoginError(
+                        "Login failed. User account was not found."
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                 * STEP 2
+                 * Load the user's profile.
+                 */
+
+                const {
+                    data: profile,
+                    error: profileError
+                } =
+                    await supabaseClient
                     .from("profiles")
-                    .select("id, full_name, role, hotel_id")
+                    .select(
+                        "id, full_name, role, hotel_id"
+                    )
                     .eq("id", user.id)
                     .single();
 
-            if (profileError) {
-                await supabaseClient.auth.signOut();
 
-                loginMessage.className = "alert alert-danger";
-                loginMessage.textContent =
-                    "Your user profile could not be loaded. Please contact the system administrator.";
-                loginMessage.style.display = "block";
-                return;
-            }
+                if (profileError) {
 
-            if (!profile) {
-                await supabaseClient.auth.signOut();
+                    await supabaseClient.auth.signOut();
 
-                loginMessage.className = "alert alert-danger";
-                loginMessage.textContent =
-                    "No system profile exists for this account.";
-                loginMessage.style.display = "block";
-                return;
-            }
+                    showLoginError(
+                        "Your user profile could not be loaded. Please contact the system administrator."
+                    );
 
-            if (profile.role !== "system_owner" && !profile.hotel_id) {
-                await supabaseClient.auth.signOut();
+                    return;
 
-                loginMessage.className = "alert alert-danger";
-                loginMessage.textContent =
-                    "Your account is not assigned to a hotel.";
-                loginMessage.style.display = "block";
-                return;
-            }
+                }
 
-            sessionStorage.setItem("userRole", profile.role);
-            sessionStorage.setItem("userName", profile.full_name);
 
-            if (profile.hotel_id) {
+                if (!profile) {
+
+                    await supabaseClient.auth.signOut();
+
+                    showLoginError(
+                        "No system profile exists for this account."
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                 * STEP 3
+                 * System Owner is not controlled
+                 * by any individual hotel's subscription.
+                 */
+
+                if (profile.role === "system_owner") {
+
+                    sessionStorage.setItem(
+                        "userRole",
+                        profile.role
+                    );
+
+                    sessionStorage.setItem(
+                        "userName",
+                        profile.full_name || ""
+                    );
+
+                    sessionStorage.removeItem(
+                        "hotelId"
+                    );
+
+                    window.location.href =
+                        "index.html";
+
+                    return;
+
+                }
+
+
+                /*
+                 * STEP 4
+                 * Every other user must belong
+                 * to a hotel.
+                 */
+
+                if (!profile.hotel_id) {
+
+                    await supabaseClient.auth.signOut();
+
+                    showLoginError(
+                        "Your account is not assigned to a hotel."
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                 * STEP 5
+                 * Load the assigned hotel.
+                 */
+
+                const {
+                    data: hotel,
+                    error: hotelError
+                } =
+                    await supabaseClient
+                    .from("hotels")
+                    .select(
+                        "id, hotel_name, status, subscription_start, subscription_end, subscription_status"
+                    )
+                    .eq("id", profile.hotel_id)
+                    .single();
+
+
+                if (hotelError || !hotel) {
+
+                    await supabaseClient.auth.signOut();
+
+                    showLoginError(
+                        "Your assigned hotel could not be found. Please contact the system administrator."
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                 * STEP 6
+                 * Check hotel status.
+                 */
+
+                const hotelStatus =
+                    String(
+                        hotel.status || "active"
+                    ).toLowerCase();
+
+
+                if (
+                    hotelStatus === "deactivated"
+                ) {
+
+                    await supabaseClient.auth.signOut();
+
+                    showLoginError(
+                        "Access denied. Your hotel account has been deactivated. Please contact the System Owner."
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    hotelStatus === "suspended"
+                ) {
+
+                    await supabaseClient.auth.signOut();
+
+                    showLoginError(
+                        "Access denied. Your hotel account is currently suspended. Please contact the System Owner."
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                 * STEP 7
+                 * Check subscription status.
+                 */
+
+                const subscriptionStatus =
+                    String(
+                        hotel.subscription_status || "active"
+                    ).toLowerCase();
+
+
+                if (
+                    subscriptionStatus === "expired" ||
+                    subscriptionStatus === "cancelled"
+                ) {
+
+                    await supabaseClient.auth.signOut();
+
+                    showLoginError(
+                        "Access denied. Your hotel's subscription is no longer active. Please contact the System Owner."
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                 * STEP 8
+                 * Check subscription end date.
+                 *
+                 * This makes expiry work even if the
+                 * subscription_status field has not yet
+                 * been changed to 'expired'.
+                 */
+
+                if (hotel.subscription_end) {
+
+                    const today =
+                        new Date();
+
+                    today.setHours(
+                        0,
+                        0,
+                        0,
+                        0
+                    );
+
+
+                    const subscriptionEnd =
+                        new Date(
+                            hotel.subscription_end +
+                            "T00:00:00"
+                        );
+
+
+                    if (
+                        subscriptionEnd <
+                        today
+                    ) {
+
+                        await supabaseClient.auth.signOut();
+
+                        showLoginError(
+                            "Access denied. Your hotel's subscription has expired. Please contact the System Owner for renewal."
+                        );
+
+                        return;
+
+                    }
+
+                }
+
+
+                /*
+                 * STEP 9
+                 * Everything is okay.
+                 * Save the login information.
+                 */
+
+                sessionStorage.setItem(
+                    "userRole",
+                    profile.role
+                );
+
+                sessionStorage.setItem(
+                    "userName",
+                    profile.full_name || ""
+                );
+
                 sessionStorage.setItem(
                     "hotelId",
                     profile.hotel_id
                 );
-            } else {
-                sessionStorage.removeItem("hotelId");
-            }
 
-            window.location.href = "index.html";
-        });
+                sessionStorage.setItem(
+                    "hotelName",
+                    hotel.hotel_name || ""
+                );
+
+
+                /*
+                 * STEP 10
+                 * Open the dashboard.
+                 */
+
+                window.location.href =
+                    "index.html";
+
+            }
+        );
+
     </script>
 
 </body>
 </html>
+```
