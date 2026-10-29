@@ -2,7 +2,7 @@
 
 /* =========================================================
    EDU TECH HOTEL MANAGEMENT SYSTEM
-   GLOBAL ROLE CONTROL
+   GLOBAL ROLE CONTROL + GLOBAL LOGOUT
    ========================================================= */
 
 
@@ -133,20 +133,14 @@ function getCurrentUserRole() {
    GET MODULE FROM LINK
    ========================================================= */
 
-function getModuleFromLink(link) {
+function getModuleFromLink(element) {
 
-    if (!link) {
+    if (!element) {
         return "";
     }
 
-
-    /* -----------------------------------------------------
-       First check data-module
-       ----------------------------------------------------- */
-
     const dataModule =
-        link.getAttribute("data-module");
-
+        element.getAttribute("data-module");
 
     if (dataModule) {
 
@@ -156,14 +150,8 @@ function getModuleFromLink(link) {
 
     }
 
-
-    /* -----------------------------------------------------
-       Then check href
-       ----------------------------------------------------- */
-
     const href =
-        link.getAttribute("href") || "";
-
+        element.getAttribute("href") || "";
 
     const cleanHref =
         href
@@ -171,12 +159,10 @@ function getModuleFromLink(link) {
             .split("#")[0]
             .toLowerCase();
 
-
     const fileName =
         cleanHref.substring(
             cleanHref.lastIndexOf("/") + 1
         );
-
 
     return fileName
         .replace(".html", "")
@@ -186,7 +172,7 @@ function getModuleFromLink(link) {
 
 
 /* =========================================================
-   CHECK DASHBOARD
+   CHECK DASHBOARD LINK
    ========================================================= */
 
 function isDashboardLink(element) {
@@ -195,10 +181,8 @@ function isDashboardLink(element) {
         return false;
     }
 
-
     const moduleName =
         getModuleFromLink(element);
-
 
     const href =
         String(
@@ -206,7 +190,6 @@ function isDashboardLink(element) {
         )
             .toLowerCase()
             .trim();
-
 
     return (
 
@@ -226,7 +209,7 @@ function isDashboardLink(element) {
 
 
 /* =========================================================
-   CHECK LOGOUT
+   CHECK LOGOUT ELEMENT
    ========================================================= */
 
 function isLogoutElement(element) {
@@ -235,14 +218,12 @@ function isLogoutElement(element) {
         return false;
     }
 
-
     const dataAction =
         String(
             element.getAttribute("data-action") || ""
         )
             .toLowerCase()
             .trim();
-
 
     const dataModule =
         String(
@@ -251,14 +232,12 @@ function isLogoutElement(element) {
             .toLowerCase()
             .trim();
 
-
     const id =
         String(
             element.id || ""
         )
             .toLowerCase()
             .trim();
-
 
     const className =
         String(
@@ -269,14 +248,12 @@ function isLogoutElement(element) {
             .toLowerCase()
             .trim();
 
-
     const href =
         String(
             element.getAttribute("href") || ""
         )
             .toLowerCase()
             .trim();
-
 
     const text =
         String(
@@ -286,22 +263,14 @@ function isLogoutElement(element) {
             .replace(/\s+/g, " ")
             .trim();
 
-
-    /* -----------------------------------------------------
-       Check explicit attributes
-       ----------------------------------------------------- */
-
     if (
         dataAction === "logout" ||
         dataAction === "log-out" ||
         dataAction === "signout" ||
         dataAction === "sign-out"
     ) {
-
         return true;
-
     }
-
 
     if (
         dataModule === "logout" ||
@@ -309,15 +278,8 @@ function isLogoutElement(element) {
         dataModule === "signout" ||
         dataModule === "sign-out"
     ) {
-
         return true;
-
     }
-
-
-    /* -----------------------------------------------------
-       Check ID
-       ----------------------------------------------------- */
 
     if (
         id.includes("logout") ||
@@ -325,15 +287,8 @@ function isLogoutElement(element) {
         id.includes("signout") ||
         id.includes("sign-out")
     ) {
-
         return true;
-
     }
-
-
-    /* -----------------------------------------------------
-       Check class
-       ----------------------------------------------------- */
 
     if (
         className.includes("logout") ||
@@ -341,30 +296,16 @@ function isLogoutElement(element) {
         className.includes("signout") ||
         className.includes("sign-out")
     ) {
-
         return true;
-
     }
-
-
-    /* -----------------------------------------------------
-       Check href
-       ----------------------------------------------------- */
 
     if (
         href.includes("logout") ||
         href.includes("signout") ||
         href.includes("sign-out")
     ) {
-
         return true;
-
     }
-
-
-    /* -----------------------------------------------------
-       Check visible text
-       ----------------------------------------------------- */
 
     if (
         text === "logout" ||
@@ -372,13 +313,258 @@ function isLogoutElement(element) {
         text === "signout" ||
         text === "sign out"
     ) {
-
         return true;
+    }
+
+    return false;
+
+}
+
+
+/* =========================================================
+   LOGOUT FUNCTION
+   ========================================================= */
+
+async function logoutUser(event) {
+
+    if (event) {
+        event.preventDefault();
+    }
+
+    try {
+
+        /*
+           Sign out from Supabase when available.
+        */
+
+        if (
+            typeof supabaseClient !== "undefined" &&
+            supabaseClient &&
+            supabaseClient.auth
+        ) {
+
+            await supabaseClient.auth.signOut();
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Logout error:",
+            error
+        );
 
     }
 
 
-    return false;
+    /*
+       Remove only authentication/session
+       information.
+
+       DO NOT clear all storage because the
+       application may contain payment,
+       inventory or other local data.
+    */
+
+    sessionStorage.removeItem("userRole");
+    sessionStorage.removeItem("userName");
+    sessionStorage.removeItem("hotelId");
+
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("hotelId");
+
+
+    /*
+       Return to login page.
+    */
+
+    window.location.href =
+        "./login.html";
+
+}
+
+
+/*
+   Make logout function available globally.
+*/
+
+window.logoutUser =
+    logoutUser;
+
+
+/* =========================================================
+   CREATE GLOBAL LOGOUT CONTROL
+   ========================================================= */
+
+function ensureGlobalLogoutControl() {
+
+    const sidebars =
+        document.querySelectorAll(
+            ".sidebar"
+        );
+
+    sidebars.forEach(
+        function(sidebar) {
+
+            /*
+               Look for an existing Logout control.
+            */
+
+            let logoutElement =
+                sidebar.querySelector(
+                    '[data-action="logout"]'
+                );
+
+
+            /*
+               If not found, search all links
+               and buttons for an existing Logout.
+            */
+
+            if (!logoutElement) {
+
+                const possibleElements =
+                    sidebar.querySelectorAll(
+                        "a, button"
+                    );
+
+                possibleElements.forEach(
+                    function(element) {
+
+                        if (
+                            !logoutElement &&
+                            isLogoutElement(element)
+                        ) {
+
+                            logoutElement =
+                                element;
+
+                        }
+
+                    }
+                );
+
+            }
+
+
+            /*
+               If Logout does not exist on this page,
+               create it.
+            */
+
+            if (!logoutElement) {
+
+                logoutElement =
+                    document.createElement(
+                        "button"
+                    );
+
+                logoutElement.type =
+                    "button";
+
+                logoutElement.className =
+                    "logout-btn";
+
+                logoutElement.setAttribute(
+                    "data-action",
+                    "logout"
+                );
+
+                logoutElement.textContent =
+                    "Logout";
+
+                sidebar.appendChild(
+                    logoutElement
+                );
+
+            }
+
+
+            /*
+               Standardize the Logout control.
+            */
+
+            logoutElement.setAttribute(
+                "data-action",
+                "logout"
+            );
+
+            logoutElement.classList.add(
+                "logout-btn"
+            );
+
+
+            /*
+               Remove role hiding.
+            */
+
+            logoutElement.classList.remove(
+                "role-hidden"
+            );
+
+            logoutElement.classList.remove(
+                "hidden"
+            );
+
+            logoutElement.classList.remove(
+                "d-none"
+            );
+
+
+            logoutElement.removeAttribute(
+                "aria-hidden"
+            );
+
+
+            /*
+               Force visibility.
+            */
+
+            logoutElement.style.setProperty(
+                "display",
+                "flex",
+                "important"
+            );
+
+            logoutElement.style.setProperty(
+                "visibility",
+                "visible",
+                "important"
+            );
+
+            logoutElement.style.setProperty(
+                "opacity",
+                "1",
+                "important"
+            );
+
+
+            /*
+               Make sure Logout has only one
+               click handler.
+
+               Clone and replace only if the
+               element was originally created
+               without our handler.
+            */
+
+            if (
+                logoutElement.dataset.globalLogoutBound !== "true"
+            ) {
+
+                logoutElement.addEventListener(
+                    "click",
+                    logoutUser
+                );
+
+                logoutElement.dataset.globalLogoutBound =
+                    "true";
+
+            }
+
+        }
+    );
 
 }
 
@@ -389,104 +575,65 @@ function isLogoutElement(element) {
 
 function forceLogoutVisible() {
 
-    const sidebar =
-        document.querySelector(".sidebar");
-
-
-    if (!sidebar) {
-        return;
-    }
-
-
-    /*
-       Check links and buttons.
-    */
-
-    const elements =
-        sidebar.querySelectorAll(
-            "a, button"
+    const sidebars =
+        document.querySelectorAll(
+            ".sidebar"
         );
 
+    sidebars.forEach(
+        function(sidebar) {
 
-    elements.forEach(
-        function(element) {
+            const elements =
+                sidebar.querySelectorAll(
+                    "a, button"
+                );
 
-            if (
-                !isLogoutElement(element)
-            ) {
+            elements.forEach(
+                function(element) {
 
-                return;
-
-            }
-
-
-            /*
-               Remove every role-based hiding
-               mechanism from Logout.
-            */
-
-            element.classList.remove(
-                "role-hidden"
-            );
+                    if (
+                        !isLogoutElement(element)
+                    ) {
+                        return;
+                    }
 
 
-            element.classList.remove(
-                "hidden"
-            );
+                    element.classList.remove(
+                        "role-hidden"
+                    );
+
+                    element.classList.remove(
+                        "hidden"
+                    );
+
+                    element.classList.remove(
+                        "d-none"
+                    );
+
+                    element.removeAttribute(
+                        "aria-hidden"
+                    );
 
 
-            element.classList.remove(
-                "d-none"
-            );
+                    element.style.setProperty(
+                        "display",
+                        "flex",
+                        "important"
+                    );
 
+                    element.style.setProperty(
+                        "visibility",
+                        "visible",
+                        "important"
+                    );
 
-            element.removeAttribute(
-                "aria-hidden"
-            );
+                    element.style.setProperty(
+                        "opacity",
+                        "1",
+                        "important"
+                    );
 
-
-            /*
-               Remove inline hiding.
-            */
-
-            element.style.removeProperty(
-                "display"
-            );
-
-
-            element.style.removeProperty(
-                "visibility"
-            );
-
-
-            element.style.removeProperty(
-                "opacity"
-            );
-
-
-            /*
-               Force visibility in case another
-               page has an inline display:none.
-            */
-
-            element.style.setProperty(
-                "display",
-                "flex",
-                "important"
-            );
-
-
-            element.style.setProperty(
-                "visibility",
-                "visible",
-                "important"
-            );
-
-
-            element.style.setProperty(
-                "opacity",
-                "1",
-                "important"
+                }
             );
 
         }
@@ -505,10 +652,8 @@ function isProtectedModuleLink(element) {
         return false;
     }
 
-
     const moduleName =
         getModuleFromLink(element);
-
 
     return PROTECTED_MODULES.includes(
         moduleName
@@ -531,24 +676,36 @@ function setModuleVisibility(
     }
 
 
+    /*
+       Never hide Logout.
+    */
+
+    if (
+        isLogoutElement(element)
+    ) {
+
+        forceLogoutVisible();
+
+        return;
+
+    }
+
+
     if (visible) {
 
         element.classList.remove(
             "role-hidden"
         );
 
-
         element.removeAttribute(
             "aria-hidden"
         );
-
 
     } else {
 
         element.classList.add(
             "role-hidden"
         );
-
 
         element.setAttribute(
             "aria-hidden",
@@ -561,18 +718,26 @@ function setModuleVisibility(
 
 
 /* =========================================================
-   APPLY GLOBAL ROLE CONTROL
+   APPLY GLOBAL ROLE SIDEBAR
    ========================================================= */
 
 function applyGlobalRoleSidebar() {
 
-    const sidebar =
-        document.querySelector(
+    /*
+       First make sure every page has
+       a Logout control.
+    */
+
+    ensureGlobalLogoutControl();
+
+
+    const sidebars =
+        document.querySelectorAll(
             ".sidebar"
         );
 
 
-    if (!sidebar) {
+    if (!sidebars.length) {
         return;
     }
 
@@ -582,15 +747,8 @@ function applyGlobalRoleSidebar() {
 
 
     /*
-       Always protect Logout first.
-    */
-
-    forceLogoutVisible();
-
-
-    /*
-       If the role has not loaded yet,
-       do not make role decisions.
+       If role has not loaded yet,
+       do not hide any modules.
     */
 
     if (!role) {
@@ -606,99 +764,103 @@ function applyGlobalRoleSidebar() {
         ROLE_PERMISSIONS[role] || [];
 
 
-    const links =
-        sidebar.querySelectorAll(
-            "a"
-        );
+    sidebars.forEach(
+        function(sidebar) {
 
-
-    links.forEach(
-        function(link) {
-
-            /*
-               NEVER process Logout as a
-               normal module.
-            */
-
-            if (
-                isLogoutElement(link)
-            ) {
-
-                forceLogoutVisible();
-
-                return;
-
-            }
-
-
-            /*
-               Dashboard must always remain visible.
-            */
-
-            if (
-                isDashboardLink(link)
-            ) {
-
-                setModuleVisibility(
-                    link,
-                    true
-                );
-
-                return;
-
-            }
-
-
-            /*
-               Ignore links that are not part
-               of the protected module list.
-            */
-
-            if (
-                !isProtectedModuleLink(link)
-            ) {
-
-                return;
-
-            }
-
-
-            const moduleName =
-                getModuleFromLink(link);
-
-
-            /*
-               System Owner has access to
-               everything.
-            */
-
-            if (
-                role === "system_owner"
-            ) {
-
-                setModuleVisibility(
-                    link,
-                    true
-                );
-
-                return;
-
-            }
-
-
-            /*
-               Other roles follow permissions.
-            */
-
-            const allowed =
-                allowedModules.includes(
-                    moduleName
+            const links =
+                sidebar.querySelectorAll(
+                    "a"
                 );
 
 
-            setModuleVisibility(
-                link,
-                allowed
+            links.forEach(
+                function(link) {
+
+                    /*
+                       Logout is NEVER a module.
+                    */
+
+                    if (
+                        isLogoutElement(link)
+                    ) {
+
+                        forceLogoutVisible();
+
+                        return;
+
+                    }
+
+
+                    /*
+                       Dashboard is always visible.
+                    */
+
+                    if (
+                        isDashboardLink(link)
+                    ) {
+
+                        setModuleVisibility(
+                            link,
+                            true
+                        );
+
+                        return;
+
+                    }
+
+
+                    /*
+                       Only process protected
+                       hotel modules.
+                    */
+
+                    if (
+                        !isProtectedModuleLink(link)
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const moduleName =
+                        getModuleFromLink(link);
+
+
+                    /*
+                       System Owner sees everything.
+                    */
+
+                    if (
+                        role === "system_owner"
+                    ) {
+
+                        setModuleVisibility(
+                            link,
+                            true
+                        );
+
+                        return;
+
+                    }
+
+
+                    /*
+                       Check role permission.
+                    */
+
+                    const allowed =
+                        allowedModules.includes(
+                            moduleName
+                        );
+
+
+                    setModuleVisibility(
+                        link,
+                        allowed
+                    );
+
+                }
             );
 
         }
@@ -706,11 +868,10 @@ function applyGlobalRoleSidebar() {
 
 
     /*
-       FINAL LOGOUT CHECK.
-       This is deliberately done after
-       all module processing.
+       Final protection for Logout.
     */
 
+    ensureGlobalLogoutControl();
     forceLogoutVisible();
 
 
@@ -722,7 +883,6 @@ function applyGlobalRoleSidebar() {
         "role-control-ready"
     );
 
-
     document.documentElement.classList.remove(
         "role-control-pending"
     );
@@ -731,7 +891,7 @@ function applyGlobalRoleSidebar() {
 
 
 /* =========================================================
-   EXPOSE GLOBAL FUNCTION
+   EXPOSE GLOBAL ROLE FUNCTION
    ========================================================= */
 
 window.applyGlobalRoleSidebar =
@@ -739,7 +899,7 @@ window.applyGlobalRoleSidebar =
 
 
 /* =========================================================
-   RUN ROLE CONTROL
+   RUN GLOBAL ROLE CONTROL
    ========================================================= */
 
 function runGlobalRoleControl() {
@@ -796,7 +956,7 @@ function startSidebarObserver() {
         new MutationObserver(
             function(mutations) {
 
-                let relevantChange =
+                let sidebarChanged =
                     false;
 
 
@@ -804,9 +964,14 @@ function startSidebarObserver() {
                     function(mutation) {
 
                         /*
-                           Detect changes to classes,
-                           style, attributes or newly
-                           created sidebar elements.
+                           Only watch newly added or
+                           removed sidebar elements.
+
+                           IMPORTANT:
+                           We intentionally do NOT watch
+                           class/style changes because our
+                           own role-control code changes
+                           those attributes.
                         */
 
                         if (
@@ -814,52 +979,47 @@ function startSidebarObserver() {
                             "childList"
                         ) {
 
+                            const target =
+                                mutation.target;
+
+
                             if (
-                                mutation.target.closest &&
-                                mutation.target.closest(
+                                target &&
+                                target.closest &&
+                                target.closest(
                                     ".sidebar"
                                 )
                             ) {
 
-                                relevantChange =
+                                sidebarChanged =
                                     true;
 
                             }
 
-                        }
-
-
-                        if (
-                            mutation.type ===
-                            "attributes"
-                        ) {
 
                             if (
-                                mutation.target.closest &&
-                                mutation.target.closest(
-                                    ".sidebar"
-                                )
+                                mutation.addedNodes &&
+                                mutation.addedNodes.length
                             ) {
 
-                                /*
-                                   Only react immediately
-                                   if the affected element
-                                   is Logout or a module.
-                                */
+                                mutation.addedNodes.forEach(
+                                    function(node) {
 
-                                if (
-                                    isLogoutElement(
-                                        mutation.target
-                                    ) ||
-                                    isProtectedModuleLink(
-                                        mutation.target
-                                    )
-                                ) {
+                                        if (
+                                            node.nodeType === 1 &&
+                                            node.closest &&
+                                            node.closest(
+                                                ".sidebar"
+                                            )
+                                        ) {
 
-                                    relevantChange =
-                                        true;
+                                            sidebarChanged =
+                                                true;
 
-                                }
+                                        }
+
+                                    }
+                                );
 
                             }
 
@@ -870,10 +1030,23 @@ function startSidebarObserver() {
 
 
                 if (
-                    relevantChange
+                    sidebarChanged
                 ) {
 
-                    applyGlobalRoleSidebar();
+                    /*
+                       Small delay allows the
+                       page to finish inserting
+                       sidebar content.
+                    */
+
+                    setTimeout(
+                        function() {
+
+                            applyGlobalRoleSidebar();
+
+                        },
+                        20
+                    );
 
                 }
 
@@ -885,16 +1058,7 @@ function startSidebarObserver() {
         document.body,
         {
             childList: true,
-            subtree: true,
-            attributes: true,
-            attributeFilter: [
-                "class",
-                "style",
-                "aria-hidden",
-                "data-module",
-                "data-action",
-                "href"
-            ]
+            subtree: true
         }
     );
 
@@ -902,7 +1066,7 @@ function startSidebarObserver() {
 
 
 /* =========================================================
-   START OBSERVER
+   START SIDEBAR OBSERVER
    ========================================================= */
 
 if (
@@ -931,21 +1095,7 @@ setInterval(
         applyGlobalRoleSidebar();
 
     },
-    1000
-);
-
-
-/* =========================================================
-   EXTRA LOGOUT PROTECTION
-   ========================================================= */
-
-setInterval(
-    function() {
-
-        forceLogoutVisible();
-
-    },
-    300
+    2000
 );
 
 
