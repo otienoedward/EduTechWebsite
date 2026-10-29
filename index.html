@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -86,6 +85,11 @@
             display: none;
         }
 
+        /* Role controlled navigation */
+        .role-hidden {
+            display: none !important;
+        }
+
         /* Logout button */
         .logout-button {
             display: block;
@@ -131,59 +135,101 @@
                 🏨 Hotels
             </a>
 
-            <a href="./rooms.html">
+            <a
+                href="./rooms.html"
+                data-module="rooms"
+            >
                 🛏️ Rooms
             </a>
 
-            <a href="./guests.html">
+            <a
+                href="./guests.html"
+                data-module="guests"
+            >
                 👤 Guests
             </a>
 
-            <a href="./reservations.html">
+            <a
+                href="./reservations.html"
+                data-module="reservations"
+            >
                 📅 Reservations
             </a>
 
-            <a href="./checkin.html">
+            <a
+                href="./checkin.html"
+                data-module="checkin"
+            >
                 🛎️ Check-in
             </a>
 
-            <a href="./checkout.html">
+            <a
+                href="./checkout.html"
+                data-module="checkout"
+            >
                 🚪 Check-out
             </a>
 
-            <a href="./restaurant.html">
+            <a
+                href="./restaurant.html"
+                data-module="restaurant"
+            >
                 🍽️ Restaurant
             </a>
 
-            <a href="./inventory.html">
+            <a
+                href="./inventory.html"
+                data-module="inventory"
+            >
                 📦 Inventory
             </a>
 
-            <a href="./payments.html">
+            <a
+                href="./payments.html"
+                data-module="payments"
+            >
                 💰 Payments
             </a>
 
-            <a href="./expenses.html">
+            <a
+                href="./expenses.html"
+                data-module="expenses"
+            >
                 💸 Expenses
             </a>
 
-            <a href="./employees.html">
+            <a
+                href="./employees.html"
+                data-module="employees"
+            >
                 👨‍💼 Employees
             </a>
 
-            <a href="./housekeeping.html">
+            <a
+                href="./housekeeping.html"
+                data-module="housekeeping"
+            >
                 🧹 Housekeeping
             </a>
 
-            <a href="./maintenance.html">
+            <a
+                href="./maintenance.html"
+                data-module="maintenance"
+            >
                 🔧 Maintenance
             </a>
 
-            <a href="./reports.html">
+            <a
+                href="./reports.html"
+                data-module="reports"
+            >
                 📊 Reports
             </a>
 
-            <a href="./settings.html">
+            <a
+                href="./settings.html"
+                data-module="settings"
+            >
                 ⚙️ Settings
             </a>
 
@@ -377,6 +423,158 @@
         let currentUser = null;
         let currentProfile = null;
         let currentHotel = null;
+
+
+        /* ================================
+           ROLE PERMISSIONS
+        ================================= */
+
+        const ROLE_PERMISSIONS = {
+
+            system_owner: [
+                "rooms",
+                "guests",
+                "reservations",
+                "checkin",
+                "checkout",
+                "restaurant",
+                "inventory",
+                "payments",
+                "expenses",
+                "employees",
+                "housekeeping",
+                "maintenance",
+                "reports",
+                "settings"
+            ],
+
+            hotel_owner: [
+                "rooms",
+                "guests",
+                "reservations",
+                "checkin",
+                "checkout",
+                "restaurant",
+                "inventory",
+                "payments",
+                "expenses",
+                "employees",
+                "housekeeping",
+                "maintenance",
+                "reports",
+                "settings"
+            ],
+
+            manager: [
+                "rooms",
+                "guests",
+                "reservations",
+                "checkin",
+                "checkout",
+                "restaurant",
+                "inventory",
+                "payments",
+                "expenses",
+                "employees",
+                "housekeeping",
+                "maintenance",
+                "reports",
+                "settings"
+            ],
+
+            receptionist: [
+                "rooms",
+                "guests",
+                "reservations",
+                "checkin",
+                "checkout",
+                "payments",
+                "reports"
+            ]
+
+        };
+
+
+        function applyRolePermissions() {
+
+            if (!currentProfile) {
+                return;
+            }
+
+
+            const role =
+                String(
+                    currentProfile.role || ""
+                ).toLowerCase();
+
+
+            const allowedModules =
+                ROLE_PERMISSIONS[role] || [];
+
+
+            const moduleLinks =
+                document.querySelectorAll(
+                    "[data-module]"
+                );
+
+
+            moduleLinks.forEach(
+                function(link) {
+
+                    const module =
+                        link.getAttribute(
+                            "data-module"
+                        );
+
+
+                    if (
+                        role === "system_owner" ||
+                        allowedModules.includes(module)
+                    ) {
+
+                        link.classList.remove(
+                            "role-hidden"
+                        );
+
+                    } else {
+
+                        link.classList.add(
+                            "role-hidden"
+                        );
+
+                    }
+
+                }
+            );
+
+
+            const hotelsNavigation =
+                document.getElementById(
+                    "hotelsNavigation"
+                );
+
+
+            if (
+                hotelsNavigation
+            ) {
+
+                if (
+                    role === "system_owner"
+                ) {
+
+                    hotelsNavigation.style.display =
+                        "block";
+
+                } else {
+
+                    hotelsNavigation.style.display =
+                        "none";
+
+                }
+
+            }
+
+        }
 
 
         /* ================================
@@ -648,6 +846,9 @@
                 "dashboardUserRole"
             ).textContent =
                 profile.role;
+
+
+            applyRolePermissions();
 
 
             const hotelsNavigation =
@@ -1883,4 +2084,3 @@
 
 </body>
 </html>
-```
