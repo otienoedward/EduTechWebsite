@@ -47,6 +47,28 @@
             color: #666;
             margin-top: 6px;
         }
+
+        .role-hidden {
+            display: none !important;
+        }
+
+        .access-denied {
+            display: none;
+            padding: 30px;
+            text-align: center;
+            background: #fff;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .access-denied h2 {
+            color: #b02a37;
+            margin-bottom: 10px;
+        }
+
+        .access-denied p {
+            color: #666;
+        }
     </style>
 </head>
 
@@ -64,21 +86,71 @@
 
         <nav class="sidebar-nav">
 
-            <a href="./index.html">🏠 Dashboard</a>
-            <a href="./rooms.html">🛏️ Rooms</a>
-            <a href="./guests.html">👤 Guests</a>
-            <a href="./reservations.html">📅 Reservations</a>
-            <a href="./checkin.html">🛎️ Check-in</a>
-            <a href="./checkout.html">🚪 Check-out</a>
-            <a href="./restaurant.html">🍽️ Restaurant</a>
-            <a href="./inventory.html">📦 Inventory</a>
-            <a href="./payments.html">💰 Payments</a>
-            <a href="./expenses.html">💸 Expenses</a>
-            <a href="./employees.html">👨‍💼 Employees</a>
-            <a href="./housekeeping.html">🧹 Housekeeping</a>
-            <a href="./maintenance.html">🔧 Maintenance</a>
-            <a href="./reports.html">📊 Reports</a>
-            <a href="./settings.html" class="active">⚙️ Settings</a>
+            <a href="./index.html" data-module="dashboard">
+                🏠 Dashboard
+            </a>
+
+            <a href="./rooms.html" data-module="rooms">
+                🛏️ Rooms
+            </a>
+
+            <a href="./guests.html" data-module="guests">
+                👤 Guests
+            </a>
+
+            <a href="./reservations.html" data-module="reservations">
+                📅 Reservations
+            </a>
+
+            <a href="./checkin.html" data-module="checkin">
+                🛎️ Check-in
+            </a>
+
+            <a href="./checkout.html" data-module="checkout">
+                🚪 Check-out
+            </a>
+
+            <a href="./restaurant.html" data-module="restaurant">
+                🍽️ Restaurant
+            </a>
+
+            <a href="./inventory.html" data-module="inventory">
+                📦 Inventory
+            </a>
+
+            <a href="./payments.html" data-module="payments">
+                💰 Payments
+            </a>
+
+            <a href="./expenses.html" data-module="expenses">
+                💸 Expenses
+            </a>
+
+            <a href="./employees.html" data-module="employees">
+                👨‍💼 Employees
+            </a>
+
+            <a href="./housekeeping.html" data-module="housekeeping">
+                🧹 Housekeeping
+            </a>
+
+            <a href="./maintenance.html" data-module="maintenance">
+                🔧 Maintenance
+            </a>
+
+            <a href="./reports.html" data-module="reports">
+                📊 Reports
+            </a>
+
+            <a href="./settings.html"
+               class="active"
+               data-module="settings">
+                ⚙️ Settings
+            </a>
+
+            <a href="./hotels.html" data-module="hotels">
+                🏨 Hotels
+            </a>
 
         </nav>
 
@@ -99,112 +171,271 @@
         </header>
 
 
-        <!-- HOTEL INFORMATION -->
-        <section class="content-card">
+        <!-- ACCESS DENIED -->
+        <section
+            id="settingsAccessDenied"
+            class="access-denied"
+        >
 
-            <div class="section-header">
+            <h2>Access Denied</h2>
 
-                <div>
-                    <h2>Hotel Information</h2>
-                    <p>Update your hotel's basic information</p>
+            <p>
+                You do not have permission to access Settings.
+            </p>
+
+            <p>
+                Please contact the Hotel Owner, Manager or System Owner
+                if you require access.
+            </p>
+
+        </section>
+
+
+        <!-- SETTINGS CONTENT -->
+        <div id="settingsContent">
+
+
+            <!-- HOTEL INFORMATION -->
+            <section class="content-card">
+
+                <div class="section-header">
+
+                    <div>
+                        <h2>Hotel Information</h2>
+                        <p>Update your hotel's basic information</p>
+                    </div>
+
                 </div>
 
-            </div>
+
+                <form id="hotelSettingsForm">
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="hotelName">
+                                Hotel Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="hotelName"
+                                placeholder="Enter hotel name"
+                                required
+                            >
+
+                        </div>
 
 
-            <form id="hotelSettingsForm">
+                        <div class="form-group">
+
+                            <label for="hotelPhone">
+                                Phone Number
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="hotelPhone"
+                                placeholder="Enter hotel phone number"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="hotelEmail">
+                                Email Address
+                            </label>
+
+                            <input
+                                type="email"
+                                id="hotelEmail"
+                                placeholder="Enter hotel email"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="hotelLocation">
+                                Location
+                            </label>
+
+                            <input
+                                type="text"
+                                id="hotelLocation"
+                                placeholder="Enter hotel location"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="hotelLogo">
+                                Hotel Logo
+                            </label>
+
+                            <input
+                                type="file"
+                                id="hotelLogo"
+                                accept="image/png,image/jpeg,image/webp"
+                            >
+
+                            <p class="logo-note">
+                                Recommended: PNG, JPG or WebP image.
+                            </p>
+
+                            <div
+                                id="logoPreview"
+                                class="logo-preview"
+                            >
+
+                                <img
+                                    id="hotelLogoPreview"
+                                    src=""
+                                    alt="Hotel logo preview"
+                                >
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="hotelMessage"
+                        class="settings-message"
+                    ></div>
+
+
+                    <div class="form-actions">
+
+                        <button
+                            type="submit"
+                            class="primary-btn"
+                        >
+                            Save Hotel Information
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+
+            <!-- SYSTEM PREFERENCES -->
+            <section class="content-card">
+
+                <div class="section-header">
+
+                    <div>
+                        <h2>System Preferences</h2>
+                        <p>Configure basic system preferences</p>
+                    </div>
+
+                </div>
+
 
                 <div class="form-grid">
 
                     <div class="form-group">
 
-                        <label for="hotelName">
-                            Hotel Name
+                        <label for="currency">
+                            Currency
                         </label>
 
-                        <input
-                            type="text"
-                            id="hotelName"
-                            placeholder="Enter hotel name"
-                            required
-                        >
+                        <select id="currency">
+
+                            <option value="KES">
+                                KSh - Kenyan Shilling
+                            </option>
+
+                            <option value="USD">
+                                $ - US Dollar
+                            </option>
+
+                            <option value="EUR">
+                                € - Euro
+                            </option>
+
+                        </select>
 
                     </div>
 
 
                     <div class="form-group">
 
-                        <label for="hotelPhone">
-                            Phone Number
+                        <label for="dateFormat">
+                            Date Format
                         </label>
 
-                        <input
-                            type="tel"
-                            id="hotelPhone"
-                            placeholder="Enter hotel phone number"
-                        >
+                        <select id="dateFormat">
+
+                            <option value="DD/MM/YYYY">
+                                DD/MM/YYYY
+                            </option>
+
+                            <option value="MM/DD/YYYY">
+                                MM/DD/YYYY
+                            </option>
+
+                            <option value="YYYY-MM-DD">
+                                YYYY-MM-DD
+                            </option>
+
+                        </select>
 
                     </div>
 
 
                     <div class="form-group">
 
-                        <label for="hotelEmail">
-                            Email Address
+                        <label for="hotelTimezone">
+                            Time Zone
                         </label>
 
-                        <input
-                            type="email"
-                            id="hotelEmail"
-                            placeholder="Enter hotel email"
-                        >
+                        <select id="hotelTimezone">
+
+                            <option value="Africa/Nairobi">
+                                Africa/Nairobi (EAT)
+                            </option>
+
+                            <option value="Africa/Kampala">
+                                Africa/Kampala (EAT)
+                            </option>
+
+                            <option value="Africa/Dar_es_Salaam">
+                                Africa/Dar es Salaam (EAT)
+                            </option>
+
+                        </select>
 
                     </div>
 
 
                     <div class="form-group">
 
-                        <label for="hotelLocation">
-                            Location
+                        <label for="language">
+                            Language
                         </label>
 
-                        <input
-                            type="text"
-                            id="hotelLocation"
-                            placeholder="Enter hotel location"
-                        >
+                        <select id="language">
 
-                    </div>
+                            <option value="English">
+                                English
+                            </option>
 
+                            <option value="Swahili">
+                                Kiswahili
+                            </option>
 
-                    <div class="form-group">
-
-                        <label for="hotelLogo">
-                            Hotel Logo
-                        </label>
-
-                        <input
-                            type="file"
-                            id="hotelLogo"
-                            accept="image/png,image/jpeg,image/webp"
-                        >
-
-                        <p class="logo-note">
-                            Recommended: PNG, JPG or WebP image.
-                        </p>
-
-                        <div
-                            id="logoPreview"
-                            class="logo-preview"
-                        >
-
-                            <img
-                                id="hotelLogoPreview"
-                                src=""
-                                alt="Hotel logo preview"
-                            >
-
-                        </div>
+                        </select>
 
                     </div>
 
@@ -212,7 +443,7 @@
 
 
                 <div
-                    id="hotelMessage"
+                    id="preferencesMessage"
                     class="settings-message"
                 ></div>
 
@@ -220,395 +451,262 @@
                 <div class="form-actions">
 
                     <button
-                        type="submit"
+                        type="button"
                         class="primary-btn"
+                        onclick="savePreferences()"
                     >
-                        Save Hotel Information
+                        Save Preferences
                     </button>
 
                 </div>
 
-            </form>
-
-        </section>
+            </section>
 
 
-        <!-- SYSTEM PREFERENCES -->
-        <section class="content-card">
+            <!-- NOTIFICATIONS -->
+            <section class="content-card">
 
-            <div class="section-header">
+                <div class="section-header">
 
-                <div>
-                    <h2>System Preferences</h2>
-                    <p>Configure basic system preferences</p>
-                </div>
-
-            </div>
-
-
-            <div class="form-grid">
-
-                <div class="form-group">
-
-                    <label for="currency">
-                        Currency
-                    </label>
-
-                    <select id="currency">
-
-                        <option value="KES">
-                            KSh - Kenyan Shilling
-                        </option>
-
-                        <option value="USD">
-                            $ - US Dollar
-                        </option>
-
-                        <option value="EUR">
-                            € - Euro
-                        </option>
-
-                    </select>
+                    <div>
+                        <h2>Notifications</h2>
+                        <p>Manage system notification preferences</p>
+                    </div>
 
                 </div>
 
 
-                <div class="form-group">
+                <div class="form-grid">
 
-                    <label for="dateFormat">
-                        Date Format
-                    </label>
+                    <div class="form-group">
 
-                    <select id="dateFormat">
+                        <label>
+                            <input
+                                type="checkbox"
+                                id="reservationNotifications"
+                            >
 
-                        <option value="DD/MM/YYYY">
-                            DD/MM/YYYY
-                        </option>
+                            Reservation Notifications
 
-                        <option value="MM/DD/YYYY">
-                            MM/DD/YYYY
-                        </option>
+                        </label>
 
-                        <option value="YYYY-MM-DD">
-                            YYYY-MM-DD
-                        </option>
-
-                    </select>
-
-                </div>
+                    </div>
 
 
-                <div class="form-group">
+                    <div class="form-group">
 
-                    <label for="hotelTimezone">
-                        Time Zone
-                    </label>
+                        <label>
+                            <input
+                                type="checkbox"
+                                id="paymentNotifications"
+                            >
 
-                    <select id="hotelTimezone">
+                            Payment Notifications
 
-                        <option value="Africa/Nairobi">
-                            Africa/Nairobi (EAT)
-                        </option>
+                        </label>
 
-                        <option value="Africa/Kampala">
-                            Africa/Kampala (EAT)
-                        </option>
-
-                        <option value="Africa/Dar_es_Salaam">
-                            Africa/Dar es Salaam (EAT)
-                        </option>
-
-                    </select>
-
-                </div>
+                    </div>
 
 
-                <div class="form-group">
+                    <div class="form-group">
 
-                    <label for="language">
-                        Language
-                    </label>
+                        <label>
+                            <input
+                                type="checkbox"
+                                id="maintenanceNotifications"
+                            >
 
-                    <select id="language">
+                            Maintenance Notifications
 
-                        <option value="English">
-                            English
-                        </option>
+                        </label>
 
-                        <option value="Swahili">
-                            Kiswahili
-                        </option>
-
-                    </select>
-
-                </div>
-
-            </div>
+                    </div>
 
 
-            <div
-                id="preferencesMessage"
-                class="settings-message"
-            ></div>
+                    <div class="form-group">
 
+                        <label>
+                            <input
+                                type="checkbox"
+                                id="housekeepingNotifications"
+                            >
 
-            <div class="form-actions">
+                            Housekeeping Notifications
 
-                <button
-                    type="button"
-                    class="primary-btn"
-                    onclick="savePreferences()"
-                >
-                    Save Preferences
-                </button>
+                        </label>
 
-            </div>
-
-        </section>
-
-
-        <!-- NOTIFICATIONS -->
-        <section class="content-card">
-
-            <div class="section-header">
-
-                <div>
-                    <h2>Notifications</h2>
-                    <p>Manage system notification preferences</p>
-                </div>
-
-            </div>
-
-
-            <div class="form-grid">
-
-                <div class="form-group">
-
-                    <label>
-                        <input
-                            type="checkbox"
-                            id="reservationNotifications"
-                        >
-
-                        Reservation Notifications
-
-                    </label>
+                    </div>
 
                 </div>
 
 
-                <div class="form-group">
+                <div
+                    id="notificationMessage"
+                    class="settings-message"
+                ></div>
 
-                    <label>
-                        <input
-                            type="checkbox"
-                            id="paymentNotifications"
-                        >
 
-                        Payment Notifications
+                <div class="form-actions">
 
-                    </label>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        <input
-                            type="checkbox"
-                            id="maintenanceNotifications"
-                        >
-
-                        Maintenance Notifications
-
-                    </label>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        <input
-                            type="checkbox"
-                            id="housekeepingNotifications"
-                        >
-
-                        Housekeeping Notifications
-
-                    </label>
-
-                </div>
-
-            </div>
-
-
-            <div
-                id="notificationMessage"
-                class="settings-message"
-            ></div>
-
-
-            <div class="form-actions">
-
-                <button
-                    type="button"
-                    class="primary-btn"
-                    onclick="saveNotifications()"
-                >
-                    Save Notification Settings
-                </button>
-
-            </div>
-
-        </section>
-
-
-        <!-- SECURITY -->
-        <section class="content-card">
-
-            <div class="section-header">
-
-                <div>
-                    <h2>Security</h2>
-                    <p>Configure basic security settings</p>
-                </div>
-
-            </div>
-
-
-            <div class="form-grid">
-
-                <div class="form-group">
-
-                    <label for="sessionTimeout">
-                        Session Timeout
-                    </label>
-
-                    <select id="sessionTimeout">
-
-                        <option value="15">
-                            15 Minutes
-                        </option>
-
-                        <option value="30">
-                            30 Minutes
-                        </option>
-
-                        <option value="60">
-                            1 Hour
-                        </option>
-
-                        <option value="120">
-                            2 Hours
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        <input
-                            type="checkbox"
-                            id="loginProtection"
-                        >
-
-                        Enable Login Protection
-
-                    </label>
-
-                </div>
-
-            </div>
-
-
-            <div
-                id="securityMessage"
-                class="settings-message"
-            ></div>
-
-
-            <div class="form-actions">
-
-                <button
-                    type="button"
-                    class="primary-btn"
-                    onclick="saveSecurity()"
-                >
-                    Save Security Settings
-                </button>
-
-            </div>
-
-        </section>
-
-
-        <!-- SYSTEM INFORMATION -->
-        <section class="content-card">
-
-            <div class="section-header">
-
-                <div>
-                    <h2>System Information</h2>
-                    <p>Information about this hotel management system</p>
-                </div>
-
-            </div>
-
-
-            <div class="form-grid">
-
-                <div class="form-group">
-
-                    <label>
-                        System Name
-                    </label>
-
-                    <input
-                        type="text"
-                        value="EDU TECH HMS"
-                        readonly
+                    <button
+                        type="button"
+                        class="primary-btn"
+                        onclick="saveNotifications()"
                     >
+                        Save Notification Settings
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- SECURITY -->
+            <section class="content-card">
+
+                <div class="section-header">
+
+                    <div>
+                        <h2>Security</h2>
+                        <p>Configure basic security settings</p>
+                    </div>
 
                 </div>
 
 
-                <div class="form-group">
+                <div class="form-grid">
 
-                    <label>
-                        Version
-                    </label>
+                    <div class="form-group">
 
-                    <input
-                        type="text"
-                        value="1.0"
-                        readonly
+                        <label for="sessionTimeout">
+                            Session Timeout
+                        </label>
+
+                        <select id="sessionTimeout">
+
+                            <option value="15">
+                                15 Minutes
+                            </option>
+
+                            <option value="30">
+                                30 Minutes
+                            </option>
+
+                            <option value="60">
+                                1 Hour
+                            </option>
+
+                            <option value="120">
+                                2 Hours
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            <input
+                                type="checkbox"
+                                id="loginProtection"
+                            >
+
+                            Enable Login Protection
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="securityMessage"
+                    class="settings-message"
+                ></div>
+
+
+                <div class="form-actions">
+
+                    <button
+                        type="button"
+                        class="primary-btn"
+                        onclick="saveSecurity()"
                     >
+                        Save Security Settings
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- SYSTEM INFORMATION -->
+            <section class="content-card">
+
+                <div class="section-header">
+
+                    <div>
+                        <h2>System Information</h2>
+                        <p>Information about this hotel management system</p>
+                    </div>
 
                 </div>
 
 
-                <div class="form-group">
+                <div class="form-grid">
 
-                    <label>
-                        Platform
-                    </label>
+                    <div class="form-group">
 
-                    <input
-                        type="text"
-                        value="Web"
-                        readonly
-                    >
+                        <label>
+                            System Name
+                        </label>
+
+                        <input
+                            type="text"
+                            value="EDU TECH HMS"
+                            readonly
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Version
+                        </label>
+
+                        <input
+                            type="text"
+                            value="1.0"
+                            readonly
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Platform
+                        </label>
+
+                        <input
+                            type="text"
+                            value="Web"
+                            readonly
+                        >
+
+                    </div>
 
                 </div>
 
-            </div>
+            </section>
 
-        </section>
+        </div>
 
     </main>
 
@@ -617,84 +715,413 @@
 
 <script>
 
-    const HOTEL_SETTINGS_KEY = "eduTechHotelSettings";
-    const SYSTEM_PREFERENCES_KEY = "eduTechSystemPreferences";
-    const NOTIFICATION_SETTINGS_KEY = "eduTechNotificationSettings";
-    const SECURITY_SETTINGS_KEY = "eduTechSecuritySettings";
+    /* =========================================================
+       ROLE PERMISSIONS
+       ========================================================= */
+
+    const ROLE_PERMISSIONS = {
+
+        system_owner: [
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings",
+            "hotels"
+        ],
+
+        hotel_owner: [
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings"
+        ],
+
+        manager: [
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "settings"
+        ],
+
+        receptionist: [
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "payments",
+            "reports"
+        ]
+
+    };
 
 
-    function showSettingsMessage(elementId, message, type = "success") {
+    /* =========================================================
+       GET CURRENT ROLE
+       ========================================================= */
 
-        const element = document.getElementById(elementId);
+    function getCurrentRole() {
+
+        return (
+            sessionStorage.getItem("userRole") ||
+            localStorage.getItem("userRole") ||
+            ""
+        ).toLowerCase().trim();
+
+    }
+
+
+    /* =========================================================
+       GET MODULE FROM LINK
+       ========================================================= */
+
+    function getModuleFromLink(link) {
+
+        if (!link) {
+            return "";
+        }
+
+        const module =
+            link.getAttribute("data-module");
+
+        if (module) {
+            return module.toLowerCase().trim();
+        }
+
+        const href =
+            link.getAttribute("href") || "";
+
+        const file =
+            href
+                .split("/")
+                .pop()
+                .split("?")[0]
+                .split("#")[0]
+                .toLowerCase();
+
+        const moduleName =
+            file.replace(".html", "");
+
+        if (moduleName === "index") {
+            return "dashboard";
+        }
+
+        return moduleName;
+
+    }
+
+
+    /* =========================================================
+       APPLY SIDEBAR ROLE CONTROL
+       ========================================================= */
+
+    function applyRoleControl() {
+
+        const role =
+            getCurrentRole();
+
+        const allowedModules =
+            ROLE_PERMISSIONS[role] || [];
+
+        const sidebarLinks =
+            document.querySelectorAll(
+                ".sidebar-nav a"
+            );
+
+
+        sidebarLinks.forEach(function (link) {
+
+            const module =
+                getModuleFromLink(link);
+
+            if (!module) {
+                return;
+            }
+
+
+            if (
+                allowedModules.includes(module)
+            ) {
+
+                link.classList.remove(
+                    "role-hidden"
+                );
+
+                link.style.setProperty(
+                    "display",
+                    "",
+                    "important"
+                );
+
+            } else {
+
+                link.classList.add(
+                    "role-hidden"
+                );
+
+                link.style.setProperty(
+                    "display",
+                    "none",
+                    "important"
+                );
+
+            }
+
+        });
+
+    }
+
+
+    /* =========================================================
+       CHECK SETTINGS ACCESS
+       ========================================================= */
+
+    function settingsAccessAllowed() {
+
+        const role =
+            getCurrentRole();
+
+        return (
+            ROLE_PERMISSIONS[role] &&
+            ROLE_PERMISSIONS[role].includes(
+                "settings"
+            )
+        );
+
+    }
+
+
+    /* =========================================================
+       PROTECT DIRECT SETTINGS PAGE ACCESS
+       ========================================================= */
+
+    function protectSettingsPage() {
+
+        const role =
+            getCurrentRole();
+
+        if (!role) {
+            return;
+        }
+
+        if (!settingsAccessAllowed()) {
+
+            const content =
+                document.getElementById(
+                    "settingsContent"
+                );
+
+            const denied =
+                document.getElementById(
+                    "settingsAccessDenied"
+                );
+
+            if (content) {
+                content.style.display = "none";
+            }
+
+            if (denied) {
+                denied.style.display = "block";
+            }
+
+            setTimeout(function () {
+
+                window.location.href =
+                    "./index.html";
+
+            }, 1500);
+
+        }
+
+    }
+
+
+    /* =========================================================
+       SETTINGS ACTION ACCESS CHECK
+       ========================================================= */
+
+    function settingsActionAllowed() {
+
+        if (!settingsAccessAllowed()) {
+
+            alert(
+                "You do not have permission to manage Settings."
+            );
+
+            return false;
+
+        }
+
+        return true;
+
+    }
+
+
+    /* =========================================================
+       SETTINGS STORAGE
+       ========================================================= */
+
+    const HOTEL_SETTINGS_KEY =
+        "eduTechHotelSettings";
+
+    const SYSTEM_PREFERENCES_KEY =
+        "eduTechSystemPreferences";
+
+    const NOTIFICATION_SETTINGS_KEY =
+        "eduTechNotificationSettings";
+
+    const SECURITY_SETTINGS_KEY =
+        "eduTechSecuritySettings";
+
+
+    /* =========================================================
+       SHOW MESSAGE
+       ========================================================= */
+
+    function showSettingsMessage(
+        elementId,
+        message,
+        type = "success"
+    ) {
+
+        const element =
+            document.getElementById(elementId);
 
         if (!element) {
             return;
         }
 
-        element.textContent = message;
+        element.textContent =
+            message;
 
         element.className =
             "settings-message " +
-            (type === "success"
-                ? "settings-success"
-                : "settings-error");
+            (
+                type === "success"
+                    ? "settings-success"
+                    : "settings-error"
+            );
 
-        element.style.display = "block";
+        element.style.display =
+            "block";
 
         setTimeout(function () {
 
-            element.style.display = "none";
+            element.style.display =
+                "none";
 
         }, 4000);
 
     }
 
 
+    /* =========================================================
+       LOAD HOTEL SETTINGS
+       ========================================================= */
+
     function loadHotelSettings() {
 
         const saved =
-            localStorage.getItem(HOTEL_SETTINGS_KEY);
+            localStorage.getItem(
+                HOTEL_SETTINGS_KEY
+            );
 
         if (!saved) {
 
-            document.getElementById("hotelName").value =
+            document.getElementById(
+                "hotelName"
+            ).value =
                 "EDU TECH Hotel";
 
             return;
 
         }
 
+
         try {
 
-            const settings = JSON.parse(saved);
+            const settings =
+                JSON.parse(saved);
 
-            document.getElementById("hotelName").value =
-                settings.name || "EDU TECH Hotel";
+            document.getElementById(
+                "hotelName"
+            ).value =
+                settings.name ||
+                "EDU TECH Hotel";
 
-            document.getElementById("hotelPhone").value =
+            document.getElementById(
+                "hotelPhone"
+            ).value =
                 settings.phone || "";
 
-            document.getElementById("hotelEmail").value =
+            document.getElementById(
+                "hotelEmail"
+            ).value =
                 settings.email || "";
 
-            document.getElementById("hotelLocation").value =
+            document.getElementById(
+                "hotelLocation"
+            ).value =
                 settings.location || "";
+
 
             if (settings.logo) {
 
                 const preview =
-                    document.getElementById("hotelLogoPreview");
+                    document.getElementById(
+                        "hotelLogoPreview"
+                    );
 
                 const previewContainer =
-                    document.getElementById("logoPreview");
+                    document.getElementById(
+                        "logoPreview"
+                    );
 
-                preview.src = settings.logo;
+                preview.src =
+                    settings.logo;
 
-                previewContainer.style.display = "block";
+                previewContainer.style.display =
+                    "block";
 
             }
 
-            window.eduTechHotel = settings;
+
+            window.eduTechHotel =
+                settings;
 
         } catch (error) {
 
@@ -708,24 +1135,44 @@
     }
 
 
+    /* =========================================================
+       SAVE HOTEL SETTINGS
+       ========================================================= */
+
     function saveHotelSettings(event) {
 
         event.preventDefault();
 
+        if (!settingsActionAllowed()) {
+            return;
+        }
+
+
         const hotelName =
-            document.getElementById("hotelName").value.trim();
+            document.getElementById(
+                "hotelName"
+            ).value.trim();
 
         const hotelPhone =
-            document.getElementById("hotelPhone").value.trim();
+            document.getElementById(
+                "hotelPhone"
+            ).value.trim();
 
         const hotelEmail =
-            document.getElementById("hotelEmail").value.trim();
+            document.getElementById(
+                "hotelEmail"
+            ).value.trim();
 
         const hotelLocation =
-            document.getElementById("hotelLocation").value.trim();
+            document.getElementById(
+                "hotelLocation"
+            ).value.trim();
 
         const logoInput =
-            document.getElementById("hotelLogo");
+            document.getElementById(
+                "hotelLogo"
+            );
+
 
         if (!hotelName) {
 
@@ -741,9 +1188,12 @@
 
 
         const existing =
-            localStorage.getItem(HOTEL_SETTINGS_KEY);
+            localStorage.getItem(
+                HOTEL_SETTINGS_KEY
+            );
 
         let oldLogo = "";
+
 
         if (existing) {
 
@@ -753,7 +1203,8 @@
                     JSON.parse(existing);
 
                 oldLogo =
-                    existingSettings.logo || "";
+                    existingSettings.logo ||
+                    "";
 
             } catch (error) {
 
@@ -764,19 +1215,27 @@
         }
 
 
-        function finishSaving(logoData) {
+        function finishSaving(
+            logoData
+        ) {
 
             const settings = {
 
-                name: hotelName,
+                name:
+                    hotelName,
 
-                phone: hotelPhone,
+                phone:
+                    hotelPhone,
 
-                email: hotelEmail,
+                email:
+                    hotelEmail,
 
-                location: hotelLocation,
+                location:
+                    hotelLocation,
 
-                logo: logoData || oldLogo
+                logo:
+                    logoData ||
+                    oldLogo
 
             };
 
@@ -787,18 +1246,21 @@
             );
 
 
-            window.eduTechHotel = settings;
+            window.eduTechHotel =
+                settings;
 
 
             if (settings.logo) {
 
                 document.getElementById(
                     "hotelLogoPreview"
-                ).src = settings.logo;
+                ).src =
+                    settings.logo;
 
                 document.getElementById(
                     "logoPreview"
-                ).style.display = "block";
+                ).style.display =
+                    "block";
 
             }
 
@@ -812,7 +1274,10 @@
         }
 
 
-        if (logoInput.files && logoInput.files[0]) {
+        if (
+            logoInput.files &&
+            logoInput.files[0]
+        ) {
 
             const file =
                 logoInput.files[0];
@@ -820,23 +1285,32 @@
             const reader =
                 new FileReader();
 
-            reader.onload = function () {
 
-                finishSaving(reader.result);
+            reader.onload =
+                function () {
 
-            };
+                    finishSaving(
+                        reader.result
+                    );
 
-            reader.onerror = function () {
+                };
 
-                showSettingsMessage(
-                    "hotelMessage",
-                    "Unable to read the selected logo.",
-                    "error"
-                );
 
-            };
+            reader.onerror =
+                function () {
 
-            reader.readAsDataURL(file);
+                    showSettingsMessage(
+                        "hotelMessage",
+                        "Unable to read the selected logo.",
+                        "error"
+                    );
+
+                };
+
+
+            reader.readAsDataURL(
+                file
+            );
 
         } else {
 
@@ -847,6 +1321,10 @@
     }
 
 
+    /* =========================================================
+       LOAD PREFERENCES
+       ========================================================= */
+
     function loadPreferences() {
 
         const saved =
@@ -855,28 +1333,38 @@
             );
 
         if (!saved) {
-
             return;
-
         }
+
 
         try {
 
             const settings =
                 JSON.parse(saved);
 
-            document.getElementById("currency").value =
-                settings.currency || "KES";
+            document.getElementById(
+                "currency"
+            ).value =
+                settings.currency ||
+                "KES";
 
-            document.getElementById("dateFormat").value =
-                settings.dateFormat || "DD/MM/YYYY";
+            document.getElementById(
+                "dateFormat"
+            ).value =
+                settings.dateFormat ||
+                "DD/MM/YYYY";
 
-            document.getElementById("hotelTimezone").value =
+            document.getElementById(
+                "hotelTimezone"
+            ).value =
                 settings.hotelTimezone ||
                 "Africa/Nairobi";
 
-            document.getElementById("language").value =
-                settings.language || "English";
+            document.getElementById(
+                "language"
+            ).value =
+                settings.language ||
+                "English";
 
         } catch (error) {
 
@@ -890,21 +1378,38 @@
     }
 
 
+    /* =========================================================
+       SAVE PREFERENCES
+       ========================================================= */
+
     function savePreferences() {
+
+        if (!settingsActionAllowed()) {
+            return;
+        }
+
 
         const settings = {
 
             currency:
-                document.getElementById("currency").value,
+                document.getElementById(
+                    "currency"
+                ).value,
 
             dateFormat:
-                document.getElementById("dateFormat").value,
+                document.getElementById(
+                    "dateFormat"
+                ).value,
 
             hotelTimezone:
-                document.getElementById("hotelTimezone").value,
+                document.getElementById(
+                    "hotelTimezone"
+                ).value,
 
             language:
-                document.getElementById("language").value
+                document.getElementById(
+                    "language"
+                ).value
 
         };
 
@@ -924,12 +1429,17 @@
     }
 
 
+    /* =========================================================
+       LOAD NOTIFICATIONS
+       ========================================================= */
+
     function loadNotifications() {
 
         const saved =
             localStorage.getItem(
                 NOTIFICATION_SETTINGS_KEY
             );
+
 
         if (!saved) {
 
@@ -991,7 +1501,16 @@
     }
 
 
+    /* =========================================================
+       SAVE NOTIFICATIONS
+       ========================================================= */
+
     function saveNotifications() {
+
+        if (!settingsActionAllowed()) {
+            return;
+        }
+
 
         const settings = {
 
@@ -1033,12 +1552,17 @@
     }
 
 
+    /* =========================================================
+       LOAD SECURITY
+       ========================================================= */
+
     function loadSecurity() {
 
         const saved =
             localStorage.getItem(
                 SECURITY_SETTINGS_KEY
             );
+
 
         if (!saved) {
 
@@ -1063,7 +1587,8 @@
             document.getElementById(
                 "sessionTimeout"
             ).value =
-                settings.sessionTimeout || "30";
+                settings.sessionTimeout ||
+                "30";
 
             document.getElementById(
                 "loginProtection"
@@ -1082,7 +1607,16 @@
     }
 
 
+    /* =========================================================
+       SAVE SECURITY
+       ========================================================= */
+
     function saveSecurity() {
+
+        if (!settingsActionAllowed()) {
+            return;
+        }
+
 
         const settings = {
 
@@ -1114,47 +1648,79 @@
     }
 
 
+    /* =========================================================
+       HOTEL FORM
+       ========================================================= */
+
     document
-        .getElementById("hotelSettingsForm")
+        .getElementById(
+            "hotelSettingsForm"
+        )
         .addEventListener(
             "submit",
             saveHotelSettings
         );
 
 
+    /* =========================================================
+       LOGO PREVIEW
+       ========================================================= */
+
     document
-        .getElementById("hotelLogo")
+        .getElementById(
+            "hotelLogo"
+        )
         .addEventListener(
             "change",
             function () {
 
+                if (!settingsActionAllowed()) {
+                    this.value = "";
+                    return;
+                }
+
+
                 const file =
-                    this.files && this.files[0];
+                    this.files &&
+                    this.files[0];
+
 
                 if (!file) {
                     return;
                 }
 
+
                 const reader =
                     new FileReader();
 
-                reader.onload = function (event) {
 
-                    document.getElementById(
-                        "hotelLogoPreview"
-                    ).src = event.target.result;
+                reader.onload =
+                    function (event) {
 
-                    document.getElementById(
-                        "logoPreview"
-                    ).style.display = "block";
+                        document.getElementById(
+                            "hotelLogoPreview"
+                        ).src =
+                            event.target.result;
 
-                };
+                        document.getElementById(
+                            "logoPreview"
+                        ).style.display =
+                            "block";
 
-                reader.readAsDataURL(file);
+                    };
+
+
+                reader.readAsDataURL(
+                    file
+                );
 
             }
         );
 
+
+    /* =========================================================
+       INITIALIZE SETTINGS
+       ========================================================= */
 
     document.addEventListener(
         "DOMContentLoaded",
@@ -1168,8 +1734,30 @@
 
             loadSecurity();
 
+            applyRoleControl();
+
+            protectSettingsPage();
+
         }
     );
+
+
+    /* =========================================================
+       CONTINUOUS ROLE CONTROL
+       ========================================================= */
+
+    setInterval(
+        function () {
+
+            applyRoleControl();
+
+        },
+        500
+    );
+
+
+    window.applyRoleControl =
+        applyRoleControl;
 
 </script>
 
