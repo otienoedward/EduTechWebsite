@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -97,6 +96,35 @@
             pointer-events: none;
         }
 
+        .role-hidden {
+            display: none !important;
+        }
+
+        .access-denied {
+            display: none;
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .access-denied h2 {
+            margin-bottom: 10px;
+            color: #b91c1c;
+        }
+
+        .access-denied p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .access-denied a {
+            display: inline-block;
+            padding: 10px 18px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
         @media print {
 
             .sidebar,
@@ -120,6 +148,7 @@
             body {
                 background: white !important;
             }
+
         }
 
     </style>
@@ -150,68 +179,139 @@
 
         <nav class="sidebar-nav">
 
-            <a href="./index.html">
+            <a
+                href="./index.html"
+                data-module="dashboard">
+
                 🏠 Dashboard
+
             </a>
 
-            <a href="./rooms.html">
+
+            <a
+                href="./rooms.html"
+                data-module="rooms">
+
                 🛏️ Rooms
+
             </a>
 
-            <a href="./guests.html">
+
+            <a
+                href="./guests.html"
+                data-module="guests">
+
                 👤 Guests
+
             </a>
 
-            <a href="./reservations.html">
+
+            <a
+                href="./reservations.html"
+                data-module="reservations">
+
                 📅 Reservations
+
             </a>
 
-            <a href="./checkin.html">
+
+            <a
+                href="./checkin.html"
+                data-module="checkin">
+
                 🛎️ Check-in
+
             </a>
 
-            <a href="./checkout.html">
+
+            <a
+                href="./checkout.html"
+                data-module="checkout">
+
                 🚪 Check-out
+
             </a>
 
-            <a href="./restaurant.html">
+
+            <a
+                href="./restaurant.html"
+                data-module="restaurant">
+
                 🍽️ Restaurant
+
             </a>
 
-            <a href="./inventory.html">
+
+            <a
+                href="./inventory.html"
+                data-module="inventory">
+
                 📦 Inventory
+
             </a>
 
-            <a href="./payments.html">
+
+            <a
+                href="./payments.html"
+                data-module="payments">
+
                 💰 Payments
+
             </a>
 
-            <a href="./expenses.html">
+
+            <a
+                href="./expenses.html"
+                data-module="expenses">
+
                 💸 Expenses
+
             </a>
 
-            <a href="./employees.html">
+
+            <a
+                href="./employees.html"
+                data-module="employees">
+
                 👨‍💼 Employees
+
             </a>
 
-            <a href="./housekeeping.html">
+
+            <a
+                href="./housekeeping.html"
+                data-module="housekeeping">
+
                 🧹 Housekeeping
+
             </a>
 
-            <a href="./maintenance.html">
+
+            <a
+                href="./maintenance.html"
+                data-module="maintenance">
+
                 🔧 Maintenance
+
             </a>
+
 
             <a
                 href="./reports.html"
+                data-module="reports"
                 class="active">
 
                 📊 Reports
 
             </a>
 
-            <a href="./settings.html">
+
+            <a
+                href="./settings.html"
+                data-module="settings">
+
                 ⚙️ Settings
+
             </a>
 
         </nav>
@@ -297,376 +397,404 @@
         </header>
 
 
-        <!-- MESSAGE -->
+        <!-- ACCESS DENIED -->
 
-        <div
-            id="reportMessage"
-            class="report-message">
+        <section
+            id="reportsAccessDenied"
+            class="access-denied">
+
+            <h2>
+                Access Denied
+            </h2>
+
+            <p>
+                You do not have permission to access the Reports module.
+            </p>
+
+            <a href="./index.html">
+                Return to Dashboard
+            </a>
+
+        </section>
+
+
+        <!-- REPORT CONTENT -->
+
+        <div id="reportsContent">
+
+
+            <!-- MESSAGE -->
+
+            <div
+                id="reportMessage"
+                class="report-message">
+            </div>
+
+
+            <!-- REPORT PERIOD -->
+
+            <section class="content-card">
+
+                <div class="section-header">
+
+                    <div>
+
+                        <h2>
+                            Report Period
+                        </h2>
+
+                        <p>
+                            Select the period you want to review
+                        </p>
+
+                    </div>
+
+
+                    <div class="filters">
+
+                        <select id="reportPeriod">
+
+                            <option value="today">
+                                Today
+                            </option>
+
+                            <option value="week">
+                                This Week
+                            </option>
+
+                            <option
+                                value="month"
+                                selected>
+
+                                This Month
+
+                            </option>
+
+                            <option value="year">
+                                This Year
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- SUMMARY CARDS -->
+
+            <section class="summary-grid">
+
+                <div class="summary-card">
+
+                    <h3>
+                        Total Rooms
+                    </h3>
+
+                    <strong id="reportRooms">
+                        0
+                    </strong>
+
+                    <p>
+                        Hotel rooms
+                    </p>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>
+                        Occupied Rooms
+                    </h3>
+
+                    <strong id="reportOccupied">
+                        0
+                    </strong>
+
+                    <p>
+                        Currently occupied
+                    </p>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>
+                        Reservations
+                    </h3>
+
+                    <strong id="reportReservations">
+                        0
+                    </strong>
+
+                    <p>
+                        Recorded reservations
+                    </p>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>
+                        Total Guests
+                    </h3>
+
+                    <strong id="reportGuests">
+                        0
+                    </strong>
+
+                    <p>
+                        Registered guests
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- FINANCIAL REPORT -->
+
+            <section class="content-card">
+
+                <div class="section-header">
+
+                    <div>
+
+                        <h2>
+                            Financial Summary
+                        </h2>
+
+                        <p>
+                            Overview of hotel income and expenses
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="summary-grid">
+
+                    <div class="summary-card">
+
+                        <h3>
+                            Total Revenue
+                        </h3>
+
+                        <strong id="reportRevenue">
+                            KSh 0.00
+                        </strong>
+
+                        <p>
+                            Recorded payments
+                        </p>
+
+                    </div>
+
+
+                    <div class="summary-card">
+
+                        <h3>
+                            Total Expenses
+                        </h3>
+
+                        <strong id="reportExpenses">
+                            KSh 0.00
+                        </strong>
+
+                        <p>
+                            Recorded expenses
+                        </p>
+
+                    </div>
+
+
+                    <div class="summary-card">
+
+                        <h3>
+                            Net Income
+                        </h3>
+
+                        <strong id="reportNetIncome">
+                            KSh 0.00
+                        </strong>
+
+                        <p>
+                            Revenue minus expenses
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- OPERATIONS REPORT -->
+
+            <section class="content-card">
+
+                <div class="section-header">
+
+                    <div>
+
+                        <h2>
+                            Operations Summary
+                        </h2>
+
+                        <p>
+                            Housekeeping and maintenance performance
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="summary-grid">
+
+                    <div class="summary-card">
+
+                        <h3>
+                            Housekeeping Tasks
+                        </h3>
+
+                        <strong id="reportHousekeeping">
+                            0
+                        </strong>
+
+                        <p>
+                            Total housekeeping tasks
+                        </p>
+
+                    </div>
+
+
+                    <div class="summary-card">
+
+                        <h3>
+                            Completed Cleaning
+                        </h3>
+
+                        <strong id="reportCleaningCompleted">
+                            0
+                        </strong>
+
+                        <p>
+                            Completed tasks
+                        </p>
+
+                    </div>
+
+
+                    <div class="summary-card">
+
+                        <h3>
+                            Maintenance Tasks
+                        </h3>
+
+                        <strong id="reportMaintenance">
+                            0
+                        </strong>
+
+                        <p>
+                            Total maintenance tasks
+                        </p>
+
+                    </div>
+
+
+                    <div class="summary-card">
+
+                        <h3>
+                            Pending Maintenance
+                        </h3>
+
+                        <strong id="reportMaintenancePending">
+                            0
+                        </strong>
+
+                        <p>
+                            Tasks still pending
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- REPORT DETAILS -->
+
+            <section class="content-card">
+
+                <div class="section-header">
+
+                    <div>
+
+                        <h2>
+                            Report Details
+                        </h2>
+
+                        <p id="reportDetailsDescription">
+                            Current system activity summary
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Category
+                                </th>
+
+                                <th>
+                                    Total
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="reportTable">
+
+                            <tr>
+
+                                <td colspan="3">
+                                    Loading report...
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
         </div>
-
-
-        <!-- REPORT PERIOD -->
-
-        <section class="content-card">
-
-            <div class="section-header">
-
-                <div>
-
-                    <h2>
-                        Report Period
-                    </h2>
-
-                    <p>
-                        Select the period you want to review
-                    </p>
-
-                </div>
-
-
-                <div class="filters">
-
-                    <select id="reportPeriod">
-
-                        <option value="today">
-                            Today
-                        </option>
-
-                        <option value="week">
-                            This Week
-                        </option>
-
-                        <option
-                            value="month"
-                            selected>
-
-                            This Month
-
-                        </option>
-
-                        <option value="year">
-                            This Year
-                        </option>
-
-                    </select>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- SUMMARY CARDS -->
-
-        <section class="summary-grid">
-
-            <div class="summary-card">
-
-                <h3>
-                    Total Rooms
-                </h3>
-
-                <strong id="reportRooms">
-                    0
-                </strong>
-
-                <p>
-                    Hotel rooms
-                </p>
-
-            </div>
-
-
-            <div class="summary-card">
-
-                <h3>
-                    Occupied Rooms
-                </h3>
-
-                <strong id="reportOccupied">
-                    0
-                </strong>
-
-                <p>
-                    Currently occupied
-                </p>
-
-            </div>
-
-
-            <div class="summary-card">
-
-                <h3>
-                    Reservations
-                </h3>
-
-                <strong id="reportReservations">
-                    0
-                </strong>
-
-                <p>
-                    Recorded reservations
-                </p>
-
-            </div>
-
-
-            <div class="summary-card">
-
-                <h3>
-                    Total Guests
-                </h3>
-
-                <strong id="reportGuests">
-                    0
-                </strong>
-
-                <p>
-                    Registered guests
-                </p>
-
-            </div>
-
-        </section>
-
-
-        <!-- FINANCIAL REPORT -->
-
-        <section class="content-card">
-
-            <div class="section-header">
-
-                <div>
-
-                    <h2>
-                        Financial Summary
-                    </h2>
-
-                    <p>
-                        Overview of hotel income and expenses
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="summary-grid">
-
-                <div class="summary-card">
-
-                    <h3>
-                        Total Revenue
-                    </h3>
-
-                    <strong id="reportRevenue">
-                        KSh 0.00
-                    </strong>
-
-                    <p>
-                        Recorded payments
-                    </p>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <h3>
-                        Total Expenses
-                    </h3>
-
-                    <strong id="reportExpenses">
-                        KSh 0.00
-                    </strong>
-
-                    <p>
-                        Recorded expenses
-                    </p>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <h3>
-                        Net Income
-                    </h3>
-
-                    <strong id="reportNetIncome">
-                        KSh 0.00
-                    </strong>
-
-                    <p>
-                        Revenue minus expenses
-                    </p>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- OPERATIONS REPORT -->
-
-        <section class="content-card">
-
-            <div class="section-header">
-
-                <div>
-
-                    <h2>
-                        Operations Summary
-                    </h2>
-
-                    <p>
-                        Housekeeping and maintenance performance
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="summary-grid">
-
-                <div class="summary-card">
-
-                    <h3>
-                        Housekeeping Tasks
-                    </h3>
-
-                    <strong id="reportHousekeeping">
-                        0
-                    </strong>
-
-                    <p>
-                        Total housekeeping tasks
-                    </p>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <h3>
-                        Completed Cleaning
-                    </h3>
-
-                    <strong id="reportCleaningCompleted">
-                        0
-                    </strong>
-
-                    <p>
-                        Completed tasks
-                    </p>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <h3>
-                        Maintenance Tasks
-                    </h3>
-
-                    <strong id="reportMaintenance">
-                        0
-                    </strong>
-
-                    <p>
-                        Total maintenance tasks
-                    </p>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <h3>
-                        Pending Maintenance
-                    </h3>
-
-                    <strong id="reportMaintenancePending">
-                        0
-                    </strong>
-
-                    <p>
-                        Tasks still pending
-                    </p>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- REPORT DETAILS -->
-
-        <section class="content-card">
-
-            <div class="section-header">
-
-                <div>
-
-                    <h2>
-                        Report Details
-                    </h2>
-
-                    <p id="reportDetailsDescription">
-                        Current system activity summary
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="table-container">
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                Category
-                            </th>
-
-                            <th>
-                                Total
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody id="reportTable">
-
-                        <tr>
-
-                            <td colspan="3">
-                                Loading report...
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </section>
 
     </main>
 
@@ -683,6 +811,298 @@
 
 
 <script>
+
+/* =========================================================
+   ROLE PERMISSIONS
+========================================================= */
+
+const ROLE_PERMISSIONS = {
+
+    system_owner: [
+        "dashboard",
+        "rooms",
+        "guests",
+        "reservations",
+        "checkin",
+        "checkout",
+        "restaurant",
+        "inventory",
+        "payments",
+        "expenses",
+        "employees",
+        "housekeeping",
+        "maintenance",
+        "reports",
+        "settings",
+        "hotels"
+    ],
+
+    hotel_owner: [
+        "dashboard",
+        "rooms",
+        "guests",
+        "reservations",
+        "checkin",
+        "checkout",
+        "restaurant",
+        "inventory",
+        "payments",
+        "expenses",
+        "employees",
+        "housekeeping",
+        "maintenance",
+        "reports",
+        "settings"
+    ],
+
+    manager: [
+        "dashboard",
+        "rooms",
+        "guests",
+        "reservations",
+        "checkin",
+        "checkout",
+        "restaurant",
+        "inventory",
+        "payments",
+        "expenses",
+        "employees",
+        "housekeeping",
+        "maintenance",
+        "reports",
+        "settings"
+    ],
+
+    receptionist: [
+        "dashboard",
+        "rooms",
+        "guests",
+        "reservations",
+        "checkin",
+        "checkout",
+        "payments",
+        "reports"
+    ]
+
+};
+
+
+/* =========================================================
+   GET CURRENT ROLE
+========================================================= */
+
+function getCurrentRole() {
+
+    return (
+        sessionStorage.getItem("userRole") ||
+        localStorage.getItem("userRole") ||
+        ""
+    )
+    .toLowerCase()
+    .trim();
+
+}
+
+
+/* =========================================================
+   REPORT ACCESS
+========================================================= */
+
+function reportsAccessAllowed() {
+
+    const role =
+        getCurrentRole();
+
+
+    return [
+        "system_owner",
+        "hotel_owner",
+        "manager",
+        "receptionist"
+    ].includes(role);
+
+}
+
+
+/* =========================================================
+   APPLY ROLE CONTROL
+========================================================= */
+
+function applyRoleControl() {
+
+    const role =
+        getCurrentRole();
+
+
+    const allowedModules =
+        ROLE_PERMISSIONS[role] || [];
+
+
+    const sidebarLinks =
+        document.querySelectorAll(
+            ".sidebar-nav a[data-module]"
+        );
+
+
+    sidebarLinks.forEach(
+        function(link) {
+
+            const module =
+                link.getAttribute(
+                    "data-module"
+                );
+
+
+            if (
+                allowedModules.includes(
+                    module
+                )
+            ) {
+
+                link.classList.remove(
+                    "role-hidden"
+                );
+
+                link.style.setProperty(
+                    "display",
+                    "",
+                    "important"
+                );
+
+            }
+
+            else {
+
+                link.classList.add(
+                    "role-hidden"
+                );
+
+                link.style.setProperty(
+                    "display",
+                    "none",
+                    "important"
+                );
+
+            }
+
+        }
+    );
+
+
+    const content =
+        document.getElementById(
+            "reportsContent"
+        );
+
+
+    const denied =
+        document.getElementById(
+            "reportsAccessDenied"
+        );
+
+
+    if (
+        reportsAccessAllowed()
+    ) {
+
+        if (content) {
+            content.style.display = "";
+        }
+
+        if (denied) {
+            denied.style.display = "none";
+        }
+
+    }
+
+    else {
+
+        if (content) {
+            content.style.display = "none";
+        }
+
+        if (denied) {
+            denied.style.display = "block";
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   DIRECT PAGE ACCESS PROTECTION
+========================================================= */
+
+function protectReportsPage() {
+
+    const role =
+        getCurrentRole();
+
+
+    const allowedRoles = [
+        "system_owner",
+        "hotel_owner",
+        "manager",
+        "receptionist"
+    ];
+
+
+    if (!allowedRoles.includes(role)) {
+
+        const content =
+            document.getElementById(
+                "reportsContent"
+            );
+
+
+        const denied =
+            document.getElementById(
+                "reportsAccessDenied"
+            );
+
+
+        if (content) {
+            content.style.display = "none";
+        }
+
+
+        if (denied) {
+            denied.style.display = "block";
+        }
+
+
+        setTimeout(
+            function() {
+
+                const latestRole =
+                    getCurrentRole();
+
+
+                if (
+                    ![
+                        "system_owner",
+                        "hotel_owner",
+                        "manager",
+                        "receptionist"
+                    ].includes(
+                        latestRole
+                    )
+                ) {
+
+                    window.location.href =
+                        "./index.html";
+
+                }
+
+            },
+            800
+        );
+
+    }
+
+}
+
 
 /* =========================================================
    VARIABLES
@@ -894,7 +1314,6 @@ function getReportPeriod() {
 
     }
 
-
     else if (selected === "week") {
 
         const day =
@@ -928,7 +1347,6 @@ function getReportPeriod() {
 
     }
 
-
     else if (selected === "year") {
 
         start =
@@ -951,7 +1369,6 @@ function getReportPeriod() {
             );
 
     }
-
 
     else {
 
@@ -1402,7 +1819,9 @@ async function loadTable(tableName) {
                     row[idKey]
                 );
 
-        } else {
+        }
+
+        else {
 
             identifier =
                 tableName +
@@ -1455,6 +1874,11 @@ function formatMoney(value) {
 ========================================================= */
 
 async function loadReport() {
+
+    if (!reportsAccessAllowed()) {
+        return;
+    }
+
 
     try {
 
@@ -1532,8 +1956,8 @@ async function loadReport() {
                         String(
                             row[statusKey]
                         )
-                            .toLowerCase()
-                            .trim();
+                        .toLowerCase()
+                        .trim();
 
 
                     return (
@@ -1780,8 +2204,8 @@ async function loadReport() {
                         String(
                             row[statusKey]
                         )
-                            .toLowerCase()
-                            .trim();
+                        .toLowerCase()
+                        .trim();
 
 
                     return (
@@ -1867,8 +2291,8 @@ async function loadReport() {
                         String(
                             row[statusKey]
                         )
-                            .toLowerCase()
-                            .trim();
+                        .toLowerCase()
+                        .trim();
 
 
                     return !(
@@ -2100,195 +2524,69 @@ function updateReportTable() {
     table.innerHTML = `
 
         <tr>
-
-            <td>
-                Rooms
-            </td>
-
-            <td>
-                ${reportData.rooms}
-            </td>
-
-            <td>
-                Active
-            </td>
-
+            <td>Rooms</td>
+            <td>${reportData.rooms}</td>
+            <td>Active</td>
         </tr>
 
-
         <tr>
-
-            <td>
-                Occupied Rooms
-            </td>
-
-            <td>
-                ${reportData.occupied}
-            </td>
-
-            <td>
-                Current
-            </td>
-
+            <td>Occupied Rooms</td>
+            <td>${reportData.occupied}</td>
+            <td>Current</td>
         </tr>
 
-
         <tr>
-
-            <td>
-                Guests
-            </td>
-
-            <td>
-                ${reportData.guests}
-            </td>
-
-            <td>
-                Registered
-            </td>
-
+            <td>Guests</td>
+            <td>${reportData.guests}</td>
+            <td>Registered</td>
         </tr>
 
-
         <tr>
-
-            <td>
-                Reservations
-            </td>
-
-            <td>
-                ${reportData.reservations}
-            </td>
-
-            <td>
-                Recorded
-            </td>
-
+            <td>Reservations</td>
+            <td>${reportData.reservations}</td>
+            <td>Recorded</td>
         </tr>
 
-
         <tr>
-
-            <td>
-                Payments / Revenue
-            </td>
-
-            <td>
-                ${formatMoney(
-                    reportData.revenue
-                )}
-            </td>
-
-            <td>
-                Recorded
-            </td>
-
+            <td>Payments / Revenue</td>
+            <td>${formatMoney(reportData.revenue)}</td>
+            <td>Recorded</td>
         </tr>
 
-
         <tr>
-
-            <td>
-                Expenses
-            </td>
-
-            <td>
-                ${formatMoney(
-                    reportData.expenses
-                )}
-            </td>
-
-            <td>
-                Recorded
-            </td>
-
+            <td>Expenses</td>
+            <td>${formatMoney(reportData.expenses)}</td>
+            <td>Recorded</td>
         </tr>
 
-
         <tr>
-
-            <td>
-                Net Income
-            </td>
-
-            <td>
-                ${formatMoney(
-                    reportData.netIncome
-                )}
-            </td>
-
-            <td>
-                Calculated
-            </td>
-
+            <td>Net Income</td>
+            <td>${formatMoney(reportData.netIncome)}</td>
+            <td>Calculated</td>
         </tr>
 
-
         <tr>
-
-            <td>
-                Housekeeping
-            </td>
-
-            <td>
-                ${reportData.housekeeping}
-            </td>
-
-            <td>
-                Recorded
-            </td>
-
+            <td>Housekeeping</td>
+            <td>${reportData.housekeeping}</td>
+            <td>Recorded</td>
         </tr>
 
-
         <tr>
-
-            <td>
-                Completed Cleaning
-            </td>
-
-            <td>
-                ${reportData.cleaningCompleted}
-            </td>
-
-            <td>
-                Completed
-            </td>
-
+            <td>Completed Cleaning</td>
+            <td>${reportData.cleaningCompleted}</td>
+            <td>Completed</td>
         </tr>
 
-
         <tr>
-
-            <td>
-                Maintenance
-            </td>
-
-            <td>
-                ${reportData.maintenance}
-            </td>
-
-            <td>
-                Recorded
-            </td>
-
+            <td>Maintenance</td>
+            <td>${reportData.maintenance}</td>
+            <td>Recorded</td>
         </tr>
 
-
         <tr>
-
-            <td>
-                Pending Maintenance
-            </td>
-
-            <td>
-                ${reportData.maintenancePending}
-            </td>
-
-            <td>
-                Pending
-            </td>
-
+            <td>Pending Maintenance</td>
+            <td>${reportData.maintenancePending}</td>
+            <td>Pending</td>
         </tr>
 
     `;
@@ -2300,10 +2598,7 @@ function updateReportTable() {
    MESSAGE
 ========================================================= */
 
-function showMessage(
-    message,
-    type
-) {
+function showMessage(message, type) {
 
     const box =
         document.getElementById(
@@ -2325,7 +2620,7 @@ function showMessage(
 
 
     setTimeout(
-        function () {
+        function() {
 
             box.style.display =
                 "none";
@@ -2379,6 +2674,10 @@ function escapeHtml(value) {
 
 function printReport() {
 
+    if (!reportsAccessAllowed()) {
+        return;
+    }
+
     window.print();
 
 }
@@ -2389,6 +2688,11 @@ function printReport() {
 ========================================================= */
 
 function downloadPDF() {
+
+    if (!reportsAccessAllowed()) {
+        return;
+    }
+
 
     if (!window.jspdf) {
 
@@ -2454,13 +2758,11 @@ function downloadPDF() {
         startY: 50,
 
         head: [
-
             [
                 "Category",
                 "Total",
                 "Status"
             ]
-
         ],
 
         body: [
@@ -2563,6 +2865,11 @@ function downloadPDF() {
 
 function downloadExcel() {
 
+    if (!reportsAccessAllowed()) {
+        return;
+    }
+
+
     if (!window.XLSX) {
 
         showMessage(
@@ -2578,134 +2885,69 @@ function downloadExcel() {
     const rows = [
 
         {
-            Category:
-                "Total Rooms",
-
-            Total:
-                reportData.rooms,
-
-            Status:
-                "Active"
+            Category: "Total Rooms",
+            Total: reportData.rooms,
+            Status: "Active"
         },
 
-
         {
-            Category:
-                "Occupied Rooms",
-
-            Total:
-                reportData.occupied,
-
-            Status:
-                "Current"
+            Category: "Occupied Rooms",
+            Total: reportData.occupied,
+            Status: "Current"
         },
 
-
         {
-            Category:
-                "Guests",
-
-            Total:
-                reportData.guests,
-
-            Status:
-                "Registered"
+            Category: "Guests",
+            Total: reportData.guests,
+            Status: "Registered"
         },
 
-
         {
-            Category:
-                "Reservations",
-
-            Total:
-                reportData.reservations,
-
-            Status:
-                "Recorded"
+            Category: "Reservations",
+            Total: reportData.reservations,
+            Status: "Recorded"
         },
 
-
         {
-            Category:
-                "Revenue",
-
-            Total:
-                reportData.revenue,
-
-            Status:
-                "Recorded"
+            Category: "Revenue",
+            Total: reportData.revenue,
+            Status: "Recorded"
         },
 
-
         {
-            Category:
-                "Expenses",
-
-            Total:
-                reportData.expenses,
-
-            Status:
-                "Recorded"
+            Category: "Expenses",
+            Total: reportData.expenses,
+            Status: "Recorded"
         },
 
-
         {
-            Category:
-                "Net Income",
-
-            Total:
-                reportData.netIncome,
-
-            Status:
-                "Calculated"
+            Category: "Net Income",
+            Total: reportData.netIncome,
+            Status: "Calculated"
         },
 
-
         {
-            Category:
-                "Housekeeping",
-
-            Total:
-                reportData.housekeeping,
-
-            Status:
-                "Recorded"
+            Category: "Housekeeping",
+            Total: reportData.housekeeping,
+            Status: "Recorded"
         },
 
-
         {
-            Category:
-                "Completed Cleaning",
-
-            Total:
-                reportData.cleaningCompleted,
-
-            Status:
-                "Completed"
+            Category: "Completed Cleaning",
+            Total: reportData.cleaningCompleted,
+            Status: "Completed"
         },
 
-
         {
-            Category:
-                "Maintenance",
-
-            Total:
-                reportData.maintenance,
-
-            Status:
-                "Recorded"
+            Category: "Maintenance",
+            Total: reportData.maintenance,
+            Status: "Recorded"
         },
 
-
         {
-            Category:
-                "Pending Maintenance",
-
-            Total:
-                reportData.maintenancePending,
-
-            Status:
-                "Pending"
+            Category: "Pending Maintenance",
+            Total: reportData.maintenancePending,
+            Status: "Pending"
         }
 
     ];
@@ -2749,6 +2991,11 @@ function downloadExcel() {
 ========================================================= */
 
 function downloadWord() {
+
+    if (!reportsAccessAllowed()) {
+        return;
+    }
+
 
     const rows = [
 
@@ -3120,6 +3367,16 @@ async function initializeReports() {
         }
 
 
+        applyRoleControl();
+
+        protectReportsPage();
+
+
+        if (!reportsAccessAllowed()) {
+            return;
+        }
+
+
         await loadReport();
 
     } catch (error) {
@@ -3159,409 +3416,37 @@ async function initializeReports() {
 }
 
 
-initializeReports();
-
-</script>
-
-
-<!-- =========================================================
-     ROLE ACCESS CONTROL
-========================================================= -->
-
-<script>
-
-(function () {
-
-    "use strict";
-
-
-    const ROLE_PERMISSIONS = {
-
-        system_owner: [
-
-            "dashboard",
-            "rooms",
-            "guests",
-            "reservations",
-            "checkin",
-            "checkout",
-            "restaurant",
-            "inventory",
-            "payments",
-            "expenses",
-            "employees",
-            "housekeeping",
-            "maintenance",
-            "reports",
-            "settings",
-            "hotels"
-
-        ],
-
-
-        hotel_owner: [
-
-            "dashboard",
-            "rooms",
-            "guests",
-            "reservations",
-            "checkin",
-            "checkout",
-            "restaurant",
-            "inventory",
-            "payments",
-            "expenses",
-            "employees",
-            "housekeeping",
-            "maintenance",
-            "reports",
-            "settings"
-
-        ],
-
-
-        manager: [
-
-            "dashboard",
-            "rooms",
-            "guests",
-            "reservations",
-            "checkin",
-            "checkout",
-            "restaurant",
-            "inventory",
-            "payments",
-            "expenses",
-            "employees",
-            "housekeeping",
-            "maintenance",
-            "reports",
-            "settings"
-
-        ],
-
-
-        receptionist: [
-
-            "dashboard",
-            "rooms",
-            "guests",
-            "reservations",
-            "checkin",
-            "checkout",
-            "payments",
-            "reports"
-
-        ]
-
-    };
-
-
-    /* =====================================================
-       GET USER ROLE
-    ===================================================== */
-
-    function getRole() {
-
-        let role =
-            sessionStorage.getItem(
-                "userRole"
-            );
-
-
-        if (!role) {
-
-            role =
-                localStorage.getItem(
-                    "userRole"
-                );
-
-        }
-
-
-        return String(
-            role || ""
-        )
-        .toLowerCase()
-        .trim();
-
-    }
-
-
-    /* =====================================================
-       GET MODULE FROM LINK
-    ===================================================== */
-
-    function getModuleFromLink(link) {
-
-        const href =
-            String(
-                link.getAttribute(
-                    "href"
-                ) || ""
-            )
-            .toLowerCase()
-            .split("?")[0]
-            .split("#")[0]
-            .trim();
-
-
-        if (
-
-            href === "./" ||
-
-            href === "/" ||
-
-            href === "index.html" ||
-
-            href === "./index.html" ||
-
-            href.endsWith(
-                "/index.html"
-            )
-
-        ) {
-
-            return "dashboard";
-
-        }
-
-
-        const modules = [
-
-            "rooms",
-            "guests",
-            "reservations",
-            "checkin",
-            "checkout",
-            "restaurant",
-            "inventory",
-            "payments",
-            "expenses",
-            "employees",
-            "housekeeping",
-            "maintenance",
-            "reports",
-            "settings",
-            "hotels"
-
-        ];
-
-
-        for (
-            let i = 0;
-            i < modules.length;
-            i++
-        ) {
-
-            if (
-                href.includes(
-                    modules[i] +
-                    ".html"
-                )
-            ) {
-
-                return modules[i];
-
-            }
-
-        }
-
-
-        return null;
-
-    }
-
-
-    /* =====================================================
-       GET CURRENT MODULE
-    ===================================================== */
-
-    function getCurrentModule() {
-
-        const filename =
-            window.location.pathname
-            .split("/")
-            .pop()
-            .toLowerCase();
-
-
-        if (
-            !filename ||
-            filename === "index.html"
-        ) {
-
-            return "dashboard";
-
-        }
-
-
-        return filename.replace(
-            ".html",
-            ""
-        );
-
-    }
-
-
-    /* =====================================================
-       HIDE UNAUTHORIZED LINKS
-    ===================================================== */
-
-    function applyRoleControl() {
-
-        const role =
-            getRole();
-
-
-        if (!role) {
-            return;
-        }
-
-
-        const allowed =
-            ROLE_PERMISSIONS[role];
-
-
-        if (!allowed) {
-            return;
-        }
-
-
-        document
-        .querySelectorAll(
-            ".sidebar nav a, .sidebar-nav a"
-        )
-        .forEach(
-            function (link) {
-
-                const module =
-                    getModuleFromLink(
-                        link
-                    );
-
-
-                if (!module) {
-                    return;
-                }
-
-
-                if (
-                    allowed.includes(
-                        module
-                    )
-                ) {
-
-                    link.style.removeProperty(
-                        "display"
-                    );
-
-                }
-
-                else {
-
-                    link.style.setProperty(
-                        "display",
-                        "none",
-                        "important"
-                    );
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       PROTECT DIRECT PAGE ACCESS
-    ===================================================== */
-
-    function protectPage() {
-
-        const role =
-            getRole();
-
-
-        if (!role) {
-            return;
-        }
-
-
-        const allowed =
-            ROLE_PERMISSIONS[role];
-
-
-        if (!allowed) {
-            return;
-        }
-
-
-        const currentModule =
-            getCurrentModule();
-
-
-        if (
-            !allowed.includes(
-                currentModule
-            )
-        ) {
-
-            window.location.href =
-                "./index.html";
-
-        }
-
-    }
-
-
-    /* =====================================================
-       RUN ROLE CONTROL
-    ===================================================== */
-
-    function runRoleControl() {
+/* =========================================================
+   INITIAL ROLE CONTROL
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
 
         applyRoleControl();
 
-        protectPage();
+        protectReportsPage();
 
     }
+);
 
 
-    if (
-        document.readyState ===
-        "loading"
-    ) {
+/* =========================================================
+   CONTINUOUS ROLE CHECK
+========================================================= */
 
-        document.addEventListener(
-            "DOMContentLoaded",
-            runRoleControl
-        );
-
-    }
-
-    else {
-
-        runRoleControl();
-
-    }
+setInterval(
+    applyRoleControl,
+    500
+);
 
 
-    /* =====================================================
-       KEEP SIDEBAR CONTROL ACTIVE
-    ===================================================== */
-
-    setInterval(
-        applyRoleControl,
-        500
-    );
+window.applyRoleControl =
+    applyRoleControl;
 
 
-    window.applyRoleControl =
-        applyRoleControl;
-
-})();
+initializeReports();
 
 </script>
 
