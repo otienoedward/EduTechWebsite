@@ -7,7 +7,6 @@
 
     <link rel="stylesheet" href="./style.css">
 
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase.js"></script>
 
@@ -158,12 +157,7 @@
             color: #374151;
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 35px;
-            color: #777;
-        }
-
+        .empty-state,
         .loading-state {
             text-align: center;
             padding: 35px;
@@ -179,7 +173,15 @@
             display: none;
         }
 
-        /* Modal */
+        .success-message {
+            background: #dcfce7;
+            color: #166534;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -236,8 +238,7 @@
             color: #374151;
         }
 
-        .form-group input,
-        .form-group select {
+        .form-group input {
             width: 100%;
             box-sizing: border-box;
             padding: 11px 12px;
@@ -247,8 +248,7 @@
             font-size: 14px;
         }
 
-        .form-group input:focus,
-        .form-group select:focus {
+        .form-group input:focus {
             border-color: #2563eb;
         }
 
@@ -289,31 +289,86 @@
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
+
         <div class="sidebar-header">
             <h2>EDU TECH</h2>
             <p>Hotel Management</p>
         </div>
 
         <nav>
-            <a href="./index.html" data-module="dashboard">Dashboard</a>
-            <a href="./rooms.html" data-module="rooms">Rooms</a>
-            <a href="./guests.html" data-module="guests">Guests</a>
-            <a href="./reservations.html" data-module="reservations">Reservations</a>
-            <a href="./checkin.html" data-module="checkin">Check-in</a>
-            <a href="./checkout.html" data-module="checkout">Check-out</a>
-            <a href="./restaurant.html" data-module="restaurant">Restaurant</a>
-            <a href="./inventory.html" data-module="inventory">Inventory</a>
-            <a href="./payments.html" data-module="payments">Payments</a>
-            <a href="./expenses.html" data-module="expenses">Expenses</a>
-            <a href="./employees.html" data-module="employees">Employees</a>
-            <a href="./housekeeping.html" data-module="housekeeping">Housekeeping</a>
-            <a href="./maintenance.html" data-module="maintenance">Maintenance</a>
-            <a href="./reports.html" data-module="reports">Reports</a>
-            <a href="./settings.html" data-module="settings">Settings</a>
-            <a href="./hotels.html" data-module="hotels">Hotels</a>
-            <a href="#" data-action="logout">Logout</a>
+
+            <a href="./index.html" data-module="dashboard">
+                Dashboard
+            </a>
+
+            <a href="./rooms.html" data-module="rooms">
+                Rooms
+            </a>
+
+            <a href="./guests.html" data-module="guests" class="active">
+                Guests
+            </a>
+
+            <a href="./reservations.html" data-module="reservations">
+                Reservations
+            </a>
+
+            <a href="./checkin.html" data-module="checkin">
+                Check-in
+            </a>
+
+            <a href="./checkout.html" data-module="checkout">
+                Check-out
+            </a>
+
+            <a href="./restaurant.html" data-module="restaurant">
+                Restaurant
+            </a>
+
+            <a href="./inventory.html" data-module="inventory">
+                Inventory
+            </a>
+
+            <a href="./payments.html" data-module="payments">
+                Payments
+            </a>
+
+            <a href="./expenses.html" data-module="expenses">
+                Expenses
+            </a>
+
+            <a href="./employees.html" data-module="employees">
+                Employees
+            </a>
+
+            <a href="./housekeeping.html" data-module="housekeeping">
+                Housekeeping
+            </a>
+
+            <a href="./maintenance.html" data-module="maintenance">
+                Maintenance
+            </a>
+
+            <a href="./reports.html" data-module="reports">
+                Reports
+            </a>
+
+            <a href="./settings.html" data-module="settings">
+                Settings
+            </a>
+
+            <a href="./hotels.html" data-module="hotels">
+                Hotels
+            </a>
+
+            <a href="#" data-action="logout">
+                Logout
+            </a>
+
         </nav>
+
     </aside>
+
 
     <!-- MAIN CONTENT -->
     <main class="main-content">
@@ -321,37 +376,83 @@
         <div class="guest-page">
 
             <div class="page-header">
+
                 <div>
                     <h1>Guests</h1>
-                    <p>Manage hotel guests and their contact information.</p>
+                    <p>
+                        Manage hotel guests and their contact information.
+                    </p>
                 </div>
 
-                <button class="btn btn-primary" id="addGuestBtn">
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="addGuestBtn"
+                >
                     + Add Guest
                 </button>
+
             </div>
 
-            <div id="errorMessage" class="error-message"></div>
+
+            <div
+                id="errorMessage"
+                class="error-message"
+            ></div>
+
+
+            <div
+                id="successMessage"
+                class="success-message"
+            ></div>
+
 
             <!-- SUMMARY -->
             <div class="summary-grid">
 
                 <div class="summary-card">
+
                     <h3>Total Guests</h3>
-                    <div class="number" id="totalGuests">0</div>
+
+                    <div
+                        class="number"
+                        id="totalGuests"
+                    >
+                        0
+                    </div>
+
                 </div>
 
+
                 <div class="summary-card">
+
                     <h3>Guests With Email</h3>
-                    <div class="number" id="guestsWithEmail">0</div>
+
+                    <div
+                        class="number"
+                        id="guestsWithEmail"
+                    >
+                        0
+                    </div>
+
                 </div>
 
+
                 <div class="summary-card">
+
                     <h3>Guests With Phone</h3>
-                    <div class="number" id="guestsWithPhone">0</div>
+
+                    <div
+                        class="number"
+                        id="guestsWithPhone"
+                    >
+                        0
+                    </div>
+
                 </div>
 
             </div>
+
 
             <!-- TABLE -->
             <div class="table-card">
@@ -359,41 +460,82 @@
                 <div class="table-toolbar">
 
                     <div class="search-box">
+
                         <input
                             type="text"
                             id="searchInput"
                             placeholder="Search guest by name, phone or email..."
                         >
+
                     </div>
 
-                    <div class="hotel-select system-owner-only" id="hotelSelectorContainer">
+
+                    <div
+                        class="hotel-select system-owner-only"
+                        id="hotelSelectorContainer"
+                    >
+
                         <select id="hotelSelector">
-                            <option value="">Select Hotel</option>
+
+                            <option value="">
+                                Select Hotel
+                            </option>
+
                         </select>
+
                     </div>
 
                 </div>
 
+
                 <div class="table-wrapper">
 
                     <table>
+
                         <thead>
+
                             <tr>
+
                                 <th>#</th>
-                                <th>Full Name</th>
-                                <th>Phone</th>
-                                <th>Email</th>
-                                <th>Created</th>
-                                <th>Actions</th>
+
+                                <th>
+                                    Full Name
+                                </th>
+
+                                <th>
+                                    Phone
+                                </th>
+
+                                <th>
+                                    Email
+                                </th>
+
+                                <th>
+                                    Created
+                                </th>
+
+                                <th>
+                                    Actions
+                                </th>
+
                             </tr>
+
                         </thead>
 
+
                         <tbody id="guestsTableBody">
+
                             <tr>
-                                <td colspan="6" class="loading-state">
+
+                                <td
+                                    colspan="6"
+                                    class="loading-state"
+                                >
                                     Loading guests...
                                 </td>
+
                             </tr>
+
                         </tbody>
 
                     </table>
@@ -408,26 +550,43 @@
 
 
     <!-- ADD / EDIT GUEST MODAL -->
-    <div class="modal" id="guestModal">
+    <div
+        class="modal"
+        id="guestModal"
+    >
 
         <div class="modal-content">
 
             <div class="modal-header">
 
-                <h2 id="modalTitle">Add Guest</h2>
+                <h2 id="modalTitle">
+                    Add Guest
+                </h2>
 
-                <button class="close-btn" id="closeModalBtn">
+                <button
+                    type="button"
+                    class="close-btn"
+                    id="closeModalBtn"
+                >
                     &times;
                 </button>
 
             </div>
 
+
             <form id="guestForm">
 
-                <input type="hidden" id="guestId">
+                <input
+                    type="hidden"
+                    id="guestId"
+                >
+
 
                 <div class="form-group">
-                    <label for="fullName">Full Name *</label>
+
+                    <label for="fullName">
+                        Full Name *
+                    </label>
 
                     <input
                         type="text"
@@ -435,27 +594,39 @@
                         required
                         placeholder="Enter guest full name"
                     >
+
                 </div>
 
+
                 <div class="form-group">
-                    <label for="phone">Phone</label>
+
+                    <label for="phone">
+                        Phone
+                    </label>
 
                     <input
                         type="text"
                         id="phone"
                         placeholder="Enter phone number"
                     >
+
                 </div>
 
+
                 <div class="form-group">
-                    <label for="email">Email</label>
+
+                    <label for="email">
+                        Email
+                    </label>
 
                     <input
                         type="email"
                         id="email"
                         placeholder="Enter email address"
                     >
+
                 </div>
+
 
                 <div class="form-actions">
 
@@ -470,7 +641,6 @@
                     <button
                         type="submit"
                         class="btn btn-primary"
-                        id="saveGuestBtn"
                     >
                         Save Guest
                     </button>
@@ -484,632 +654,1097 @@
     </div>
 
 
-<script>
-/* ==========================================================
-   EDU TECH HOTEL MANAGEMENT SYSTEM
-   GUESTS MODULE
-   ========================================================== */
-
-let guests = [];
-let hotels = [];
-let editingGuestId = null;
+    <!-- SUPABASE + GLOBAL SCRIPT -->
+    <script src="./script.js"></script>
 
 
-/* ==========================================================
-   ROLE PERMISSIONS
-   ========================================================== */
+    <!-- GUESTS JAVASCRIPT -->
+    <script>
 
-const GUESTS_ALLOWED_ROLES = [
-    "system_owner",
-    "hotel_owner",
-    "manager",
-    "receptionist"
-];
+        "use strict";
 
 
-function getCurrentRole() {
-    return String(
-        sessionStorage.getItem("userRole") ||
-        localStorage.getItem("userRole") ||
-        ""
-    ).toLowerCase().trim();
-}
+        /* =====================================================
+           GLOBAL VARIABLES
+           ===================================================== */
+
+        let guestsData = [];
+        let hotelsData = [];
+        let editingGuestId = null;
 
 
-function getCurrentHotelId() {
-    return sessionStorage.getItem("hotelId") ||
-           localStorage.getItem("hotelId") ||
-           "";
-}
+        /* =====================================================
+           DOM ELEMENTS
+           ===================================================== */
 
+        const guestModal =
+            document.getElementById("guestModal");
 
-/* ==========================================================
-   DOM ELEMENTS
-   ========================================================== */
+        const guestForm =
+            document.getElementById("guestForm");
 
-const guestModal = document.getElementById("guestModal");
-const guestForm = document.getElementById("guestForm");
-const guestsTableBody = document.getElementById("guestsTableBody");
-const searchInput = document.getElementById("searchInput");
-const errorMessage = document.getElementById("errorMessage");
+        const guestsTableBody =
+            document.getElementById("guestsTableBody");
 
-const totalGuests = document.getElementById("totalGuests");
-const guestsWithEmail = document.getElementById("guestsWithEmail");
-const guestsWithPhone = document.getElementById("guestsWithPhone");
+        const searchInput =
+            document.getElementById("searchInput");
 
-const hotelSelector = document.getElementById("hotelSelector");
-const hotelSelectorContainer = document.getElementById("hotelSelectorContainer");
+        const errorMessage =
+            document.getElementById("errorMessage");
 
-const fullNameInput = document.getElementById("fullName");
-const phoneInput = document.getElementById("phone");
-const emailInput = document.getElementById("email");
-const guestIdInput = document.getElementById("guestId");
+        const successMessage =
+            document.getElementById("successMessage");
 
-const modalTitle = document.getElementById("modalTitle");
+        const totalGuests =
+            document.getElementById("totalGuests");
 
+        const guestsWithEmail =
+            document.getElementById("guestsWithEmail");
 
-/* ==========================================================
-   ERROR MESSAGE
-   ========================================================== */
+        const guestsWithPhone =
+            document.getElementById("guestsWithPhone");
 
-function showError(message) {
-    errorMessage.textContent = message;
-    errorMessage.style.display = "block";
-}
+        const hotelSelector =
+            document.getElementById("hotelSelector");
 
-
-function hideError() {
-    errorMessage.textContent = "";
-    errorMessage.style.display = "none";
-}
-
-
-/* ==========================================================
-   INITIALIZATION
-   ========================================================== */
-
-document.addEventListener("DOMContentLoaded", async () => {
-
-    const role = getCurrentRole();
-
-    if (!GUESTS_ALLOWED_ROLES.includes(role)) {
-        showError("You do not have permission to access the Guests module.");
-        return;
-    }
-
-    setupEvents();
-
-    setupRoleInterface();
-
-    await initializeGuests();
-
-});
-
-
-/* ==========================================================
-   EVENTS
-   ========================================================== */
-
-function setupEvents() {
-
-    document
-        .getElementById("addGuestBtn")
-        .addEventListener("click", openAddGuestModal);
-
-    document
-        .getElementById("closeModalBtn")
-        .addEventListener("click", closeGuestModal);
-
-    document
-        .getElementById("cancelBtn")
-        .addEventListener("click", closeGuestModal);
-
-    guestForm.addEventListener("submit", saveGuest);
-
-    searchInput.addEventListener("input", renderGuests);
-
-    hotelSelector.addEventListener("change", async () => {
-        await loadGuests();
-    });
-
-    guestModal.addEventListener("click", (event) => {
-
-        if (event.target === guestModal) {
-            closeGuestModal();
-        }
-
-    });
-
-}
-
-
-/* ==========================================================
-   ROLE INTERFACE
-   ========================================================== */
-
-function setupRoleInterface() {
-
-    const role = getCurrentRole();
-
-    if (role === "system_owner") {
-
-        hotelSelectorContainer.style.display = "block";
-
-        loadHotels();
-
-    } else {
-
-        hotelSelectorContainer.style.display = "none";
-
-    }
-
-}
-
-
-/* ==========================================================
-   INITIALIZE
-   ========================================================== */
-
-async function initializeGuests() {
-
-    try {
-
-        hideError();
-
-        if (!window.supabaseClient) {
-            throw new Error(
-                "Supabase client is not available. Check supabase.js."
+        const hotelSelectorContainer =
+            document.getElementById(
+                "hotelSelectorContainer"
             );
-        }
 
-        const role = getCurrentRole();
+        const fullNameInput =
+            document.getElementById("fullName");
 
-        if (role === "system_owner") {
+        const phoneInput =
+            document.getElementById("phone");
 
-            await loadHotels();
+        const emailInput =
+            document.getElementById("email");
 
-            const selectedHotel = hotelSelector.value;
+        const guestIdInput =
+            document.getElementById("guestId");
 
-            if (selectedHotel) {
-                await loadGuests();
-            } else {
-                guests = [];
-                renderGuests();
-            }
-
-        } else {
-
-            const hotelId = getCurrentHotelId();
-
-            if (!hotelId) {
-                throw new Error(
-                    "Hotel ID is missing from the current user session."
-                );
-            }
-
-            await loadGuests();
-
-        }
-
-    } catch (error) {
-
-        console.error("Initialize guests error:", error);
-
-        showError(
-            "Failed to initialize Guests module: " +
-            (error.message || error)
-        );
-
-    }
-
-}
+        const modalTitle =
+            document.getElementById("modalTitle");
 
 
-/* ==========================================================
-   LOAD HOTELS
-   ========================================================== */
+        /* =====================================================
+           ROLE
+           ===================================================== */
 
-async function loadHotels() {
+        function getCurrentRole() {
 
-    try {
-
-        const { data, error } = await window.supabaseClient
-            .from("hotels")
-            .select("id, hotel_name")
-            .order("hotel_name", { ascending: true });
-
-        if (error) {
-            throw error;
-        }
-
-        hotels = data || [];
-
-        hotelSelector.innerHTML =
-            '<option value="">Select Hotel</option>';
-
-        hotels.forEach(hotel => {
-
-            const option = document.createElement("option");
-
-            option.value = hotel.id;
-            option.textContent = hotel.hotel_name;
-
-            hotelSelector.appendChild(option);
-
-        });
-
-    } catch (error) {
-
-        console.error("Load hotels error:", error);
-
-        showError(
-            "Failed to load hotels: " +
-            (error.message || error)
-        );
-
-    }
-
-}
-
-
-/* ==========================================================
-   LOAD GUESTS
-   ========================================================== */
-
-async function loadGuests() {
-
-    try {
-
-        hideError();
-
-        guestsTableBody.innerHTML = `
-            <tr>
-                <td colspan="6" class="loading-state">
-                    Loading guests...
-                </td>
-            </tr>
-        `;
-
-        const role = getCurrentRole();
-
-        let query = window.supabaseClient
-            .from("guests")
-            .select(
-                "id, created_at, full_name, phone, email, hotel_id"
+            return String(
+                sessionStorage.getItem("userRole") ||
+                localStorage.getItem("userRole") ||
+                ""
             )
-            .order("created_at", { ascending: false });
+            .toLowerCase()
+            .trim();
+
+        }
 
 
-        /* ------------------------------------------
-           HOTEL FILTER
-           ------------------------------------------ */
+        /* =====================================================
+           HOTEL ID
+           ===================================================== */
 
-        if (role === "system_owner") {
+        function getCurrentHotelId() {
 
-            const selectedHotel = hotelSelector.value;
+            return (
+                sessionStorage.getItem("hotelId") ||
+                localStorage.getItem("hotelId") ||
+                ""
+            );
 
-            if (!selectedHotel) {
+        }
 
-                guests = [];
+
+        /* =====================================================
+           ERROR / SUCCESS
+           ===================================================== */
+
+        function showError(message) {
+
+            errorMessage.textContent =
+                message;
+
+            errorMessage.style.display =
+                "block";
+
+        }
+
+
+        function hideError() {
+
+            errorMessage.textContent =
+                "";
+
+            errorMessage.style.display =
+                "none";
+
+        }
+
+
+        function showSuccess(message) {
+
+            successMessage.textContent =
+                message;
+
+            successMessage.style.display =
+                "block";
+
+            setTimeout(
+                function () {
+
+                    successMessage.style.display =
+                        "none";
+
+                },
+                4000
+            );
+
+        }
+
+
+        /* =====================================================
+           HTML ESCAPE
+           ===================================================== */
+
+        function escapeHtml(value) {
+
+            return String(
+                value === null ||
+                value === undefined
+                    ? ""
+                    : value
+            )
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+        }
+
+
+        /* =====================================================
+           INITIALIZATION
+           ===================================================== */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            async function () {
+
+                try {
+
+                    hideError();
+
+                    if (
+                        !window.supabaseClient
+                    ) {
+
+                        throw new Error(
+                            "Supabase client is not available. Check supabase.js."
+                        );
+
+                    }
+
+
+                    setupEvents();
+
+                    const role =
+                        getCurrentRole();
+
+
+                    if (
+                        role ===
+                        "system_owner"
+                    ) {
+
+                        hotelSelectorContainer.style.display =
+                            "block";
+
+                        await loadHotels();
+
+                    }
+
+
+                    await loadGuests();
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "Guests initialization error:",
+                        error
+                    );
+
+                    showError(
+                        "Failed to initialize Guests module: " +
+                        error.message
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           EVENTS
+           ===================================================== */
+
+        function setupEvents() {
+
+            document
+                .getElementById("addGuestBtn")
+                .addEventListener(
+                    "click",
+                    openAddGuestModal
+                );
+
+
+            document
+                .getElementById("closeModalBtn")
+                .addEventListener(
+                    "click",
+                    closeGuestModal
+                );
+
+
+            document
+                .getElementById("cancelBtn")
+                .addEventListener(
+                    "click",
+                    closeGuestModal
+                );
+
+
+            guestForm.addEventListener(
+                "submit",
+                saveGuest
+            );
+
+
+            searchInput.addEventListener(
+                "input",
+                renderGuests
+            );
+
+
+            hotelSelector.addEventListener(
+                "change",
+                async function () {
+
+                    await loadGuests();
+
+                }
+            );
+
+
+            guestModal.addEventListener(
+                "click",
+                function (event) {
+
+                    if (
+                        event.target ===
+                        guestModal
+                    ) {
+
+                        closeGuestModal();
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* =====================================================
+           LOAD HOTELS
+           ===================================================== */
+
+        async function loadHotels() {
+
+            const {
+                data,
+                error
+            } =
+                await window.supabaseClient
+                    .from("hotels")
+                    .select(
+                        "id, hotel_name"
+                    )
+                    .order(
+                        "hotel_name",
+                        {
+                            ascending: true
+                        }
+                    );
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            hotelsData =
+                data || [];
+
+
+            hotelSelector.innerHTML =
+                '<option value="">Select Hotel</option>';
+
+
+            hotelsData.forEach(
+                function (hotel) {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+                    option.value =
+                        hotel.id;
+
+                    option.textContent =
+                        hotel.hotel_name;
+
+                    hotelSelector.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =====================================================
+           LOAD GUESTS
+           
+           VERY IMPORTANT:
+           THE ACTUAL DATABASE COLUMN IS:
+
+           "full name"
+
+           NOT:
+
+           "full_name"
+           ===================================================== */
+
+        async function loadGuests() {
+
+            try {
+
+                hideError();
+
+
+                guestsTableBody.innerHTML = `
+                    <tr>
+                        <td
+                            colspan="6"
+                            class="loading-state"
+                        >
+                            Loading guests...
+                        </td>
+                    </tr>
+                `;
+
+
+                const role =
+                    getCurrentRole();
+
+
+                let hotelId = "";
+
+
+                if (
+                    role ===
+                    "system_owner"
+                ) {
+
+                    hotelId =
+                        hotelSelector.value;
+
+
+                    if (!hotelId) {
+
+                        guestsData =
+                            [];
+
+                        renderGuests();
+
+                        return;
+
+                    }
+
+                }
+                else {
+
+                    hotelId =
+                        getCurrentHotelId();
+
+
+                    if (!hotelId) {
+
+                        throw new Error(
+                            "Hotel ID is missing from the current user session."
+                        );
+
+                    }
+
+                }
+
+
+                /*
+                 EXACT DATABASE COLUMN:
+
+                 "full name"
+                */
+
+                const {
+                    data,
+                    error
+                } =
+                    await window.supabaseClient
+                        .from("guests")
+                        .select(
+                            'id, created_at, "full name", phone, email, hotel_id'
+                        )
+                        .eq(
+                            "hotel_id",
+                            hotelId
+                        )
+                        .order(
+                            "created_at",
+                            {
+                                ascending: false
+                            }
+                        );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                guestsData =
+                    data || [];
+
 
                 renderGuests();
 
-                return;
             }
+            catch (error) {
 
-            query = query.eq("hotel_id", selectedHotel);
+                console.error(
+                    "Load guests error:",
+                    error
+                );
 
-        } else {
+                guestsData =
+                    [];
 
-            const hotelId = getCurrentHotelId();
 
-            if (!hotelId) {
+                guestsTableBody.innerHTML = `
+                    <tr>
+                        <td
+                            colspan="6"
+                            class="empty-state"
+                        >
+                            Failed to load guests.
+                        </td>
+                    </tr>
+                `;
 
-                throw new Error(
-                    "Hotel ID is missing from the current session."
+
+                showError(
+                    "Failed to load guests: " +
+                    error.message
                 );
 
             }
 
-            query = query.eq("hotel_id", hotelId);
-
         }
 
 
-        const { data, error } = await query;
+        /* =====================================================
+           RENDER GUESTS
+           ===================================================== */
 
-        if (error) {
-            throw error;
-        }
+        function renderGuests() {
 
-        guests = data || [];
-
-        renderGuests();
-
-    } catch (error) {
-
-        console.error("Load guests error:", error);
-
-        guests = [];
-
-        guestsTableBody.innerHTML = `
-            <tr>
-                <td colspan="6" class="empty-state">
-                    Failed to load guests.
-                </td>
-            </tr>
-        `;
-
-        showError(
-            "Failed to load guests: " +
-            (error.message || error)
-        );
-
-    }
-
-}
+            const searchTerm =
+                searchInput.value
+                    .toLowerCase()
+                    .trim();
 
 
-/* ==========================================================
-   RENDER GUESTS
-   ========================================================== */
+            const filteredGuests =
+                guestsData.filter(
+                    function (guest) {
 
-function renderGuests() {
+                        /*
+                         EXACT DATABASE COLUMN:
 
-    const searchTerm =
-        searchInput.value.toLowerCase().trim();
+                         guest["full name"]
+                        */
 
-    const filteredGuests = guests.filter(guest => {
-
-        const name =
-            String(guest.full_name || "").toLowerCase();
-
-        const phone =
-            String(guest.phone || "").toLowerCase();
-
-        const email =
-            String(guest.email || "").toLowerCase();
-
-        return (
-            name.includes(searchTerm) ||
-            phone.includes(searchTerm) ||
-            email.includes(searchTerm)
-        );
-
-    });
+                        const name =
+                            String(
+                                guest["full name"] ||
+                                ""
+                            )
+                            .toLowerCase();
 
 
-    /* ------------------------------------------
-       SUMMARY
-       ------------------------------------------ */
-
-    totalGuests.textContent = guests.length;
-
-    guestsWithEmail.textContent =
-        guests.filter(
-            guest => String(guest.email || "").trim() !== ""
-        ).length;
-
-    guestsWithPhone.textContent =
-        guests.filter(
-            guest => String(guest.phone || "").trim() !== ""
-        ).length;
+                        const phone =
+                            String(
+                                guest.phone ||
+                                ""
+                            )
+                            .toLowerCase();
 
 
-    /* ------------------------------------------
-       EMPTY
-       ------------------------------------------ */
+                        const email =
+                            String(
+                                guest.email ||
+                                ""
+                            )
+                            .toLowerCase();
 
-    if (filteredGuests.length === 0) {
 
-        guestsTableBody.innerHTML = `
-            <tr>
-                <td colspan="6" class="empty-state">
-                    ${
-                        guests.length === 0
-                        ? "No guests found."
-                        : "No guests match your search."
+                        return (
+                            name.includes(
+                                searchTerm
+                            ) ||
+                            phone.includes(
+                                searchTerm
+                            ) ||
+                            email.includes(
+                                searchTerm
+                            )
+                        );
+
                     }
-                </td>
-            </tr>
-        `;
-
-        return;
-
-    }
+                );
 
 
-    /* ------------------------------------------
-       TABLE
-       ------------------------------------------ */
-
-    guestsTableBody.innerHTML = "";
-
-    filteredGuests.forEach((guest, index) => {
-
-        const row = document.createElement("tr");
-
-        const createdDate = guest.created_at
-            ? new Date(guest.created_at).toLocaleDateString()
-            : "-";
-
-        row.innerHTML = `
-            <td>${index + 1}</td>
-
-            <td>
-                <strong>
-                    ${escapeHtml(guest.full_name || "-")}
-                </strong>
-            </td>
-
-            <td>
-                ${escapeHtml(guest.phone || "-")}
-            </td>
-
-            <td>
-                ${escapeHtml(guest.email || "-")}
-            </td>
-
-            <td>
-                ${createdDate}
-            </td>
-
-            <td>
-
-                <button
-                    class="btn btn-edit"
-                    onclick="editGuest('${guest.id}')"
-                >
-                    Edit
-                </button>
-
-                <button
-                    class="btn btn-delete"
-                    onclick="deleteGuest('${guest.id}')"
-                >
-                    Delete
-                </button>
-
-            </td>
-        `;
-
-        guestsTableBody.appendChild(row);
-
-    });
-
-}
+            totalGuests.textContent =
+                guestsData.length;
 
 
-/* ==========================================================
-   OPEN ADD GUEST MODAL
-   ========================================================== */
+            guestsWithEmail.textContent =
+                guestsData.filter(
+                    function (guest) {
 
-function openAddGuestModal() {
+                        return String(
+                            guest.email ||
+                            ""
+                        ).trim() !== "";
 
-    editingGuestId = null;
-
-    guestIdInput.value = "";
-
-    fullNameInput.value = "";
-    phoneInput.value = "";
-    emailInput.value = "";
-
-    modalTitle.textContent = "Add Guest";
-
-    guestModal.classList.add("show");
-
-    setTimeout(() => {
-        fullNameInput.focus();
-    }, 100);
-
-}
+                    }
+                ).length;
 
 
-/* ==========================================================
-   EDIT GUEST
-   ========================================================== */
+            guestsWithPhone.textContent =
+                guestsData.filter(
+                    function (guest) {
 
-function editGuest(id) {
+                        return String(
+                            guest.phone ||
+                            ""
+                        ).trim() !== "";
 
-    const guest = guests.find(
-        item => String(item.id) === String(id)
-    );
-
-    if (!guest) {
-
-        alert("Guest could not be found.");
-
-        return;
-
-    }
-
-    editingGuestId = guest.id;
-
-    guestIdInput.value = guest.id;
-
-    fullNameInput.value =
-        guest.full_name || "";
-
-    phoneInput.value =
-        guest.phone || "";
-
-    emailInput.value =
-        guest.email || "";
-
-    modalTitle.textContent = "Edit Guest";
-
-    guestModal.classList.add("show");
-
-    setTimeout(() => {
-        fullNameInput.focus();
-    }, 100);
-
-}
+                    }
+                ).length;
 
 
-/* ==========================================================
-   SAVE GUEST
-   ========================================================== */
+            if (
+                filteredGuests.length ===
+                0
+            ) {
 
-async function saveGuest(event) {
+                guestsTableBody.innerHTML = `
+                    <tr>
+                        <td
+                            colspan="6"
+                            class="empty-state"
+                        >
+                            ${
+                                guestsData.length === 0
+                                    ? "No guests found."
+                                    : "No guests match your search."
+                            }
+                        </td>
+                    </tr>
+                `;
 
-    event.preventDefault();
+                return;
 
-    try {
-
-        hideError();
-
-        const role = getCurrentRole();
-
-        const fullName =
-            fullNameInput.value.trim();
-
-        const phone =
-            phoneInput.value.trim();
-
-        const email =
-            emailInput.value.trim();
+            }
 
 
-        if (!fullName) {
+            guestsTableBody.innerHTML =
+                "";
 
-            alert("Please enter the guest's full name.");
 
-            fullNameInput.focus();
+            filteredGuests.forEach(
+                function (guest, index) {
 
-            return;
+                    const row =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    const createdDate =
+                        guest.created_at
+                            ? new Date(
+                                guest.created_at
+                            ).toLocaleDateString()
+                            : "-";
+
+
+                    row.innerHTML = `
+                        <td>
+                            ${index + 1}
+                        </td>
+
+                        <td>
+                            <strong>
+                                ${escapeHtml(
+                                    guest["full name"] ||
+                                    "-"
+                                )}
+                            </strong>
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                guest.phone ||
+                                "-"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                guest.email ||
+                                "-"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                createdDate
+                            )}
+                        </td>
+
+                        <td>
+
+                            <button
+                                type="button"
+                                class="btn btn-edit"
+                                onclick="editGuest('${escapeHtml(guest.id)}')"
+                            >
+                                Edit
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn btn-delete"
+                                onclick="deleteGuest('${escapeHtml(guest.id)}')"
+                            >
+                                Delete
+                            </button>
+
+                        </td>
+                    `;
+
+
+                    guestsTableBody.appendChild(
+                        row
+                    );
+
+                }
+            );
 
         }
 
 
-        /* ------------------------------------------
-           DETERMINE HOTEL
-           ------------------------------------------ */
+        /* =====================================================
+           OPEN ADD GUEST
+           ===================================================== */
 
-        let hotelId = null;
+        function openAddGuestModal() {
 
-        if (role === "system_owner") {
+            editingGuestId =
+                null;
 
-            hotelId = hotelSelector.value;
+            guestForm.reset();
 
-            if (!hotelId) {
+            guestIdInput.value =
+                "";
 
-                alert(
-                    "Please select a hotel before adding a guest."
+            modalTitle.textContent =
+                "Add Guest";
+
+            guestModal.classList.add(
+                "show"
+            );
+
+
+            setTimeout(
+                function () {
+
+                    fullNameInput.focus();
+
+                },
+                100
+            );
+
+        }
+
+
+        /* =====================================================
+           EDIT GUEST
+           ===================================================== */
+
+        function editGuest(id) {
+
+            const guest =
+                guestsData.find(
+                    function (item) {
+
+                        return String(
+                            item.id
+                        ) === String(
+                            id
+                        );
+
+                    }
+                );
+
+
+            if (!guest) {
+
+                showError(
+                    "Guest could not be found."
                 );
 
                 return;
 
             }
 
-        } else {
 
-            hotelId = getCurrentHotelId();
+            editingGuestId =
+                guest.id;
 
-            if (!hotelId) {
+            guestIdInput.value =
+                guest.id;
 
-                throw new Error(
-                    "Hotel ID is missing from the current session."
+
+            /*
+             EXACT DATABASE COLUMN:
+
+             "full name"
+            */
+
+            fullNameInput.value =
+                guest["full name"] ||
+                "";
+
+
+            phoneInput.value =
+                guest.phone ||
+                "";
+
+
+            emailInput.value =
+                guest.email ||
+                "";
+
+
+            modalTitle.textContent =
+                "Edit Guest";
+
+
+            guestModal.classList.add(
+                "show"
+            );
+
+
+            setTimeout(
+                function () {
+
+                    fullNameInput.focus();
+
+                },
+                100
+            );
+
+        }
+
+
+        /* =====================================================
+           SAVE GUEST
+           ===================================================== */
+
+        async function saveGuest(event) {
+
+            event.preventDefault();
+
+
+            try {
+
+                hideError();
+
+
+                const role =
+                    getCurrentRole();
+
+
+                const fullName =
+                    fullNameInput.value
+                        .trim();
+
+
+                const phone =
+                    phoneInput.value
+                        .trim();
+
+
+                const email =
+                    emailInput.value
+                        .trim();
+
+
+                if (!fullName) {
+
+                    showError(
+                        "Please enter the guest's full name."
+                    );
+
+                    fullNameInput.focus();
+
+                    return;
+
+                }
+
+
+                let hotelId = "";
+
+
+                if (
+                    role ===
+                    "system_owner"
+                ) {
+
+                    hotelId =
+                        hotelSelector.value;
+
+
+                    if (!hotelId) {
+
+                        showError(
+                            "Please select a hotel first."
+                        );
+
+                        return;
+
+                    }
+
+                }
+                else {
+
+                    hotelId =
+                        getCurrentHotelId();
+
+
+                    if (!hotelId) {
+
+                        throw new Error(
+                            "Hotel ID is missing from the current user session."
+                        );
+
+                    }
+
+                }
+
+
+                /*
+                 CHECK FOR DUPLICATE NAME.
+
+                 IMPORTANT:
+                 The column is "full name".
+                */
+
+                let duplicateQuery =
+                    window.supabaseClient
+                        .from("guests")
+                        .select(
+                            'id, "full name", phone, email'
+                        )
+                        .eq(
+                            "hotel_id",
+                            hotelId
+                        )
+                        .eq(
+                            "full name",
+                            fullName
+                        );
+
+
+                if (editingGuestId) {
+
+                    duplicateQuery =
+                        duplicateQuery.neq(
+                            "id",
+                            editingGuestId
+                        );
+
+                }
+
+
+                const {
+                    data: duplicateGuests,
+                    error: duplicateError
+                } =
+                    await duplicateQuery;
+
+
+                if (duplicateError) {
+
+                    throw duplicateError;
+
+                }
+
+
+                if (
+                    duplicateGuests &&
+                    duplicateGuests.length > 0
+                ) {
+
+                    showError(
+                        "A guest with this name already exists for this hotel."
+                    );
+
+                    return;
+
+                }
+
+
+                /* UPDATE */
+
+                if (editingGuestId) {
+
+                    const {
+                        error
+                    } =
+                        await window.supabaseClient
+                            .from("guests")
+                            .update({
+                                "full name":
+                                    fullName,
+
+                                phone:
+                                    phone ||
+                                    null,
+
+                                email:
+                                    email ||
+                                    null
+                            })
+                            .eq(
+                                "id",
+                                editingGuestId
+                            )
+                            .eq(
+                                "hotel_id",
+                                hotelId
+                            );
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    closeGuestModal();
+
+                    showSuccess(
+                        "Guest updated successfully."
+                    );
+
+                }
+
+
+                /* INSERT */
+
+                else {
+
+                    const {
+                        error
+                    } =
+                        await window.supabaseClient
+                            .from("guests")
+                            .insert([
+                                {
+                                    "full name":
+                                        fullName,
+
+                                    phone:
+                                        phone ||
+                                        null,
+
+                                    email:
+                                        email ||
+                                        null,
+
+                                    hotel_id:
+                                        hotelId
+                                }
+                            ]);
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    closeGuestModal();
+
+                    showSuccess(
+                        "Guest added successfully."
+                    );
+
+                }
+
+
+                await loadGuests();
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Save guest error:",
+                    error
+                );
+
+                showError(
+                    "Failed to save guest: " +
+                    error.message
                 );
 
             }
@@ -1117,283 +1752,166 @@ async function saveGuest(event) {
         }
 
 
-        /* ------------------------------------------
-           DUPLICATE CHECK
-           ------------------------------------------ */
+        /* =====================================================
+           DELETE GUEST
+           ===================================================== */
 
-        let duplicateQuery = window.supabaseClient
-            .from("guests")
-            .select("id, full_name, phone, email")
-            .eq("hotel_id", hotelId)
-            .ilike("full_name", fullName);
+        async function deleteGuest(id) {
 
+            const guest =
+                guestsData.find(
+                    function (item) {
 
-        if (editingGuestId) {
+                        return String(
+                            item.id
+                        ) === String(
+                            id
+                        );
 
-            duplicateQuery =
-                duplicateQuery.neq(
-                    "id",
-                    editingGuestId
+                    }
                 );
 
-        }
 
+            if (!guest) {
 
-        const {
-            data: duplicateGuests,
-            error: duplicateError
-        } = await duplicateQuery;
+                showError(
+                    "Guest could not be found."
+                );
 
-
-        if (duplicateError) {
-            throw duplicateError;
-        }
-
-
-        if (
-            duplicateGuests &&
-            duplicateGuests.length > 0
-        ) {
-
-            alert(
-                "A guest with this name already exists for this hotel."
-            );
-
-            return;
-
-        }
-
-
-        /* ------------------------------------------
-           UPDATE
-           ------------------------------------------ */
-
-        if (editingGuestId) {
-
-            const { error } =
-                await window.supabaseClient
-                    .from("guests")
-                    .update({
-                        full_name: fullName,
-                        phone: phone || null,
-                        email: email || null
-                    })
-                    .eq("id", editingGuestId)
-                    .eq("hotel_id", hotelId);
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            alert("Guest updated successfully.");
-
-        }
-
-
-        /* ------------------------------------------
-           INSERT
-           ------------------------------------------ */
-
-        else {
-
-            const { error } =
-                await window.supabaseClient
-                    .from("guests")
-                    .insert([
-                        {
-                            full_name: fullName,
-                            phone: phone || null,
-                            email: email || null,
-                            hotel_id: hotelId
-                        }
-                    ]);
-
-
-            if (error) {
-                throw error;
-            }
-
-
-            alert("Guest added successfully.");
-
-        }
-
-
-        closeGuestModal();
-
-        await loadGuests();
-
-    } catch (error) {
-
-        console.error("Save guest error:", error);
-
-        showError(
-            "Failed to save guest: " +
-            (error.message || error)
-        );
-
-    }
-
-}
-
-
-/* ==========================================================
-   DELETE GUEST
-   ========================================================== */
-
-async function deleteGuest(id) {
-
-    const guest = guests.find(
-        item => String(item.id) === String(id)
-    );
-
-    if (!guest) {
-
-        alert("Guest could not be found.");
-
-        return;
-
-    }
-
-
-    const confirmed = confirm(
-        `Are you sure you want to delete ${guest.full_name}?`
-    );
-
-
-    if (!confirmed) {
-        return;
-    }
-
-
-    try {
-
-        hideError();
-
-        const role = getCurrentRole();
-
-        let hotelId = null;
-
-        if (role === "system_owner") {
-
-            hotelId = hotelSelector.value;
-
-        } else {
-
-            hotelId = getCurrentHotelId();
-
-        }
-
-
-        let query = window.supabaseClient
-            .from("guests")
-            .delete()
-            .eq("id", id);
-
-
-        if (hotelId) {
-
-            query = query.eq(
-                "hotel_id",
-                hotelId
-            );
-
-        }
-
-
-        const { error } = await query;
-
-        if (error) {
-            throw error;
-        }
-
-
-        alert("Guest deleted successfully.");
-
-        await loadGuests();
-
-    } catch (error) {
-
-        console.error("Delete guest error:", error);
-
-        showError(
-            "Failed to delete guest: " +
-            (error.message || error)
-        );
-
-    }
-
-}
-
-
-/* ==========================================================
-   CLOSE MODAL
-   ========================================================== */
-
-function closeGuestModal() {
-
-    guestModal.classList.remove("show");
-
-    guestForm.reset();
-
-    guestIdInput.value = "";
-
-    editingGuestId = null;
-
-}
-
-
-/* ==========================================================
-   HTML ESCAPE
-   ========================================================== */
-
-function escapeHtml(value) {
-
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
-
-
-/* ==========================================================
-   GLOBAL LOGOUT
-   ========================================================== */
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    document
-        .querySelectorAll('[data-action="logout"]')
-        .forEach(button => {
-
-            if (button.dataset.logoutBound === "true") {
                 return;
+
             }
 
-            button.dataset.logoutBound = "true";
 
-            button.addEventListener("click", () => {
+            const guestName =
+                guest["full name"] ||
+                "this guest";
 
-                sessionStorage.removeItem("userRole");
-                sessionStorage.removeItem("userName");
-                sessionStorage.removeItem("hotelId");
-                sessionStorage.removeItem("hotelName");
 
-                localStorage.removeItem("userRole");
+            const confirmed =
+                window.confirm(
+                    "Are you sure you want to delete " +
+                    guestName +
+                    "?"
+                );
 
-                window.location.href = "./login.html";
 
-            });
+            if (!confirmed) {
 
-        });
+                return;
 
-});
-</script>
+            }
+
+
+            try {
+
+                hideError();
+
+
+                const role =
+                    getCurrentRole();
+
+
+                let hotelId = "";
+
+
+                if (
+                    role ===
+                    "system_owner"
+                ) {
+
+                    hotelId =
+                        hotelSelector.value;
+
+                }
+                else {
+
+                    hotelId =
+                        getCurrentHotelId();
+
+                }
+
+
+                let query =
+                    window.supabaseClient
+                        .from("guests")
+                        .delete()
+                        .eq(
+                            "id",
+                            id
+                        );
+
+
+                if (hotelId) {
+
+                    query =
+                        query.eq(
+                            "hotel_id",
+                            hotelId
+                        );
+
+                }
+
+
+                const {
+                    error
+                } =
+                    await query;
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                showSuccess(
+                    "Guest deleted successfully."
+                );
+
+
+                await loadGuests();
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Delete guest error:",
+                    error
+                );
+
+                showError(
+                    "Failed to delete guest: " +
+                    error.message
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           CLOSE MODAL
+           ===================================================== */
+
+        function closeGuestModal() {
+
+            guestModal.classList.remove(
+                "show"
+            );
+
+            guestForm.reset();
+
+            guestIdInput.value =
+                "";
+
+            editingGuestId =
+                null;
+
+        }
+
+    </script>
 
 </body>
 </html>
