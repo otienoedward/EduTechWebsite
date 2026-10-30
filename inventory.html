@@ -13,118 +13,115 @@
 
 <style>
 
-/* =========================================================
-   INVENTORY PAGE LAYOUT
-========================================================= */
-
 .sidebar {
-
     position: fixed !important;
-
     left: 0 !important;
-
     top: 0 !important;
-
     width: 250px !important;
-
     height: 100vh !important;
-
     z-index: 999999 !important;
-
     overflow-y: auto !important;
-
 }
-
 
 .main-content {
-
     margin-left: 250px !important;
-
 }
-
 
 .sidebar a {
-
     display: block !important;
-
     cursor: pointer !important;
-
 }
-
-
-/* =========================================================
-   ROLE CONTROL
-========================================================= */
 
 .role-hidden {
-
     display: none !important;
-
 }
-
 
 #accessDeniedScreen {
-
     display: none;
-
     text-align: center;
-
     padding: 60px 20px;
-
 }
-
 
 #accessDeniedScreen h2 {
-
     color: #c0392b;
-
     margin-bottom: 10px;
-
 }
-
 
 #accessDeniedScreen p {
-
     color: #666;
-
     margin-bottom: 20px;
-
 }
 
-
 #accessDeniedScreen a {
-
     display: inline-block;
-
     padding: 10px 18px;
-
     background: #007bff;
-
     color: white;
-
     text-decoration: none;
-
     border-radius: 6px;
+}
 
+.status-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-available {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-maintenance {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-occupied {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.hotel-selector {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f7f7f7;
+    border-radius: 8px;
+}
+
+.hotel-selector label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+.hotel-selector select {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+}
+
+.inventory-empty {
+    text-align: center;
+    padding: 30px;
+    color: #777;
 }
 
 </style>
 
 </head>
 
-
 <body>
 
-
 <div class="dashboard">
-
 
 <!-- =====================================================
      SIDEBAR
 ====================================================== -->
 
 <aside class="sidebar">
-
 
 <div class="logo">
 
@@ -134,130 +131,71 @@
 
 </div>
 
-
 <nav>
 
-
-<a href="./index.html"
-   data-module="dashboard">
-
+<a href="./index.html" data-module="dashboard">
 Dashboard
-
 </a>
 
-
-<a href="./rooms.html"
-   data-module="rooms">
-
+<a href="./rooms.html" data-module="rooms">
 Rooms
-
 </a>
 
-
-<a href="./guests.html"
-   data-module="guests">
-
+<a href="./guests.html" data-module="guests">
 Guests
-
 </a>
 
-
-<a href="./reservations.html"
-   data-module="reservations">
-
+<a href="./reservations.html" data-module="reservations">
 Reservations
-
 </a>
 
-
-<a href="./checkin.html"
-   data-module="checkin">
-
+<a href="./checkin.html" data-module="checkin">
 Check-in
-
 </a>
 
-
-<a href="./checkout.html"
-   data-module="checkout">
-
+<a href="./checkout.html" data-module="checkout">
 Check-out
-
 </a>
 
-
-<a href="./restaurant.html"
-   data-module="restaurant">
-
+<a href="./restaurant.html" data-module="restaurant">
 Restaurant
-
 </a>
 
-
-<a href="./inventory.html"
-   class="active"
-   data-module="inventory">
-
+<a href="./inventory.html" class="active" data-module="inventory">
 Inventory
-
 </a>
 
-
-<a href="./payments.html"
-   data-module="payments">
-
+<a href="./payments.html" data-module="payments">
 Payments
-
 </a>
 
-
-<a href="./expenses.html"
-   data-module="expenses">
-
+<a href="./expenses.html" data-module="expenses">
 Expenses
-
 </a>
 
-
-<a href="./employees.html"
-   data-module="employees">
-
+<a href="./employees.html" data-module="employees">
 Employees
-
 </a>
 
-
-<a href="./housekeeping.html"
-   data-module="housekeeping">
-
+<a href="./housekeeping.html" data-module="housekeeping">
 Housekeeping
-
 </a>
 
-
-<a href="./maintenance.html"
-   data-module="maintenance">
-
+<a href="./maintenance.html" data-module="maintenance">
 Maintenance
-
 </a>
 
-
-<a href="./reports.html"
-   data-module="reports">
-
+<a href="./reports.html" data-module="reports">
 Reports
-
 </a>
 
-
-<a href="./settings.html"
-   data-module="settings">
-
+<a href="./settings.html" data-module="settings">
 Settings
-
 </a>
 
+<a href="./hotels.html" data-module="hotels">
+Hotels
+</a>
 
 </nav>
 
@@ -270,41 +208,24 @@ Settings
 
 <main class="main-content">
 
-
-<!-- =================================================
-     ACCESS DENIED
-================================================== -->
-
 <div id="accessDeniedScreen">
 
-<h2>
-Access Denied
-</h2>
-
+<h2>Access Denied</h2>
 
 <p>
 You do not have permission to access the Inventory module.
 </p>
 
-
 <a href="./index.html">
-
 Return to Dashboard
-
 </a>
 
 </div>
 
 
-<!-- =================================================
-     INVENTORY MODULE CONTENT
-================================================== -->
-
 <div id="inventoryModuleContent">
 
-
 <header class="topbar">
-
 
 <div>
 
@@ -312,29 +233,50 @@ Return to Dashboard
 Inventory Management
 </h1>
 
-
 <p>
-Track and manage hotel inventory
+Track and manage hotel stock
 </p>
 
 </div>
 
-
 <div class="user-info">
 
-<strong>
+<strong id="inventoryUserName">
 Administrator
 </strong>
 
-
-<span>
+<span id="inventoryUserRole">
 System Admin
 </span>
 
 </div>
 
-
 </header>
+
+
+<!-- =====================================================
+     SYSTEM OWNER HOTEL SELECTOR
+====================================================== -->
+
+<div
+id="inventoryHotelSelector"
+class="hotel-selector"
+style="display:none;"
+>
+
+<label for="inventoryHotel">
+Select Hotel
+</label>
+
+<select id="inventoryHotel">
+
+<option value="">
+Select Hotel
+</option>
+
+</select>
+
+</div>
 
 
 <!-- =====================================================
@@ -343,13 +285,11 @@ System Admin
 
 <section class="summary-cards">
 
-
 <div class="summary-card">
 
 <h3>
 Total Items
 </h3>
-
 
 <p id="totalInventoryItems">
 0
@@ -364,7 +304,6 @@ Total Items
 In Stock
 </h3>
 
-
 <p id="inStockItems">
 0
 </p>
@@ -377,7 +316,6 @@ In Stock
 <h3>
 Low Stock
 </h3>
-
 
 <p id="lowStockItems">
 0
@@ -392,13 +330,11 @@ Low Stock
 Total Value
 </h3>
 
-
 <p id="inventoryValue">
 KSh 0
 </p>
 
 </div>
-
 
 </section>
 
@@ -409,9 +345,7 @@ KSh 0
 
 <section class="content-section">
 
-
 <div class="section-header">
-
 
 <div>
 
@@ -419,18 +353,17 @@ KSh 0
 Hotel Inventory
 </h2>
 
-
 <p>
 Record and manage hotel stock items
 </p>
 
 </div>
 
-
 <button
 type="button"
 class="primary-btn"
-onclick="openInventoryForm()">
+onclick="openInventoryForm()"
+>
 
 + New Inventory Item
 
@@ -443,7 +376,6 @@ onclick="openInventoryForm()">
 
 <div class="table-controls">
 
-
 <input
 type="text"
 id="inventorySearch"
@@ -451,34 +383,28 @@ placeholder="Search inventory..."
 onkeyup="filterInventory()"
 >
 
-
 <select
 id="inventoryFilter"
-onchange="filterInventory()">
-
+onchange="filterInventory()"
+>
 
 <option value="all">
 All Stock Status
 </option>
 
-
 <option value="In Stock">
 In Stock
 </option>
-
 
 <option value="Low Stock">
 Low Stock
 </option>
 
-
 <option value="Out of Stock">
 Out of Stock
 </option>
 
-
 </select>
-
 
 </div>
 
@@ -487,12 +413,9 @@ Out of Stock
 
 <div class="table-container">
 
-
 <table id="inventoryTable">
 
-
 <thead>
-
 
 <tr>
 
@@ -505,7 +428,7 @@ Item Name
 </th>
 
 <th>
-Category
+Unit
 </th>
 
 <th>
@@ -513,11 +436,11 @@ Quantity
 </th>
 
 <th>
-Unit Price
+Reorder Level
 </th>
 
 <th>
-Supplier
+Unit Price
 </th>
 
 <th>
@@ -530,25 +453,18 @@ Actions
 
 </tr>
 
-
 </thead>
-
 
 <tbody id="inventoryTableBody">
 </tbody>
 
-
 </table>
 
-
 </div>
-
 
 </section>
 
-
 </div>
-
 
 </main>
 
@@ -561,42 +477,59 @@ Actions
 
 <div
 id="inventoryModal"
-class="modal">
-
+class="modal"
+>
 
 <div class="modal-content">
 
-
 <div class="modal-header">
-
 
 <h2 id="inventoryModalTitle">
 New Inventory Item
 </h2>
 
-
 <button
 type="button"
-onclick="closeInventoryForm()">
+onclick="closeInventoryForm()"
+>
 
 &times;
 
 </button>
-
 
 </div>
 
 
 <form id="inventoryForm">
 
+<div
+id="inventoryFormHotelGroup"
+class="form-group"
+style="display:none;"
+>
+
+<label for="inventoryFormHotel">
+Hotel
+</label>
+
+<select
+id="inventoryFormHotel"
+>
+
+<option value="">
+Select Hotel
+</option>
+
+</select>
+
+</div>
+
 
 <div class="form-group">
-
 
 <label for="inventoryItemName">
 Item Name
 </label>
-
 
 <input
 type="text"
@@ -604,100 +537,116 @@ id="inventoryItemName"
 required
 >
 
-
 </div>
 
 
 <div class="form-group">
 
-
-<label for="inventoryCategory">
-Category
+<label for="inventoryUnit">
+Unit
 </label>
 
-
 <select
-id="inventoryCategory"
-required>
-
+id="inventoryUnit"
+required
+>
 
 <option value="">
-Select Category
+Select Unit
 </option>
 
-
-<option value="Food">
-Food
+<option value="pcs">
+Pieces
 </option>
 
-
-<option value="Beverages">
-Beverages
+<option value="kg">
+Kilograms
 </option>
 
-
-<option value="Cleaning">
-Cleaning
+<option value="g">
+Grams
 </option>
 
-
-<option value="Toiletries">
-Toiletries
+<option value="litres">
+Litres
 </option>
 
-
-<option value="Kitchen">
-Kitchen
+<option value="ml">
+Millilitres
 </option>
 
-
-<option value="Office">
-Office
+<option value="boxes">
+Boxes
 </option>
 
-
-<option value="Maintenance">
-Maintenance
+<option value="packets">
+Packets
 </option>
 
+<option value="bottles">
+Bottles
+</option>
 
-<option value="Other">
+<option value="cartons">
+Cartons
+</option>
+
+<option value="bags">
+Bags
+</option>
+
+<option value="sets">
+Sets
+</option>
+
+<option value="other">
 Other
 </option>
 
-
 </select>
-
 
 </div>
 
 
 <div class="form-group">
-
 
 <label for="inventoryQuantity">
 Quantity
 </label>
 
-
 <input
 type="number"
 id="inventoryQuantity"
 min="0"
+step="0.01"
 required
 >
-
 
 </div>
 
 
 <div class="form-group">
 
+<label for="inventoryReorderLevel">
+Reorder Level
+</label>
+
+<input
+type="number"
+id="inventoryReorderLevel"
+min="0"
+step="0.01"
+required
+>
+
+</div>
+
+
+<div class="form-group">
 
 <label for="inventoryUnitPrice">
 Unit Price (KSh)
 </label>
-
 
 <input
 type="number"
@@ -707,55 +656,33 @@ step="0.01"
 required
 >
 
-
-</div>
-
-
-<div class="form-group">
-
-
-<label for="inventorySupplier">
-Supplier
-</label>
-
-
-<input
-type="text"
-id="inventorySupplier"
-required
->
-
-
 </div>
 
 
 <div class="form-actions">
 
-
 <button
 type="button"
 class="secondary-btn"
-onclick="closeInventoryForm()">
+onclick="closeInventoryForm()"
+>
 
 Cancel
 
 </button>
 
-
 <button
 type="submit"
-class="primary-btn">
+class="primary-btn"
+>
 
 Save Inventory Item
 
 </button>
 
-
 </div>
 
-
 </form>
-
 
 </div>
 
@@ -763,116 +690,103 @@ Save Inventory Item
 
 
 <!-- =====================================================
-     MAIN JAVASCRIPT
+     SUPABASE
 ====================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="./supabase.js"></script>
 
 <script src="./script.js"></script>
 
+
+<!-- =====================================================
+     INVENTORY JAVASCRIPT
+====================================================== -->
 
 <script>
 
 "use strict";
 
 
-let editingRow = null;
+let inventoryItems = [];
+
+let hotels = [];
+
+let editingInventoryId = null;
 
 
 /* =========================================================
-   INVENTORY ACCESS CHECK
+   BASIC HELPERS
 ========================================================= */
+
+function getInventoryRole() {
+
+    return String(
+        sessionStorage.getItem("userRole") ||
+        localStorage.getItem("userRole") ||
+        ""
+    )
+    .toLowerCase()
+    .trim();
+
+}
+
+
+function getInventoryHotelId() {
+
+    return String(
+        sessionStorage.getItem("hotelId") ||
+        localStorage.getItem("hotelId") ||
+        ""
+    )
+    .trim();
+
+}
+
+
+function isSystemOwner() {
+
+    return getInventoryRole() === "system_owner";
+
+}
+
 
 function inventoryAccessAllowed() {
 
-    const role =
-        String(
-            sessionStorage.getItem("userRole") ||
-            localStorage.getItem("userRole") ||
-            ""
-        )
-        .toLowerCase()
-        .trim();
-
+    const role = getInventoryRole();
 
     return (
-
         role === "system_owner" ||
-
         role === "hotel_owner" ||
-
         role === "manager"
-
     );
 
 }
 
 
-/* =========================================================
-   OPEN FORM
-========================================================= */
+function escapeHtml(value) {
 
-function openInventoryForm() {
-
-    if (!inventoryAccessAllowed()) {
-
-        alert(
-            "You do not have permission to access the Inventory module."
-        );
-
-        return;
-
-    }
-
-
-    document
-        .getElementById(
-            "inventoryForm"
-        )
-        .reset();
-
-
-    editingRow = null;
-
-
-    document
-        .getElementById(
-            "inventoryModalTitle"
-        )
-        .textContent =
-        "New Inventory Item";
-
-
-    document
-        .getElementById(
-            "inventoryModal"
-        )
-        .style.display =
-        "flex";
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
 }
 
 
-/* =========================================================
-   CLOSE FORM
-========================================================= */
+function formatMoney(value) {
 
-function closeInventoryForm() {
-
-    document
-        .getElementById(
-            "inventoryModal"
-        )
-        .style.display =
-        "none";
-
-
-    document
-        .getElementById(
-            "inventoryForm"
-        )
-        .reset();
-
-
-    editingRow = null;
+    return Number(value || 0)
+        .toLocaleString(
+            "en-KE",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        );
 
 }
 
@@ -881,20 +795,23 @@ function closeInventoryForm() {
    STOCK STATUS
 ========================================================= */
 
-function getStockStatus(quantity) {
+function getStockStatus(item) {
 
-    if (
-        Number(quantity) <= 0
-    ) {
+    const quantity =
+        Number(item.quantity || 0);
+
+    const reorderLevel =
+        Number(item.reoder_level || 0);
+
+
+    if (quantity <= 0) {
 
         return "Out of Stock";
 
     }
 
 
-    if (
-        Number(quantity) <= 5
-    ) {
+    if (quantity <= reorderLevel) {
 
         return "Low Stock";
 
@@ -906,24 +823,16 @@ function getStockStatus(quantity) {
 }
 
 
-/* =========================================================
-   STATUS CLASS
-========================================================= */
-
 function getStatusClass(status) {
 
-    if (
-        status === "In Stock"
-    ) {
+    if (status === "In Stock") {
 
         return "status-available";
 
     }
 
 
-    if (
-        status === "Low Stock"
-    ) {
+    if (status === "Low Stock") {
 
         return "status-maintenance";
 
@@ -936,10 +845,254 @@ function getStatusClass(status) {
 
 
 /* =========================================================
-   UPDATE SUMMARY
+   ACCESS PROTECTION
 ========================================================= */
 
-function updateInventorySummary() {
+function protectInventoryPage() {
+
+    if (inventoryAccessAllowed()) {
+
+        document
+            .getElementById(
+                "inventoryModuleContent"
+            )
+            .style.display = "";
+
+        document
+            .getElementById(
+                "accessDeniedScreen"
+            )
+            .style.display = "none";
+
+        return true;
+
+    }
+
+
+    document
+        .getElementById(
+            "inventoryModuleContent"
+        )
+        .style.display = "none";
+
+
+    document
+        .getElementById(
+            "inventoryModal"
+        )
+        .style.display = "none";
+
+
+    document
+        .getElementById(
+            "accessDeniedScreen"
+        )
+        .style.display = "block";
+
+
+    return false;
+
+}
+
+
+/* =========================================================
+   DISPLAY USER
+========================================================= */
+
+function displayInventoryUser() {
+
+    const name =
+        sessionStorage.getItem("userName") ||
+        localStorage.getItem("userName") ||
+        "Administrator";
+
+
+    const role =
+        getInventoryRole();
+
+
+    document
+        .getElementById(
+            "inventoryUserName"
+        )
+        .textContent =
+        name;
+
+
+    document
+        .getElementById(
+            "inventoryUserRole"
+        )
+        .textContent =
+        role
+            ? role.replace(
+                /_/g,
+                " "
+            ).replace(
+                /\b\w/g,
+                c => c.toUpperCase()
+            )
+            : "System Admin";
+
+}
+
+
+/* =========================================================
+   LOAD HOTELS
+========================================================= */
+
+async function loadInventoryHotels() {
+
+    if (!isSystemOwner()) {
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } = await window.supabaseClient
+        .from("hotels")
+        .select(
+            "id, hotel_name"
+        )
+        .order(
+            "hotel_name",
+            {
+                ascending: true
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Error loading hotels:",
+            error
+        );
+
+        alert(
+            "Unable to load hotels. Please check the Supabase connection."
+        );
+
+        return;
+
+    }
+
+
+    hotels = data || [];
+
+
+    const filterSelect =
+        document.getElementById(
+            "inventoryHotel"
+        );
+
+
+    const formSelect =
+        document.getElementById(
+            "inventoryFormHotel"
+        );
+
+
+    filterSelect.innerHTML =
+        '<option value="">All Hotels</option>';
+
+
+    formSelect.innerHTML =
+        '<option value="">Select Hotel</option>';
+
+
+    hotels.forEach(
+        hotel => {
+
+            const option1 =
+                document.createElement(
+                    "option"
+                );
+
+            option1.value =
+                hotel.id;
+
+            option1.textContent =
+                hotel.hotel_name;
+
+
+            filterSelect.appendChild(
+                option1
+            );
+
+
+            const option2 =
+                document.createElement(
+                    "option"
+                );
+
+            option2.value =
+                hotel.id;
+
+            option2.textContent =
+                hotel.hotel_name;
+
+
+            formSelect.appendChild(
+                option2
+            );
+
+        }
+    );
+
+
+    document
+        .getElementById(
+            "inventoryHotelSelector"
+        )
+        .style.display =
+        "";
+
+
+    document
+        .getElementById(
+            "inventoryFormHotelGroup"
+        )
+        .style.display =
+        "";
+
+}
+
+
+/* =========================================================
+   GET CURRENT SELECTED HOTEL
+========================================================= */
+
+function getSelectedInventoryHotel() {
+
+    if (isSystemOwner()) {
+
+        return String(
+            document
+                .getElementById(
+                    "inventoryHotel"
+                )
+                .value ||
+            ""
+        );
+
+    }
+
+
+    return getInventoryHotelId();
+
+}
+
+
+/* =========================================================
+   LOAD INVENTORY
+========================================================= */
+
+async function loadInventory() {
 
     if (!inventoryAccessAllowed()) {
 
@@ -948,13 +1101,285 @@ function updateInventorySummary() {
     }
 
 
-    const rows =
-        document.querySelectorAll(
-            "#inventoryTableBody tr"
+    const selectedHotel =
+        getSelectedInventoryHotel();
+
+
+    let query =
+        window.supabaseClient
+            .from("inventory")
+            .select(
+                "id, created_at, item_name, quantity, unit, reoder_level, unit_price, hotel_id"
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+    if (
+        selectedHotel
+    ) {
+
+        query =
+            query.eq(
+                "hotel_id",
+                selectedHotel
+            );
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await query;
+
+
+    if (error) {
+
+        console.error(
+            "Error loading inventory:",
+            error
+        );
+
+        alert(
+            "Unable to load inventory: " +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    inventoryItems =
+        data || [];
+
+
+    renderInventory();
+
+    updateInventorySummary();
+
+}
+
+
+/* =========================================================
+   RENDER INVENTORY
+========================================================= */
+
+function renderInventory() {
+
+    const tbody =
+        document.getElementById(
+            "inventoryTableBody"
         );
 
 
-    let total = 0;
+    tbody.innerHTML = "";
+
+
+    if (
+        inventoryItems.length === 0
+    ) {
+
+        tbody.innerHTML =
+
+            "<tr>" +
+
+            "<td colspan='8' class='inventory-empty'>" +
+
+            "No inventory items found." +
+
+            "</td>" +
+
+            "</tr>";
+
+        return;
+
+    }
+
+
+    inventoryItems.forEach(
+        item => {
+
+            const status =
+                getStockStatus(item);
+
+
+            const hotel =
+                hotels.find(
+                    h =>
+                    String(h.id) ===
+                    String(item.hotel_id)
+                );
+
+
+            const hotelText =
+                isSystemOwner() &&
+                hotel
+                    ? " - " +
+                      escapeHtml(
+                          hotel.hotel_name
+                      )
+                    : "";
+
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.dataset.id =
+                item.id;
+
+
+            row.dataset.status =
+                status;
+
+
+            row.dataset.price =
+                Number(
+                    item.unit_price || 0
+                );
+
+
+            row.innerHTML =
+
+                "<td>" +
+
+                escapeHtml(
+                    String(item.id)
+                        .substring(0, 8)
+                ) +
+
+                "</td>" +
+
+                "<td>" +
+
+                escapeHtml(
+                    item.item_name
+                ) +
+
+                hotelText +
+
+                "</td>" +
+
+                "<td>" +
+
+                escapeHtml(
+                    item.unit
+                ) +
+
+                "</td>" +
+
+                "<td>" +
+
+                escapeHtml(
+                    item.quantity
+                ) +
+
+                "</td>" +
+
+                "<td>" +
+
+                escapeHtml(
+                    item.reoder_level
+                ) +
+
+                "</td>" +
+
+                "<td>KSh " +
+
+                formatMoney(
+                    item.unit_price
+                ) +
+
+                "</td>" +
+
+                "<td>" +
+
+                "<span class='status-badge " +
+
+                getStatusClass(
+                    status
+                ) +
+
+                "'>" +
+
+                status +
+
+                "</span>" +
+
+                "</td>" +
+
+                "<td>" +
+
+                "<button " +
+
+                "type='button' " +
+
+                "class='secondary-btn' " +
+
+                "onclick='editInventoryItem(\"" +
+
+                escapeHtml(
+                    item.id
+                ) +
+
+                "\")'>" +
+
+                "Edit" +
+
+                "</button> " +
+
+                "<button " +
+
+                "type='button' " +
+
+                "class='danger-btn' " +
+
+                "onclick='deleteInventoryItem(\"" +
+
+                escapeHtml(
+                    item.id
+                ) +
+
+                "\")'>" +
+
+                "Delete" +
+
+                "</button>" +
+
+                "</td>";
+
+
+            tbody.appendChild(
+                row
+            );
+
+        }
+    );
+
+
+    filterInventory();
+
+}
+
+
+/* =========================================================
+   UPDATE SUMMARY
+========================================================= */
+
+function updateInventorySummary() {
+
+    const total =
+        inventoryItems.length;
+
 
     let inStock = 0;
 
@@ -963,31 +1388,29 @@ function updateInventorySummary() {
     let value = 0;
 
 
-    rows.forEach(
-        function(row) {
-
-            total++;
-
+    inventoryItems.forEach(
+        item => {
 
             const quantity =
                 Number(
-                    row.cells[3].textContent
+                    item.quantity || 0
                 );
 
 
             const price =
                 Number(
-                    row.dataset.price
+                    item.unit_price || 0
                 );
 
 
             const status =
-                row.dataset.status;
+                getStockStatus(
+                    item
+                );
 
 
             value +=
-                quantity *
-                price;
+                quantity * price;
 
 
             if (
@@ -1041,40 +1464,104 @@ function updateInventorySummary() {
         )
         .textContent =
         "KSh " +
-        value.toLocaleString(
-            "en-KE"
+        formatMoney(
+            value
         );
 
 }
 
 
 /* =========================================================
-   GENERATE INVENTORY ID
+   OPEN FORM
 ========================================================= */
 
-function generateInventoryID() {
+function openInventoryForm() {
 
-    const rows =
-        document.querySelectorAll(
-            "#inventoryTableBody tr"
+    if (
+        !inventoryAccessAllowed()
+    ) {
+
+        alert(
+            "You do not have permission to access the Inventory module."
         );
 
+        return;
 
-    return "INV-" +
+    }
 
-        String(
-            rows.length + 1
+
+    editingInventoryId =
+        null;
+
+
+    document
+        .getElementById(
+            "inventoryForm"
         )
-        .padStart(
-            3,
-            "0"
-        );
+        .reset();
+
+
+    document
+        .getElementById(
+            "inventoryModalTitle"
+        )
+        .textContent =
+        "New Inventory Item";
+
+
+    if (
+        isSystemOwner()
+    ) {
+
+        document
+            .getElementById(
+                "inventoryFormHotel"
+            )
+            .value =
+            getSelectedInventoryHotel();
+
+    }
+
+
+    document
+        .getElementById(
+            "inventoryModal"
+        )
+        .style.display =
+        "flex";
 
 }
 
 
 /* =========================================================
-   ADD OR EDIT INVENTORY
+   CLOSE FORM
+========================================================= */
+
+function closeInventoryForm() {
+
+    document
+        .getElementById(
+            "inventoryModal"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "inventoryForm"
+        )
+        .reset();
+
+
+    editingInventoryId =
+        null;
+
+}
+
+
+/* =========================================================
+   SAVE INVENTORY
 ========================================================= */
 
 document
@@ -1083,12 +1570,14 @@ document
     )
     .addEventListener(
         "submit",
-        function(event) {
+        async function(event) {
 
             event.preventDefault();
 
 
-            if (!inventoryAccessAllowed()) {
+            if (
+                !inventoryAccessAllowed()
+            ) {
 
                 alert(
                     "You do not have permission to modify Inventory."
@@ -1099,7 +1588,7 @@ document
             }
 
 
-            const name =
+            const itemName =
                 document
                     .getElementById(
                         "inventoryItemName"
@@ -1108,12 +1597,13 @@ document
                     .trim();
 
 
-            const category =
+            const unit =
                 document
                     .getElementById(
-                        "inventoryCategory"
+                        "inventoryUnit"
                     )
-                    .value;
+                    .value
+                    .trim();
 
 
             const quantity =
@@ -1126,7 +1616,17 @@ document
                 );
 
 
-            const price =
+            const reorderLevel =
+                Number(
+                    document
+                        .getElementById(
+                            "inventoryReorderLevel"
+                        )
+                        .value
+                );
+
+
+            const unitPrice =
                 Number(
                     document
                         .getElementById(
@@ -1136,23 +1636,32 @@ document
                 );
 
 
-            const supplier =
-                document
-                    .getElementById(
-                        "inventorySupplier"
-                    )
-                    .value
-                    .trim();
+            let hotelId;
 
 
             if (
-                !name ||
-                !category ||
-                !supplier
+                isSystemOwner()
             ) {
 
+                hotelId =
+                    document
+                        .getElementById(
+                            "inventoryFormHotel"
+                        )
+                        .value;
+
+            } else {
+
+                hotelId =
+                    getInventoryHotelId();
+
+            }
+
+
+            if (!hotelId) {
+
                 alert(
-                    "Please complete all fields."
+                    "Please select a hotel."
                 );
 
                 return;
@@ -1160,192 +1669,192 @@ document
             }
 
 
-            /* =====================================================
-               EDIT EXISTING ITEM
-            ====================================================== */
+            if (!itemName) {
+
+                alert(
+                    "Please enter the item name."
+                );
+
+                return;
+
+            }
+
+
+            if (!unit) {
+
+                alert(
+                    "Please select the unit."
+                );
+
+                return;
+
+            }
+
 
             if (
-                editingRow
+                Number.isNaN(quantity) ||
+                quantity < 0
             ) {
 
-                const status =
-                    getStockStatus(
-                        quantity
+                alert(
+                    "Please enter a valid quantity."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                Number.isNaN(reorderLevel) ||
+                reorderLevel < 0
+            ) {
+
+                alert(
+                    "Please enter a valid reorder level."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                Number.isNaN(unitPrice) ||
+                unitPrice < 0
+            ) {
+
+                alert(
+                    "Please enter a valid unit price."
+                );
+
+                return;
+
+            }
+
+
+            const inventoryData = {
+
+                item_name:
+                    itemName,
+
+                quantity:
+                    quantity,
+
+                unit:
+                    unit,
+
+                reoder_level:
+                    reorderLevel,
+
+                unit_price:
+                    unitPrice,
+
+                hotel_id:
+                    hotelId
+
+            };
+
+
+            const saveButton =
+                event.submitter;
+
+
+            if (saveButton) {
+
+                saveButton.disabled =
+                    true;
+
+                saveButton.textContent =
+                    "Saving...";
+
+            }
+
+
+            try {
+
+                let result;
+
+
+                if (
+                    editingInventoryId
+                ) {
+
+                    result =
+                        await window
+                            .supabaseClient
+                            .from("inventory")
+                            .update(
+                                inventoryData
+                            )
+                            .eq(
+                                "id",
+                                editingInventoryId
+                            )
+                            .select()
+                            .single();
+
+                } else {
+
+                    result =
+                        await window
+                            .supabaseClient
+                            .from("inventory")
+                            .insert(
+                                inventoryData
+                            )
+                            .select()
+                            .single();
+
+                }
+
+
+                if (
+                    result.error
+                ) {
+
+                    console.error(
+                        "Inventory save error:",
+                        result.error
                     );
 
-
-                editingRow.cells[1]
-                    .textContent =
-                    name;
-
-
-                editingRow.cells[2]
-                    .textContent =
-                    category;
-
-
-                editingRow.cells[3]
-                    .textContent =
-                    quantity;
-
-
-                editingRow.cells[4]
-                    .textContent =
-                    "KSh " +
-                    price.toLocaleString(
-                        "en-KE",
-                        {
-                            minimumFractionDigits: 2
-                        }
+                    alert(
+                        "Unable to save inventory item:\n\n" +
+                        result.error.message
                     );
 
+                    return;
 
-                editingRow.cells[5]
-                    .textContent =
-                    supplier;
-
-
-                editingRow.cells[6]
-                    .innerHTML =
-                    '<span class="status-badge ' +
-                    getStatusClass(status) +
-                    '">' +
-                    status +
-                    '</span>';
+                }
 
 
-                editingRow.dataset.status =
-                    status;
-
-
-                editingRow.dataset.price =
-                    price;
+                alert(
+                    editingInventoryId
+                        ? "Inventory item updated successfully."
+                        : "Inventory item added successfully."
+                );
 
 
                 closeInventoryForm();
 
 
-                updateInventorySummary();
-
-
-                filterInventory();
-
-
-                return;
+                await loadInventory();
 
             }
 
+            finally {
 
-            /* =====================================================
-               CREATE NEW ITEM
-            ====================================================== */
+                if (saveButton) {
 
-            const id =
-                generateInventoryID();
+                    saveButton.disabled =
+                        false;
 
+                    saveButton.textContent =
+                        "Save Inventory Item";
 
-            const status =
-                getStockStatus(
-                    quantity
-                );
+                }
 
-
-            const row =
-                document.createElement(
-                    "tr"
-                );
-
-
-            row.dataset.status =
-                status;
-
-
-            row.dataset.price =
-                price;
-
-
-            row.innerHTML =
-
-                "<td>" +
-                id +
-                "</td>" +
-
-                "<td>" +
-                name +
-                "</td>" +
-
-                "<td>" +
-                category +
-                "</td>" +
-
-                "<td>" +
-                quantity +
-                "</td>" +
-
-                "<td>KSh " +
-                price.toLocaleString(
-                    "en-KE",
-                    {
-                        minimumFractionDigits: 2
-                    }
-                ) +
-                "</td>" +
-
-                "<td>" +
-                supplier +
-                "</td>" +
-
-                "<td>" +
-
-                "<span class='status-badge " +
-                getStatusClass(status) +
-                "'>" +
-
-                status +
-
-                "</span>" +
-
-                "</td>" +
-
-                "<td>" +
-
-                "<button " +
-                "type='button' " +
-                "class='secondary-btn' " +
-                "onclick='editInventoryItem(this)'>" +
-
-                "Edit" +
-
-                "</button> " +
-
-                "<button " +
-                "type='button' " +
-                "class='danger-btn' " +
-                "onclick='deleteInventoryItem(this)'>" +
-
-                "Delete" +
-
-                "</button>" +
-
-                "</td>";
-
-
-            document
-                .getElementById(
-                    "inventoryTableBody"
-                )
-                .appendChild(
-                    row
-                );
-
-
-            closeInventoryForm();
-
-
-            updateInventorySummary();
-
-
-            filterInventory();
+            }
 
         }
     );
@@ -1355,11 +1864,13 @@ document
    EDIT INVENTORY ITEM
 ========================================================= */
 
-function editInventoryItem(
-    button
+async function editInventoryItem(
+    id
 ) {
 
-    if (!inventoryAccessAllowed()) {
+    if (
+        !inventoryAccessAllowed()
+    ) {
 
         alert(
             "You do not have permission to edit Inventory."
@@ -1370,10 +1881,27 @@ function editInventoryItem(
     }
 
 
-    editingRow =
-        button.closest(
-            "tr"
+    const item =
+        inventoryItems.find(
+            record =>
+            String(record.id) ===
+            String(id)
         );
+
+
+    if (!item) {
+
+        alert(
+            "Inventory item could not be found."
+        );
+
+        return;
+
+    }
+
+
+    editingInventoryId =
+        item.id;
 
 
     document
@@ -1381,17 +1909,15 @@ function editInventoryItem(
             "inventoryItemName"
         )
         .value =
-        editingRow.cells[1]
-            .textContent;
+        item.item_name || "";
 
 
     document
         .getElementById(
-            "inventoryCategory"
+            "inventoryUnit"
         )
         .value =
-        editingRow.cells[2]
-            .textContent;
+        item.unit || "";
 
 
     document
@@ -1399,8 +1925,15 @@ function editInventoryItem(
             "inventoryQuantity"
         )
         .value =
-        editingRow.cells[3]
-            .textContent;
+        item.quantity ?? 0;
+
+
+    document
+        .getElementById(
+            "inventoryReorderLevel"
+        )
+        .value =
+        item.reoder_level ?? 0;
 
 
     document
@@ -1408,16 +1941,21 @@ function editInventoryItem(
             "inventoryUnitPrice"
         )
         .value =
-        editingRow.dataset.price;
+        item.unit_price ?? 0;
 
 
-    document
-        .getElementById(
-            "inventorySupplier"
-        )
-        .value =
-        editingRow.cells[5]
-            .textContent;
+    if (
+        isSystemOwner()
+    ) {
+
+        document
+            .getElementById(
+                "inventoryFormHotel"
+            )
+            .value =
+            item.hotel_id;
+
+    }
 
 
     document
@@ -1442,11 +1980,13 @@ function editInventoryItem(
    DELETE INVENTORY ITEM
 ========================================================= */
 
-function deleteInventoryItem(
-    button
+async function deleteInventoryItem(
+    id
 ) {
 
-    if (!inventoryAccessAllowed()) {
+    if (
+        !inventoryAccessAllowed()
+    ) {
 
         alert(
             "You do not have permission to delete Inventory items."
@@ -1457,34 +1997,76 @@ function deleteInventoryItem(
     }
 
 
-    const row =
-        button.closest(
-            "tr"
+    const item =
+        inventoryItems.find(
+            record =>
+            String(record.id) ===
+            String(id)
         );
 
 
-    const name =
-        row.cells[1]
-            .textContent;
+    if (!item) {
 
+        alert(
+            "Inventory item could not be found."
+        );
 
-    if (
-        confirm(
-            "Delete " +
-            name +
-            "?"
-        )
-    ) {
-
-        row.remove();
-
-
-        updateInventorySummary();
-
-
-        filterInventory();
+        return;
 
     }
+
+
+    const confirmed =
+        confirm(
+            "Delete " +
+            item.item_name +
+            "?\n\nThis will permanently remove the inventory item from the database."
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+        await window
+            .supabaseClient
+            .from("inventory")
+            .delete()
+            .eq(
+                "id",
+                id
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Inventory delete error:",
+            error
+        );
+
+        alert(
+            "Unable to delete inventory item:\n\n" +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    alert(
+        "Inventory item deleted successfully."
+    );
+
+
+    await loadInventory();
 
 }
 
@@ -1495,21 +2077,17 @@ function deleteInventoryItem(
 
 function filterInventory() {
 
-    if (!inventoryAccessAllowed()) {
-
-        return;
-
-    }
-
-
     const search =
-        document
-            .getElementById(
-                "inventorySearch"
-            )
-            .value
-            .toLowerCase()
-            .trim();
+        String(
+            document
+                .getElementById(
+                    "inventorySearch"
+                )
+                .value ||
+            ""
+        )
+        .toLowerCase()
+        .trim();
 
 
     const filter =
@@ -1520,58 +2098,74 @@ function filterInventory() {
             .value;
 
 
-    const rows =
-        document.querySelectorAll(
+    document
+        .querySelectorAll(
             "#inventoryTableBody tr"
-        );
+        )
+        .forEach(
+            row => {
+
+                const text =
+                    row.textContent
+                        .toLowerCase();
 
 
-    rows.forEach(
-        function(row) {
-
-            const text =
-                row.textContent
-                    .toLowerCase();
+                const status =
+                    row.dataset.status;
 
 
-            const status =
-                row.dataset.status;
+                const searchMatch =
+                    text.includes(
+                        search
+                    );
 
 
-            const searchMatch =
-                text.includes(
-                    search
-                );
+                const filterMatch =
+                    filter === "all" ||
+                    status === filter;
 
 
-            const filterMatch =
-                filter === "all" ||
-                status === filter;
+                if (
+                    searchMatch &&
+                    filterMatch
+                ) {
 
+                    row.style.display =
+                        "";
 
-            if (
-                searchMatch &&
-                filterMatch
-            ) {
+                } else {
 
-                row.style.display =
-                    "";
+                    row.style.display =
+                        "none";
 
-            } else {
-
-                row.style.display =
-                    "none";
+                }
 
             }
-
-        }
-    );
+        );
 
 }
 
 
 /* =========================================================
-   CLOSE MODAL WHEN CLICKING OUTSIDE
+   HOTEL FILTER
+========================================================= */
+
+document
+    .getElementById(
+        "inventoryHotel"
+    )
+    .addEventListener(
+        "change",
+        async function() {
+
+            await loadInventory();
+
+        }
+    );
+
+
+/* =========================================================
+   CLOSE MODAL OUTSIDE
 ========================================================= */
 
 window.addEventListener(
@@ -1603,511 +2197,48 @@ window.addEventListener(
 
 document.addEventListener(
     "DOMContentLoaded",
-    function() {
+    async function() {
 
         if (
-            inventoryAccessAllowed()
+            !protectInventoryPage()
         ) {
 
-            updateInventorySummary();
+            return;
 
         }
 
-    }
-);
 
-</script>
+        displayInventoryUser();
 
 
-<!-- =====================================================
-     ROLE CONTROL
-====================================================== -->
+        if (
+            !window.supabaseClient
+        ) {
 
-<script>
-
-(function () {
-
-"use strict";
-
-
-/* =========================================================
-   ROLE PERMISSIONS
-========================================================= */
-
-const ROLE_PERMISSIONS = {
-
-    system_owner: [
-
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings",
-        "hotels"
-
-    ],
-
-
-    hotel_owner: [
-
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings"
-
-    ],
-
-
-    manager: [
-
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings"
-
-    ],
-
-
-    receptionist: [
-
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "payments",
-        "reports"
-
-    ]
-
-};
-
-
-/* =========================================================
-   GET USER ROLE
-========================================================= */
-
-function getRole() {
-
-    let role =
-        sessionStorage.getItem(
-            "userRole"
-        );
-
-
-    if (!role) {
-
-        role =
-            localStorage.getItem(
-                "userRole"
+            alert(
+                "Supabase is not connected. Please check supabase.js and the Supabase CDN script."
             );
 
-    }
-
-
-    return String(
-        role || ""
-    )
-    .toLowerCase()
-    .trim();
-
-}
-
-
-/* =========================================================
-   GET MODULE FROM LINK
-========================================================= */
-
-function getModuleFromLink(
-    link
-) {
-
-    const dataModule =
-        link.getAttribute(
-            "data-module"
-        );
-
-
-    if (dataModule) {
-
-        return dataModule
-            .toLowerCase()
-            .trim();
-
-    }
-
-
-    const href =
-        String(
-            link.getAttribute(
-                "href"
-            ) || ""
-        )
-        .toLowerCase()
-        .split("?")[0]
-        .split("#")[0]
-        .trim();
-
-
-    if (
-
-        href === "./" ||
-
-        href === "/" ||
-
-        href === "index.html" ||
-
-        href === "./index.html" ||
-
-        href.endsWith(
-            "/index.html"
-        )
-
-    ) {
-
-        return "dashboard";
-
-    }
-
-
-    const modules = [
-
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings",
-        "hotels"
-
-    ];
-
-
-    for (
-        let i = 0;
-        i < modules.length;
-        i++
-    ) {
-
-        if (
-            href.includes(
-                modules[i] +
-                ".html"
-            )
-        ) {
-
-            return modules[i];
+            return;
 
         }
 
-    }
+
+        if (
+            isSystemOwner()
+        ) {
+
+            await loadInventoryHotels();
+
+        }
 
 
-    return null;
-
-}
-
-
-/* =========================================================
-   GET CURRENT PAGE MODULE
-========================================================= */
-
-function getCurrentModule() {
-
-    const filename =
-        window.location.pathname
-        .split("/")
-        .pop()
-        .toLowerCase();
-
-
-    if (
-
-        !filename ||
-
-        filename === "index.html"
-
-    ) {
-
-        return "dashboard";
+        await loadInventory();
 
     }
-
-
-    return filename.replace(
-        ".html",
-        ""
-    );
-
-}
-
-
-/* =========================================================
-   HIDE UNAUTHORIZED LINKS
-========================================================= */
-
-function applyRoleControl() {
-
-    const role =
-        getRole();
-
-
-    if (!role) {
-
-        return;
-
-    }
-
-
-    const allowed =
-        ROLE_PERMISSIONS[
-            role
-        ];
-
-
-    if (!allowed) {
-
-        return;
-
-    }
-
-
-    document
-        .querySelectorAll(
-            ".sidebar nav a"
-        )
-        .forEach(
-            function(link) {
-
-                const module =
-                    getModuleFromLink(
-                        link
-                    );
-
-
-                if (!module) {
-
-                    return;
-
-                }
-
-
-                if (
-                    allowed.includes(
-                        module
-                    )
-                ) {
-
-                    link.classList
-                        .remove(
-                            "role-hidden"
-                        );
-
-
-                    link.style
-                        .removeProperty(
-                            "display"
-                        );
-
-                } else {
-
-                    link.classList
-                        .add(
-                            "role-hidden"
-                        );
-
-
-                    link.style
-                        .setProperty(
-                            "display",
-                            "none",
-                            "important"
-                        );
-
-                }
-
-            }
-        );
-
-}
-
-
-/* =========================================================
-   PROTECT DIRECT PAGE ACCESS
-========================================================= */
-
-function protectPage() {
-
-    const role =
-        getRole();
-
-
-    if (!role) {
-
-        return;
-
-    }
-
-
-    const allowed =
-        ROLE_PERMISSIONS[
-            role
-        ];
-
-
-    if (!allowed) {
-
-        return;
-
-    }
-
-
-    const currentModule =
-        getCurrentModule();
-
-
-    if (
-        !allowed.includes(
-            currentModule
-        )
-    ) {
-
-        document
-            .getElementById(
-                "inventoryModuleContent"
-            )
-            .style.display =
-            "none";
-
-
-        document
-            .getElementById(
-                "inventoryModal"
-            )
-            .style.display =
-            "none";
-
-
-        document
-            .getElementById(
-                "accessDeniedScreen"
-            )
-            .style.display =
-            "block";
-
-
-        setTimeout(
-            function() {
-
-                window.location.href =
-                    "./index.html";
-
-            },
-            500
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   RUN ROLE CONTROL
-========================================================= */
-
-function runRoleControl() {
-
-    applyRoleControl();
-
-    protectPage();
-
-}
-
-
-/* =========================================================
-   START ROLE CONTROL
-========================================================= */
-
-if (
-    document.readyState ===
-    "loading"
-) {
-
-    document.addEventListener(
-        "DOMContentLoaded",
-        runRoleControl
-    );
-
-} else {
-
-    runRoleControl();
-
-}
-
-
-/* =========================================================
-   KEEP SIDEBAR PROTECTED
-========================================================= */
-
-setInterval(
-    applyRoleControl,
-    500
 );
 
-
-/* =========================================================
-   GLOBAL FUNCTION
-========================================================= */
-
-window.applyRoleControl =
-    applyRoleControl;
-
-
-})();
-
 </script>
-
 
 </body>
 
