@@ -2,100 +2,83 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Guests - EDU TECH Hotel Management System</title>
 
-    <link
-        rel="stylesheet"
-        href="./style.css"
-    >
-
+    <link rel="stylesheet" href="./style.css">
 </head>
-
 
 <body>
 
-
+    <!-- SIDEBAR -->
     <aside class="sidebar">
 
         <div class="logo">
-
             <h2>EDU TECH</h2>
-
             <span>HOTEL SYSTEM</span>
-
         </div>
-
 
         <nav>
 
-            <a href="./index.html">
+            <a href="./index.html" data-module="dashboard">
                 🏠 Dashboard
             </a>
 
-            <a href="./rooms.html">
+            <a href="./rooms.html" data-module="rooms">
                 🛏️ Rooms
             </a>
 
-            <a
-                href="./guests.html"
-                class="active"
-            >
+            <a href="./guests.html" data-module="guests" class="active">
                 👤 Guests
             </a>
 
-            <a href="./reservations.html">
+            <a href="./reservations.html" data-module="reservations">
                 📅 Reservations
             </a>
 
-            <a href="./checkin.html">
+            <a href="./checkin.html" data-module="checkin">
                 🛎️ Check-in
             </a>
 
-            <a href="./checkout.html">
+            <a href="./checkout.html" data-module="checkout">
                 🚪 Check-out
             </a>
 
-            <a href="./restaurant.html">
+            <a href="./restaurant.html" data-module="restaurant">
                 🍽️ Restaurant
             </a>
 
-            <a href="./inventory.html">
+            <a href="./inventory.html" data-module="inventory">
                 📦 Inventory
             </a>
 
-            <a href="./payments.html">
+            <a href="./payments.html" data-module="payments">
                 💰 Payments
             </a>
 
-            <a href="./expenses.html">
+            <a href="./expenses.html" data-module="expenses">
                 💸 Expenses
             </a>
 
-            <a href="./employees.html">
+            <a href="./employees.html" data-module="employees">
                 👨‍💼 Employees
             </a>
 
-            <a href="./housekeeping.html">
+            <a href="./housekeeping.html" data-module="housekeeping">
                 🧹 Housekeeping
             </a>
 
-            <a href="./maintenance.html">
+            <a href="./maintenance.html" data-module="maintenance">
                 🔧 Maintenance
             </a>
 
-            <a href="./reports.html">
+            <a href="./reports.html" data-module="reports">
                 📊 Reports
             </a>
 
-            <a href="./settings.html">
+            <a href="./settings.html" data-module="settings">
                 ⚙️ Settings
             </a>
 
@@ -104,57 +87,39 @@
     </aside>
 
 
-
+    <!-- MAIN CONTENT -->
     <main class="main-content">
-
 
         <header class="topbar">
 
-
             <div>
-
-                <h1>
-                    Guest Management
-                </h1>
-
-                <p>
-                    Register and manage hotel guests
-                </p>
-
+                <h1>Guest Management</h1>
+                <p>Register and manage hotel guests</p>
             </div>
-
-
 
             <div class="user">
 
-
-                <div class="user-icon">
+                <div class="user-icon" id="userIcon">
                     A
                 </div>
 
-
                 <div>
-
-                    <strong>
+                    <strong id="loggedInUser">
                         Administrator
                     </strong>
 
-                    <small>
+                    <small id="loggedInRole">
                         System Admin
                     </small>
-
                 </div>
 
-
             </div>
-
 
         </header>
 
 
-
+        <!-- SUMMARY CARDS -->
         <section class="cards">
-
 
             <div class="card">
 
@@ -163,19 +128,11 @@
                 </div>
 
                 <div>
-
-                    <h3>
-                        Total Guests
-                    </h3>
-
-                    <p id="totalGuests">
-                        0
-                    </p>
-
+                    <h3>Total Guests</h3>
+                    <p id="totalGuests">0</p>
                 </div>
 
             </div>
-
 
 
             <div class="card">
@@ -185,19 +142,11 @@
                 </div>
 
                 <div>
-
-                    <h3>
-                        Currently Staying
-                    </h3>
-
-                    <p id="stayingGuests">
-                        0
-                    </p>
-
+                    <h3>Currently Staying</h3>
+                    <p id="stayingGuests">0</p>
                 </div>
 
             </div>
-
 
 
             <div class="card">
@@ -207,19 +156,11 @@
                 </div>
 
                 <div>
-
-                    <h3>
-                        Today's Arrivals
-                    </h3>
-
-                    <p id="arrivalGuests">
-                        0
-                    </p>
-
+                    <h3>Today's Arrivals</h3>
+                    <p id="arrivalGuests">0</p>
                 </div>
 
             </div>
-
 
 
             <div class="card">
@@ -229,58 +170,41 @@
                 </div>
 
                 <div>
-
-                    <h3>
-                        Today's Departures
-                    </h3>
-
-                    <p id="departureGuests">
-                        0
-                    </p>
-
+                    <h3>Today's Departures</h3>
+                    <p id="departureGuests">0</p>
                 </div>
 
             </div>
 
-
         </section>
 
 
-
+        <!-- GUEST SECTION -->
         <section class="room-container">
-
 
             <div class="room-header">
 
-
                 <div>
-
-                    <h2>
-                        Hotel Guests
-                    </h2>
+                    <h2>Hotel Guests</h2>
 
                     <p>
                         View and manage registered guests
                     </p>
-
                 </div>
-
-
 
                 <button
                     class="add-room-btn"
+                    type="button"
                     onclick="openGuestForm()"
                 >
                     + Register New Guest
                 </button>
 
-
             </div>
 
 
-
+            <!-- SEARCH -->
             <div class="room-tools">
-
 
                 <input
                     type="text"
@@ -288,91 +212,58 @@
                     placeholder="Search guest name or phone..."
                 >
 
-
             </div>
 
 
-
+            <!-- TABLE -->
             <div class="table-container">
-
 
                 <table id="guestsTable">
 
-
                     <thead>
-
 
                         <tr>
 
-                            <th>
-                                Full Name
-                            </th>
+                            <th>Full Name</th>
 
-                            <th>
-                                Phone
-                            </th>
+                            <th>Phone</th>
 
-                            <th>
-                                ID / Passport
-                            </th>
+                            <th>ID / Passport</th>
 
-                            <th>
-                                Email
-                            </th>
+                            <th>Email</th>
 
-                            <th>
-                                Country
-                            </th>
+                            <th>Country</th>
 
-                            <th>
-                                Address
-                            </th>
+                            <th>Address</th>
 
-                            <th>
-                                Actions
-                            </th>
+                            <th>Actions</th>
 
                         </tr>
 
-
                     </thead>
 
-
-
                     <tbody id="guestTable">
-
                     </tbody>
-
 
                 </table>
 
-
             </div>
 
-
         </section>
-
 
     </main>
 
 
-
-    <div
-        id="guestModal"
-        class="modal"
-    >
-
+    <!-- GUEST MODAL -->
+    <div id="guestModal" class="modal">
 
         <div class="modal-content">
 
-
             <div class="modal-header">
 
-
-                <h2>
+                <h2 id="guestModalTitle">
                     Register New Guest
                 </h2>
-
 
                 <button
                     type="button"
@@ -381,18 +272,14 @@
                     ×
                 </button>
 
-
             </div>
-
 
 
             <form id="guestForm">
 
-
-                <label>
+                <label for="guestName">
                     Full Name
                 </label>
-
 
                 <input
                     type="text"
@@ -402,11 +289,9 @@
                 >
 
 
-
-                <label>
+                <label for="guestPhone">
                     Phone Number
                 </label>
-
 
                 <input
                     type="tel"
@@ -416,25 +301,20 @@
                 >
 
 
-
-                <label>
+                <label for="guestID">
                     ID / Passport Number
                 </label>
-
 
                 <input
                     type="text"
                     id="guestID"
                     placeholder="Enter ID or passport number"
-                    required
                 >
 
 
-
-                <label>
+                <label for="guestEmail">
                     Email Address
                 </label>
-
 
                 <input
                     type="email"
@@ -443,11 +323,9 @@
                 >
 
 
-
-                <label>
+                <label for="guestCountry">
                     Country
                 </label>
-
 
                 <input
                     type="text"
@@ -456,11 +334,9 @@
                 >
 
 
-
-                <label>
+                <label for="guestAddress">
                     Address
                 </label>
-
 
                 <input
                     type="text"
@@ -469,1166 +345,1061 @@
                 >
 
 
-
                 <button
                     type="submit"
                     class="save-room-btn"
+                    id="guestSubmitButton"
                 >
                     Register Guest
                 </button>
 
-
             </form>
 
-
         </div>
-
 
     </div>
 
 
+    <!-- SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- MAIN SYSTEM SCRIPT -->
+    <script src="./supabase.js"></script>
 
     <script src="./script.js"></script>
 
 
-
-    <!-- ============================================================
-         GUEST PAGE FUNCTIONS
-         ============================================================ -->
-
+    <!-- GUEST PAGE SCRIPT -->
     <script>
+
+        "use strict";
+
+
+        /* =========================================================
+           GUEST PAGE VARIABLES
+        ========================================================= */
+
+        let guests = [];
+
+        let editingGuestId = null;
 
 
         const guestForm =
-            document.getElementById(
-                "guestForm"
-            );
-
+            document.getElementById("guestForm");
 
         const guestTable =
-            document.getElementById(
-                "guestTable"
-            );
-
+            document.getElementById("guestTable");
 
         const guestSearch =
-            document.getElementById(
-                "guestSearch"
-            );
+            document.getElementById("guestSearch");
+
+        const guestModal =
+            document.getElementById("guestModal");
 
 
+        /* =========================================================
+           PAGE ACCESS
+        ========================================================= */
 
-        function updateGuestSummary() {
-
-
-            const rows =
-                guestTable.querySelectorAll(
-                    "tr"
-                );
-
-
-            document.getElementById(
-                "totalGuests"
-            ).textContent =
-                rows.length;
+        const guestAllowedRoles = [
+            "system_owner",
+            "hotel_owner",
+            "manager",
+            "receptionist"
+        ];
 
 
-            document.getElementById(
-                "stayingGuests"
-            ).textContent =
-                0;
+        function getGuestRole() {
 
-
-            document.getElementById(
-                "arrivalGuests"
-            ).textContent =
-                0;
-
-
-            document.getElementById(
-                "departureGuests"
-            ).textContent =
-                0;
-
+            return String(
+                sessionStorage.getItem("userRole") ||
+                localStorage.getItem("userRole") ||
+                ""
+            )
+                .toLowerCase()
+                .trim();
 
         }
 
 
+        function protectGuestPage() {
 
-        guestForm.addEventListener(
-            "submit",
-            function (event) {
+            const role = getGuestRole();
 
+            if (!role) {
+                return;
+            }
 
-                event.preventDefault();
+            if (!guestAllowedRoles.includes(role)) {
 
+                window.location.href = "./index.html";
 
+            }
 
-                const name =
-                    document
-                        .getElementById(
-                            "guestName"
-                        )
-                        .value
-                        .trim();
+        }
 
 
+        /* =========================================================
+           USER INFORMATION
+        ========================================================= */
 
-                const phone =
-                    document
-                        .getElementById(
-                            "guestPhone"
-                        )
-                        .value
-                        .trim();
+        function displayGuestUser() {
 
+            const userName =
+                sessionStorage.getItem("userName") ||
+                localStorage.getItem("userName") ||
+                "Administrator";
 
-
-                const guestID =
-                    document
-                        .getElementById(
-                            "guestID"
-                        )
-                        .value
-                        .trim();
+            const role =
+                getGuestRole() ||
+                "system_admin";
 
 
+            const userNameElement =
+                document.getElementById("loggedInUser");
 
-                const email =
-                    document
-                        .getElementById(
-                            "guestEmail"
-                        )
-                        .value
-                        .trim();
+            const roleElement =
+                document.getElementById("loggedInRole");
 
-
-
-                const country =
-                    document
-                        .getElementById(
-                            "guestCountry"
-                        )
-                        .value
-                        .trim();
+            const iconElement =
+                document.getElementById("userIcon");
 
 
+            if (userNameElement) {
 
-                const address =
-                    document
-                        .getElementById(
-                            "guestAddress"
-                        )
-                        .value
-                        .trim();
+                userNameElement.textContent =
+                    userName;
+
+            }
 
 
+            if (roleElement) {
 
-                if (
-                    !name ||
-                    !phone ||
-                    !guestID
-                ) {
+                roleElement.textContent =
+                    role
+                        .replace(/_/g, " ")
+                        .replace(/\b\w/g, letter =>
+                            letter.toUpperCase()
+                        );
+
+            }
 
 
-                    alert(
-                        "Please fill in the required guest details."
-                    );
+            if (iconElement) {
+
+                iconElement.textContent =
+                    userName
+                        .charAt(0)
+                        .toUpperCase();
+
+            }
+
+        }
 
 
-                    return;
+        /* =========================================================
+           HOTEL ID
+        ========================================================= */
 
+        function getGuestHotelId() {
+
+            return sessionStorage.getItem("hotelId") ||
+                   localStorage.getItem("hotelId") ||
+                   "";
+
+        }
+
+
+        /* =========================================================
+           LOAD GUESTS
+        ========================================================= */
+
+        async function loadGuests() {
+
+            if (!window.supabaseClient) {
+
+                console.error(
+                    "Supabase client is not available."
+                );
+
+                alert(
+                    "Supabase connection is not available. Please check supabase.js."
+                );
+
+                return;
+
+            }
+
+
+            guestTable.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align:center;">
+                        Loading guests...
+                    </td>
+                </tr>
+            `;
+
+
+            const role = getGuestRole();
+
+            const hotelId = getGuestHotelId();
+
+
+            try {
+
+                let query =
+                    window.supabaseClient
+                        .from("guest")
+                        .select(`
+                            id,
+                            created_at,
+                            full_name,
+                            phone,
+                            email,
+                            hotel_id,
+                            id_passport,
+                            country,
+                            address
+                        `)
+                        .order("created_at", {
+                            ascending: false
+                        });
+
+
+                /*
+                   Hotel users see only their own hotel.
+                   System owner can see all hotels.
+                */
+
+                if (role !== "system_owner") {
+
+                    if (!hotelId) {
+
+                        guestTable.innerHTML = `
+                            <tr>
+                                <td colspan="7" style="text-align:center;">
+                                    No hotel is assigned to this account.
+                                </td>
+                            </tr>
+                        `;
+
+                        return;
+
+                    }
+
+                    query =
+                        query.eq(
+                            "hotel_id",
+                            hotelId
+                        );
 
                 }
 
 
+                const {
+                    data,
+                    error
+                } = await query;
 
-                const row =
-                    document.createElement(
-                        "tr"
+
+                if (error) {
+
+                    console.error(
+                        "Guest loading error:",
+                        error
                     );
 
+                    guestTable.innerHTML = `
+                        <tr>
+                            <td colspan="7" style="text-align:center;">
+                                Failed to load guests.
+                            </td>
+                        </tr>
+                    `;
+
+                    alert(
+                        "Failed to load guests: " +
+                        error.message
+                    );
+
+                    return;
+
+                }
 
 
-                row.innerHTML = `
+                guests = data || [];
 
-                    <td>${name}</td>
+                renderGuests();
 
-                    <td>${phone}</td>
+            }
 
-                    <td>${guestID}</td>
+            catch (error) {
 
-                    <td>${email || "-"}</td>
-
-                    <td>${country || "-"}</td>
-
-                    <td>${address || "-"}</td>
-
-                    <td>
-
-                        <button
-                            class="edit-btn"
-                            onclick="editGuest(this)"
-                        >
-                            Edit
-                        </button>
-
-                        <button
-                            class="delete-btn"
-                            onclick="deleteGuestRecord(this)"
-                        >
-                            Delete
-                        </button>
-
-                    </td>
-
-                `;
-
-
-
-                guestTable.appendChild(
-                    row
+                console.error(
+                    "Unexpected guest loading error:",
+                    error
                 );
 
+                guestTable.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align:center;">
+                            Failed to load guests.
+                        </td>
+                    </tr>
+                `;
+
+            }
+
+        }
 
 
-                guestForm.reset();
+        /* =========================================================
+           HTML ESCAPE
+        ========================================================= */
 
+        function escapeGuestHtml(value) {
+
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        /* =========================================================
+           RENDER GUESTS
+        ========================================================= */
+
+        function renderGuests() {
+
+            const searchText =
+                guestSearch.value
+                    .toLowerCase()
+                    .trim();
+
+
+            const filteredGuests =
+                guests.filter(guest => {
+
+                    const searchableText = [
+
+                        guest.full_name,
+
+                        guest.phone,
+
+                        guest.email,
+
+                        guest.id_passport,
+
+                        guest.country,
+
+                        guest.address
+
+                    ]
+                        .filter(Boolean)
+                        .join(" ")
+                        .toLowerCase();
+
+
+                    return searchableText
+                        .includes(searchText);
+
+                });
+
+
+            if (filteredGuests.length === 0) {
+
+                guestTable.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align:center;">
+                            ${
+                                searchText
+                                    ? "No guests match your search."
+                                    : "No guests registered yet."
+                            }
+                        </td>
+                    </tr>
+                `;
+
+                updateGuestSummary();
+
+                return;
+
+            }
+
+
+            guestTable.innerHTML =
+                filteredGuests.map(guest => {
+
+                    return `
+
+                        <tr data-guest-id="${escapeGuestHtml(guest.id)}">
+
+                            <td>
+                                ${escapeGuestHtml(
+                                    guest.full_name
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeGuestHtml(
+                                    guest.phone
+                                )}
+                            </td>
+
+                            <td>
+                                ${
+                                    guest.id_passport
+                                        ? escapeGuestHtml(
+                                            guest.id_passport
+                                          )
+                                        : "-"
+                                }
+                            </td>
+
+                            <td>
+                                ${
+                                    guest.email
+                                        ? escapeGuestHtml(
+                                            guest.email
+                                          )
+                                        : "-"
+                                }
+                            </td>
+
+                            <td>
+                                ${
+                                    guest.country
+                                        ? escapeGuestHtml(
+                                            guest.country
+                                          )
+                                        : "-"
+                                }
+                            </td>
+
+                            <td>
+                                ${
+                                    guest.address
+                                        ? escapeGuestHtml(
+                                            guest.address
+                                          )
+                                        : "-"
+                                }
+                            </td>
+
+                            <td>
+
+                                <button
+                                    type="button"
+                                    class="edit-btn"
+                                    onclick="editGuest('${escapeGuestHtml(guest.id)}')"
+                                >
+                                    Edit
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="delete-btn"
+                                    onclick="deleteGuestRecord('${escapeGuestHtml(guest.id)}')"
+                                >
+                                    Delete
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }).join("");
+
+
+            updateGuestSummary();
+
+        }
+
+
+        /* =========================================================
+           SUMMARY
+        ========================================================= */
+
+        async function updateGuestSummary() {
+
+            document.getElementById(
+                "totalGuests"
+            ).textContent = guests.length;
+
+
+            /*
+               Staying, arrivals and departures will later be
+               calculated from the reservation/check-in data.
+
+               For now they remain zero because the Guests table
+               itself does not contain stay dates.
+            */
+
+            document.getElementById(
+                "stayingGuests"
+            ).textContent = "0";
+
+            document.getElementById(
+                "arrivalGuests"
+            ).textContent = "0";
+
+            document.getElementById(
+                "departureGuests"
+            ).textContent = "0";
+
+        }
+
+
+        /* =========================================================
+           OPEN GUEST FORM
+        ========================================================= */
+
+        function openGuestForm() {
+
+            guestModal.style.display = "flex";
+
+            guestForm.reset();
+
+            editingGuestId = null;
+
+
+            document.getElementById(
+                "guestModalTitle"
+            ).textContent =
+                "Register New Guest";
+
+
+            document.getElementById(
+                "guestSubmitButton"
+            ).textContent =
+                "Register Guest";
+
+        }
+
+
+        /* =========================================================
+           CLOSE GUEST FORM
+        ========================================================= */
+
+        function closeGuestForm() {
+
+            guestModal.style.display = "none";
+
+            guestForm.reset();
+
+            editingGuestId = null;
+
+        }
+
+
+        /* =========================================================
+           ADD / UPDATE GUEST
+        ========================================================= */
+
+        guestForm.addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                const name =
+                    document.getElementById(
+                        "guestName"
+                    ).value.trim();
+
+
+                const phone =
+                    document.getElementById(
+                        "guestPhone"
+                    ).value.trim();
+
+
+                const guestID =
+                    document.getElementById(
+                        "guestID"
+                    ).value.trim();
+
+
+                const email =
+                    document.getElementById(
+                        "guestEmail"
+                    ).value.trim();
+
+
+                const country =
+                    document.getElementById(
+                        "guestCountry"
+                    ).value.trim();
+
+
+                const address =
+                    document.getElementById(
+                        "guestAddress"
+                    ).value.trim();
+
+
+                if (!name || !phone) {
+
+                    alert(
+                        "Please enter the guest's full name and phone number."
+                    );
+
+                    return;
+
+                }
+
+
+                const role =
+                    getGuestRole();
+
+
+                const hotelId =
+                    getGuestHotelId();
 
 
                 if (
-                    typeof closeGuestForm ===
-                    "function"
+                    role !== "system_owner" &&
+                    !hotelId
+                ) {
+
+                    alert(
+                        "This account does not have a hotel assigned."
+                    );
+
+                    return;
+
+                }
+
+
+                const submitButton =
+                    document.getElementById(
+                        "guestSubmitButton"
+                    );
+
+
+                submitButton.disabled = true;
+
+
+                try {
+
+                    /*
+                       Prevent duplicate phone numbers within
+                       the same hotel.
+                    */
+
+                    let duplicateQuery =
+                        window.supabaseClient
+                            .from("guest")
+                            .select("id")
+                            .eq("phone", phone);
+
+
+                    if (role !== "system_owner") {
+
+                        duplicateQuery =
+                            duplicateQuery.eq(
+                                "hotel_id",
+                                hotelId
+                            );
+
+                    }
+
+
+                    if (editingGuestId) {
+
+                        duplicateQuery =
+                            duplicateQuery.neq(
+                                "id",
+                                editingGuestId
+                            );
+
+                    }
+
+
+                    const {
+                        data: duplicateGuests,
+                        error: duplicateError
+                    } =
+                        await duplicateQuery;
+
+
+                    if (duplicateError) {
+
+                        console.error(
+                            duplicateError
+                        );
+
+                    }
+
+
+                    if (
+                        duplicateGuests &&
+                        duplicateGuests.length > 0
+                    ) {
+
+                        alert(
+                            "A guest with this phone number already exists."
+                        );
+
+                        submitButton.disabled = false;
+
+                        return;
+
+                    }
+
+
+                    const guestData = {
+
+                        full_name: name,
+
+                        phone: phone,
+
+                        email:
+                            email || null,
+
+                        id_passport:
+                            guestID || null,
+
+                        country:
+                            country || null,
+
+                        address:
+                            address || null
+
+                    };
+
+
+                    /*
+                       Hotel ID is assigned automatically
+                       for hotel users.
+                    */
+
+                    if (
+                        role !== "system_owner"
+                    ) {
+
+                        guestData.hotel_id =
+                            Number(hotelId);
+
+                    }
+
+
+                    let result;
+
+
+                    if (editingGuestId) {
+
+                        result =
+                            await window.supabaseClient
+                                .from("guest")
+                                .update(guestData)
+                                .eq(
+                                    "id",
+                                    editingGuestId
+                                );
+
+                    }
+
+                    else {
+
+                        result =
+                            await window.supabaseClient
+                                .from("guest")
+                                .insert([
+                                    guestData
+                                ]);
+
+                    }
+
+
+                    if (result.error) {
+
+                        console.error(
+                            "Guest save error:",
+                            result.error
+                        );
+
+                        alert(
+                            "Failed to save guest: " +
+                            result.error.message
+                        );
+
+                        return;
+
+                    }
+
+
+                    alert(
+                        editingGuestId
+                            ? "Guest updated successfully."
+                            : "Guest registered successfully."
+                    );
+
+
+                    closeGuestForm();
+
+                    await loadGuests();
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "Guest save error:",
+                        error
+                    );
+
+                    alert(
+                        "An unexpected error occurred while saving the guest."
+                    );
+
+                }
+
+                finally {
+
+                    submitButton.disabled = false;
+
+                }
+
+            }
+        );
+
+
+        /* =========================================================
+           EDIT GUEST
+        ========================================================= */
+
+        async function editGuest(guestId) {
+
+            const guest =
+                guests.find(
+                    item =>
+                        String(item.id) ===
+                        String(guestId)
+                );
+
+
+            if (!guest) {
+
+                alert(
+                    "Guest record could not be found."
+                );
+
+                return;
+
+            }
+
+
+            editingGuestId =
+                guest.id;
+
+
+            document.getElementById(
+                "guestName"
+            ).value =
+                guest.full_name || "";
+
+
+            document.getElementById(
+                "guestPhone"
+            ).value =
+                guest.phone || "";
+
+
+            document.getElementById(
+                "guestID"
+            ).value =
+                guest.id_passport || "";
+
+
+            document.getElementById(
+                "guestEmail"
+            ).value =
+                guest.email || "";
+
+
+            document.getElementById(
+                "guestCountry"
+            ).value =
+                guest.country || "";
+
+
+            document.getElementById(
+                "guestAddress"
+            ).value =
+                guest.address || "";
+
+
+            document.getElementById(
+                "guestModalTitle"
+            ).textContent =
+                "Edit Guest";
+
+
+            document.getElementById(
+                "guestSubmitButton"
+            ).textContent =
+                "Update Guest";
+
+
+            guestModal.style.display =
+                "flex";
+
+        }
+
+
+        /* =========================================================
+           DELETE GUEST
+        ========================================================= */
+
+        async function deleteGuestRecord(guestId) {
+
+            const guest =
+                guests.find(
+                    item =>
+                        String(item.id) ===
+                        String(guestId)
+                );
+
+
+            if (!guest) {
+
+                alert(
+                    "Guest record could not be found."
+                );
+
+                return;
+
+            }
+
+
+            const confirmed =
+                confirm(
+                    `Are you sure you want to delete ${guest.full_name}?`
+                );
+
+
+            if (!confirmed) {
+
+                return;
+
+            }
+
+
+            try {
+
+                const {
+                    error
+                } =
+                    await window.supabaseClient
+                        .from("guest")
+                        .delete()
+                        .eq(
+                            "id",
+                            guestId
+                        );
+
+
+                if (error) {
+
+                    console.error(
+                        "Guest delete error:",
+                        error
+                    );
+
+                    alert(
+                        "Failed to delete guest: " +
+                        error.message
+                    );
+
+                    return;
+
+                }
+
+
+                alert(
+                    "Guest deleted successfully."
+                );
+
+
+                await loadGuests();
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    error
+                );
+
+                alert(
+                    "An unexpected error occurred while deleting the guest."
+                );
+
+            }
+
+        }
+
+
+        /* =========================================================
+           SEARCH
+        ========================================================= */
+
+        guestSearch.addEventListener(
+            "input",
+            function() {
+
+                renderGuests();
+
+            }
+        );
+
+
+        /* =========================================================
+           CLOSE MODAL WHEN CLICKING OUTSIDE
+        ========================================================= */
+
+        guestModal.addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    event.target ===
+                    guestModal
                 ) {
 
                     closeGuestForm();
 
                 }
 
-
-
-                updateGuestSummary();
-
-
             }
         );
 
 
+        /* =========================================================
+           INITIALIZE
+        ========================================================= */
 
-        guestSearch.addEventListener(
-            "input",
-            function () {
+        document.addEventListener(
+            "DOMContentLoaded",
+            async function() {
 
+                protectGuestPage();
 
-                const searchText =
-                    guestSearch.value
-                        .toLowerCase();
+                displayGuestUser();
 
-
-
-                const rows =
-                    guestTable.querySelectorAll(
-                        "tr"
-                    );
-
-
-
-                rows.forEach(
-                    function (row) {
-
-
-                        const rowText =
-                            row.textContent
-                                .toLowerCase();
-
-
-
-                        row.style.display =
-                            rowText.includes(
-                                searchText
-                            )
-                                ? ""
-                                : "none";
-
-
-                    }
-                );
-
+                await loadGuests();
 
             }
         );
 
-
-
-        function deleteGuestRecord(
-            button
-        ) {
-
-
-            if (
-                !confirm(
-                    "Are you sure you want to delete this guest?"
-                )
-            ) {
-
-                return;
-
-            }
-
-
-
-            const row =
-                button.closest(
-                    "tr"
-                );
-
-
-
-            if (row) {
-
-
-                row.remove();
-
-
-                updateGuestSummary();
-
-
-            }
-
-
-        }
-
-
-
-        function editGuest(
-            button
-        ) {
-
-
-            const row =
-                button.closest(
-                    "tr"
-                );
-
-
-
-            if (!row) {
-
-                return;
-
-            }
-
-
-
-            document.getElementById(
-                "guestName"
-            ).value =
-                row.cells[0].textContent;
-
-
-
-            document.getElementById(
-                "guestPhone"
-            ).value =
-                row.cells[1].textContent;
-
-
-
-            document.getElementById(
-                "guestID"
-            ).value =
-                row.cells[2].textContent;
-
-
-
-            document.getElementById(
-                "guestEmail"
-            ).value =
-                row.cells[3].textContent ===
-                "-"
-                    ? ""
-                    : row.cells[3].textContent;
-
-
-
-            document.getElementById(
-                "guestCountry"
-            ).value =
-                row.cells[4].textContent ===
-                "-"
-                    ? ""
-                    : row.cells[4].textContent;
-
-
-
-            document.getElementById(
-                "guestAddress"
-            ).value =
-                row.cells[5].textContent ===
-                "-"
-                    ? ""
-                    : row.cells[5].textContent;
-
-
-
-            row.remove();
-
-
-
-            updateGuestSummary();
-
-
-
-            if (
-                typeof openGuestForm ===
-                "function"
-            ) {
-
-                openGuestForm();
-
-            }
-
-
-        }
-
-
-
-        updateGuestSummary();
-
-
     </script>
-
-
-
-    <!-- ============================================================
-         FINAL ROLE CONTROL FOR THIS PAGE
-         ============================================================ -->
-
-    <script>
-
-
-        (function () {
-
-
-            "use strict";
-
-
-
-            const ROLE_PERMISSIONS = {
-
-
-                system_owner: [
-
-                    "dashboard",
-                    "rooms",
-                    "guests",
-                    "reservations",
-                    "checkin",
-                    "checkout",
-                    "restaurant",
-                    "inventory",
-                    "payments",
-                    "expenses",
-                    "employees",
-                    "housekeeping",
-                    "maintenance",
-                    "reports",
-                    "settings",
-                    "hotels"
-
-                ],
-
-
-
-                hotel_owner: [
-
-                    "dashboard",
-                    "rooms",
-                    "guests",
-                    "reservations",
-                    "checkin",
-                    "checkout",
-                    "restaurant",
-                    "inventory",
-                    "payments",
-                    "expenses",
-                    "employees",
-                    "housekeeping",
-                    "maintenance",
-                    "reports",
-                    "settings"
-
-                ],
-
-
-
-                manager: [
-
-                    "dashboard",
-                    "rooms",
-                    "guests",
-                    "reservations",
-                    "checkin",
-                    "checkout",
-                    "restaurant",
-                    "inventory",
-                    "payments",
-                    "expenses",
-                    "employees",
-                    "housekeeping",
-                    "maintenance",
-                    "reports",
-                    "settings"
-
-                ],
-
-
-
-                receptionist: [
-
-                    "dashboard",
-                    "rooms",
-                    "guests",
-                    "reservations",
-                    "checkin",
-                    "checkout",
-                    "payments",
-                    "reports"
-
-                ]
-
-
-            };
-
-
-
-            function getRole() {
-
-
-                let role =
-                    sessionStorage.getItem(
-                        "userRole"
-                    );
-
-
-
-                if (!role) {
-
-                    role =
-                        localStorage.getItem(
-                            "userRole"
-                        );
-
-                }
-
-
-
-                return String(
-                    role || ""
-                )
-                    .toLowerCase()
-                    .trim();
-
-
-            }
-
-
-
-            function getModuleFromLink(
-                link
-            ) {
-
-
-                if (!link) {
-
-                    return null;
-
-                }
-
-
-
-                const href =
-                    String(
-                        link.getAttribute(
-                            "href"
-                        ) || ""
-                    )
-                        .toLowerCase()
-                        .split("?")[0]
-                        .split("#")[0]
-                        .trim();
-
-
-
-                if (
-                    href === "./" ||
-                    href === "/" ||
-                    href === "index.html" ||
-                    href === "./index.html" ||
-                    href.endsWith(
-                        "/index.html"
-                    )
-                ) {
-
-                    return "dashboard";
-
-                }
-
-
-
-                if (
-                    href.includes(
-                        "rooms.html"
-                    )
-                ) {
-
-                    return "rooms";
-
-                }
-
-
-
-                if (
-                    href.includes(
-                        "guests.html"
-                    )
-                ) {
-
-                    return "guests";
-
-                }
-
-
-
-                if (
-                    href.includes(
-                        "reservations.html"
-                    )
-                ) {
-
-                    return "reservations";
-
-                }
-
-
-
-                if (
-                    href.includes(
-                        "checkin.html"
-                    )
-                ) {
-
-                    return "checkin";
-
-                }
-
-
-
-                if (
-                    href.includes(
-                        "checkout.html"
-                    )
-                ) {
-
-                    return "checkout";
-
-                }
-
-
-
-                if (
-                    href.includes(
-                        "restaurant.html"
-                    )
-                ) {
-
-                    return "restaurant";
-
-                }
-
-
-
-                if (
-                    href.includes(
-                        "inventory.html"
-                    )
-                ) {
-
-                    return "inventory";
-
-                }
-
-
-
-                if (
-                    href.includes(
-                        "payments.html"
-                    )
-                ) {
-
-                    return "payments";
-
-                }
-
-
-
-                if (
-                    href.includes(
-                        "expenses.html"
-                    )
-                ) {
-
-                    return "expenses";
-
-                }
-
-
-
-                if (
-                    href.includes(
-                        "employees.html"
-                    )
-                ) {
-
-                    return "employees";
-
-                }
-
-
-
-                if (
-                    href.includes(
-                        "housekeeping.html"
-                    )
-                ) {
-
-                    return "housekeeping";
-
-                }
-
-
-
-                if (
-                    href.includes(
-                        "maintenance.html"
-                    )
-                ) {
-
-                    return "maintenance";
-
-                }
-
-
-
-                if (
-                    href.includes(
-                        "reports.html"
-                    )
-                ) {
-
-                    return "reports";
-
-                }
-
-
-
-                if (
-                    href.includes(
-                        "settings.html"
-                    )
-                ) {
-
-                    return "settings";
-
-                }
-
-
-
-                if (
-                    href.includes(
-                        "hotels.html"
-                    )
-                ) {
-
-                    return "hotels";
-
-                }
-
-
-
-                return null;
-
-
-            }
-
-
-
-            function applyRoleControl() {
-
-
-                const role =
-                    getRole();
-
-
-
-                if (!role) {
-
-                    return;
-
-                }
-
-
-
-                const allowed =
-                    ROLE_PERMISSIONS[
-                        role
-                    ];
-
-
-
-                if (!allowed) {
-
-                    return;
-
-                }
-
-
-
-                const links =
-                    document.querySelectorAll(
-                        ".sidebar nav a"
-                    );
-
-
-
-                links.forEach(
-                    function (link) {
-
-
-                        const module =
-                            getModuleFromLink(
-                                link
-                            );
-
-
-
-                        if (!module) {
-
-                            return;
-
-                        }
-
-
-
-                        if (
-                            allowed.includes(
-                                module
-                            )
-                        ) {
-
-
-                            link.style.removeProperty(
-                                "display"
-                            );
-
-
-                        }
-
-                        else {
-
-
-                            link.style.setProperty(
-                                "display",
-                                "none",
-                                "important"
-                            );
-
-
-                        }
-
-
-                    }
-                );
-
-
-            }
-
-
-
-            function protectCurrentPage() {
-
-
-                const role =
-                    getRole();
-
-
-
-                if (!role) {
-
-                    return;
-
-                }
-
-
-
-                const allowed =
-                    ROLE_PERMISSIONS[
-                        role
-                    ];
-
-
-
-                if (!allowed) {
-
-                    return;
-
-                }
-
-
-
-                const filename =
-                    window.location
-                        .pathname
-                        .split("/")
-                        .pop()
-                        .toLowerCase();
-
-
-
-                let currentModule =
-                    "dashboard";
-
-
-
-                if (
-                    filename ===
-                    "rooms.html"
-                ) {
-
-                    currentModule =
-                        "rooms";
-
-                }
-
-                else if (
-                    filename ===
-                    "guests.html"
-                ) {
-
-                    currentModule =
-                        "guests";
-
-                }
-
-                else if (
-                    filename ===
-                    "reservations.html"
-                ) {
-
-                    currentModule =
-                        "reservations";
-
-                }
-
-                else if (
-                    filename ===
-                    "checkin.html"
-                ) {
-
-                    currentModule =
-                        "checkin";
-
-                }
-
-                else if (
-                    filename ===
-                    "checkout.html"
-                ) {
-
-                    currentModule =
-                        "checkout";
-
-                }
-
-                else if (
-                    filename ===
-                    "restaurant.html"
-                ) {
-
-                    currentModule =
-                        "restaurant";
-
-                }
-
-                else if (
-                    filename ===
-                    "inventory.html"
-                ) {
-
-                    currentModule =
-                        "inventory";
-
-                }
-
-                else if (
-                    filename ===
-                    "payments.html"
-                ) {
-
-                    currentModule =
-                        "payments";
-
-                }
-
-                else if (
-                    filename ===
-                    "expenses.html"
-                ) {
-
-                    currentModule =
-                        "expenses";
-
-                }
-
-                else if (
-                    filename ===
-                    "employees.html"
-                ) {
-
-                    currentModule =
-                        "employees";
-
-                }
-
-                else if (
-                    filename ===
-                    "housekeeping.html"
-                ) {
-
-                    currentModule =
-                        "housekeeping";
-
-                }
-
-                else if (
-                    filename ===
-                    "maintenance.html"
-                ) {
-
-                    currentModule =
-                        "maintenance";
-
-                }
-
-                else if (
-                    filename ===
-                    "reports.html"
-                ) {
-
-                    currentModule =
-                        "reports";
-
-                }
-
-                else if (
-                    filename ===
-                    "settings.html"
-                ) {
-
-                    currentModule =
-                        "settings";
-
-                }
-
-                else if (
-                    filename ===
-                    "hotels.html"
-                ) {
-
-                    currentModule =
-                        "hotels";
-
-                }
-
-
-
-                if (
-                    !allowed.includes(
-                        currentModule
-                    )
-                ) {
-
-
-                    window.location.href =
-                        "./index.html";
-
-
-                }
-
-
-            }
-
-
-
-            function runRoleControl() {
-
-
-                applyRoleControl();
-
-                protectCurrentPage();
-
-
-            }
-
-
-
-            if (
-                document.readyState ===
-                "loading"
-            ) {
-
-
-                document.addEventListener(
-                    "DOMContentLoaded",
-                    runRoleControl
-                );
-
-
-            }
-
-            else {
-
-
-                runRoleControl();
-
-
-            }
-
-
-
-            /*
-             * Keep checking because another
-             * script may rebuild or modify
-             * the sidebar.
-             */
-
-            setInterval(
-                applyRoleControl,
-                500
-            );
-
-
-            window.applyRoleControl =
-                applyRoleControl;
-
-
-        })();
-
-
-    </script>
-
 
 </body>
 
