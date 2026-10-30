@@ -11,46 +11,15 @@
 
     <link rel="stylesheet" href="./style.css">
 
-    <style>
-
-        /* =====================================================
-           ROLE CONTROL
-        ====================================================== */
-
-        .role-hidden {
-            display: none !important;
-        }
-
-        #accessDeniedScreen {
-            display: none;
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        #accessDeniedScreen h2 {
-            color: #c0392b;
-            margin-bottom: 10px;
-        }
-
-        #accessDeniedScreen p {
-            color: #666;
-            margin-bottom: 20px;
-        }
-
-        #accessDeniedScreen a {
-            display: inline-block;
-            padding: 10px 18px;
-            background: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-        }
-
-    </style>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase.js"></script>
 
 </head>
 
+
 <body>
+
 
     <!-- =====================================================
          SIDEBAR
@@ -65,6 +34,7 @@
             <p>HOTEL SYSTEM</p>
 
         </div>
+
 
         <nav>
 
@@ -92,9 +62,11 @@
                 🚪 Check-out
             </a>
 
-            <a href="./restaurant.html"
-               class="active"
-               data-module="restaurant">
+            <a
+                href="./restaurant.html"
+                class="active"
+                data-module="restaurant"
+            >
                 🍽️ Restaurant
             </a>
 
@@ -130,6 +102,14 @@
                 ⚙️ Settings
             </a>
 
+            <a href="./hotels.html" data-module="hotels">
+                🏨 Hotels
+            </a>
+
+            <a href="#" data-action="logout">
+                🚪 Logout
+            </a>
+
         </nav>
 
     </aside>
@@ -141,19 +121,39 @@
 
     <main class="main-content">
 
+
         <!-- =================================================
-             ACCESS DENIED SCREEN
+             ACCESS DENIED
         ================================================== -->
 
-        <div id="accessDeniedScreen">
+        <div
+            id="accessDeniedScreen"
+            style="
+                display:none;
+                text-align:center;
+                padding:60px 20px;
+            "
+        >
 
-            <h2>Access Denied</h2>
+            <h2 style="color:#c0392b;">
+                Access Denied
+            </h2>
 
             <p>
                 You do not have permission to access the Restaurant module.
             </p>
 
-            <a href="./index.html">
+            <a
+                href="./index.html"
+                style="
+                    display:inline-block;
+                    padding:10px 18px;
+                    background:#007bff;
+                    color:white;
+                    text-decoration:none;
+                    border-radius:6px;
+                "
+            >
                 Return to Dashboard
             </a>
 
@@ -161,19 +161,26 @@
 
 
         <!-- =================================================
-             RESTAURANT MODULE CONTENT
+             RESTAURANT CONTENT
         ================================================== -->
 
         <div id="restaurantModuleContent">
+
+
+            <!-- =================================================
+                 TOPBAR
+            ================================================== -->
 
             <header class="topbar">
 
                 <div>
 
-                    <h1>Restaurant Management</h1>
+                    <h1>
+                        Restaurant Management
+                    </h1>
 
                     <p>
-                        Manage restaurant orders, food sales and guest dining
+                        Manage restaurant orders and guest dining
                     </p>
 
                 </div>
@@ -187,9 +194,11 @@
 
                     <div>
 
-                        <strong>Administrator</strong>
+                        <strong id="currentUserName">
+                            Administrator
+                        </strong>
 
-                        <small>
+                        <small id="currentUserRole">
                             System Admin
                         </small>
 
@@ -201,10 +210,28 @@
 
 
             <!-- =================================================
+                 ERROR MESSAGE
+            ================================================== -->
+
+            <div
+                id="restaurantError"
+                style="
+                    display:none;
+                    margin:20px 0;
+                    padding:14px;
+                    border-radius:6px;
+                    background:#fee2e2;
+                    color:#991b1b;
+                "
+            ></div>
+
+
+            <!-- =================================================
                  SUMMARY CARDS
             ================================================== -->
 
             <section class="cards">
+
 
                 <div class="card">
 
@@ -289,6 +316,7 @@
 
                 </div>
 
+
             </section>
 
 
@@ -297,6 +325,7 @@
             ================================================== -->
 
             <section class="room-container">
+
 
                 <div class="room-header">
 
@@ -316,30 +345,29 @@
                     <button
                         type="button"
                         class="add-room-btn"
-                        onclick="openRestaurantForm()">
-
+                        id="newRestaurantOrderBtn"
+                    >
                         + New Order
-
                     </button>
 
                 </div>
 
 
-                <!-- SEARCH AND FILTER -->
+                <!-- =================================================
+                     SEARCH / FILTER
+                ================================================== -->
 
                 <div class="room-tools">
+
 
                     <input
                         type="text"
                         id="restaurantSearch"
                         placeholder="Search guest, room or order..."
-                        onkeyup="searchRestaurantOrders()"
                     >
 
 
-                    <select
-                        id="restaurantFilter"
-                        onchange="filterRestaurantOrders()">
+                    <select id="restaurantFilter">
 
                         <option value="all">
                             All Orders
@@ -367,10 +395,25 @@
 
                     </select>
 
+
+                    <select
+                        id="restaurantHotelSelector"
+                        style="display:none;"
+                    >
+
+                        <option value="">
+                            Select Hotel
+                        </option>
+
+                    </select>
+
+
                 </div>
 
 
-                <!-- TABLE -->
+                <!-- =================================================
+                     TABLE
+                ================================================== -->
 
                 <div class="table-container">
 
@@ -397,11 +440,11 @@
                                 </th>
 
                                 <th>
-                                    Total
+                                    Quantity
                                 </th>
 
                                 <th>
-                                    Payment
+                                    Total
                                 </th>
 
                                 <th>
@@ -418,15 +461,33 @@
 
 
                         <tbody id="restaurantTable">
+
+                            <tr>
+
+                                <td
+                                    colspan="8"
+                                    style="
+                                        text-align:center;
+                                        padding:25px;
+                                    "
+                                >
+                                    Loading restaurant orders...
+                                </td>
+
+                            </tr>
+
                         </tbody>
 
                     </table>
 
                 </div>
 
+
             </section>
 
+
         </div>
+
 
     </main>
 
@@ -437,67 +498,162 @@
 
     <div
         id="restaurantModal"
-        class="modal">
+        class="modal"
+        style="
+            display:none;
+        "
+    >
 
         <div class="modal-content">
 
+
             <div class="modal-header">
 
-                <h2>
+                <h2 id="restaurantModalTitle">
                     New Restaurant Order
                 </h2>
 
 
                 <button
                     type="button"
-                    onclick="closeRestaurantForm()">
-
+                    id="closeRestaurantBtn"
+                >
                     ×
-
                 </button>
 
             </div>
 
 
-            <!-- FORM -->
+            <!-- =================================================
+                 FORM
+            ================================================== -->
 
             <form id="restaurantForm">
 
-                <label for="restaurantGuest">
-                    Guest Name
+
+                <!-- HOTEL -->
+
+                <div
+                    id="restaurantHotelField"
+                    style="display:none;"
+                >
+
+                    <label for="restaurantHotel">
+                        Hotel
+                    </label>
+
+                    <select
+                        id="restaurantHotel"
+                    >
+
+                        <option value="">
+                            Select Hotel
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- RESERVATION -->
+
+                <label for="restaurantReservation">
+                    Reservation
                 </label>
 
-                <input
-                    type="text"
+                <select
+                    id="restaurantReservation"
+                >
+
+                    <option value="">
+                        No Reservation / Walk-in
+                    </option>
+
+                </select>
+
+
+                <!-- GUEST -->
+
+                <label for="restaurantGuest">
+                    Guest
+                </label>
+
+                <select
                     id="restaurantGuest"
-                    placeholder="Enter guest name"
                     required
                 >
 
+                    <option value="">
+                        Select Guest
+                    </option>
+
+                </select>
+
+
+                <!-- ROOM -->
 
                 <label for="restaurantRoom">
-                    Room Number
+                    Room
+                </label>
+
+                <select
+                    id="restaurantRoom"
+                    required
+                >
+
+                    <option value="">
+                        Select Room
+                    </option>
+
+                </select>
+
+
+                <!-- ITEM -->
+
+                <label for="restaurantItems">
+                    Order Item
                 </label>
 
                 <input
                     type="text"
-                    id="restaurantRoom"
-                    placeholder="Example: 105"
+                    id="restaurantItems"
+                    placeholder="Example: Chicken and Chips"
                     required
                 >
 
 
-                <label for="restaurantItems">
-                    Order Items
+                <!-- QUANTITY -->
+
+                <label for="restaurantQuantity">
+                    Quantity
                 </label>
 
-                <textarea
-                    id="restaurantItems"
-                    placeholder="Example: Chicken, Chips, Soda"
-                    rows="4"
+                <input
+                    type="number"
+                    id="restaurantQuantity"
+                    min="1"
+                    value="1"
                     required
-                ></textarea>
+                >
 
+
+                <!-- UNIT PRICE -->
+
+                <label for="restaurantUnitPrice">
+                    Unit Price (KSh)
+                </label>
+
+                <input
+                    type="number"
+                    id="restaurantUnitPrice"
+                    min="0"
+                    step="0.01"
+                    placeholder="Enter unit price"
+                    required
+                >
+
+
+                <!-- TOTAL -->
 
                 <label for="restaurantAmount">
                     Total Amount (KSh)
@@ -506,42 +662,11 @@
                 <input
                     type="number"
                     id="restaurantAmount"
-                    placeholder="Enter total amount"
-                    min="0"
-                    required
+                    readonly
                 >
 
 
-                <label for="restaurantPayment">
-                    Payment Method
-                </label>
-
-                <select
-                    id="restaurantPayment"
-                    required>
-
-                    <option value="">
-                        Select Payment Method
-                    </option>
-
-                    <option value="Cash">
-                        Cash
-                    </option>
-
-                    <option value="M-Pesa">
-                        M-Pesa
-                    </option>
-
-                    <option value="Card">
-                        Card
-                    </option>
-
-                    <option value="Room Charge">
-                        Room Charge
-                    </option>
-
-                </select>
-
+                <!-- STATUS -->
 
                 <label for="restaurantStatus">
                     Order Status
@@ -549,7 +674,8 @@
 
                 <select
                     id="restaurantStatus"
-                    required>
+                    required
+                >
 
                     <option value="Pending">
                         Pending
@@ -574,15 +700,31 @@
                 </select>
 
 
+                <!-- NOTES -->
+
+                <label for="restaurantNotes">
+                    Notes
+                </label>
+
+                <textarea
+                    id="restaurantNotes"
+                    rows="3"
+                    placeholder="Optional notes"
+                ></textarea>
+
+
+                <!-- SAVE -->
+
                 <button
                     type="submit"
-                    class="save-room-btn">
-
+                    class="save-room-btn"
+                >
                     Save Order
-
                 </button>
 
+
             </form>
+
 
         </div>
 
@@ -590,17 +732,41 @@
 
 
     <!-- =====================================================
-         MAIN JAVASCRIPT
+         GLOBAL SCRIPT
     ====================================================== -->
 
     <script src="./script.js"></script>
 
 
     <!-- =====================================================
-         RESTAURANT PAGE JAVASCRIPT
+         RESTAURANT SCRIPT
     ====================================================== -->
 
     <script>
+
+        "use strict";
+
+
+        /* =====================================================
+           VARIABLES
+        ====================================================== */
+
+        let restaurantOrders = [];
+
+        let restaurantGuests = [];
+
+        let restaurantRooms = [];
+
+        let restaurantReservations = [];
+
+        let restaurantHotels = [];
+
+        let editingOrderId = null;
+
+
+        /* =====================================================
+           DOM
+        ====================================================== */
 
         const restaurantForm =
             document.getElementById(
@@ -608,37 +774,1063 @@
             );
 
 
-        /* =================================================
-           RESTAURANT ACCESS CHECK
-        ================================================= */
+        const restaurantTable =
+            document.getElementById(
+                "restaurantTable"
+            );
+
+
+        const restaurantModal =
+            document.getElementById(
+                "restaurantModal"
+            );
+
+
+        const restaurantSearch =
+            document.getElementById(
+                "restaurantSearch"
+            );
+
+
+        const restaurantFilter =
+            document.getElementById(
+                "restaurantFilter"
+            );
+
+
+        const restaurantHotelSelector =
+            document.getElementById(
+                "restaurantHotelSelector"
+            );
+
+
+        const restaurantHotel =
+            document.getElementById(
+                "restaurantHotel"
+            );
+
+
+        const restaurantReservation =
+            document.getElementById(
+                "restaurantReservation"
+            );
+
+
+        const restaurantGuest =
+            document.getElementById(
+                "restaurantGuest"
+            );
+
+
+        const restaurantRoom =
+            document.getElementById(
+                "restaurantRoom"
+            );
+
+
+        const restaurantItems =
+            document.getElementById(
+                "restaurantItems"
+            );
+
+
+        const restaurantQuantity =
+            document.getElementById(
+                "restaurantQuantity"
+            );
+
+
+        const restaurantUnitPrice =
+            document.getElementById(
+                "restaurantUnitPrice"
+            );
+
+
+        const restaurantAmount =
+            document.getElementById(
+                "restaurantAmount"
+            );
+
+
+        const restaurantStatus =
+            document.getElementById(
+                "restaurantStatus"
+            );
+
+
+        const restaurantNotes =
+            document.getElementById(
+                "restaurantNotes"
+            );
+
+
+        const restaurantError =
+            document.getElementById(
+                "restaurantError"
+            );
+
+
+        /* =====================================================
+           ROLE
+        ====================================================== */
+
+        function getCurrentRole() {
+
+            return String(
+                sessionStorage.getItem("userRole") ||
+                localStorage.getItem("userRole") ||
+                ""
+            )
+                .toLowerCase()
+                .trim();
+
+        }
+
+
+        /* =====================================================
+           ACCESS
+        ====================================================== */
 
         function restaurantAccessAllowed() {
 
             const role =
-                String(
-                    sessionStorage.getItem("userRole") ||
-                    localStorage.getItem("userRole") ||
-                    ""
-                )
-                .toLowerCase()
-                .trim();
+                getCurrentRole();
+
 
             return (
+
                 role === "system_owner" ||
+
                 role === "hotel_owner" ||
+
                 role === "manager"
+
             );
 
         }
 
 
-        /* =================================================
+        /* =====================================================
+           HOTEL ID
+        ====================================================== */
+
+        function getCurrentHotelId() {
+
+            return (
+
+                sessionStorage.getItem(
+                    "hotelId"
+                ) ||
+
+                localStorage.getItem(
+                    "hotelId"
+                ) ||
+
+                ""
+
+            );
+
+        }
+
+
+        /* =====================================================
+           SELECTED HOTEL
+        ====================================================== */
+
+        function getSelectedHotelId() {
+
+            const role =
+                getCurrentRole();
+
+
+            if (
+                role ===
+                "system_owner"
+            ) {
+
+                return restaurantHotelSelector.value;
+
+            }
+
+
+            return getCurrentHotelId();
+
+        }
+
+
+        /* =====================================================
+           ERROR
+        ====================================================== */
+
+        function showRestaurantError(
+            message
+        ) {
+
+            restaurantError.textContent =
+                message;
+
+            restaurantError.style.display =
+                "block";
+
+        }
+
+
+        function hideRestaurantError() {
+
+            restaurantError.textContent =
+                "";
+
+            restaurantError.style.display =
+                "none";
+
+        }
+
+
+        /* =====================================================
+           PAGE INITIALIZATION
+        ====================================================== */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            initializeRestaurant
+        );
+
+
+        async function initializeRestaurant() {
+
+            try {
+
+                hideRestaurantError();
+
+
+                if (
+                    !restaurantAccessAllowed()
+                ) {
+
+                    document.getElementById(
+                        "restaurantModuleContent"
+                    ).style.display =
+                        "none";
+
+
+                    document.getElementById(
+                        "accessDeniedScreen"
+                    ).style.display =
+                        "block";
+
+
+                    return;
+
+                }
+
+
+                if (
+                    !window.supabaseClient
+                ) {
+
+                    throw new Error(
+                        "Supabase client is not available."
+                    );
+
+                }
+
+
+                document.getElementById(
+                    "currentUserName"
+                ).textContent =
+                    sessionStorage.getItem(
+                        "userName"
+                    ) ||
+                    "Administrator";
+
+
+                document.getElementById(
+                    "currentUserRole"
+                ).textContent =
+                    getCurrentRole()
+                        .replace(
+                            /_/g,
+                            " "
+                        );
+
+
+                if (
+                    getCurrentRole() ===
+                    "system_owner"
+                ) {
+
+                    document.getElementById(
+                        "restaurantHotelField"
+                    ).style.display =
+                        "block";
+
+
+                    restaurantHotelSelector.style.display =
+                        "block";
+
+
+                    await loadHotels();
+
+                }
+
+
+                await loadRestaurantData();
+
+            } catch (error) {
+
+                console.error(
+                    "Restaurant initialization error:",
+                    error
+                );
+
+
+                showRestaurantError(
+                    "Failed to load Restaurant module: " +
+                    (
+                        error.message ||
+                        error
+                    )
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           LOAD HOTELS
+        ====================================================== */
+
+        async function loadHotels() {
+
+            const {
+                data,
+                error
+            } =
+                await window.supabaseClient
+                    .from("hotels")
+                    .select(
+                        "id, hotel_name"
+                    )
+                    .order(
+                        "hotel_name",
+                        {
+                            ascending:true
+                        }
+                    );
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            restaurantHotels =
+                data || [];
+
+
+            restaurantHotelSelector.innerHTML =
+                `
+                    <option value="">
+                        Select Hotel
+                    </option>
+                `;
+
+
+            restaurantHotel.innerHTML =
+                `
+                    <option value="">
+                        Select Hotel
+                    </option>
+                `;
+
+
+            restaurantHotels.forEach(
+                function(hotel) {
+
+                    const option1 =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option1.value =
+                        hotel.id;
+
+
+                    option1.textContent =
+                        hotel.hotel_name;
+
+
+                    restaurantHotelSelector.appendChild(
+                        option1
+                    );
+
+
+                    const option2 =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option2.value =
+                        hotel.id;
+
+
+                    option2.textContent =
+                        hotel.hotel_name;
+
+
+                    restaurantHotel.appendChild(
+                        option2
+                    );
+
+                }
+            );
+
+
+            restaurantHotelSelector.addEventListener(
+                "change",
+                async function() {
+
+                    restaurantHotel.value =
+                        restaurantHotelSelector.value;
+
+
+                    await loadRestaurantData();
+
+                }
+            );
+
+
+            restaurantHotel.addEventListener(
+                "change",
+                async function() {
+
+                    restaurantHotelSelector.value =
+                        restaurantHotel.value;
+
+
+                    await loadRestaurantData();
+
+                }
+            );
+
+        }
+
+
+        /* =====================================================
+           LOAD ALL DATA
+        ====================================================== */
+
+        async function loadRestaurantData() {
+
+            hideRestaurantError();
+
+
+            await Promise.all([
+
+                loadGuests(),
+
+                loadRooms(),
+
+                loadReservations(),
+
+                loadOrders()
+
+            ]);
+
+
+            populateGuestSelect();
+
+            populateRoomSelect();
+
+            populateReservationSelect();
+
+            renderRestaurantOrders();
+
+        }
+
+
+        /* =====================================================
+           LOAD GUESTS
+        ====================================================== */
+
+        async function loadGuests() {
+
+            let query =
+                window.supabaseClient
+                    .from("guests")
+                    .select(
+                        'id, "full name", phone, email, hotel_id'
+                    )
+                    .order(
+                        "full name",
+                        {
+                            ascending:true
+                        }
+                    );
+
+
+            const hotelId =
+                getSelectedHotelId();
+
+
+            if (hotelId) {
+
+                query =
+                    query.eq(
+                        "hotel_id",
+                        hotelId
+                    );
+
+            }
+
+
+            const {
+                data,
+                error
+            } =
+                await query;
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            restaurantGuests =
+                data || [];
+
+        }
+
+
+        /* =====================================================
+           LOAD ROOMS
+        ====================================================== */
+
+        async function loadRooms() {
+
+            let query =
+                window.supabaseClient
+                    .from("rooms")
+                    .select(
+                        "id, room_number, room_type, status, price, hotel_id"
+                    )
+                    .order(
+                        "room_number",
+                        {
+                            ascending:true
+                        }
+                    );
+
+
+            const hotelId =
+                getSelectedHotelId();
+
+
+            if (hotelId) {
+
+                query =
+                    query.eq(
+                        "hotel_id",
+                        hotelId
+                    );
+
+            }
+
+
+            const {
+                data,
+                error
+            } =
+                await query;
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            restaurantRooms =
+                data || [];
+
+        }
+
+
+        /* =====================================================
+           LOAD RESERVATIONS
+        ====================================================== */
+
+        async function loadReservations() {
+
+            let query =
+                window.supabaseClient
+                    .from("reservation")
+                    .select(
+                        "id, guest_id, room_id, check_in, check_out, status, amount, hotel_id"
+                    )
+                    .order(
+                        "check_in",
+                        {
+                            ascending:false
+                        }
+                    );
+
+
+            const hotelId =
+                getSelectedHotelId();
+
+
+            if (hotelId) {
+
+                query =
+                    query.eq(
+                        "hotel_id",
+                        hotelId
+                    );
+
+            }
+
+
+            const {
+                data,
+                error
+            } =
+                await query;
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            restaurantReservations =
+                data || [];
+
+        }
+
+
+        /* =====================================================
+           LOAD ORDERS
+        ====================================================== */
+
+        async function loadOrders() {
+
+            let query =
+                window.supabaseClient
+                    .from("restaurant_orders")
+                    .select(
+                        "id, created_at, hotel_id, reservation_id, guest_id, room_id, item_name, quantity, unit_price, total, status, order_date, notes"
+                    )
+                    .order(
+                        "order_date",
+                        {
+                            ascending:false
+                        }
+                    );
+
+
+            const hotelId =
+                getSelectedHotelId();
+
+
+            if (hotelId) {
+
+                query =
+                    query.eq(
+                        "hotel_id",
+                        hotelId
+                    );
+
+            }
+
+
+            const {
+                data,
+                error
+            } =
+                await query;
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            restaurantOrders =
+                data || [];
+
+        }
+
+
+        /* =====================================================
+           GUEST NAME
+        ====================================================== */
+
+        function getGuestName(
+            guestId
+        ) {
+
+            const guest =
+                restaurantGuests.find(
+                    function(item) {
+
+                        return String(
+                            item.id
+                        ) ===
+                        String(
+                            guestId
+                        );
+
+                    }
+                );
+
+
+            if (!guest) {
+
+                return "Walk-in Guest";
+
+            }
+
+
+            return (
+                guest["full name"] ||
+                "Walk-in Guest"
+            );
+
+        }
+
+
+        /* =====================================================
+           ROOM NUMBER
+        ====================================================== */
+
+        function getRoomNumber(
+            roomId
+        ) {
+
+            const room =
+                restaurantRooms.find(
+                    function(item) {
+
+                        return String(
+                            item.id
+                        ) ===
+                        String(
+                            roomId
+                        );
+
+                    }
+                );
+
+
+            if (!room) {
+
+                return "-";
+
+            }
+
+
+            return (
+                room.room_number ||
+                "-"
+            );
+
+        }
+
+
+        /* =====================================================
+           POPULATE GUESTS
+        ====================================================== */
+
+        function populateGuestSelect() {
+
+            const selected =
+                restaurantGuest.value;
+
+
+            restaurantGuest.innerHTML =
+                `
+                    <option value="">
+                        Select Guest
+                    </option>
+                `;
+
+
+            restaurantGuests.forEach(
+                function(guest) {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        guest.id;
+
+
+                    option.textContent =
+                        guest["full name"] ||
+                        "Unnamed Guest";
+
+
+                    restaurantGuest.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+
+            if (selected) {
+
+                restaurantGuest.value =
+                    selected;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           POPULATE ROOMS
+        ====================================================== */
+
+        function populateRoomSelect() {
+
+            const selected =
+                restaurantRoom.value;
+
+
+            restaurantRoom.innerHTML =
+                `
+                    <option value="">
+                        Select Room
+                    </option>
+                `;
+
+
+            restaurantRooms.forEach(
+                function(room) {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        room.id;
+
+
+                    option.textContent =
+                        "Room " +
+                        room.room_number +
+                        " - " +
+                        (
+                            room.status ||
+                            ""
+                        );
+
+
+                    restaurantRoom.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+
+            if (selected) {
+
+                restaurantRoom.value =
+                    selected;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           POPULATE RESERVATIONS
+        ====================================================== */
+
+        function populateReservationSelect() {
+
+            const selected =
+                restaurantReservation.value;
+
+
+            restaurantReservation.innerHTML =
+                `
+                    <option value="">
+                        No Reservation / Walk-in
+                    </option>
+                `;
+
+
+            restaurantReservations.forEach(
+                function(reservation) {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        reservation.id;
+
+
+                    option.textContent =
+                        "RES-" +
+                        reservation.id +
+                        " | " +
+                        getGuestName(
+                            reservation.guest_id
+                        ) +
+                        " | Room " +
+                        getRoomNumber(
+                            reservation.room_id
+                        );
+
+
+                    restaurantReservation.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+
+            if (selected) {
+
+                restaurantReservation.value =
+                    selected;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           RESERVATION SELECTION
+        ====================================================== */
+
+        restaurantReservation.addEventListener(
+            "change",
+            function() {
+
+                const reservationId =
+                    restaurantReservation.value;
+
+
+                if (!reservationId) {
+
+                    return;
+
+                }
+
+
+                const reservation =
+                    restaurantReservations.find(
+                        function(item) {
+
+                            return String(
+                                item.id
+                            ) ===
+                            String(
+                                reservationId
+                            );
+
+                        }
+                    );
+
+
+                if (!reservation) {
+
+                    return;
+
+                }
+
+
+                restaurantGuest.value =
+                    reservation.guest_id ||
+                    "";
+
+
+                restaurantRoom.value =
+                    reservation.room_id ||
+                    "";
+
+            }
+        );
+
+
+        /* =====================================================
+           CALCULATE TOTAL
+        ====================================================== */
+
+        function calculateRestaurantTotal() {
+
+            const quantity =
+                Number(
+                    restaurantQuantity.value
+                ) || 0;
+
+
+            const unitPrice =
+                Number(
+                    restaurantUnitPrice.value
+                ) || 0;
+
+
+            const total =
+                quantity *
+                unitPrice;
+
+
+            restaurantAmount.value =
+                total.toFixed(2);
+
+        }
+
+
+        restaurantQuantity.addEventListener(
+            "input",
+            calculateRestaurantTotal
+        );
+
+
+        restaurantUnitPrice.addEventListener(
+            "input",
+            calculateRestaurantTotal
+        );
+
+
+        /* =====================================================
            OPEN FORM
-        ================================================= */
+        ====================================================== */
 
-        function openRestaurantForm() {
+        function openRestaurantForm(
+            orderId = null
+        ) {
 
-            if (!restaurantAccessAllowed()) {
+            if (
+                !restaurantAccessAllowed()
+            ) {
 
                 alert(
                     "You do not have permission to access the Restaurant module."
@@ -649,210 +1841,745 @@
             }
 
 
-            document.getElementById(
-                "restaurantModal"
-            ).style.display = "flex";
-
-        }
+            editingOrderId =
+                orderId;
 
 
-        /* =================================================
-           CLOSE FORM
-        ================================================= */
-
-        function closeRestaurantForm() {
-
-            document.getElementById(
-                "restaurantModal"
-            ).style.display = "none";
-
-        }
+            restaurantForm.reset();
 
 
-        /* =================================================
-           SAVE RESTAURANT ORDER
-        ================================================= */
-
-        restaurantForm.addEventListener(
-            "submit",
-            function(event) {
-
-                event.preventDefault();
+            restaurantQuantity.value =
+                "1";
 
 
-                if (!restaurantAccessAllowed()) {
+            restaurantAmount.value =
+                "0.00";
 
-                    alert(
-                        "You do not have permission to save restaurant orders."
+
+            populateGuestSelect();
+
+            populateRoomSelect();
+
+            populateReservationSelect();
+
+
+            if (getCurrentRole() === "system_owner") {
+
+                restaurantHotel.value =
+                    restaurantHotelSelector.value;
+
+            }
+
+
+            if (orderId) {
+
+                const order =
+                    restaurantOrders.find(
+                        function(item) {
+
+                            return String(
+                                item.id
+                            ) ===
+                            String(
+                                orderId
+                            );
+
+                        }
                     );
+
+
+                if (!order) {
 
                     return;
 
                 }
 
 
-                const guest =
-                    document
-                        .getElementById(
-                            "restaurantGuest"
-                        )
-                        .value
-                        .trim();
+                document.getElementById(
+                    "restaurantModalTitle"
+                ).textContent =
+                    "Edit Restaurant Order";
 
 
-                const room =
-                    document
-                        .getElementById(
-                            "restaurantRoom"
-                        )
-                        .value
-                        .trim();
+                restaurantReservation.value =
+                    order.reservation_id ||
+                    "";
 
 
-                const items =
-                    document
-                        .getElementById(
-                            "restaurantItems"
-                        )
-                        .value
-                        .trim();
+                restaurantGuest.value =
+                    order.guest_id ||
+                    "";
 
 
-                const amount =
+                restaurantRoom.value =
+                    order.room_id ||
+                    "";
+
+
+                restaurantItems.value =
+                    order.item_name ||
+                    "";
+
+
+                restaurantQuantity.value =
+                    order.quantity ||
+                    1;
+
+
+                restaurantUnitPrice.value =
+                    order.unit_price ||
+                    0;
+
+
+                restaurantAmount.value =
                     Number(
-                        document
-                            .getElementById(
-                                "restaurantAmount"
-                            )
-                            .value
-                    );
+                        order.total ||
+                        0
+                    ).toFixed(2);
 
 
-                const payment =
-                    document
-                        .getElementById(
-                            "restaurantPayment"
-                        )
-                        .value;
+                restaurantStatus.value =
+                    order.status ||
+                    "Pending";
 
 
-                const status =
-                    document
-                        .getElementById(
-                            "restaurantStatus"
-                        )
-                        .value;
+                restaurantNotes.value =
+                    order.notes ||
+                    "";
+
+            } else {
+
+                document.getElementById(
+                    "restaurantModalTitle"
+                ).textContent =
+                    "New Restaurant Order";
+
+            }
 
 
-                const orderID =
-                    "ORD-" +
-                    Math.floor(
-                        1000 +
-                        Math.random() * 9000
-                    );
+            restaurantModal.style.display =
+                "flex";
+
+        }
 
 
-                const table =
-                    document.getElementById(
-                        "restaurantTable"
-                    );
+        /* =====================================================
+           CLOSE FORM
+        ====================================================== */
+
+        function closeRestaurantForm() {
+
+            restaurantModal.style.display =
+                "none";
 
 
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
+            restaurantForm.reset();
 
 
-                row.innerHTML = `
-
-                    <td>
-                        ${orderID}
-                    </td>
-
-                    <td>
-                        ${guest}
-                    </td>
-
-                    <td>
-                        ${room}
-                    </td>
-
-                    <td>
-                        ${items}
-                    </td>
-
-                    <td>
-                        KSh ${amount.toLocaleString()}
-                    </td>
-
-                    <td>
-                        ${payment}
-                    </td>
-
-                    <td>
-
-                        <span class="room-status ${getRestaurantStatusClass(status)}">
-
-                            ${status}
-
-                        </span>
-
-                    </td>
-
-                    <td>
-
-                        <button
-                            type="button"
-                            class="edit-btn"
-                            onclick="editRestaurantRecord(this)">
-
-                            Edit
-
-                        </button>
+            restaurantQuantity.value =
+                "1";
 
 
-                        <button
-                            type="button"
-                            class="delete-btn"
-                            onclick="deleteRestaurantRecord(this)">
-
-                            Delete
-
-                        </button>
-
-                    </td>
-
-                `;
+            restaurantAmount.value =
+                "0.00";
 
 
-                table.appendChild(
-                    row
-                );
+            editingOrderId =
+                null;
+
+        }
 
 
-                updateRestaurantSummary();
+        document.getElementById(
+            "newRestaurantOrderBtn"
+        ).addEventListener(
+            "click",
+            function() {
 
-
-                restaurantForm.reset();
-
-
-                closeRestaurantForm();
+                openRestaurantForm();
 
             }
         );
 
 
-        /* =================================================
+        document.getElementById(
+            "closeRestaurantBtn"
+        ).addEventListener(
+            "click",
+            closeRestaurantForm
+        );
+
+
+        /* =====================================================
+           SAVE ORDER
+        ====================================================== */
+
+        restaurantForm.addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                try {
+
+                    hideRestaurantError();
+
+
+                    if (
+                        !restaurantAccessAllowed()
+                    ) {
+
+                        throw new Error(
+                            "You do not have permission to save restaurant orders."
+                        );
+
+                    }
+
+
+                    const hotelId =
+                        getSelectedHotelId();
+
+
+                    if (!hotelId) {
+
+                        throw new Error(
+                            "Please select a hotel before saving the order."
+                        );
+
+                    }
+
+
+                    const guestId =
+                        restaurantGuest.value;
+
+
+                    const roomId =
+                        restaurantRoom.value;
+
+
+                    const reservationId =
+                        restaurantReservation.value ||
+                        null;
+
+
+                    const itemName =
+                        restaurantItems.value
+                            .trim();
+
+
+                    const quantity =
+                        Number(
+                            restaurantQuantity.value
+                        );
+
+
+                    const unitPrice =
+                        Number(
+                            restaurantUnitPrice.value
+                        );
+
+
+                    const total =
+                        quantity *
+                        unitPrice;
+
+
+                    const status =
+                        restaurantStatus.value;
+
+
+                    const notes =
+                        restaurantNotes.value
+                            .trim() ||
+                        null;
+
+
+                    if (!guestId) {
+
+                        throw new Error(
+                            "Please select a guest."
+                        );
+
+                    }
+
+
+                    if (!roomId) {
+
+                        throw new Error(
+                            "Please select a room."
+                        );
+
+                    }
+
+
+                    if (!itemName) {
+
+                        throw new Error(
+                            "Please enter the order item."
+                        );
+
+                    }
+
+
+                    if (
+                        quantity < 1
+                    ) {
+
+                        throw new Error(
+                            "Quantity must be at least 1."
+                        );
+
+                    }
+
+
+                    if (
+                        unitPrice < 0
+                    ) {
+
+                        throw new Error(
+                            "Unit price cannot be negative."
+                        );
+
+                    }
+
+
+                    /* =========================================
+                       EDIT
+                    ========================================== */
+
+                    if (editingOrderId) {
+
+                        const {
+                            error
+                        } =
+                            await window.supabaseClient
+                                .from(
+                                    "restaurant_orders"
+                                )
+                                .update({
+
+                                    hotel_id:
+                                        Number(
+                                            hotelId
+                                        ),
+
+                                    reservation_id:
+                                        reservationId
+                                            ?
+                                            Number(
+                                                reservationId
+                                            )
+                                            :
+                                            null,
+
+                                    guest_id:
+                                        Number(
+                                            guestId
+                                        ),
+
+                                    room_id:
+                                        Number(
+                                            roomId
+                                        ),
+
+                                    item_name:
+                                        itemName,
+
+                                    quantity:
+                                        quantity,
+
+                                    unit_price:
+                                        unitPrice,
+
+                                    total:
+                                        total,
+
+                                    status:
+                                        status,
+
+                                    notes:
+                                        notes
+
+                                })
+                                .eq(
+                                    "id",
+                                    editingOrderId
+                                );
+
+
+                        if (error) {
+
+                            throw error;
+
+                        }
+
+
+                        alert(
+                            "Restaurant order updated successfully."
+                        );
+
+                    }
+
+
+                    /* =========================================
+                       NEW ORDER
+                    ========================================== */
+
+                    else {
+
+                        const {
+                            error
+                        } =
+                            await window.supabaseClient
+                                .from(
+                                    "restaurant_orders"
+                                )
+                                .insert({
+
+                                    hotel_id:
+                                        Number(
+                                            hotelId
+                                        ),
+
+                                    reservation_id:
+                                        reservationId
+                                            ?
+                                            Number(
+                                                reservationId
+                                            )
+                                            :
+                                            null,
+
+                                    guest_id:
+                                        Number(
+                                            guestId
+                                        ),
+
+                                    room_id:
+                                        Number(
+                                            roomId
+                                        ),
+
+                                    item_name:
+                                        itemName,
+
+                                    quantity:
+                                        quantity,
+
+                                    unit_price:
+                                        unitPrice,
+
+                                    total:
+                                        total,
+
+                                    status:
+                                        status,
+
+                                    notes:
+                                        notes
+
+                                });
+
+
+                        if (error) {
+
+                            throw error;
+
+                        }
+
+
+                        alert(
+                            "Restaurant order saved successfully."
+                        );
+
+                    }
+
+
+                    closeRestaurantForm();
+
+
+                    await loadRestaurantData();
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Save restaurant order error:",
+                        error
+                    );
+
+
+                    showRestaurantError(
+                        "Failed to save restaurant order: " +
+                        (
+                            error.message ||
+                            error
+                        )
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           RENDER ORDERS
+        ====================================================== */
+
+        function renderRestaurantOrders() {
+
+            restaurantTable.innerHTML =
+                "";
+
+
+            const searchText =
+                restaurantSearch.value
+                    .toLowerCase()
+                    .trim();
+
+
+            const selectedStatus =
+                restaurantFilter.value;
+
+
+            const filteredOrders =
+                restaurantOrders.filter(
+                    function(order) {
+
+                        const guest =
+                            getGuestName(
+                                order.guest_id
+                            )
+                            .toLowerCase();
+
+
+                        const room =
+                            getRoomNumber(
+                                order.room_id
+                            )
+                            .toLowerCase();
+
+
+                        const orderId =
+                            String(
+                                order.id
+                            )
+                            .toLowerCase();
+
+
+                        const item =
+                            String(
+                                order.item_name ||
+                                ""
+                            )
+                            .toLowerCase();
+
+
+                        const matchesSearch =
+
+                            guest.includes(
+                                searchText
+                            ) ||
+
+                            room.includes(
+                                searchText
+                            ) ||
+
+                            orderId.includes(
+                                searchText
+                            ) ||
+
+                            item.includes(
+                                searchText
+                            );
+
+
+                        const matchesStatus =
+
+                            selectedStatus ===
+                                "all" ||
+
+                            order.status ===
+                                selectedStatus;
+
+
+                        return (
+                            matchesSearch &&
+                            matchesStatus
+                        );
+
+                    }
+                );
+
+
+            if (
+                filteredOrders.length ===
+                0
+            ) {
+
+                restaurantTable.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            style="
+                                text-align:center;
+                                padding:25px;
+                            "
+                        >
+                            No restaurant orders found.
+                        </td>
+
+                    </tr>
+
+                `;
+
+
+                updateRestaurantSummary();
+
+                return;
+
+            }
+
+
+            filteredOrders.forEach(
+                function(order) {
+
+                    const row =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    row.innerHTML = `
+
+                        <td>
+                            ORD-${escapeHtml(
+                                order.id
+                            )}
+                        </td>
+
+
+                        <td>
+                            ${escapeHtml(
+                                getGuestName(
+                                    order.guest_id
+                                )
+                            )}
+                        </td>
+
+
+                        <td>
+                            ${escapeHtml(
+                                getRoomNumber(
+                                    order.room_id
+                                )
+                            )}
+                        </td>
+
+
+                        <td>
+                            ${escapeHtml(
+                                order.item_name ||
+                                "-"
+                            )}
+                        </td>
+
+
+                        <td>
+                            ${escapeHtml(
+                                order.quantity ||
+                                0
+                            )}
+                        </td>
+
+
+                        <td>
+                            KSh ${Number(
+                                order.total ||
+                                0
+                            ).toLocaleString(
+                                undefined,
+                                {
+                                    minimumFractionDigits:2,
+                                    maximumFractionDigits:2
+                                }
+                            )}
+                        </td>
+
+
+                        <td>
+
+                            <span
+                                class="room-status
+                                ${getRestaurantStatusClass(
+                                    order.status
+                                )}"
+                            >
+                                ${escapeHtml(
+                                    order.status ||
+                                    "-"
+                                )}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <button
+                                type="button"
+                                class="edit-btn"
+                                onclick="editRestaurantRecord('${escapeHtml(
+                                    order.id
+                                )}')"
+                            >
+                                Edit
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="delete-btn"
+                                onclick="deleteRestaurantRecord('${escapeHtml(
+                                    order.id
+                                )}')"
+                            >
+                                Delete
+                            </button>
+
+                        </td>
+
+                    `;
+
+
+                    restaurantTable.appendChild(
+                        row
+                    );
+
+                }
+            );
+
+
+            updateRestaurantSummary();
+
+        }
+
+
+        /* =====================================================
            STATUS CLASS
-        ================================================= */
+        ====================================================== */
 
         function getRestaurantStatusClass(
             status
         ) {
 
             if (
-                status === "Paid"
+                status ===
+                "Paid"
             ) {
 
                 return "available-status";
@@ -861,7 +2588,8 @@
 
 
             if (
-                status === "Served"
+                status ===
+                "Served"
             ) {
 
                 return "available-status";
@@ -870,7 +2598,8 @@
 
 
             if (
-                status === "Pending"
+                status ===
+                "Pending"
             ) {
 
                 return "cleaning-status";
@@ -879,7 +2608,8 @@
 
 
             if (
-                status === "Preparing"
+                status ===
+                "Preparing"
             ) {
 
                 return "cleaning-status";
@@ -888,7 +2618,8 @@
 
 
             if (
-                status === "Cancelled"
+                status ===
+                "Cancelled"
             ) {
 
                 return "maintenance-status";
@@ -901,126 +2632,132 @@
         }
 
 
-        /* =================================================
-           UPDATE SUMMARY
-        ================================================= */
+        /* =====================================================
+           SUMMARY
+        ====================================================== */
 
         function updateRestaurantSummary() {
 
-            const rows =
-                document.querySelectorAll(
-                    "#restaurantTable tr"
-                );
-
-
-            let pending =
-                0;
-
-
-            let completed =
-                0;
-
-
-            let sales =
-                0;
+            const today =
+                new Date()
+                    .toISOString()
+                    .split(
+                        "T"
+                    )[0];
 
 
             const todayOrders =
-                rows.length;
+                restaurantOrders.filter(
+                    function(order) {
+
+                        if (
+                            order.status ===
+                            "Cancelled"
+                        ) {
+
+                            return false;
+
+                        }
 
 
-            rows.forEach(
-                function(row) {
+                        const orderDate =
+                            String(
+                                order.order_date ||
+                                order.created_at ||
+                                ""
+                            )
+                            .split(
+                                "T"
+                            )[0];
 
-                    const cells =
-                        row.querySelectorAll(
-                            "td"
+
+                        return (
+                            orderDate ===
+                            today
                         );
 
+                    }
+                );
 
-                    if (
-                        cells.length < 7
-                    ) {
 
-                        return;
+            const pending =
+                restaurantOrders.filter(
+                    function(order) {
+
+                        return (
+                            order.status ===
+                                "Pending" ||
+
+                            order.status ===
+                                "Preparing"
+                        );
 
                     }
+                ).length;
 
 
-                    const amountText =
-                        cells[4]
-                            .textContent
-                            .replace(
-                                "KSh",
-                                ""
-                            )
-                            .replace(
-                                /,/g,
-                                ""
-                            )
-                            .trim();
+            const completed =
+                restaurantOrders.filter(
+                    function(order) {
 
+                        return (
+                            order.status ===
+                                "Served" ||
 
-                    const amount =
-                        Number(
-                            amountText
-                        ) || 0;
-
-
-                    const status =
-                        cells[6]
-                            .textContent
-                            .trim();
-
-
-                    if (
-
-                        status ===
-                        "Paid" ||
-
-                        status ===
-                        "Served"
-
-                    ) {
-
-                        completed++;
+                            order.status ===
+                                "Paid"
+                        );
 
                     }
+                ).length;
 
 
-                    if (
+            const sales =
+                restaurantOrders
+                    .filter(
+                        function(order) {
 
-                        status ===
-                        "Pending" ||
-
-                        status ===
-                        "Preparing"
-
-                    ) {
-
-                        pending++;
-
-                    }
+                            const orderDate =
+                                String(
+                                    order.order_date ||
+                                    order.created_at ||
+                                    ""
+                                )
+                                .split(
+                                    "T"
+                                )[0];
 
 
-                    if (
-                        status ===
-                        "Paid"
-                    ) {
+                            return (
+                                orderDate ===
+                                today &&
 
-                        sales +=
-                            amount;
+                                order.status ===
+                                "Paid"
+                            );
 
-                    }
+                        }
+                    )
+                    .reduce(
+                        function(total, order) {
 
-                }
-            );
+                            return (
+                                total +
+                                Number(
+                                    order.total ||
+                                    0
+                                )
+                            );
+
+                        },
+                        0
+                    );
 
 
             document.getElementById(
                 "todayOrders"
             ).textContent =
-                todayOrders;
+                todayOrders.length;
 
 
             document.getElementById(
@@ -1039,57 +2776,28 @@
                 "restaurantSales"
             ).textContent =
                 "KSh " +
-                sales.toLocaleString();
-
-        }
-
-
-        /* =================================================
-           DELETE ORDER
-        ================================================= */
-
-        function deleteRestaurantRecord(
-            button
-        ) {
-
-            if (!restaurantAccessAllowed()) {
-
-                alert(
-                    "You do not have permission to delete restaurant orders."
+                sales.toLocaleString(
+                    undefined,
+                    {
+                        minimumFractionDigits:2,
+                        maximumFractionDigits:2
+                    }
                 );
 
-                return;
-
-            }
-
-
-            if (
-                confirm(
-                    "Are you sure you want to delete this restaurant order?"
-                )
-            ) {
-
-                button
-                    .closest("tr")
-                    .remove();
-
-
-                updateRestaurantSummary();
-
-            }
-
         }
 
 
-        /* =================================================
-           EDIT ORDER
-        ================================================= */
+        /* =====================================================
+           EDIT
+        ====================================================== */
 
         function editRestaurantRecord(
-            button
+            orderId
         ) {
 
-            if (!restaurantAccessAllowed()) {
+            if (
+                !restaurantAccessAllowed()
+            ) {
 
                 alert(
                     "You do not have permission to edit restaurant orders."
@@ -1100,201 +2808,133 @@
             }
 
 
-            const row =
-                button.closest(
-                    "tr"
-                );
-
-
-            const cells =
-                row.querySelectorAll(
-                    "td"
-                );
-
-
-            document.getElementById(
-                "restaurantGuest"
-            ).value =
-                cells[1]
-                    .textContent
-                    .trim();
-
-
-            document.getElementById(
-                "restaurantRoom"
-            ).value =
-                cells[2]
-                    .textContent
-                    .trim();
-
-
-            document.getElementById(
-                "restaurantItems"
-            ).value =
-                cells[3]
-                    .textContent
-                    .trim();
-
-
-            const amount =
-                cells[4]
-                    .textContent
-                    .replace(
-                        "KSh",
-                        ""
-                    )
-                    .replace(
-                        /,/g,
-                        ""
-                    )
-                    .trim();
-
-
-            document.getElementById(
-                "restaurantAmount"
-            ).value =
-                amount;
-
-
-            document.getElementById(
-                "restaurantPayment"
-            ).value =
-                cells[5]
-                    .textContent
-                    .trim();
-
-
-            document.getElementById(
-                "restaurantStatus"
-            ).value =
-                cells[6]
-                    .textContent
-                    .trim();
-
-
-            row.remove();
-
-
-            openRestaurantForm();
-
-
-            updateRestaurantSummary();
+            openRestaurantForm(
+                orderId
+            );
 
         }
 
 
-        /* =================================================
-           FILTERS
-        ================================================= */
+        /* =====================================================
+           DELETE
+        ====================================================== */
 
-        function applyRestaurantFilters() {
+        async function deleteRestaurantRecord(
+            orderId
+        ) {
 
-            if (!restaurantAccessAllowed()) {
+            if (
+                !restaurantAccessAllowed()
+            ) {
+
+                alert(
+                    "You do not have permission to delete restaurant orders."
+                );
 
                 return;
 
             }
 
 
-            const searchText =
-                document
-                    .getElementById(
-                        "restaurantSearch"
-                    )
-                    .value
-                    .toLowerCase()
-                    .trim();
-
-
-            const selectedStatus =
-                document
-                    .getElementById(
-                        "restaurantFilter"
-                    )
-                    .value;
-
-
-            const rows =
-                document.querySelectorAll(
-                    "#restaurantTable tr"
+            const confirmed =
+                confirm(
+                    "Are you sure you want to delete this restaurant order?"
                 );
 
 
-            rows.forEach(
-                function(row) {
+            if (!confirmed) {
 
-                    const text =
-                        row.textContent
-                            .toLowerCase();
+                return;
+
+            }
 
 
-                    const status =
-                        row.querySelector(
-                            "td:nth-child(7)"
+            try {
+
+                hideRestaurantError();
+
+
+                const {
+                    error
+                } =
+                    await window.supabaseClient
+                        .from(
+                            "restaurant_orders"
                         )
-                        ?.textContent
-                        .trim();
-
-
-                    const matchesSearch =
-                        text.includes(
-                            searchText
+                        .delete()
+                        .eq(
+                            "id",
+                            orderId
                         );
 
 
-                    const matchesStatus =
-                        selectedStatus ===
-                            "all" ||
-                        status ===
-                            selectedStatus;
+                if (error) {
 
-
-                    row.style.display =
-
-                        matchesSearch &&
-                        matchesStatus
-
-                            ? ""
-
-                            : "none";
+                    throw error;
 
                 }
-            );
+
+
+                alert(
+                    "Restaurant order deleted successfully."
+                );
+
+
+                await loadRestaurantData();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Delete restaurant order error:",
+                    error
+                );
+
+
+                showRestaurantError(
+                    "Failed to delete restaurant order: " +
+                    (
+                        error.message ||
+                        error
+                    )
+                );
+
+            }
 
         }
 
 
-        function searchRestaurantOrders() {
+        /* =====================================================
+           SEARCH
+        ====================================================== */
 
-            applyRestaurantFilters();
-
-        }
-
-
-        function filterRestaurantOrders() {
-
-            applyRestaurantFilters();
-
-        }
+        restaurantSearch.addEventListener(
+            "input",
+            renderRestaurantOrders
+        );
 
 
-        /* =================================================
-           CLOSE MODAL WHEN CLICKING OUTSIDE
-        ================================================= */
+        /* =====================================================
+           FILTER
+        ====================================================== */
 
-        window.addEventListener(
+        restaurantFilter.addEventListener(
+            "change",
+            renderRestaurantOrders
+        );
+
+
+        /* =====================================================
+           MODAL OUTSIDE CLICK
+        ====================================================== */
+
+        restaurantModal.addEventListener(
             "click",
             function(event) {
 
-                const modal =
-                    document.getElementById(
-                        "restaurantModal"
-                    );
-
-
                 if (
                     event.target ===
-                    modal
+                    restaurantModal
                 ) {
 
                     closeRestaurantForm();
@@ -1305,488 +2945,60 @@
         );
 
 
-        /* =================================================
-           INITIAL SUMMARY
-        ================================================= */
+        /* =====================================================
+           ESCAPE KEY
+        ====================================================== */
 
-        if (restaurantAccessAllowed()) {
+        document.addEventListener(
+            "keydown",
+            function(event) {
 
-            updateRestaurantSummary();
+                if (
+                    event.key ===
+                    "Escape"
+                ) {
+
+                    closeRestaurantForm();
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           HTML ESCAPE
+        ====================================================== */
+
+        function escapeHtml(
+            value
+        ) {
+
+            return String(
+                value ?? ""
+            )
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
 
         }
-
-    </script>
-
-
-    <!-- =====================================================
-         ROLE CONTROL
-    ====================================================== -->
-
-    <script>
-
-        (function () {
-
-            "use strict";
-
-
-            /* =================================================
-               ROLE PERMISSIONS
-            ================================================= */
-
-            const ROLE_PERMISSIONS = {
-
-                system_owner: [
-
-                    "dashboard",
-                    "rooms",
-                    "guests",
-                    "reservations",
-                    "checkin",
-                    "checkout",
-                    "restaurant",
-                    "inventory",
-                    "payments",
-                    "expenses",
-                    "employees",
-                    "housekeeping",
-                    "maintenance",
-                    "reports",
-                    "settings",
-                    "hotels"
-
-                ],
-
-
-                hotel_owner: [
-
-                    "dashboard",
-                    "rooms",
-                    "guests",
-                    "reservations",
-                    "checkin",
-                    "checkout",
-                    "restaurant",
-                    "inventory",
-                    "payments",
-                    "expenses",
-                    "employees",
-                    "housekeeping",
-                    "maintenance",
-                    "reports",
-                    "settings"
-
-                ],
-
-
-                manager: [
-
-                    "dashboard",
-                    "rooms",
-                    "guests",
-                    "reservations",
-                    "checkin",
-                    "checkout",
-                    "restaurant",
-                    "inventory",
-                    "payments",
-                    "expenses",
-                    "employees",
-                    "housekeeping",
-                    "maintenance",
-                    "reports",
-                    "settings"
-
-                ],
-
-
-                receptionist: [
-
-                    "dashboard",
-                    "rooms",
-                    "guests",
-                    "reservations",
-                    "checkin",
-                    "checkout",
-                    "payments",
-                    "reports"
-
-                ]
-
-            };
-
-
-            /* =================================================
-               GET CURRENT ROLE
-            ================================================= */
-
-            function getCurrentRole() {
-
-                let role =
-                    sessionStorage.getItem(
-                        "userRole"
-                    );
-
-
-                if (!role) {
-
-                    role =
-                        localStorage.getItem(
-                            "userRole"
-                        );
-
-                }
-
-
-                return String(
-                    role || ""
-                )
-                    .toLowerCase()
-                    .trim();
-
-            }
-
-
-            /* =================================================
-               GET MODULE FROM LINK
-            ================================================= */
-
-            function getModuleFromLink(
-                link
-            ) {
-
-                const dataModule =
-                    link.getAttribute(
-                        "data-module"
-                    );
-
-
-                if (dataModule) {
-
-                    return dataModule
-                        .toLowerCase()
-                        .trim();
-
-                }
-
-
-                const href =
-                    String(
-                        link.getAttribute(
-                            "href"
-                        ) || ""
-                    )
-                        .toLowerCase()
-                        .split("?")[0]
-                        .split("#")[0]
-                        .trim();
-
-
-                if (
-
-                    href === "./" ||
-                    href === "/" ||
-                    href === "index.html" ||
-                    href === "./index.html" ||
-                    href.endsWith(
-                        "/index.html"
-                    )
-
-                ) {
-
-                    return "dashboard";
-
-                }
-
-
-                const modules = [
-
-                    "rooms",
-                    "guests",
-                    "reservations",
-                    "checkin",
-                    "checkout",
-                    "restaurant",
-                    "inventory",
-                    "payments",
-                    "expenses",
-                    "employees",
-                    "housekeeping",
-                    "maintenance",
-                    "reports",
-                    "settings",
-                    "hotels"
-
-                ];
-
-
-                for (
-                    let i = 0;
-                    i < modules.length;
-                    i++
-                ) {
-
-                    if (
-                        href.includes(
-                            modules[i] +
-                            ".html"
-                        )
-                    ) {
-
-                        return modules[i];
-
-                    }
-
-                }
-
-
-                return null;
-
-            }
-
-
-            /* =================================================
-               GET CURRENT MODULE
-            ================================================= */
-
-            function getCurrentModule() {
-
-                const filename =
-                    window.location.pathname
-                        .split("/")
-                        .pop()
-                        .toLowerCase();
-
-
-                if (
-
-                    !filename ||
-                    filename === "index.html"
-
-                ) {
-
-                    return "dashboard";
-
-                }
-
-
-                return filename.replace(
-                    ".html",
-                    ""
-                );
-
-            }
-
-
-            /* =================================================
-               APPLY SIDEBAR ROLE CONTROL
-            ================================================= */
-
-            function applyRoleControl() {
-
-                const role =
-                    getCurrentRole();
-
-
-                if (!role) {
-
-                    return;
-
-                }
-
-
-                const allowed =
-                    ROLE_PERMISSIONS[
-                        role
-                    ];
-
-
-                if (!allowed) {
-
-                    return;
-
-                }
-
-
-                document
-                    .querySelectorAll(
-                        ".sidebar nav a"
-                    )
-                    .forEach(
-                        function(link) {
-
-                            const module =
-                                getModuleFromLink(
-                                    link
-                                );
-
-
-                            if (!module) {
-
-                                return;
-
-                            }
-
-
-                            if (
-                                allowed.includes(
-                                    module
-                                )
-                            ) {
-
-                                link.classList
-                                    .remove(
-                                        "role-hidden"
-                                    );
-
-                                link.style
-                                    .removeProperty(
-                                        "display"
-                                    );
-
-                            } else {
-
-                                link.classList
-                                    .add(
-                                        "role-hidden"
-                                    );
-
-                                link.style
-                                    .setProperty(
-                                        "display",
-                                        "none",
-                                        "important"
-                                    );
-
-                            }
-
-                        }
-                    );
-
-            }
-
-
-            /* =================================================
-               DIRECT PAGE ACCESS PROTECTION
-            ================================================= */
-
-            function protectDirectPageAccess() {
-
-                const role =
-                    getCurrentRole();
-
-
-                if (!role) {
-
-                    return;
-
-                }
-
-
-                const allowed =
-                    ROLE_PERMISSIONS[
-                        role
-                    ];
-
-
-                if (!allowed) {
-
-                    return;
-
-                }
-
-
-                const currentModule =
-                    getCurrentModule();
-
-
-                if (
-                    !allowed.includes(
-                        currentModule
-                    )
-                ) {
-
-                    document.getElementById(
-                        "restaurantModuleContent"
-                    ).style.display = "none";
-
-
-                    document.getElementById(
-                        "restaurantModal"
-                    ).style.display = "none";
-
-
-                    document.getElementById(
-                        "accessDeniedScreen"
-                    ).style.display = "block";
-
-
-                    setTimeout(
-                        function() {
-
-                            window.location.href =
-                                "./index.html";
-
-                        },
-                        500
-                    );
-
-                }
-
-            }
-
-
-            /* =================================================
-               RUN ROLE CONTROL
-            ================================================= */
-
-            function runRoleControl() {
-
-                applyRoleControl();
-
-                protectDirectPageAccess();
-
-            }
-
-
-            /* =================================================
-               START ROLE CONTROL
-            ================================================= */
-
-            if (
-                document.readyState ===
-                "loading"
-            ) {
-
-                document.addEventListener(
-                    "DOMContentLoaded",
-                    runRoleControl
-                );
-
-            } else {
-
-                runRoleControl();
-
-            }
-
-
-            /* =================================================
-               CONTINUOUS SIDEBAR CHECK
-            ================================================= */
-
-            setInterval(
-                applyRoleControl,
-                500
-            );
-
-
-            /* =================================================
-               GLOBAL FUNCTION
-            ================================================= */
-
-            window.applyRoleControl =
-                applyRoleControl;
-
-        })();
 
     </script>
 
