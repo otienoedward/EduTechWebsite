@@ -1,460 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Payments - EDU TECH HOTEL MANAGEMENT SYSTEM</title>
+    <title>Payments - EDU TECH Hotel Management System</title>
 
     <link rel="stylesheet" href="./style.css">
-
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <!-- jsPDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-    <style>
-        /* =====================================================
-           PAYMENTS PAGE
-           Global sidebar/layout comes from style.css
-           ===================================================== */
-
-        .sidebar a.role-hidden {
-            display: none !important;
-        }
-
-        .main-content {
-            position: relative;
-            min-width: 0;
-        }
-
-        /* =====================================================
-           LOGOUT BUTTON
-           ===================================================== */
-
-        .sidebar .logout-btn {
-            display: flex;
-            align-items: center;
-            width: 100%;
-            margin-top: 16px;
-            padding: 12px 14px;
-            border: 0;
-            background: transparent;
-            color: inherit;
-            font: inherit;
-            text-align: left;
-            cursor: pointer;
-            border-radius: 8px;
-        }
-
-        .sidebar .logout-btn:hover {
-            opacity: 0.85;
-        }
-
-        /* =====================================================
-           RESTRICTION SCREEN
-           ===================================================== */
-
-        #moduleRestrictionScreen {
-            display: none;
-            min-height: calc(100vh - 100px);
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-        }
-
-        .restriction-card {
-            width: 100%;
-            max-width: 650px;
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 45px 35px;
-            text-align: center;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-            border: 1px solid #e5e5e5;
-        }
-
-        .restriction-icon {
-            width: 75px;
-            height: 75px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
-            background: #fff1f1;
-            color: #c62828;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 38px;
-        }
-
-        .restriction-card h2 {
-            margin: 0 0 12px;
-            color: #c62828;
-        }
-
-        .restriction-card p {
-            color: #555;
-            line-height: 1.7;
-            margin: 8px 0;
-        }
-
-        .restriction-message {
-            margin-top: 20px;
-            padding: 15px;
-            background: #fff8e1;
-            border-left: 4px solid #f0ad00;
-            text-align: left;
-            border-radius: 5px;
-            color: #5f4b00;
-        }
-
-        .restriction-back {
-            margin-top: 25px;
-            display: inline-block;
-            padding: 11px 22px;
-            background: #333;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-
-        .restriction-back:hover {
-            opacity: 0.9;
-        }
-
-        /* =====================================================
-           RECEIPT MODAL
-           ===================================================== */
-
-        .receipt-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.65);
-            z-index: 2000000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            overflow-y: auto;
-        }
-
-        .receipt-box {
-            background: #ffffff;
-            width: 100%;
-            max-width: 650px;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
-            color: #222;
-        }
-
-        .receipt-header {
-            text-align: center;
-            border-bottom: 2px solid #222;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-
-        .receipt-header h1 {
-            margin: 0;
-            font-size: 26px;
-        }
-
-        .receipt-header h2 {
-            margin: 5px 0;
-            font-size: 18px;
-        }
-
-        .receipt-header p {
-            margin: 3px 0;
-        }
-
-        .receipt-title {
-            text-align: center;
-            font-size: 20px;
-            font-weight: bold;
-            margin: 15px 0;
-        }
-
-        .receipt-details {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        .receipt-details td {
-            padding: 9px 5px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .receipt-details td:first-child {
-            font-weight: bold;
-            width: 40%;
-        }
-
-        .receipt-total {
-            margin-top: 20px;
-            padding: 15px;
-            border: 2px solid #222;
-            display: flex;
-            justify-content: space-between;
-            font-size: 20px;
-            font-weight: bold;
-            gap: 15px;
-        }
-
-        .receipt-footer {
-            text-align: center;
-            margin-top: 25px;
-            padding-top: 15px;
-            border-top: 1px solid #ddd;
-        }
-
-        .receipt-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 25px;
-            flex-wrap: wrap;
-        }
-
-        .receipt-actions button {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .receipt-print-btn {
-            background: #333;
-            color: white;
-        }
-
-        .receipt-pdf-btn {
-            background: #b00020;
-            color: white;
-        }
-
-        .receipt-close-btn {
-            background: #777;
-            color: white;
-        }
-
-        .receipt-btn {
-            background: #1d6f42;
-            color: white;
-        }
-
-        /* =====================================================
-           PRINT
-           ===================================================== */
-
-        @media print {
-
-            body * {
-                visibility: hidden !important;
-            }
-
-            #receiptModal,
-            #receiptModal * {
-                visibility: visible !important;
-            }
-
-            #receiptModal {
-                position: absolute !important;
-                left: 0 !important;
-                top: 0 !important;
-                display: block !important;
-                background: white !important;
-                padding: 0 !important;
-            }
-
-            .receipt-box {
-                box-shadow: none !important;
-                max-width: none !important;
-                width: 100% !important;
-            }
-
-            .receipt-actions {
-                display: none !important;
-            }
-        }
-
-        /* =====================================================
-           MOBILE
-           ===================================================== */
-
-        @media (max-width: 700px) {
-
-            .receipt-box {
-                padding: 20px;
-            }
-
-            .receipt-total {
-                flex-direction: column;
-                font-size: 18px;
-            }
-
-            .receipt-details td {
-                font-size: 14px;
-            }
-        }
-    </style>
 </head>
 
 <body>
 
-<div class="dashboard">
-
-    <!-- =====================================================
+    <!-- =========================================
          SIDEBAR
-         ===================================================== -->
+         ========================================= -->
 
     <aside class="sidebar">
 
         <div class="logo">
             <h2>EDU TECH</h2>
-            <p>HOTEL MANAGEMENT</p>
+            <span>HOTEL SYSTEM</span>
         </div>
 
         <nav>
 
-            <a href="./index.html">
-                Dashboard
+            <a href="./index.html" data-module="dashboard">
+                🏠 Dashboard
             </a>
 
-            <a href="./rooms.html"
-               data-module="rooms">
-                Rooms
+            <a href="./rooms.html" data-module="rooms">
+                🛏️ Rooms
             </a>
 
-            <a href="./guests.html"
-               data-module="guests">
-                Guests
+            <a href="./guests.html" data-module="guests">
+                👤 Guests
             </a>
 
-            <a href="./reservations.html"
-               data-module="reservations">
-                Reservations
+            <a href="./reservations.html" data-module="reservations">
+                📅 Reservations
             </a>
 
-            <a href="./checkin.html"
-               data-module="checkin">
-                Check-in
+            <a href="./checkin.html" data-module="checkin">
+                🛎️ Check-in
             </a>
 
-            <a href="./checkout.html"
-               data-module="checkout">
-                Check-out
+            <a href="./checkout.html" data-module="checkout">
+                🚪 Check-out
             </a>
 
-            <a href="./restaurant.html"
-               data-module="restaurant">
-                Restaurant
+            <a href="./restaurant.html" data-module="restaurant">
+                🍽️ Restaurant
             </a>
 
-            <a href="./inventory.html"
-               data-module="inventory">
-                Inventory
+            <a href="./inventory.html" data-module="inventory">
+                📦 Inventory
             </a>
 
-            <a href="./payments.html"
-               data-module="payments"
-               class="active">
-                Payments
+            <a href="./payments.html" data-module="payments" class="active">
+                💰 Payments
             </a>
 
-            <a href="./expenses.html"
-               data-module="expenses">
-                Expenses
+            <a href="./expenses.html" data-module="expenses">
+                💸 Expenses
             </a>
 
-            <a href="./employees.html"
-               data-module="employees">
-                Employees
+            <a href="./employees.html" data-module="employees">
+                👨‍💼 Employees
             </a>
 
-            <a href="./housekeeping.html"
-               data-module="housekeeping">
-                Housekeeping
+            <a href="./housekeeping.html" data-module="housekeeping">
+                🧹 Housekeeping
             </a>
 
-            <a href="./maintenance.html"
-               data-module="maintenance">
-                Maintenance
+            <a href="./maintenance.html" data-module="maintenance">
+                🔧 Maintenance
             </a>
 
-            <a href="./reports.html"
-               data-module="reports">
-                Reports
+            <a href="./reports.html" data-module="reports">
+                📊 Reports
             </a>
 
-            <a href="./settings.html"
-               data-module="settings">
-                Settings
+            <a href="./settings.html" data-module="settings">
+                ⚙️ Settings
+            </a>
+
+            <a href="./hotels.html" data-module="hotels">
+                🏨 Hotels
             </a>
 
         </nav>
 
-        <!-- =================================================
-             LOGOUT
-             ================================================= -->
+        <div class="sidebar-footer">
 
-        <button
-            type="button"
-            class="logout-btn"
-            data-action="logout"
-            id="logoutButton"
-            onclick="logoutUser(event)">
+            <button type="button" data-action="logout">
+                🚪 Logout
+            </button>
 
-            Logout
-
-        </button>
+        </div>
 
     </aside>
 
 
-    <!-- =====================================================
+    <!-- =========================================
          MAIN CONTENT
-         ===================================================== -->
+         ========================================= -->
 
     <main class="main-content">
+
+        <!-- TOP BAR -->
 
         <header class="topbar">
 
             <div>
-                <h1>Payment Management</h1>
-                <p>Track and manage hotel payments</p>
+
+                <h1>Payments</h1>
+
+                <p>
+                    Manage guest reservation payments.
+                </p>
+
             </div>
 
-            <div class="user-info">
 
-                <strong id="loggedUserName">
-                    Administrator
-                </strong>
+            <div class="user">
 
-                <span id="loggedUserRole">
-                    System Admin
-                </span>
+                <div class="user-icon">
+                    A
+                </div>
+
+                <div>
+
+                    <strong id="loggedUserName">
+                        Administrator
+                    </strong>
+
+                    <small id="loggedUserRole">
+                        Hotel User
+                    </small>
+
+                </div>
 
             </div>
 
         </header>
 
 
-        <!-- =================================================
-             PAYMENT CONTENT
-             ================================================= -->
+        <!-- =========================================
+             HOTEL SELECTOR
+             ========================================= -->
 
-        <div id="paymentModuleContent">
+        <section
+            id="hotelSelectorSection"
+            class="room-container"
+            style="display:none;"
+        >
 
-            <section class="summary-cards">
+            <div class="room-header">
 
-                <div class="summary-card">
+                <div>
 
-                    <h3>Total Payments</h3>
+                    <h2>
+                        Hotel Selection
+                    </h2>
+
+                    <p>
+                        System owner: select the hotel whose payments you want to manage.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <select
+                id="hotelSelector"
+                style="
+                    width:100%;
+                    padding:12px;
+                    border:1px solid #ddd;
+                    border-radius:8px;
+                    margin-bottom:10px;
+                "
+            >
+
+                <option value="">
+                    Select Hotel
+                </option>
+
+            </select>
+
+        </section>
+
+
+        <!-- =========================================
+             MESSAGE
+             ========================================= -->
+
+        <div
+            id="paymentMessage"
+            style="
+                display:none;
+                margin:15px 0;
+                padding:12px;
+                border-radius:8px;
+            "
+        ></div>
+
+
+        <!-- =========================================
+             SUMMARY CARDS
+             ========================================= -->
+
+        <section class="cards">
+
+            <div class="card">
+
+                <div class="card-icon">
+                    💰
+                </div>
+
+                <div>
+
+                    <h3>
+                        Total Payments
+                    </h3>
 
                     <p id="totalPayments">
                         0
@@ -462,287 +232,344 @@
 
                 </div>
 
+            </div>
 
-                <div class="summary-card">
 
-                    <h3>Completed Payments</h3>
+            <div class="card">
 
-                    <p id="completedPayments">
+                <div class="card-icon">
+                    🧾
+                </div>
+
+                <div>
+
+                    <h3>
+                        Recorded Payments
+                    </h3>
+
+                    <p id="recordedPayments">
                         0
                     </p>
 
                 </div>
-
-
-                <div class="summary-card">
-
-                    <h3>Pending Payments</h3>
-
-                    <p id="pendingPayments">
-                        0
-                    </p>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <h3>Total Revenue</h3>
-
-                    <p id="paymentRevenue">
-                        KSh 0
-                    </p>
-
-                </div>
-
-            </section>
-
-
-            <section class="content-section">
-
-                <div class="section-header">
-
-                    <div>
-
-                        <h2>
-                            Hotel Payments
-                        </h2>
-
-                        <p>
-                            Record and manage guest payments
-                        </p>
-
-                    </div>
-
-
-                    <button
-                        type="button"
-                        class="primary-btn"
-                        onclick="openPaymentForm()">
-
-                        + New Payment
-
-                    </button>
-
-                </div>
-
-
-                <div class="table-controls">
-
-                    <input
-                        type="text"
-                        id="paymentSearch"
-                        placeholder="Search payments..."
-                        onkeyup="searchPayments">
-
-
-                    <select
-                        id="paymentFilter"
-                        onchange="filterPayments()">
-
-                        <option value="all">
-                            All Status
-                        </option>
-
-                        <option value="Completed">
-                            Completed
-                        </option>
-
-                        <option value="Pending">
-                            Pending
-                        </option>
-
-                        <option value="Cancelled">
-                            Cancelled
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="table-container">
-
-                    <table id="paymentsTable">
-
-                        <thead>
-
-                            <tr>
-
-                                <th>Payment ID</th>
-                                <th>Guest</th>
-                                <th>Room</th>
-                                <th>Description</th>
-                                <th>Amount</th>
-                                <th>Payment Method</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-
-                            </tr>
-
-                        </thead>
-
-                        <tbody id="paymentTable"></tbody>
-
-                    </table>
-
-                </div>
-
-            </section>
-
-        </div>
-
-
-        <!-- =================================================
-             RESTRICTION SCREEN
-             ================================================= -->
-
-        <div id="moduleRestrictionScreen">
-
-            <div class="restriction-card">
-
-                <div class="restriction-icon">
-                    🔒
-                </div>
-
-                <h2>
-                    Payments Module Restricted
-                </h2>
-
-                <p>
-                    The Payments module is temporarily unavailable
-                    for this hotel.
-                </p>
-
-                <p>
-                    Other hotel management modules can continue
-                    to operate normally.
-                </p>
-
-                <div
-                    id="restrictionMessage"
-                    class="restriction-message">
-
-                    This module has been restricted by the system owner.
-
-                </div>
-
-                <a
-                    href="./index.html"
-                    class="restriction-back">
-
-                    Return to Dashboard
-
-                </a>
 
             </div>
 
-        </div>
+
+            <div class="card">
+
+                <div class="card-icon">
+                    💵
+                </div>
+
+                <div>
+
+                    <h3>
+                        Total Revenue
+                    </h3>
+
+                    <p id="totalRevenue">
+                        KSh 0.00
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-icon">
+                    📋
+                </div>
+
+                <div>
+
+                    <h3>
+                        Outstanding Balance
+                    </h3>
+
+                    <p id="outstandingBalance">
+                        KSh 0.00
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================================
+             PAYMENTS SECTION
+             ========================================= -->
+
+        <section class="room-container">
+
+            <div class="room-header">
+
+                <div>
+
+                    <h2>
+                        Payments
+                    </h2>
+
+                    <p>
+                        Record and manage payments made against reservations.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="add-room-btn"
+                    onclick="openPaymentForm()"
+                >
+                    + Record Payment
+                </button>
+
+            </div>
+
+
+            <!-- SEARCH -->
+
+            <div class="room-tools">
+
+                <input
+                    type="text"
+                    id="paymentSearch"
+                    placeholder="Search guest, phone, room or payment method..."
+                >
+
+            </div>
+
+
+            <!-- TABLE -->
+
+            <div class="table-container">
+
+                <table id="paymentsTable">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Payment ID
+                            </th>
+
+                            <th>
+                                Guest
+                            </th>
+
+                            <th>
+                                Room
+                            </th>
+
+                            <th>
+                                Reservation
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Payment Method
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="paymentTableBody"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
 
     </main>
 
-</div>
+
+    <!-- =========================================
+         PAYMENT MODAL
+         ========================================= -->
+
+    <div
+        id="paymentModal"
+        class="modal"
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2 id="paymentModalTitle">
+                    Record Payment
+                </h2>
+
+                <button
+                    type="button"
+                    onclick="closePaymentForm()"
+                >
+                    ×
+                </button>
+
+            </div>
 
 
-<!-- =========================================================
-     PAYMENT MODAL
-     ========================================================= -->
+            <form id="paymentForm">
 
-<div id="paymentModal" class="modal">
-
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <h2 id="paymentModalTitle">
-                New Payment
-            </h2>
-
-            <button
-                type="button"
-                onclick="closePaymentForm()">
-
-                &times;
-
-            </button>
-
-        </div>
+                <input
+                    type="hidden"
+                    id="paymentId"
+                >
 
 
-        <form id="paymentForm">
+                <!-- RESERVATION -->
 
-            <div class="form-group">
+                <label>
+                    Reservation
+                </label>
 
-                <label for="paymentGuest">
-                    Guest Name
+                <select
+                    id="reservationSelect"
+                    required
+                >
+
+                    <option value="">
+                        Select Reservation
+                    </option>
+
+                </select>
+
+
+                <!-- GUEST -->
+
+                <label>
+                    Guest
                 </label>
 
                 <input
                     type="text"
                     id="paymentGuest"
-                    placeholder="Enter guest name"
-                    required>
+                    readonly
+                    placeholder="Guest will appear here"
+                >
 
-            </div>
+
+                <!-- PHONE -->
+
+                <label>
+                    Phone
+                </label>
+
+                <input
+                    type="text"
+                    id="paymentPhone"
+                    readonly
+                    placeholder="Phone will appear here"
+                >
 
 
-            <div class="form-group">
+                <!-- ROOM -->
 
-                <label for="paymentRoom">
-                    Room Number
+                <label>
+                    Room
                 </label>
 
                 <input
                     type="text"
                     id="paymentRoom"
-                    placeholder="Enter room number"
-                    required>
+                    readonly
+                    placeholder="Room will appear here"
+                >
 
-            </div>
 
+                <!-- RESERVATION TOTAL -->
 
-            <div class="form-group">
-
-                <label for="paymentDescription">
-                    Description
+                <label>
+                    Reservation Total
                 </label>
 
                 <input
                     type="text"
-                    id="paymentDescription"
-                    placeholder="Enter payment description"
-                    required>
+                    id="reservationTotal"
+                    readonly
+                    placeholder="KSh 0.00"
+                >
 
-            </div>
+
+                <!-- ALREADY PAID -->
+
+                <label>
+                    Already Paid
+                </label>
+
+                <input
+                    type="text"
+                    id="alreadyPaid"
+                    readonly
+                    placeholder="KSh 0.00"
+                >
 
 
-            <div class="form-group">
+                <!-- REMAINING -->
 
-                <label for="paymentAmount">
-                    Amount (KSh)
+                <label>
+                    Remaining Balance
+                </label>
+
+                <input
+                    type="text"
+                    id="remainingBalance"
+                    readonly
+                    placeholder="KSh 0.00"
+                >
+
+
+                <!-- AMOUNT -->
+
+                <label>
+                    Payment Amount
                 </label>
 
                 <input
                     type="number"
                     id="paymentAmount"
-                    min="0"
+                    min="0.01"
                     step="0.01"
+                    required
                     placeholder="Enter amount"
-                    required>
-
-            </div>
+                >
 
 
-            <div class="form-group">
+                <!-- PAYMENT METHOD -->
 
-                <label for="paymentMethod">
+                <label>
                     Payment Method
                 </label>
 
                 <select
                     id="paymentMethod"
-                    required>
+                    required
+                >
 
                     <option value="">
                         Select Payment Method
@@ -770,3016 +597,3331 @@
 
                 </select>
 
-            </div>
 
+                <!-- PAYMENT DATE -->
 
-            <div class="form-group">
-
-                <label for="paymentDate">
+                <label>
                     Payment Date
                 </label>
 
                 <input
                     type="date"
                     id="paymentDate"
-                    required>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="paymentStatus">
-                    Status
-                </label>
-
-                <select
-                    id="paymentStatus"
-                    required>
-
-                    <option value="Completed">
-                        Completed
-                    </option>
-
-                    <option value="Pending">
-                        Pending
-                    </option>
-
-                    <option value="Cancelled">
-                        Cancelled
-                    </option>
-
-                </select>
-
-            </div>
+                    required
+                >
 
 
-            <div class="form-actions">
-
-                <button
-                    type="button"
-                    class="secondary-btn"
-                    onclick="closePaymentForm()">
-
-                    Cancel
-
-                </button>
-
+                <!-- SAVE -->
 
                 <button
                     type="submit"
-                    class="primary-btn">
-
+                    class="save-room-btn"
+                >
                     Save Payment
+                </button>
 
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         RECEIPT MODAL
+         ========================================= -->
+
+    <div
+        id="receiptModal"
+        class="modal"
+    >
+
+        <div
+            class="modal-content"
+            id="receiptContent"
+        >
+
+            <div class="modal-header">
+
+                <h2>
+                    Payment Receipt
+                </h2>
+
+                <button
+                    type="button"
+                    onclick="closeReceipt()"
+                >
+                    ×
                 </button>
 
             </div>
 
-        </form>
 
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     RECEIPT MODAL
-     ========================================================= -->
-
-<div
-    id="receiptModal"
-    class="receipt-modal">
-
-    <div
-        class="receipt-box"
-        id="receiptContent">
-
-        <div class="receipt-header">
-
-            <h1>
-                EDU TECH
-            </h1>
-
-            <h2>
-                HOTEL MANAGEMENT
-            </h2>
-
-            <p>
-                Payment Receipt
-            </p>
-
-        </div>
+            <div
+                id="receiptDetails"
+                style="
+                    padding:20px;
+                    line-height:1.8;
+                "
+            ></div>
 
 
-        <div class="receipt-title">
-            OFFICIAL PAYMENT RECEIPT
-        </div>
+            <div
+                style="
+                    display:flex;
+                    gap:10px;
+                    flex-wrap:wrap;
+                    margin-top:20px;
+                "
+            >
+
+                <button
+                    type="button"
+                    class="save-room-btn"
+                    onclick="printReceipt()"
+                >
+                    🖨️ Print Receipt
+                </button>
 
 
-        <table class="receipt-details">
+                <button
+                    type="button"
+                    class="save-room-btn"
+                    onclick="downloadReceiptPDF()"
+                >
+                    📄 Download PDF
+                </button>
 
-            <tr>
-                <td>Receipt Number</td>
-                <td id="receiptNumber">-</td>
-            </tr>
-
-            <tr>
-                <td>Payment ID</td>
-                <td id="receiptPaymentId">-</td>
-            </tr>
-
-            <tr>
-                <td>Guest Name</td>
-                <td id="receiptGuest">-</td>
-            </tr>
-
-            <tr>
-                <td>Room Number</td>
-                <td id="receiptRoom">-</td>
-            </tr>
-
-            <tr>
-                <td>Description</td>
-                <td id="receiptDescription">-</td>
-            </tr>
-
-            <tr>
-                <td>Payment Method</td>
-                <td id="receiptMethod">-</td>
-            </tr>
-
-            <tr>
-                <td>Payment Date</td>
-                <td id="receiptDate">-</td>
-            </tr>
-
-            <tr>
-                <td>Status</td>
-                <td id="receiptStatus">-</td>
-            </tr>
-
-        </table>
-
-
-        <div class="receipt-total">
-
-            <span>
-                AMOUNT PAID
-            </span>
-
-            <span id="receiptAmount">
-                KSh 0
-            </span>
-
-        </div>
-
-
-        <div class="receipt-footer">
-
-            <p>
-                Thank you for choosing EDU TECH HOTEL.
-            </p>
-
-            <p>
-                This is an electronically generated receipt.
-            </p>
-
-        </div>
-
-
-        <div class="receipt-actions">
-
-            <button
-                type="button"
-                class="receipt-print-btn"
-                onclick="printReceipt()">
-
-                Print Receipt
-
-            </button>
-
-
-            <button
-                type="button"
-                class="receipt-pdf-btn"
-                onclick="downloadReceiptPDF()">
-
-                Download PDF
-
-            </button>
-
-
-            <button
-                type="button"
-                class="receipt-close-btn"
-                onclick="closeReceipt()">
-
-                Close
-
-            </button>
+            </div>
 
         </div>
 
     </div>
 
-</div>
+
+    <!-- =========================================
+         SUPABASE
+         ========================================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="./supabase.js"></script>
+
+    <script src="./script.js"></script>
 
 
-<!-- =========================================================
-     REQUIRED SCRIPTS
-     ========================================================= -->
+    <!-- jsPDF -->
 
-<script src="./supabase.js"></script>
-<script src="./script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 
-<script>
+    <!-- =========================================
+         PAYMENTS JAVASCRIPT
+         ========================================= -->
 
-/* =========================================================
-   GLOBAL VARIABLES
-   ========================================================= */
+    <script>
 
-const PAYMENT_STORAGE_KEY = "eduTechPayments";
-
-let editingPaymentId = null;
-
-let currentReceiptPayment = null;
-
-let paymentModuleRestricted = false;
-
-let verifiedHotelId = null;
-
-let verifiedRole = null;
+        "use strict";
 
 
-/* =========================================================
-   LOGOUT
-   ========================================================= */
+        /* =========================================
+           VARIABLES
+           ========================================= */
 
-async function logoutUser(event) {
+        let paymentsData = [];
 
-    if (event) {
-        event.preventDefault();
-    }
+        let reservationsData = [];
 
-    try {
+        let guestsData = [];
 
-        if (
-            typeof supabaseClient !== "undefined" &&
-            supabaseClient
-        ) {
+        let roomsData = [];
 
-            await supabaseClient.auth.signOut();
+        let hotelsData = [];
+
+        let editingPaymentId = null;
+
+        let currentReceiptPayment = null;
+
+
+        /* =========================================
+           ELEMENTS
+           ========================================= */
+
+        const paymentForm =
+            document.getElementById("paymentForm");
+
+        const paymentTableBody =
+            document.getElementById("paymentTableBody");
+
+        const paymentSearch =
+            document.getElementById("paymentSearch");
+
+        const reservationSelect =
+            document.getElementById("reservationSelect");
+
+        const paymentGuest =
+            document.getElementById("paymentGuest");
+
+        const paymentPhone =
+            document.getElementById("paymentPhone");
+
+        const paymentRoom =
+            document.getElementById("paymentRoom");
+
+        const reservationTotal =
+            document.getElementById("reservationTotal");
+
+        const alreadyPaid =
+            document.getElementById("alreadyPaid");
+
+        const remainingBalance =
+            document.getElementById("remainingBalance");
+
+        const paymentAmount =
+            document.getElementById("paymentAmount");
+
+        const paymentMethod =
+            document.getElementById("paymentMethod");
+
+        const paymentDate =
+            document.getElementById("paymentDate");
+
+        const paymentId =
+            document.getElementById("paymentId");
+
+        const paymentModal =
+            document.getElementById("paymentModal");
+
+        const receiptModal =
+            document.getElementById("receiptModal");
+
+        const hotelSelector =
+            document.getElementById("hotelSelector");
+
+        const hotelSelectorSection =
+            document.getElementById(
+                "hotelSelectorSection"
+            );
+
+
+        /* =========================================
+           ROLE
+           ========================================= */
+
+        function getCurrentRole() {
+
+            return String(
+                sessionStorage.getItem("userRole") ||
+                localStorage.getItem("userRole") ||
+                ""
+            )
+            .toLowerCase()
+            .trim();
 
         }
 
-    } catch (error) {
 
-        console.error(
-            "Logout error:",
-            error
-        );
+        /* =========================================
+           CURRENT HOTEL
+           ========================================= */
 
-    }
+        function getCurrentHotelId() {
 
-    /*
-       Remove login/session information only.
-       Do NOT remove payment records.
-    */
+            return (
+                sessionStorage.getItem("hotelId") ||
+                localStorage.getItem("hotelId") ||
+                ""
+            );
 
-    sessionStorage.removeItem("userRole");
-    sessionStorage.removeItem("userName");
-    sessionStorage.removeItem("hotelId");
-
-    localStorage.removeItem("userRole");
-    localStorage.removeItem("userName");
-    localStorage.removeItem("hotelId");
-
-    /*
-       Go back to the login page.
-    */
-
-    window.location.href =
-        "./login.html";
-
-}
-
-window.logoutUser = logoutUser;
+        }
 
 
-/* =========================================================
-   ROLE PERMISSIONS
-   ========================================================= */
+        /* =========================================
+           SELECTED HOTEL
+           ========================================= */
 
-const PAYMENT_ROLE_PERMISSIONS = {
+        function getSelectedHotelId() {
 
-    system_owner: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings",
-        "hotels"
-    ],
-
-    hotel_owner: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings"
-    ],
-
-    manager: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings"
-    ],
-
-    receptionist: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "payments",
-        "reports"
-    ]
-
-};
-
-
-/* =========================================================
-   GET CURRENT ROLE
-   ========================================================= */
-
-function getCurrentUserRole() {
-
-    return String(
-        verifiedRole ||
-        sessionStorage.getItem("userRole") ||
-        localStorage.getItem("userRole") ||
-        ""
-    )
-    .toLowerCase()
-    .trim();
-
-}
-
-
-/* =========================================================
-   APPLY PAYMENT PAGE ROLE CONTROL
-   ========================================================= */
-
-function applyRolePermissions() {
-
-    const role =
-        getCurrentUserRole();
-
-
-    if (!role) {
-
-        return;
-
-    }
-
-
-    const allowed =
-        PAYMENT_ROLE_PERMISSIONS[role] ||
-        [];
-
-
-    document
-        .querySelectorAll("[data-module]")
-        .forEach(function(link) {
-
-            const moduleName =
-                String(
-                    link.getAttribute("data-module") ||
-                    ""
-                )
-                .toLowerCase()
-                .trim();
+            const role =
+                getCurrentRole();
 
 
             if (
-                role === "system_owner" ||
-                allowed.includes(moduleName)
+                role === "system_owner"
             ) {
 
-                link.classList.remove(
-                    "role-hidden"
+                return hotelSelector.value || "";
+
+            }
+
+
+            return getCurrentHotelId();
+
+        }
+
+
+        /* =========================================
+           MESSAGE
+           ========================================= */
+
+        function showPaymentMessage(
+            message,
+            isError = false
+        ) {
+
+            const box =
+                document.getElementById(
+                    "paymentMessage"
                 );
 
-                link.setAttribute(
-                    "aria-hidden",
-                    "false"
-                );
+
+            box.textContent =
+                message;
+
+
+            box.style.display =
+                "block";
+
+
+            if (isError) {
+
+                box.style.background =
+                    "#f8d7da";
+
+                box.style.color =
+                    "#842029";
 
             } else {
 
-                link.classList.add(
-                    "role-hidden"
-                );
+                box.style.background =
+                    "#d1e7dd";
 
-                link.setAttribute(
-                    "aria-hidden",
-                    "true"
-                );
+                box.style.color =
+                    "#0f5132";
 
             }
 
-        });
 
-}
+            setTimeout(
+                function() {
 
+                    box.style.display =
+                        "none";
 
-/* =========================================================
-   GET AUTHENTICATED PROFILE
-   ========================================================= */
-
-async function getAuthenticatedProfile() {
-
-    try {
-
-        if (
-            typeof supabaseClient === "undefined" ||
-            !supabaseClient
-        ) {
-
-            console.error(
-                "Supabase client is not available."
+                },
+                5000
             );
-
-            return null;
 
         }
 
 
-        const {
-            data: {
-                user
-            },
-            error: userError
-        } =
-            await supabaseClient.auth.getUser();
+        /* =========================================
+           ESCAPE HTML
+           ========================================= */
 
+        function escapeHtml(value) {
 
-        if (userError) {
-
-            console.error(
-                "Authenticated user error:",
-                userError
-            );
-
-            return null;
-
-        }
-
-
-        if (!user) {
-
-            console.error(
-                "No authenticated user found."
-            );
-
-            return null;
-
-        }
-
-
-        const {
-            data: profile,
-            error: profileError
-        } =
-            await supabaseClient
-                .from("profiles")
-                .select(
-                    "id, full_name, role, hotel_id"
-                )
-                .eq(
-                    "id",
-                    user.id
-                )
-                .maybeSingle();
-
-
-        if (profileError) {
-
-            console.error(
-                "Profile lookup failed:",
-                profileError
-            );
-
-            return null;
-
-        }
-
-
-        if (!profile) {
-
-            console.error(
-                "No profile found for user.",
-                user.id
-            );
-
-            return null;
-
-        }
-
-
-        verifiedRole =
-            String(
-                profile.role || ""
+            return String(
+                value === null ||
+                value === undefined
+                    ? ""
+                    : value
             )
-            .toLowerCase()
-            .trim();
-
-
-        verifiedHotelId =
-            profile.hotel_id !== null &&
-            profile.hotel_id !== undefined
-                ? String(profile.hotel_id)
-                : "";
-
-
-        if (verifiedRole) {
-
-            sessionStorage.setItem(
-                "userRole",
-                verifiedRole
-            );
-
-            localStorage.setItem(
-                "userRole",
-                verifiedRole
-            );
-
-        }
-
-
-        if (verifiedHotelId) {
-
-            sessionStorage.setItem(
-                "hotelId",
-                verifiedHotelId
-            );
-
-            localStorage.setItem(
-                "hotelId",
-                verifiedHotelId
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
             );
 
         }
 
 
-        if (profile.full_name) {
+        /* =========================================
+           MONEY
+           ========================================= */
 
-            sessionStorage.setItem(
-                "userName",
-                profile.full_name
-            );
+        function formatMoney(value) {
 
-            localStorage.setItem(
-                "userName",
-                profile.full_name
-            );
-
-        }
-
-
-        return profile;
-
-    } catch (error) {
-
-        console.error(
-            "Profile exception:",
-            error
-        );
-
-        return null;
-
-    }
-
-}
-
-
-/* =========================================================
-   USER NAME
-   ========================================================= */
-
-function getCurrentUserName() {
-
-    return (
-        sessionStorage.getItem("userName") ||
-        localStorage.getItem("userName") ||
-        "User"
-    );
-
-}
-
-
-/* =========================================================
-   UPDATE USER DISPLAY
-   ========================================================= */
-
-function updateUserDisplay() {
-
-    const nameElement =
-        document.getElementById(
-            "loggedUserName"
-        );
-
-
-    const roleElement =
-        document.getElementById(
-            "loggedUserRole"
-        );
-
-
-    if (nameElement) {
-
-        nameElement.textContent =
-            getCurrentUserName();
-
-    }
-
-
-    if (roleElement) {
-
-        roleElement.textContent =
-            getCurrentUserRole() ||
-            "User";
-
-    }
-
-}
-
-
-/* =========================================================
-   NORMALIZE MODULE RESTRICTIONS
-   ========================================================= */
-
-function normalizeModuleRestrictions(value) {
-
-    if (!value) {
-
-        return {};
-
-    }
-
-
-    if (typeof value === "string") {
-
-        try {
-
-            value =
-                JSON.parse(value);
-
-        } catch (error) {
-
-            return {};
-
-        }
-
-    }
-
-
-    if (Array.isArray(value)) {
-
-        const result = {};
-
-
-        value.forEach(
-            function(moduleName) {
-
-                if (moduleName) {
-
-                    result[
-                        String(moduleName)
-                            .toLowerCase()
-                            .trim()
-                    ] = true;
-
+            return Number(
+                value || 0
+            )
+            .toLocaleString(
+                "en-KE",
+                {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
                 }
-
-            }
-        );
-
-
-        return result;
-
-    }
-
-
-    if (
-        typeof value === "object" &&
-        value !== null
-    ) {
-
-        const result = {};
-
-
-        Object.keys(value).forEach(
-            function(key) {
-
-                result[
-                    String(key)
-                        .toLowerCase()
-                        .trim()
-                ] =
-                    Boolean(value[key]);
-
-            }
-        );
-
-
-        return result;
-
-    }
-
-
-    return {};
-
-}
-
-
-/* =========================================================
-   CHECK PAYMENTS ACCESS
-   ========================================================= */
-
-async function checkPaymentsModuleRestriction() {
-
-    const profile =
-        await getAuthenticatedProfile();
-
-
-    if (!profile) {
-
-        showPaymentAccessError(
-            "Your account profile could not be verified. Please log out and log in again."
-        );
-
-        return false;
-
-    }
-
-
-    applyRolePermissions();
-
-    updateUserDisplay();
-
-
-    const role =
-        String(
-            profile.role || ""
-        )
-        .toLowerCase()
-        .trim();
-
-
-    if (
-        !PAYMENT_ROLE_PERMISSIONS[role] ||
-        !PAYMENT_ROLE_PERMISSIONS[role].includes(
-            "payments"
-        )
-    ) {
-
-        showPaymentAccessError(
-            "You do not have permission to access the Payments module."
-        );
-
-        return false;
-
-    }
-
-
-    if (
-        role === "system_owner"
-    ) {
-
-        paymentModuleRestricted =
-            false;
-
-        showPaymentModule();
-
-        return true;
-
-    }
-
-
-    const hotelId =
-        profile.hotel_id;
-
-
-    if (
-        hotelId === null ||
-        hotelId === undefined ||
-        hotelId === ""
-    ) {
-
-        showPaymentAccessError(
-            "Your account is not assigned to a hotel. Please contact the system administrator."
-        );
-
-        return false;
-
-    }
-
-
-    try {
-
-        const {
-            data: hotel,
-            error
-        } =
-            await supabaseClient
-                .from("hotels")
-                .select(
-                    "id, hotel_name, status, subscription_status, subscription_end, warning_type, warning_message, warning_active, module_restrictions"
-                )
-                .eq(
-                    "id",
-                    hotelId
-                )
-                .maybeSingle();
-
-
-        if (error) {
-
-            console.error(
-                "Hotel check failed:",
-                error
             );
-
-            showPaymentAccessError(
-                "Unable to verify Payments module access."
-            );
-
-            return false;
 
         }
 
 
-        if (!hotel) {
+        /* =========================================
+           DATE
+           ========================================= */
 
-            showPaymentAccessError(
-                "Your assigned hotel could not be found."
-            );
+        function getTodayDate() {
 
-            return false;
-
-        }
-
-
-        const hotelStatus =
-            String(
-                hotel.status || ""
-            )
-            .toLowerCase()
-            .trim();
-
-
-        if (
-            hotelStatus === "deactivated"
-        ) {
-
-            showPaymentAccessError(
-                "Your hotel account has been deactivated."
-            );
-
-            return false;
-
-        }
-
-
-        const subscriptionStatus =
-            String(
-                hotel.subscription_status || ""
-            )
-            .toLowerCase()
-            .trim();
-
-
-        if (
-            subscriptionStatus === "expired" ||
-            subscriptionStatus === "cancelled"
-        ) {
-
-            showPaymentAccessError(
-                "Your hotel subscription is not active."
-            );
-
-            return false;
-
-        }
-
-
-        if (hotel.subscription_end) {
-
-            const today =
+            const date =
                 new Date();
 
 
-            today.setHours(
-                0,
-                0,
-                0,
+            const year =
+                date.getFullYear();
+
+
+            const month =
+                String(
+                    date.getMonth() + 1
+                )
+                .padStart(
+                    2,
+                    "0"
+                );
+
+
+            const day =
+                String(
+                    date.getDate()
+                )
+                .padStart(
+                    2,
+                    "0"
+                );
+
+
+            return (
+                year +
+                "-" +
+                month +
+                "-" +
+                day
+            );
+
+        }
+
+
+        /* =========================================
+           PAYMENT ID DISPLAY
+           ========================================= */
+
+        function formatPaymentId(id) {
+
+            return (
+                "PAY-" +
+                String(id)
+                    .padStart(
+                        3,
+                        "0"
+                    )
+            );
+
+        }
+
+
+        /* =========================================
+           RESERVATION ID DISPLAY
+           ========================================= */
+
+        function formatReservationId(id) {
+
+            return (
+                "RES-" +
+                String(id)
+                    .padStart(
+                        3,
+                        "0"
+                    )
+            );
+
+        }
+
+
+        /* =========================================
+           GET GUEST
+           ========================================= */
+
+        function getGuestById(id) {
+
+            return guestsData.find(
+                function(guest) {
+
+                    return String(
+                        guest.id
+                    ) === String(id);
+
+                }
+            );
+
+        }
+
+
+        /* =========================================
+           GET ROOM
+           ========================================= */
+
+        function getRoomById(id) {
+
+            return roomsData.find(
+                function(room) {
+
+                    return String(
+                        room.id
+                    ) === String(id);
+
+                }
+            );
+
+        }
+
+
+        /* =========================================
+           GET RESERVATION
+           ========================================= */
+
+        function getReservationById(id) {
+
+            return reservationsData.find(
+                function(reservation) {
+
+                    return String(
+                        reservation.id
+                    ) === String(id);
+
+                }
+            );
+
+        }
+
+
+        /* =========================================
+           PAYMENT TOTAL FOR RESERVATION
+           ========================================= */
+
+        function getPaidAmountForReservation(
+            reservationId,
+            ignorePaymentId = null
+        ) {
+
+            return paymentsData.reduce(
+                function(total, payment) {
+
+                    if (
+                        String(
+                            payment.reservation_id
+                        ) !==
+                        String(
+                            reservationId
+                        )
+                    ) {
+
+                        return total;
+
+                    }
+
+
+                    if (
+                        ignorePaymentId !== null &&
+                        String(
+                            payment.id
+                        ) ===
+                        String(
+                            ignorePaymentId
+                        )
+                    ) {
+
+                        return total;
+
+                    }
+
+
+                    return (
+                        total +
+                        Number(
+                            payment.amount || 0
+                        )
+                    );
+
+                },
                 0
             );
 
+        }
 
-            const endDate =
-                new Date(
-                    hotel.subscription_end +
-                    "T00:00:00"
+
+        /* =========================================
+           LOAD HOTELS
+           ========================================= */
+
+        async function loadHotels() {
+
+            if (
+                getCurrentRole() !==
+                "system_owner"
+            ) {
+
+                return;
+
+            }
+
+
+            const result =
+                await supabaseClient
+                    .from("hotels")
+                    .select(
+                        "id, hotel_name, status"
+                    )
+                    .order(
+                        "hotel_name",
+                        {
+                            ascending: true
+                        }
+                    );
+
+
+            if (result.error) {
+
+                throw new Error(
+                    "Failed to load hotels: " +
+                    result.error.message
                 );
+
+            }
+
+
+            hotelsData =
+                result.data || [];
+
+
+            hotelSelector.innerHTML =
+                '<option value="">Select Hotel</option>';
+
+
+            hotelsData.forEach(
+                function(hotel) {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        hotel.id;
+
+
+                    option.textContent =
+                        hotel.hotel_name;
+
+
+                    hotelSelector.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+
+            hotelSelectorSection.style.display =
+                "block";
+
+        }
+
+
+        /* =========================================
+           LOAD GUESTS
+           ========================================= */
+
+        async function loadGuests() {
+
+            const hotelId =
+                getSelectedHotelId();
+
+
+            if (!hotelId) {
+
+                guestsData = [];
+
+                return;
+
+            }
+
+
+            const result =
+                await supabaseClient
+                    .from("guests")
+                    .select(
+                        'id, "full name", phone, email, hotel_id'
+                    )
+                    .eq(
+                        "hotel_id",
+                        hotelId
+                    );
+
+
+            if (result.error) {
+
+                throw new Error(
+                    "Failed to load guests: " +
+                    result.error.message
+                );
+
+            }
+
+
+            guestsData =
+                result.data || [];
+
+
+            guestsData.sort(
+                function(a, b) {
+
+                    const nameA =
+                        String(
+                            a["full name"] || ""
+                        )
+                        .toLowerCase();
+
+
+                    const nameB =
+                        String(
+                            b["full name"] || ""
+                        )
+                        .toLowerCase();
+
+
+                    return nameA.localeCompare(
+                        nameB
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =========================================
+           LOAD ROOMS
+           ========================================= */
+
+        async function loadRooms() {
+
+            const hotelId =
+                getSelectedHotelId();
+
+
+            if (!hotelId) {
+
+                roomsData = [];
+
+                return;
+
+            }
+
+
+            const result =
+                await supabaseClient
+                    .from("rooms")
+                    .select(
+                        "id, room_number, room_type, status, price, hotel_id"
+                    )
+                    .eq(
+                        "hotel_id",
+                        hotelId
+                    );
+
+
+            if (result.error) {
+
+                throw new Error(
+                    "Failed to load rooms: " +
+                    result.error.message
+                );
+
+            }
+
+
+            roomsData =
+                result.data || [];
+
+        }
+
+
+        /* =========================================
+           LOAD RESERVATIONS
+           ========================================= */
+
+        async function loadReservations() {
+
+            const hotelId =
+                getSelectedHotelId();
+
+
+            if (!hotelId) {
+
+                reservationsData = [];
+
+                return;
+
+            }
+
+
+            const result =
+                await supabaseClient
+                    .from("reservation")
+                    .select(
+                        "id, created_at, guest_id, room_id, check_in, check_out, status, amount, hotel_id"
+                    )
+                    .eq(
+                        "hotel_id",
+                        hotelId
+                    )
+                    .order(
+                        "check_in",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+            if (result.error) {
+
+                throw new Error(
+                    "Failed to load reservations: " +
+                    result.error.message
+                );
+
+            }
+
+
+            reservationsData =
+                result.data || [];
+
+        }
+
+
+        /* =========================================
+           LOAD PAYMENTS
+           ========================================= */
+
+        async function loadPayments() {
+
+            const hotelId =
+                getSelectedHotelId();
+
+
+            paymentTableBody.innerHTML =
+                `
+                <tr>
+                    <td
+                        colspan="9"
+                        style="text-align:center;"
+                    >
+                        Loading payments...
+                    </td>
+                </tr>
+                `;
+
+
+            if (!hotelId) {
+
+                paymentsData = [];
+
+
+                paymentTableBody.innerHTML =
+                    `
+                    <tr>
+                        <td
+                            colspan="9"
+                            style="text-align:center;"
+                        >
+                            Select a hotel to view payments.
+                        </td>
+                    </tr>
+                    `;
+
+
+                updatePaymentSummary();
+
+                return;
+
+            }
+
+
+            const result =
+                await supabaseClient
+                    .from("payments")
+                    .select(
+                        "id, created_at, reservation_id, amount, payment_method, payment_date, hotel_id"
+                    )
+                    .eq(
+                        "hotel_id",
+                        hotelId
+                    )
+                    .order(
+                        "payment_date",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+            if (result.error) {
+
+                throw new Error(
+                    "Failed to load payments: " +
+                    result.error.message
+                );
+
+            }
+
+
+            paymentsData =
+                result.data || [];
+
+
+            renderPayments(
+                paymentsData
+            );
+
+
+            updatePaymentSummary();
+
+        }
+
+
+        /* =========================================
+           LOAD ALL DATA
+           ========================================= */
+
+        async function loadAllPaymentData() {
+
+            const hotelId =
+                getSelectedHotelId();
+
+
+            if (!hotelId) {
+
+                paymentsData = [];
+
+                reservationsData = [];
+
+                guestsData = [];
+
+                roomsData = [];
+
+                renderPayments([]);
+
+                updatePaymentSummary();
+
+                return;
+
+            }
+
+
+            await loadGuests();
+
+            await loadRooms();
+
+            await loadReservations();
+
+            await loadPayments();
+
+        }
+
+
+        /* =========================================
+           RENDER PAYMENTS
+           ========================================= */
+
+        function renderPayments(
+            payments
+        ) {
+
+            if (
+                !payments ||
+                payments.length === 0
+            ) {
+
+                paymentTableBody.innerHTML =
+                    `
+                    <tr>
+                        <td
+                            colspan="9"
+                            style="text-align:center;"
+                        >
+                            No payments found.
+                        </td>
+                    </tr>
+                    `;
+
+                return;
+
+            }
+
+
+            paymentTableBody.innerHTML =
+                "";
+
+
+            payments.forEach(
+                function(payment) {
+
+                    const reservation =
+                        getReservationById(
+                            payment.reservation_id
+                        );
+
+
+                    const guest =
+                        reservation
+                            ? getGuestById(
+                                reservation.guest_id
+                            )
+                            : null;
+
+
+                    const room =
+                        reservation
+                            ? getRoomById(
+                                reservation.room_id
+                            )
+                            : null;
+
+
+                    const guestName =
+                        guest
+                            ? (
+                                guest["full name"] ||
+                                "Unnamed Guest"
+                            )
+                            : "Guest not found";
+
+
+                    const roomNumber =
+                        room
+                            ? (
+                                room.room_number ||
+                                "-"
+                            )
+                            : "-";
+
+
+                    const paymentAmount =
+                        Number(
+                            payment.amount || 0
+                        );
+
+
+                    const row =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    row.innerHTML =
+                        `
+                        <td>
+                            ${escapeHtml(
+                                formatPaymentId(
+                                    payment.id
+                                )
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                guestName
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                roomNumber
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                reservation
+                                    ? formatReservationId(
+                                        reservation.id
+                                    )
+                                    : "-"
+                            )}
+                        </td>
+
+                        <td>
+                            KSh ${formatMoney(
+                                paymentAmount
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                payment.payment_method ||
+                                "-"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                payment.payment_date ||
+                                "-"
+                            )}
+                        </td>
+
+                        <td>
+                            <span class="status status-available">
+                                Recorded
+                            </span>
+                        </td>
+
+                        <td>
+
+                            <button
+                                type="button"
+                                class="edit-btn"
+                                data-edit-id="${escapeHtml(
+                                    payment.id
+                                )}"
+                            >
+                                Edit
+                            </button>
+
+                            <button
+                                type="button"
+                                class="edit-btn"
+                                data-receipt-id="${escapeHtml(
+                                    payment.id
+                                )}"
+                            >
+                                Receipt
+                            </button>
+
+                            <button
+                                type="button"
+                                class="delete-btn"
+                                data-delete-id="${escapeHtml(
+                                    payment.id
+                                )}"
+                            >
+                                Delete
+                            </button>
+
+                        </td>
+                        `;
+
+
+                    paymentTableBody.appendChild(
+                        row
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =========================================
+           SUMMARY
+           ========================================= */
+
+        function updatePaymentSummary() {
+
+            const totalPayments =
+                paymentsData.length;
+
+
+            const totalRevenue =
+                paymentsData.reduce(
+                    function(total, payment) {
+
+                        return (
+                            total +
+                            Number(
+                                payment.amount || 0
+                            )
+                        );
+
+                    },
+                    0
+                );
+
+
+            let outstanding =
+                0;
+
+
+            reservationsData.forEach(
+                function(reservation) {
+
+                    const status =
+                        String(
+                            reservation.status ||
+                            ""
+                        )
+                        .toLowerCase();
+
+
+                    if (
+                        status ===
+                        "cancelled"
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const reservationAmount =
+                        Number(
+                            reservation.amount || 0
+                        );
+
+
+                    const paid =
+                        getPaidAmountForReservation(
+                            reservation.id
+                        );
+
+
+                    const balance =
+                        Math.max(
+                            0,
+                            reservationAmount -
+                            paid
+                        );
+
+
+                    outstanding +=
+                        balance;
+
+                }
+            );
+
+
+            document.getElementById(
+                "totalPayments"
+            ).textContent =
+                totalPayments;
+
+
+            document.getElementById(
+                "recordedPayments"
+            ).textContent =
+                totalPayments;
+
+
+            document.getElementById(
+                "totalRevenue"
+            ).textContent =
+                "KSh " +
+                formatMoney(
+                    totalRevenue
+                );
+
+
+            document.getElementById(
+                "outstandingBalance"
+            ).textContent =
+                "KSh " +
+                formatMoney(
+                    outstanding
+                );
+
+        }
+
+
+        /* =========================================
+           POPULATE RESERVATION SELECT
+           ========================================= */
+
+        function populateReservationSelect(
+            selectedId = null
+        ) {
+
+            reservationSelect.innerHTML =
+                '<option value="">Select Reservation</option>';
+
+
+            reservationsData.forEach(
+                function(reservation) {
+
+                    const status =
+                        String(
+                            reservation.status ||
+                            ""
+                        )
+                        .toLowerCase();
+
+
+                    if (
+                        status ===
+                        "cancelled"
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const guest =
+                        getGuestById(
+                            reservation.guest_id
+                        );
+
+
+                    const room =
+                        getRoomById(
+                            reservation.room_id
+                        );
+
+
+                    const guestName =
+                        guest
+                            ? (
+                                guest["full name"] ||
+                                "Unnamed Guest"
+                            )
+                            : "Guest not found";
+
+
+                    const roomNumber =
+                        room
+                            ? (
+                                room.room_number ||
+                                "-"
+                            )
+                            : "-";
+
+
+                    const paid =
+                        getPaidAmountForReservation(
+                            reservation.id,
+                            editingPaymentId
+                        );
+
+
+                    const reservationAmount =
+                        Number(
+                            reservation.amount || 0
+                        );
+
+
+                    const balance =
+                        Math.max(
+                            0,
+                            reservationAmount -
+                            paid
+                        );
+
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        reservation.id;
+
+
+                    option.textContent =
+                        formatReservationId(
+                            reservation.id
+                        ) +
+                        " - " +
+                        guestName +
+                        " - Room " +
+                        roomNumber +
+                        " - Balance KSh " +
+                        formatMoney(
+                            balance
+                        );
+
+
+                    reservationSelect.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+
+            if (selectedId !== null) {
+
+                reservationSelect.value =
+                    selectedId;
+
+            }
 
 
             if (
-                !Number.isNaN(
-                    endDate.getTime()
-                ) &&
-                endDate < today
+                reservationSelect.options.length === 1
             ) {
 
-                showPaymentAccessError(
-                    "Your hotel subscription has expired."
-                );
-
-                return false;
+                reservationSelect.innerHTML =
+                    `
+                    <option value="">
+                        No active reservations found
+                    </option>
+                    `;
 
             }
 
         }
 
 
-        const restrictions =
-            normalizeModuleRestrictions(
-                hotel.module_restrictions
-            );
-
-
-        if (
-            restrictions.payments === true
-        ) {
-
-            paymentModuleRestricted =
-                true;
-
-            showRestrictedPaymentModule(
-                hotel
-            );
-
-            return false;
-
-        }
-
-
-        paymentModuleRestricted =
-            false;
-
-
-        showPaymentModule();
-
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "Payments access exception:",
-            error
-        );
-
-        showPaymentAccessError(
-            "Unable to verify Payments module access."
-        );
-
-        return false;
-
-    }
-
-}
-
-
-/* =========================================================
-   SHOW PAYMENT MODULE
-   ========================================================= */
-
-function showPaymentModule() {
-
-    const content =
-        document.getElementById(
-            "paymentModuleContent"
-        );
-
-
-    const restriction =
-        document.getElementById(
-            "moduleRestrictionScreen"
-        );
-
-
-    if (content) {
-
-        content.style.display =
-            "";
-
-    }
-
-
-    if (restriction) {
-
-        restriction.style.display =
-            "none";
-
-    }
-
-}
-
-
-/* =========================================================
-   SHOW RESTRICTED MODULE
-   ========================================================= */
-
-function showRestrictedPaymentModule(
-    hotel
-) {
-
-    const content =
-        document.getElementById(
-            "paymentModuleContent"
-        );
-
-
-    const restriction =
-        document.getElementById(
-            "moduleRestrictionScreen"
-        );
-
-
-    const message =
-        document.getElementById(
-            "restrictionMessage"
-        );
-
-
-    if (content) {
-
-        content.style.display =
-            "none";
-
-    }
-
-
-    if (restriction) {
-
-        restriction.style.display =
-            "flex";
-
-    }
-
-
-    if (message) {
-
-        message.textContent =
-            hotel.warning_message ||
-            "The Payments module has been temporarily restricted by the system owner.";
-
-    }
-
-
-    closePaymentForm();
-
-    closeReceipt();
-
-}
-
-
-/* =========================================================
-   SHOW ACCESS ERROR
-   ========================================================= */
-
-function showPaymentAccessError(
-    messageText
-) {
-
-    paymentModuleRestricted =
-        true;
-
-
-    const content =
-        document.getElementById(
-            "paymentModuleContent"
-        );
-
-
-    const restriction =
-        document.getElementById(
-            "moduleRestrictionScreen"
-        );
-
-
-    const message =
-        document.getElementById(
-            "restrictionMessage"
-        );
-
-
-    if (content) {
-
-        content.style.display =
-            "none";
-
-    }
-
-
-    if (restriction) {
-
-        restriction.style.display =
-            "flex";
-
-    }
-
-
-    if (message) {
-
-        message.textContent =
-            messageText;
-
-    }
-
-}
-
-
-/* =========================================================
-   PAYMENT ACCESS ALLOWED
-   ========================================================= */
-
-function paymentAccessAllowed() {
-
-    const role =
-        getCurrentUserRole();
-
-
-    if (
-        !role ||
-        !PAYMENT_ROLE_PERMISSIONS[role] ||
-        !PAYMENT_ROLE_PERMISSIONS[role].includes(
-            "payments"
-        )
-    ) {
-
-        alert(
-            "You do not have permission to access Payments."
-        );
-
-        return false;
-
-    }
-
-
-    if (paymentModuleRestricted) {
-
-        alert(
-            "The Payments module is currently restricted."
-        );
-
-        return false;
-
-    }
-
-
-    return true;
-
-}
-
-
-/* =========================================================
-   STORAGE
-   ========================================================= */
-
-function getStoredPayments() {
-
-    const saved =
-        localStorage.getItem(
-            PAYMENT_STORAGE_KEY
-        );
-
-
-    if (!saved) {
-
-        return [];
-
-    }
-
-
-    try {
-
-        const data =
-            JSON.parse(saved);
-
-
-        return Array.isArray(data)
-            ? data
-            : [];
-
-    } catch (error) {
-
-        console.error(
-            "Payment storage error:",
-            error
-        );
-
-        return [];
-
-    }
-
-}
-
-
-function savePayments(
-    payments
-) {
-
-    localStorage.setItem(
-        PAYMENT_STORAGE_KEY,
-        JSON.stringify(payments)
-    );
-
-}
-
-
-/* =========================================================
-   ESCAPE HTML
-   ========================================================= */
-
-function escapePaymentHTML(
-    value
-) {
-
-    return String(
-        value ?? ""
-    )
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-    .replace(
-        /</g,
-        "&lt;"
-    )
-    .replace(
-        />/g,
-        "&gt;"
-    )
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-    .replace(
-        /'/g,
-        "&#039;"
-    );
-
-}
-
-
-/* =========================================================
-   OPEN PAYMENT FORM
-   ========================================================= */
-
-function openPaymentForm() {
-
-    if (!paymentAccessAllowed()) {
-
-        return;
-
-    }
-
-
-    const modal =
-        document.getElementById(
-            "paymentModal"
-        );
-
-
-    const form =
-        document.getElementById(
-            "paymentForm"
-        );
-
-
-    if (
-        !modal ||
-        !form
-    ) {
-
-        return;
-
-    }
-
-
-    form.reset();
-
-
-    editingPaymentId =
-        null;
-
-
-    document.getElementById(
-        "paymentModalTitle"
-    ).textContent =
-        "New Payment";
-
-
-    const today =
-        new Date()
-            .toISOString()
-            .split("T")[0];
-
-
-    document.getElementById(
-        "paymentDate"
-    ).value =
-        today;
-
-
-    modal.style.display =
-        "flex";
-
-}
-
-
-/* =========================================================
-   CLOSE PAYMENT FORM
-   ========================================================= */
-
-function closePaymentForm() {
-
-    const modal =
-        document.getElementById(
-            "paymentModal"
-        );
-
-
-    if (modal) {
-
-        modal.style.display =
-            "none";
-
-    }
-
-
-    const form =
-        document.getElementById(
-            "paymentForm"
-        );
-
-
-    if (form) {
-
-        form.reset();
-
-    }
-
-
-    editingPaymentId =
-        null;
-
-}
-
-
-/* =========================================================
-   PAYMENT STATUS CLASS
-   ========================================================= */
-
-function getPaymentStatusClass(
-    status
-) {
-
-    if (
-        status === "Completed"
-    ) {
-
-        return "status-available";
-
-    }
-
-
-    if (
-        status === "Pending"
-    ) {
-
-        return "status-maintenance";
-
-    }
-
-
-    return "status-occupied";
-
-}
-
-
-/* =========================================================
-   GENERATE PAYMENT ID
-   ========================================================= */
-
-function generatePaymentID() {
-
-    const payments =
-        getStoredPayments();
-
-
-    let highestNumber =
-        0;
-
-
-    payments.forEach(
-        function(payment) {
-
-            const match =
-                String(
-                    payment.id || ""
-                )
-                .match(
-                    /^PAY-(\d+)$/
+        /* =========================================
+           UPDATE RESERVATION INFORMATION
+           ========================================= */
+
+        function updateReservationInformation() {
+
+            const selectedReservation =
+                getReservationById(
+                    reservationSelect.value
                 );
 
 
-            if (match) {
+            if (!selectedReservation) {
 
-                const number =
-                    parseInt(
-                        match[1],
-                        10
-                    );
+                paymentGuest.value =
+                    "";
 
+                paymentPhone.value =
+                    "";
+
+                paymentRoom.value =
+                    "";
+
+                reservationTotal.value =
+                    "";
+
+                alreadyPaid.value =
+                    "";
+
+                remainingBalance.value =
+                    "";
+
+                paymentAmount.value =
+                    "";
+
+                return;
+
+            }
+
+
+            const guest =
+                getGuestById(
+                    selectedReservation.guest_id
+                );
+
+
+            const room =
+                getRoomById(
+                    selectedReservation.room_id
+                );
+
+
+            const guestName =
+                guest
+                    ? (
+                        guest["full name"] ||
+                        "Unnamed Guest"
+                    )
+                    : "Guest not found";
+
+
+            const phone =
+                guest
+                    ? (
+                        guest.phone ||
+                        ""
+                    )
+                    : "";
+
+
+            const roomNumber =
+                room
+                    ? (
+                        room.room_number ||
+                        "-"
+                    )
+                    : "-";
+
+
+            const total =
+                Number(
+                    selectedReservation.amount ||
+                    0
+                );
+
+
+            const paid =
+                getPaidAmountForReservation(
+                    selectedReservation.id,
+                    editingPaymentId
+                );
+
+
+            const balance =
+                Math.max(
+                    0,
+                    total - paid
+                );
+
+
+            paymentGuest.value =
+                guestName;
+
+
+            paymentPhone.value =
+                phone;
+
+
+            paymentRoom.value =
+                "Room " +
+                roomNumber;
+
+
+            reservationTotal.value =
+                "KSh " +
+                formatMoney(
+                    total
+                );
+
+
+            alreadyPaid.value =
+                "KSh " +
+                formatMoney(
+                    paid
+                );
+
+
+            remainingBalance.value =
+                "KSh " +
+                formatMoney(
+                    balance
+                );
+
+
+            /*
+             For a new payment, automatically
+             suggest the remaining balance.
+            */
+
+            if (
+                !editingPaymentId
+            ) {
 
                 if (
-                    number >
-                    highestNumber
+                    balance > 0
                 ) {
 
-                    highestNumber =
-                        number;
+                    paymentAmount.value =
+                        balance.toFixed(2);
+
+                } else {
+
+                    paymentAmount.value =
+                        "";
 
                 }
 
             }
 
         }
-    );
 
 
-    return (
-        "PAY-" +
-        String(
-            highestNumber + 1
-        )
-        .padStart(
-            3,
-            "0"
-        )
-    );
+        /* =========================================
+           OPEN PAYMENT FORM
+           ========================================= */
 
-}
+        async function openPaymentForm() {
+
+            const hotelId =
+                getSelectedHotelId();
 
 
-/* =========================================================
-   GENERATE RECEIPT NUMBER
-   ========================================================= */
+            if (!hotelId) {
 
-function generateReceiptNumber(
-    paymentId
-) {
+                showPaymentMessage(
+                    "Please select a hotel first.",
+                    true
+                );
 
-    const cleanId =
-        String(
-            paymentId || ""
-        )
-        .replace(
-            /^PAY-/,
-            ""
-        );
+                return;
+
+            }
 
 
-    return (
-        "REC-" +
-        cleanId.padStart(
-            3,
-            "0"
-        )
-    );
-
-}
+            editingPaymentId =
+                null;
 
 
-/* =========================================================
-   DISPLAY PAYMENTS
-   ========================================================= */
-
-function displayPayments() {
-
-    if (!paymentAccessAllowed()) {
-
-        return;
-
-    }
+            paymentForm.reset();
 
 
-    const payments =
-        getStoredPayments();
+            paymentId.value =
+                "";
 
 
-    const tableBody =
-        document.getElementById(
-            "paymentTable"
-        );
+            document.getElementById(
+                "paymentModalTitle"
+            ).textContent =
+                "Record Payment";
 
 
-    if (!tableBody) {
-
-        return;
-
-    }
+            paymentDate.value =
+                getTodayDate();
 
 
-    tableBody.innerHTML =
-        "";
+            try {
+
+                await loadGuests();
+
+                await loadRooms();
+
+                await loadReservations();
+
+                populateReservationSelect();
+
+            }
+
+            catch (error) {
+
+                console.error(error);
 
 
-    payments.forEach(
-        function(payment) {
-
-            const row =
-                document.createElement(
-                    "tr"
+                showPaymentMessage(
+                    error.message,
+                    true
                 );
 
 
-            row.dataset.id =
+                return;
+
+            }
+
+
+            updateReservationInformation();
+
+
+            paymentModal.style.display =
+                "flex";
+
+        }
+
+
+        /* =========================================
+           CLOSE PAYMENT FORM
+           ========================================= */
+
+        function closePaymentForm() {
+
+            paymentModal.style.display =
+                "none";
+
+
+            paymentForm.reset();
+
+
+            editingPaymentId =
+                null;
+
+        }
+
+
+        /* =========================================
+           EDIT PAYMENT
+           ========================================= */
+
+        async function editPayment(id) {
+
+            const payment =
+                paymentsData.find(
+                    function(item) {
+
+                        return String(
+                            item.id
+                        ) === String(id);
+
+                    }
+                );
+
+
+            if (!payment) {
+
+                showPaymentMessage(
+                    "Payment could not be found.",
+                    true
+                );
+
+                return;
+
+            }
+
+
+            editingPaymentId =
                 payment.id;
 
 
-            row.dataset.status =
-                payment.status;
+            paymentId.value =
+                payment.id;
 
 
-            const statusClass =
-                getPaymentStatusClass(
-                    payment.status
-                );
-
-
-            row.innerHTML = `
-
-                <td>
-                    ${escapePaymentHTML(payment.id)}
-                </td>
-
-                <td>
-                    ${escapePaymentHTML(payment.guest)}
-                </td>
-
-                <td>
-                    ${escapePaymentHTML(payment.room)}
-                </td>
-
-                <td>
-                    ${escapePaymentHTML(payment.description)}
-                </td>
-
-                <td>
-                    KSh ${Number(
-                        payment.amount || 0
-                    ).toLocaleString("en-KE")}
-                </td>
-
-                <td>
-                    ${escapePaymentHTML(payment.method)}
-                </td>
-
-                <td>
-                    ${escapePaymentHTML(payment.date)}
-                </td>
-
-                <td>
-                    <span class="status ${statusClass}">
-                        ${escapePaymentHTML(payment.status)}
-                    </span>
-                </td>
-
-                <td>
-
-                    <button
-                        type="button"
-                        class="action-btn view-btn"
-                        onclick="viewPaymentRecord(this)">
-                        View
-                    </button>
-
-                    <button
-                        type="button"
-                        class="action-btn edit-btn"
-                        onclick="editPaymentRecord(this)">
-                        Edit
-                    </button>
-
-                    <button
-                        type="button"
-                        class="action-btn receipt-btn"
-                        onclick="openPaymentReceipt(this)">
-                        Receipt
-                    </button>
-
-                    <button
-                        type="button"
-                        class="action-btn delete-btn"
-                        onclick="deletePaymentRecord(this)">
-                        Delete
-                    </button>
-
-                </td>
-
-            `;
-
-
-            tableBody.appendChild(
-                row
-            );
-
-        }
-    );
-
-
-    updatePaymentSummary();
-
-    applyPaymentFilters();
-
-}
-
-
-/* =========================================================
-   PAYMENT SUMMARY
-   ========================================================= */
-
-function updatePaymentSummary() {
-
-    const payments =
-        getStoredPayments();
-
-
-    let completedPayments =
-        0;
-
-
-    let pendingPayments =
-        0;
-
-
-    let revenue =
-        0;
-
-
-    payments.forEach(
-        function(payment) {
-
-            if (
-                payment.status ===
-                "Completed"
-            ) {
-
-                completedPayments++;
-
-
-                revenue +=
-                    Number(
-                        payment.amount
-                    ) || 0;
-
-            }
-
-
-            if (
-                payment.status ===
-                "Pending"
-            ) {
-
-                pendingPayments++;
-
-            }
-
-        }
-    );
-
-
-    const totalElement =
-        document.getElementById(
-            "totalPayments"
-        );
-
-
-    const completedElement =
-        document.getElementById(
-            "completedPayments"
-        );
-
-
-    const pendingElement =
-        document.getElementById(
-            "pendingPayments"
-        );
-
-
-    const revenueElement =
-        document.getElementById(
-            "paymentRevenue"
-        );
-
-
-    if (totalElement) {
-
-        totalElement.textContent =
-            payments.length;
-
-    }
-
-
-    if (completedElement) {
-
-        completedElement.textContent =
-            completedPayments;
-
-    }
-
-
-    if (pendingElement) {
-
-        pendingElement.textContent =
-            pendingPayments;
-
-    }
-
-
-    if (revenueElement) {
-
-        revenueElement.textContent =
-            "KSh " +
-            revenue.toLocaleString(
-                "en-KE"
-            );
-
-    }
-
-}
-
-
-/* =========================================================
-   FIND PAYMENT FROM ROW
-   ========================================================= */
-
-function findPaymentFromRow(
-    row
-) {
-
-    if (!row) {
-
-        return null;
-
-    }
-
-
-    const paymentId =
-        row.dataset.id;
-
-
-    const payments =
-        getStoredPayments();
-
-
-    return (
-        payments.find(
-            function(payment) {
-
-                return (
-                    payment.id ===
-                    paymentId
-                );
-
-            }
-        ) ||
-        null
-    );
-
-}
-
-
-/* =========================================================
-   SAVE PAYMENT FORM
-   ========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
-
-        const paymentForm =
             document.getElementById(
-                "paymentForm"
-            );
+                "paymentModalTitle"
+            ).textContent =
+                "Edit Payment";
 
 
-        if (!paymentForm) {
+            try {
 
-            return;
+                await loadGuests();
+
+                await loadRooms();
+
+                await loadReservations();
+
+                populateReservationSelect(
+                    payment.reservation_id
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+
+                showPaymentMessage(
+                    error.message,
+                    true
+                );
+
+
+                return;
+
+            }
+
+
+            reservationSelect.value =
+                payment.reservation_id;
+
+
+            paymentMethod.value =
+                payment.payment_method ||
+                "";
+
+
+            paymentDate.value =
+                payment.payment_date ||
+                getTodayDate();
+
+
+            updateReservationInformation();
+
+
+            paymentAmount.value =
+                Number(
+                    payment.amount || 0
+                )
+                .toFixed(2);
+
+
+            paymentModal.style.display =
+                "flex";
 
         }
 
+
+        /* =========================================
+           VALIDATE PAYMENT AMOUNT
+           ========================================= */
+
+        function validatePaymentAmount() {
+
+            const reservation =
+                getReservationById(
+                    reservationSelect.value
+                );
+
+
+            if (!reservation) {
+
+                return {
+                    valid: false,
+                    message:
+                        "Please select a reservation."
+                };
+
+            }
+
+
+            const amount =
+                Number(
+                    paymentAmount.value
+                );
+
+
+            if (
+                !Number.isFinite(amount) ||
+                amount <= 0
+            ) {
+
+                return {
+                    valid: false,
+                    message:
+                        "Payment amount must be greater than zero."
+                };
+
+            }
+
+
+            const reservationAmount =
+                Number(
+                    reservation.amount || 0
+                );
+
+
+            const alreadyPaidAmount =
+                getPaidAmountForReservation(
+                    reservation.id,
+                    editingPaymentId
+                );
+
+
+            const remaining =
+                Math.max(
+                    0,
+                    reservationAmount -
+                    alreadyPaidAmount
+                );
+
+
+            /*
+             Do not allow a payment to exceed
+             the remaining reservation balance.
+            */
+
+            if (
+                amount >
+                remaining + 0.001
+            ) {
+
+                return {
+                    valid: false,
+                    message:
+                        "Payment amount cannot exceed the remaining reservation balance of KSh " +
+                        formatMoney(
+                            remaining
+                        ) +
+                        "."
+                };
+
+            }
+
+
+            return {
+                valid: true
+            };
+
+        }
+
+
+        /* =========================================
+           SAVE PAYMENT
+           ========================================= */
 
         paymentForm.addEventListener(
             "submit",
-            function(event) {
+            async function(event) {
 
                 event.preventDefault();
 
 
-                if (
-                    !paymentAccessAllowed()
-                ) {
+                const hotelId =
+                    getSelectedHotelId();
+
+
+                if (!hotelId) {
+
+                    showPaymentMessage(
+                        "Please select a hotel.",
+                        true
+                    );
 
                     return;
 
                 }
 
 
-                const guest =
-                    document.getElementById(
-                        "paymentGuest"
-                    )
-                    .value
-                    .trim();
+                const reservation =
+                    getReservationById(
+                        reservationSelect.value
+                    );
 
 
-                const room =
-                    document.getElementById(
-                        "paymentRoom"
-                    )
-                    .value
-                    .trim();
+                if (!reservation) {
+
+                    showPaymentMessage(
+                        "Please select a reservation.",
+                        true
+                    );
+
+                    return;
+
+                }
 
 
-                const description =
-                    document.getElementById(
-                        "paymentDescription"
-                    )
-                    .value
-                    .trim();
+                const paymentMethodValue =
+                    paymentMethod.value;
+
+
+                if (!paymentMethodValue) {
+
+                    showPaymentMessage(
+                        "Please select a payment method.",
+                        true
+                    );
+
+                    return;
+
+                }
+
+
+                if (!paymentDate.value) {
+
+                    showPaymentMessage(
+                        "Please select the payment date.",
+                        true
+                    );
+
+                    return;
+
+                }
+
+
+                const validation =
+                    validatePaymentAmount();
+
+
+                if (!validation.valid) {
+
+                    showPaymentMessage(
+                        validation.message,
+                        true
+                    );
+
+                    return;
+
+                }
 
 
                 const amount =
                     Number(
-                        document.getElementById(
-                            "paymentAmount"
-                        ).value
+                        paymentAmount.value
                     );
 
 
-                const method =
-                    document.getElementById(
-                        "paymentMethod"
-                    ).value;
+                const paymentData = {
+
+                    reservation_id:
+                        reservation.id,
+
+                    amount:
+                        amount,
+
+                    payment_method:
+                        paymentMethodValue,
+
+                    payment_date:
+                        paymentDate.value,
+
+                    hotel_id:
+                        hotelId
+
+                };
 
 
-                const date =
-                    document.getElementById(
-                        "paymentDate"
-                    ).value;
+                try {
+
+                    let result;
 
 
-                const status =
-                    document.getElementById(
-                        "paymentStatus"
-                    ).value;
+                    if (
+                        editingPaymentId
+                    ) {
 
-
-                if (
-                    !guest ||
-                    !room ||
-                    !description ||
-                    !method ||
-                    !date
-                ) {
-
-                    alert(
-                        "Please fill in all required fields."
-                    );
-
-                    return;
-
-                }
-
-
-                if (
-                    !Number.isFinite(amount) ||
-                    amount < 0
-                ) {
-
-                    alert(
-                        "Please enter a valid payment amount."
-                    );
-
-                    return;
-
-                }
-
-
-                const payments =
-                    getStoredPayments();
-
-
-                if (editingPaymentId) {
-
-                    const index =
-                        payments.findIndex(
-                            function(payment) {
-
-                                return (
-                                    payment.id ===
+                        result =
+                            await supabaseClient
+                                .from("payments")
+                                .update(
+                                    paymentData
+                                )
+                                .eq(
+                                    "id",
                                     editingPaymentId
+                                )
+                                .eq(
+                                    "hotel_id",
+                                    hotelId
                                 );
 
-                            }
-                        );
 
+                    } else {
 
-                    if (index !== -1) {
-
-                        payments[index] = {
-
-                            id:
-                                editingPaymentId,
-
-                            guest:
-                                guest,
-
-                            room:
-                                room,
-
-                            description:
-                                description,
-
-                            amount:
-                                amount,
-
-                            method:
-                                method,
-
-                            date:
-                                date,
-
-                            status:
-                                status
-
-                        };
+                        result =
+                            await supabaseClient
+                                .from("payments")
+                                .insert(
+                                    paymentData
+                                );
 
                     }
 
-                } else {
 
-                    payments.push({
+                    if (result.error) {
 
-                        id:
-                            generatePaymentID(),
+                        throw new Error(
+                            result.error.message
+                        );
 
-                        guest:
-                            guest,
+                    }
 
-                        room:
-                            room,
 
-                        description:
-                            description,
+                    showPaymentMessage(
+                        editingPaymentId
+                            ? "Payment updated successfully."
+                            : "Payment recorded successfully.",
+                        false
+                    );
 
-                        amount:
-                            amount,
 
-                        method:
-                            method,
+                    closePaymentForm();
 
-                        date:
-                            date,
 
-                        status:
-                            status
+                    await loadAllPaymentData();
 
-                    });
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "Failed to save payment:",
+                        error
+                    );
+
+
+                    showPaymentMessage(
+                        "Failed to save payment: " +
+                        error.message,
+                        true
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =========================================
+           DELETE PAYMENT
+           ========================================= */
+
+        async function deletePayment(id) {
+
+            const confirmed =
+                window.confirm(
+                    "Are you sure you want to delete this payment?"
+                );
+
+
+            if (!confirmed) {
+
+                return;
+
+            }
+
+
+            const hotelId =
+                getSelectedHotelId();
+
+
+            if (!hotelId) {
+
+                showPaymentMessage(
+                    "Hotel could not be identified.",
+                    true
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                const result =
+                    await supabaseClient
+                        .from("payments")
+                        .delete()
+                        .eq(
+                            "id",
+                            id
+                        )
+                        .eq(
+                            "hotel_id",
+                            hotelId
+                        );
+
+
+                if (result.error) {
+
+                    throw new Error(
+                        result.error.message
+                    );
 
                 }
 
 
-                savePayments(
-                    payments
+                showPaymentMessage(
+                    "Payment deleted successfully.",
+                    false
                 );
 
 
-                displayPayments();
-
-                closePaymentForm();
+                await loadAllPaymentData();
 
             }
-        );
 
-    }
-);
+            catch (error) {
 
+                console.error(
+                    "Failed to delete payment:",
+                    error
+                );
 
-/* =========================================================
-   VIEW PAYMENT
-   ========================================================= */
 
-function viewPaymentRecord(
-    button
-) {
+                showPaymentMessage(
+                    "Failed to delete payment: " +
+                    error.message,
+                    true
+                );
 
-    if (!paymentAccessAllowed()) {
+            }
 
-        return;
+        }
 
-    }
 
+        /* =========================================
+           SEARCH PAYMENTS
+           ========================================= */
 
-    const row =
-        button.closest("tr");
+        paymentSearch.addEventListener(
+            "input",
+            function() {
 
+                const search =
+                    paymentSearch.value
+                        .toLowerCase()
+                        .trim();
 
-    const payment =
-        findPaymentFromRow(
-            row
-        );
 
+                if (!search) {
 
-    if (!payment) {
+                    renderPayments(
+                        paymentsData
+                    );
 
-        alert(
-            "Payment information could not be found."
-        );
+                    return;
 
-        return;
+                }
 
-    }
 
+                const filtered =
+                    paymentsData.filter(
+                        function(payment) {
 
-    alert(
+                            const reservation =
+                                getReservationById(
+                                    payment.reservation_id
+                                );
 
-        "Payment Details\n\n" +
 
-        "Payment ID: " +
-        payment.id +
-        "\n" +
+                            const guest =
+                                reservation
+                                    ? getGuestById(
+                                        reservation.guest_id
+                                    )
+                                    : null;
 
-        "Guest: " +
-        payment.guest +
-        "\n" +
 
-        "Room: " +
-        payment.room +
-        "\n" +
+                            const room =
+                                reservation
+                                    ? getRoomById(
+                                        reservation.room_id
+                                    )
+                                    : null;
 
-        "Description: " +
-        payment.description +
-        "\n" +
 
-        "Amount: KSh " +
-        Number(
-            payment.amount || 0
-        ).toLocaleString(
-            "en-KE"
-        ) +
-        "\n" +
+                            const guestName =
+                                guest
+                                    ? (
+                                        guest["full name"] ||
+                                        ""
+                                    )
+                                    : "";
 
-        "Payment Method: " +
-        payment.method +
-        "\n" +
 
-        "Date: " +
-        payment.date +
-        "\n" +
+                            const phone =
+                                guest
+                                    ? (
+                                        guest.phone ||
+                                        ""
+                                    )
+                                    : "";
 
-        "Status: " +
-        payment.status
 
-    );
+                            const roomNumber =
+                                room
+                                    ? (
+                                        room.room_number ||
+                                        ""
+                                    )
+                                    : "";
 
-}
 
+                            const method =
+                                String(
+                                    payment.payment_method ||
+                                    ""
+                                );
 
-/* =========================================================
-   EDIT PAYMENT
-   ========================================================= */
 
-function editPaymentRecord(
-    button
-) {
+                            const paymentIdText =
+                                formatPaymentId(
+                                    payment.id
+                                );
 
-    if (!paymentAccessAllowed()) {
 
-        return;
+                            const reservationIdText =
+                                reservation
+                                    ? formatReservationId(
+                                        reservation.id
+                                    )
+                                    : "";
 
-    }
 
+                            return (
 
-    const row =
-        button.closest("tr");
+                                guestName
+                                    .toLowerCase()
+                                    .includes(
+                                        search
+                                    )
 
+                                ||
 
-    const payment =
-        findPaymentFromRow(
-            row
-        );
+                                phone
+                                    .toLowerCase()
+                                    .includes(
+                                        search
+                                    )
 
+                                ||
 
-    if (!payment) {
+                                String(
+                                    roomNumber
+                                )
+                                    .toLowerCase()
+                                    .includes(
+                                        search
+                                    )
 
-        alert(
-            "Payment information could not be found."
-        );
+                                ||
 
-        return;
+                                method
+                                    .toLowerCase()
+                                    .includes(
+                                        search
+                                    )
 
-    }
+                                ||
 
+                                paymentIdText
+                                    .toLowerCase()
+                                    .includes(
+                                        search
+                                    )
 
-    editingPaymentId =
-        payment.id;
+                                ||
 
+                                reservationIdText
+                                    .toLowerCase()
+                                    .includes(
+                                        search
+                                    )
 
-    document.getElementById(
-        "paymentGuest"
-    ).value =
-        payment.guest;
+                            );
 
+                        }
+                    );
 
-    document.getElementById(
-        "paymentRoom"
-    ).value =
-        payment.room;
 
-
-    document.getElementById(
-        "paymentDescription"
-    ).value =
-        payment.description;
-
-
-    document.getElementById(
-        "paymentAmount"
-    ).value =
-        payment.amount;
-
-
-    document.getElementById(
-        "paymentMethod"
-    ).value =
-        payment.method;
-
-
-    document.getElementById(
-        "paymentDate"
-    ).value =
-        payment.date;
-
-
-    document.getElementById(
-        "paymentStatus"
-    ).value =
-        payment.status;
-
-
-    document.getElementById(
-        "paymentModalTitle"
-    ).textContent =
-        "Edit Payment";
-
-
-    document.getElementById(
-        "paymentModal"
-    ).style.display =
-        "flex";
-
-}
-
-
-/* =========================================================
-   DELETE PAYMENT
-   ========================================================= */
-
-function deletePaymentRecord(
-    button
-) {
-
-    if (!paymentAccessAllowed()) {
-
-        return;
-
-    }
-
-
-    const row =
-        button.closest("tr");
-
-
-    if (!row) {
-
-        return;
-
-    }
-
-
-    const paymentId =
-        row.dataset.id;
-
-
-    const confirmed =
-        confirm(
-            "Are you sure you want to delete payment " +
-            paymentId +
-            "?"
-        );
-
-
-    if (!confirmed) {
-
-        return;
-
-    }
-
-
-    let payments =
-        getStoredPayments();
-
-
-    payments =
-        payments.filter(
-            function(payment) {
-
-                return (
-                    payment.id !==
-                    paymentId
+                renderPayments(
+                    filtered
                 );
 
             }
         );
 
 
-    savePayments(
-        payments
-    );
+        /* =========================================
+           RESERVATION SELECT CHANGE
+           ========================================= */
 
+        reservationSelect.addEventListener(
+            "change",
+            function() {
 
-    displayPayments();
+                updateReservationInformation();
 
-}
-
-
-/* =========================================================
-   SEARCH
-   ========================================================= */
-
-function searchPayments() {
-
-    if (!paymentAccessAllowed()) {
-
-        return;
-
-    }
-
-
-    applyPaymentFilters();
-
-}
-
-
-/* =========================================================
-   FILTER
-   ========================================================= */
-
-function filterPayments() {
-
-    if (!paymentAccessAllowed()) {
-
-        return;
-
-    }
-
-
-    applyPaymentFilters();
-
-}
-
-
-/* =========================================================
-   APPLY FILTERS
-   ========================================================= */
-
-function applyPaymentFilters() {
-
-    const searchElement =
-        document.getElementById(
-            "paymentSearch"
+            }
         );
 
 
-    const filterElement =
-        document.getElementById(
-            "paymentFilter"
+        /* =========================================
+           TABLE BUTTONS
+           ========================================= */
+
+        paymentTableBody.addEventListener(
+            "click",
+            function(event) {
+
+                const editButton =
+                    event.target.closest(
+                        "[data-edit-id]"
+                    );
+
+
+                if (editButton) {
+
+                    editPayment(
+                        editButton.dataset.editId
+                    );
+
+                    return;
+
+                }
+
+
+                const receiptButton =
+                    event.target.closest(
+                        "[data-receipt-id]"
+                    );
+
+
+                if (receiptButton) {
+
+                    openReceipt(
+                        receiptButton.dataset.receiptId
+                    );
+
+                    return;
+
+                }
+
+
+                const deleteButton =
+                    event.target.closest(
+                        "[data-delete-id]"
+                    );
+
+
+                if (deleteButton) {
+
+                    deletePayment(
+                        deleteButton.dataset.deleteId
+                    );
+
+                }
+
+            }
         );
 
 
-    if (
-        !searchElement ||
-        !filterElement
-    ) {
+        /* =========================================
+           OPEN RECEIPT
+           ========================================= */
 
-        return;
+        function openReceipt(id) {
 
-    }
+            const payment =
+                paymentsData.find(
+                    function(item) {
 
+                        return String(
+                            item.id
+                        ) === String(id);
 
-    const search =
-        searchElement.value
-            .toLowerCase()
-            .trim();
-
-
-    const filter =
-        filterElement.value;
-
-
-    const rows =
-        document.querySelectorAll(
-            "#paymentTable tr"
-        );
-
-
-    rows.forEach(
-        function(row) {
-
-            const rowText =
-                row.textContent
-                    .toLowerCase();
-
-
-            const status =
-                row.dataset.status ||
-                "";
-
-
-            const matchesSearch =
-                rowText.includes(
-                    search
+                    }
                 );
 
 
-            const matchesFilter =
-                filter === "all" ||
-                status === filter;
+            if (!payment) {
 
+                showPaymentMessage(
+                    "Payment could not be found.",
+                    true
+                );
 
-            row.style.display =
-                matchesSearch &&
-                matchesFilter
-                    ? ""
-                    : "none";
+                return;
 
-        }
-    );
-
-}
-
-
-/* =========================================================
-   OPEN RECEIPT
-   ========================================================= */
-
-function openPaymentReceipt(
-    button
-) {
-
-    if (!paymentAccessAllowed()) {
-
-        return;
-
-    }
-
-
-    const row =
-        button.closest("tr");
-
-
-    const payment =
-        findPaymentFromRow(
-            row
-        );
-
-
-    if (!payment) {
-
-        alert(
-            "Payment information could not be found."
-        );
-
-        return;
-
-    }
-
-
-    currentReceiptPayment =
-        payment;
-
-
-    document.getElementById(
-        "receiptNumber"
-    ).textContent =
-        generateReceiptNumber(
-            payment.id
-        );
-
-
-    document.getElementById(
-        "receiptPaymentId"
-    ).textContent =
-        payment.id;
-
-
-    document.getElementById(
-        "receiptGuest"
-    ).textContent =
-        payment.guest;
-
-
-    document.getElementById(
-        "receiptRoom"
-    ).textContent =
-        payment.room;
-
-
-    document.getElementById(
-        "receiptDescription"
-    ).textContent =
-        payment.description;
-
-
-    document.getElementById(
-        "receiptMethod"
-    ).textContent =
-        payment.method;
-
-
-    document.getElementById(
-        "receiptDate"
-    ).textContent =
-        payment.date;
-
-
-    document.getElementById(
-        "receiptStatus"
-    ).textContent =
-        payment.status;
-
-
-    document.getElementById(
-        "receiptAmount"
-    ).textContent =
-        "KSh " +
-        Number(
-            payment.amount || 0
-        ).toLocaleString(
-            "en-KE",
-            {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
             }
-        );
 
 
-    document.getElementById(
-        "receiptModal"
-    ).style.display =
-        "flex";
+            const reservation =
+                getReservationById(
+                    payment.reservation_id
+                );
 
-}
 
+            const guest =
+                reservation
+                    ? getGuestById(
+                        reservation.guest_id
+                    )
+                    : null;
 
-/* =========================================================
-   CLOSE RECEIPT
-   ========================================================= */
 
-function closeReceipt() {
+            const room =
+                reservation
+                    ? getRoomById(
+                        reservation.room_id
+                    )
+                    : null;
 
-    const modal =
-        document.getElementById(
-            "receiptModal"
-        );
 
+            const guestName =
+                guest
+                    ? (
+                        guest["full name"] ||
+                        "Unnamed Guest"
+                    )
+                    : "Guest not found";
 
-    if (modal) {
 
-        modal.style.display =
-            "none";
+            const phone =
+                guest
+                    ? (
+                        guest.phone ||
+                        "-"
+                    )
+                    : "-";
 
-    }
 
+            const roomNumber =
+                room
+                    ? (
+                        room.room_number ||
+                        "-"
+                    )
+                    : "-";
 
-    currentReceiptPayment =
-        null;
 
-}
+            const amount =
+                Number(
+                    payment.amount || 0
+                );
 
 
-/* =========================================================
-   PRINT RECEIPT
-   ========================================================= */
+            const reservationAmount =
+                reservation
+                    ? Number(
+                        reservation.amount || 0
+                    )
+                    : 0;
 
-function printReceipt() {
 
-    if (!paymentAccessAllowed()) {
+            const paidBeforeThisPayment =
+                reservation
+                    ? getPaidAmountForReservation(
+                        reservation.id,
+                        payment.id
+                    )
+                    : 0;
 
-        return;
 
-    }
+            const remainingAfterPayment =
+                Math.max(
+                    0,
+                    reservationAmount -
+                    paidBeforeThisPayment -
+                    amount
+                );
 
 
-    if (!currentReceiptPayment) {
+            currentReceiptPayment = {
 
-        alert(
-            "No receipt is currently selected."
-        );
+                payment:
+                    payment,
 
-        return;
+                reservation:
+                    reservation,
 
-    }
+                guest:
+                    guest,
 
+                room:
+                    room,
 
-    window.print();
+                guestName:
+                    guestName,
 
-}
+                phone:
+                    phone,
 
+                roomNumber:
+                    roomNumber,
 
-/* =========================================================
-   DOWNLOAD RECEIPT PDF
-   ========================================================= */
+                amount:
+                    amount,
 
-function downloadReceiptPDF() {
+                reservationAmount:
+                    reservationAmount,
 
-    if (!paymentAccessAllowed()) {
+                remainingAfterPayment:
+                    remainingAfterPayment
 
-        return;
+            };
 
-    }
 
-
-    if (!currentReceiptPayment) {
-
-        alert(
-            "No receipt is currently selected."
-        );
-
-        return;
-
-    }
-
-
-    if (
-        !window.jspdf ||
-        !window.jspdf.jsPDF
-    ) {
-
-        alert(
-            "The PDF library has not loaded yet. Please try again."
-        );
-
-        return;
-
-    }
-
-
-    const payment =
-        currentReceiptPayment;
-
-
-    const jsPDF =
-        window.jspdf.jsPDF;
-
-
-    const doc =
-        new jsPDF();
-
-
-    const receiptNumber =
-        generateReceiptNumber(
-            payment.id
-        );
-
-
-    const amount =
-        Number(
-            payment.amount
-        ) || 0;
-
-
-    doc.setFontSize(20);
-
-    doc.setFont(
-        "helvetica",
-        "bold"
-    );
-
-
-    doc.text(
-        "EDU TECH",
-        105,
-        20,
-        {
-            align: "center"
-        }
-    );
-
-
-    doc.setFontSize(14);
-
-
-    doc.text(
-        "HOTEL MANAGEMENT",
-        105,
-        29,
-        {
-            align: "center"
-        }
-    );
-
-
-    doc.setFontSize(12);
-
-    doc.setFont(
-        "helvetica",
-        "normal"
-    );
-
-
-    doc.text(
-        "PAYMENT RECEIPT",
-        105,
-        40,
-        {
-            align: "center"
-        }
-    );
-
-
-    doc.line(
-        20,
-        47,
-        190,
-        47
-    );
-
-
-    let y =
-        62;
-
-
-    function addPDFLine(
-        label,
-        value
-    ) {
-
-        doc.setFont(
-            "helvetica",
-            "bold"
-        );
-
-
-        doc.text(
-            String(label),
-            25,
-            y
-        );
-
-
-        doc.setFont(
-            "helvetica",
-            "normal"
-        );
-
-
-        doc.text(
-            String(value ?? ""),
-            80,
-            y
-        );
-
-
-        y += 10;
-
-    }
-
-
-    addPDFLine(
-        "Receipt Number:",
-        receiptNumber
-    );
-
-
-    addPDFLine(
-        "Payment ID:",
-        payment.id
-    );
-
-
-    addPDFLine(
-        "Guest Name:",
-        payment.guest
-    );
-
-
-    addPDFLine(
-        "Room Number:",
-        payment.room
-    );
-
-
-    addPDFLine(
-        "Description:",
-        payment.description
-    );
-
-
-    addPDFLine(
-        "Payment Method:",
-        payment.method
-    );
-
-
-    addPDFLine(
-        "Payment Date:",
-        payment.date
-    );
-
-
-    addPDFLine(
-        "Status:",
-        payment.status
-    );
-
-
-    y += 5;
-
-
-    doc.line(
-        20,
-        y,
-        190,
-        y
-    );
-
-
-    y += 15;
-
-
-    doc.setFontSize(15);
-
-    doc.setFont(
-        "helvetica",
-        "bold"
-    );
-
-
-    doc.text(
-        "AMOUNT PAID:",
-        25,
-        y
-    );
-
-
-    doc.text(
-        "KSh " +
-        amount.toLocaleString(
-            "en-KE",
-            {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }
-        ),
-        185,
-        y,
-        {
-            align: "right"
-        }
-    );
-
-
-    y += 25;
-
-
-    doc.setFontSize(10);
-
-    doc.setFont(
-        "helvetica",
-        "normal"
-    );
-
-
-    doc.text(
-        "Thank you for choosing EDU TECH HOTEL.",
-        105,
-        y,
-        {
-            align: "center"
-        }
-    );
-
-
-    y += 8;
-
-
-    doc.text(
-        "This is an electronically generated receipt.",
-        105,
-        y,
-        {
-            align: "center"
-        }
-    );
-
-
-    doc.save(
-        receiptNumber +
-        ".pdf"
-    );
-
-}
-
-
-/* =========================================================
-   CLOSE RECEIPT WHEN CLICKING OUTSIDE
-   ========================================================= */
-
-window.addEventListener(
-    "click",
-    function(event) {
-
-        const modal =
             document.getElementById(
-                "receiptModal"
-            );
+                "receiptDetails"
+            ).innerHTML =
+                `
+                <div
+                    style="
+                        text-align:center;
+                        margin-bottom:20px;
+                    "
+                >
+
+                    <h2>
+                        EDU TECH HOTEL
+                    </h2>
+
+                    <p>
+                        Payment Receipt
+                    </p>
+
+                </div>
 
 
-        if (
-            modal &&
-            event.target === modal
-        ) {
-
-            closeReceipt();
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   CLOSE PAYMENT FORM WHEN CLICKING OUTSIDE
-   ========================================================= */
-
-window.addEventListener(
-    "click",
-    function(event) {
-
-        const modal =
-            document.getElementById(
-                "paymentModal"
-            );
+                <p>
+                    <strong>Receipt No:</strong>
+                    ${escapeHtml(
+                        "REC-" +
+                        String(
+                            payment.id
+                        )
+                        .padStart(
+                            3,
+                            "0"
+                        )
+                    )}
+                </p>
 
 
-        if (
-            modal &&
-            event.target === modal
-        ) {
-
-            closePaymentForm();
-
-        }
-
-    }
-);
+                <p>
+                    <strong>Payment ID:</strong>
+                    ${escapeHtml(
+                        formatPaymentId(
+                            payment.id
+                        )
+                    )}
+                </p>
 
 
-/* =========================================================
-   PAGE INITIALIZATION
-   ========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    async function() {
-
-        /*
-         First verify the authenticated
-         Supabase profile.
-        */
-
-        const accessGranted =
-            await checkPaymentsModuleRestriction();
+                <p>
+                    <strong>Reservation:</strong>
+                    ${escapeHtml(
+                        reservation
+                            ? formatReservationId(
+                                reservation.id
+                            )
+                            : "-"
+                    )}
+                </p>
 
 
-        /*
-         Apply role visibility after the
-         verified role has been obtained.
-        */
-
-        applyRolePermissions();
-
-
-        updateUserDisplay();
+                <p>
+                    <strong>Guest:</strong>
+                    ${escapeHtml(
+                        guestName
+                    )}
+                </p>
 
 
-        /*
-         Make sure Logout is always
-         available and visible.
-        */
-
-        const logoutButton =
-            document.getElementById(
-                "logoutButton"
-            );
+                <p>
+                    <strong>Phone:</strong>
+                    ${escapeHtml(
+                        phone
+                    )}
+                </p>
 
 
-        if (logoutButton) {
+                <p>
+                    <strong>Room:</strong>
+                    ${escapeHtml(
+                        roomNumber
+                    )}
+                </p>
 
-            logoutButton.style.display =
+
+                <p>
+                    <strong>Payment Method:</strong>
+                    ${escapeHtml(
+                        payment.payment_method ||
+                        "-"
+                    )}
+                </p>
+
+
+                <p>
+                    <strong>Payment Date:</strong>
+                    ${escapeHtml(
+                        payment.payment_date ||
+                        "-"
+                    )}
+                </p>
+
+
+                <p>
+                    <strong>Reservation Total:</strong>
+                    KSh ${formatMoney(
+                        reservationAmount
+                    )}
+                </p>
+
+
+                <p>
+                    <strong>Payment Amount:</strong>
+                    KSh ${formatMoney(
+                        amount
+                    )}
+                </p>
+
+
+                <p>
+                    <strong>Remaining Balance:</strong>
+                    KSh ${formatMoney(
+                        remainingAfterPayment
+                    )}
+                </p>
+
+
+                <hr>
+
+
+                <p
+                    style="
+                        text-align:center;
+                        font-weight:bold;
+                        margin-top:20px;
+                    "
+                >
+                    Thank you for choosing EDU TECH HOTEL.
+                </p>
+                `;
+
+
+            receiptModal.style.display =
                 "flex";
 
-            logoutButton.classList.remove(
-                "role-hidden"
+        }
+
+
+        /* =========================================
+           CLOSE RECEIPT
+           ========================================= */
+
+        function closeReceipt() {
+
+            receiptModal.style.display =
+                "none";
+
+
+            currentReceiptPayment =
+                null;
+
+        }
+
+
+        /* =========================================
+           PRINT RECEIPT
+           ========================================= */
+
+        function printReceipt() {
+
+            if (
+                !currentReceiptPayment
+            ) {
+
+                return;
+
+            }
+
+
+            const data =
+                currentReceiptPayment;
+
+
+            const payment =
+                data.payment;
+
+
+            const html =
+                `
+                <!DOCTYPE html>
+
+                <html>
+
+                <head>
+
+                    <title>
+                        Payment Receipt
+                    </title>
+
+                    <style>
+
+                        body {
+                            font-family: Arial, sans-serif;
+                            padding: 30px;
+                            color: #222;
+                        }
+
+                        h1,
+                        h2,
+                        p {
+                            margin: 6px 0;
+                        }
+
+                        .center {
+                            text-align: center;
+                        }
+
+                        .line {
+                            border-top: 1px solid #ccc;
+                            margin: 20px 0;
+                        }
+
+                    </style>
+
+                </head>
+
+                <body>
+
+                    <div class="center">
+
+                        <h1>
+                            EDU TECH HOTEL
+                        </h1>
+
+                        <h2>
+                            Payment Receipt
+                        </h2>
+
+                    </div>
+
+
+                    <div class="line"></div>
+
+
+                    <p>
+                        <strong>Receipt No:</strong>
+                        REC-${String(
+                            payment.id
+                        ).padStart(3, "0")}
+                    </p>
+
+
+                    <p>
+                        <strong>Payment ID:</strong>
+                        ${formatPaymentId(
+                            payment.id
+                        )}
+                    </p>
+
+
+                    <p>
+                        <strong>Reservation:</strong>
+                        ${
+                            data.reservation
+                                ? formatReservationId(
+                                    data.reservation.id
+                                )
+                                : "-"
+                        }
+                    </p>
+
+
+                    <p>
+                        <strong>Guest:</strong>
+                        ${escapeHtml(
+                            data.guestName
+                        )}
+                    </p>
+
+
+                    <p>
+                        <strong>Phone:</strong>
+                        ${escapeHtml(
+                            data.phone
+                        )}
+                    </p>
+
+
+                    <p>
+                        <strong>Room:</strong>
+                        ${escapeHtml(
+                            data.roomNumber
+                        )}
+                    </p>
+
+
+                    <p>
+                        <strong>Payment Method:</strong>
+                        ${escapeHtml(
+                            payment.payment_method ||
+                            "-"
+                        )}
+                    </p>
+
+
+                    <p>
+                        <strong>Payment Date:</strong>
+                        ${escapeHtml(
+                            payment.payment_date ||
+                            "-"
+                        )}
+                    </p>
+
+
+                    <p>
+                        <strong>Reservation Total:</strong>
+                        KSh ${formatMoney(
+                            data.reservationAmount
+                        )}
+                    </p>
+
+
+                    <p>
+                        <strong>Payment Amount:</strong>
+                        KSh ${formatMoney(
+                            data.amount
+                        )}
+                    </p>
+
+
+                    <p>
+                        <strong>Remaining Balance:</strong>
+                        KSh ${formatMoney(
+                            data.remainingAfterPayment
+                        )}
+                    </p>
+
+
+                    <div class="line"></div>
+
+
+                    <div class="center">
+
+                        <p>
+                            Thank you for choosing EDU TECH HOTEL.
+                        </p>
+
+                    </div>
+
+
+                    <script>
+
+                        window.onload = function() {
+
+                            window.print();
+
+                        };
+
+                    <\/script>
+
+                </body>
+
+                </html>
+                `;
+
+
+            const printWindow =
+                window.open(
+                    "",
+                    "_blank"
+                );
+
+
+            if (!printWindow) {
+
+                alert(
+                    "Please allow pop-ups in your browser to print the receipt."
+                );
+
+                return;
+
+            }
+
+
+            printWindow.document.open();
+
+            printWindow.document.write(
+                html
             );
 
-            logoutButton.removeAttribute(
-                "aria-hidden"
+            printWindow.document.close();
+
+        }
+
+
+        /* =========================================
+           DOWNLOAD RECEIPT PDF
+           ========================================= */
+
+        function downloadReceiptPDF() {
+
+            if (
+                !currentReceiptPayment
+            ) {
+
+                return;
+
+            }
+
+
+            if (
+                !window.jspdf ||
+                !window.jspdf.jsPDF
+            ) {
+
+                alert(
+                    "PDF library is not available. Please check your internet connection and try again."
+                );
+
+                return;
+
+            }
+
+
+            const data =
+                currentReceiptPayment;
+
+
+            const payment =
+                data.payment;
+
+
+            const {
+                jsPDF
+            } =
+                window.jspdf;
+
+
+            const doc =
+                new jsPDF();
+
+
+            let y =
+                20;
+
+
+            doc.setFontSize(
+                18
+            );
+
+
+            doc.text(
+                "EDU TECH HOTEL",
+                105,
+                y,
+                {
+                    align: "center"
+                }
+            );
+
+
+            y += 10;
+
+
+            doc.setFontSize(
+                14
+            );
+
+
+            doc.text(
+                "Payment Receipt",
+                105,
+                y,
+                {
+                    align: "center"
+                }
+            );
+
+
+            y += 15;
+
+
+            doc.setFontSize(
+                11
+            );
+
+
+            const lines = [
+
+                [
+                    "Receipt No:",
+                    "REC-" +
+                    String(
+                        payment.id
+                    )
+                    .padStart(
+                        3,
+                        "0"
+                    )
+                ],
+
+                [
+                    "Payment ID:",
+                    formatPaymentId(
+                        payment.id
+                    )
+                ],
+
+                [
+                    "Reservation:",
+                    data.reservation
+                        ? formatReservationId(
+                            data.reservation.id
+                        )
+                        : "-"
+                ],
+
+                [
+                    "Guest:",
+                    data.guestName
+                ],
+
+                [
+                    "Phone:",
+                    data.phone
+                ],
+
+                [
+                    "Room:",
+                    data.roomNumber
+                ],
+
+                [
+                    "Payment Method:",
+                    payment.payment_method ||
+                    "-"
+                ],
+
+                [
+                    "Payment Date:",
+                    payment.payment_date ||
+                    "-"
+                ],
+
+                [
+                    "Reservation Total:",
+                    "KSh " +
+                    formatMoney(
+                        data.reservationAmount
+                    )
+                ],
+
+                [
+                    "Payment Amount:",
+                    "KSh " +
+                    formatMoney(
+                        data.amount
+                    )
+                ],
+
+                [
+                    "Remaining Balance:",
+                    "KSh " +
+                    formatMoney(
+                        data.remainingAfterPayment
+                    )
+                ]
+
+            ];
+
+
+            lines.forEach(
+                function(line) {
+
+                    doc.setFont(
+                        "helvetica",
+                        "bold"
+                    );
+
+
+                    doc.text(
+                        line[0],
+                        20,
+                        y
+                    );
+
+
+                    doc.setFont(
+                        "helvetica",
+                        "normal"
+                    );
+
+
+                    doc.text(
+                        String(
+                            line[1]
+                        ),
+                        75,
+                        y
+                    );
+
+
+                    y += 9;
+
+                }
+            );
+
+
+            y += 10;
+
+
+            doc.line(
+                20,
+                y,
+                190,
+                y
+            );
+
+
+            y += 12;
+
+
+            doc.text(
+                "Thank you for choosing EDU TECH HOTEL.",
+                105,
+                y,
+                {
+                    align: "center"
+                }
+            );
+
+
+            doc.save(
+                "Payment-Receipt-" +
+                payment.id +
+                ".pdf"
             );
 
         }
 
 
-        /*
-         Only load payment data if the
-         user is actually allowed to use
-         the Payments module.
-        */
+        /* =========================================
+           HOTEL CHANGE
+           ========================================= */
 
-        if (accessGranted) {
+        hotelSelector.addEventListener(
+            "change",
+            async function() {
 
-            displayPayments();
+                try {
+
+                    await loadAllPaymentData();
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        error
+                    );
+
+
+                    showPaymentMessage(
+                        error.message,
+                        true
+                    );
+
+                }
+
+            }
+        );
+
+
+        /* =========================================
+           INITIALIZE
+           ========================================= */
+
+        async function initializePayments() {
+
+            try {
+
+                if (
+                    !window.supabaseClient
+                ) {
+
+                    throw new Error(
+                        "Supabase client is not available. Check supabase.js."
+                    );
+
+                }
+
+
+                const role =
+                    getCurrentRole();
+
+
+                const userName =
+                    sessionStorage.getItem(
+                        "userName"
+                    ) ||
+                    localStorage.getItem(
+                        "userName"
+                    ) ||
+                    "Administrator";
+
+
+                const roleDisplay =
+                    role
+                        ? role.replace(
+                            /_/g,
+                            " "
+                        )
+                        : "Hotel User";
+
+
+                document.getElementById(
+                    "loggedUserName"
+                ).textContent =
+                    userName;
+
+
+                document.getElementById(
+                    "loggedUserRole"
+                ).textContent =
+                    roleDisplay;
+
+
+                await loadHotels();
+
+
+                const hotelId =
+                    getSelectedHotelId();
+
+
+                if (hotelId) {
+
+                    await loadAllPaymentData();
+
+                } else {
+
+                    paymentTableBody.innerHTML =
+                        `
+                        <tr>
+                            <td
+                                colspan="9"
+                                style="text-align:center;"
+                            >
+                                Select a hotel to view payments.
+                            </td>
+                        </tr>
+                        `;
+
+
+                    updatePaymentSummary();
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Failed to initialize Payments:",
+                    error
+                );
+
+
+                paymentTableBody.innerHTML =
+                    `
+                    <tr>
+                        <td
+                            colspan="9"
+                            style="text-align:center;"
+                        >
+                            Failed to initialize Payments:
+                            ${escapeHtml(
+                                error.message
+                            )}
+                        </td>
+                    </tr>
+                    `;
+
+
+                showPaymentMessage(
+                    "Failed to initialize Payments: " +
+                    error.message,
+                    true
+                );
+
+            }
 
         }
 
-    }
-);
 
-</script>
+        /* =========================================
+           START
+           ========================================= */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+                initializePayments();
+
+            }
+        );
+
+    </script>
 
 </body>
+
 </html>
