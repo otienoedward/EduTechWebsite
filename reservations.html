@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,105 +22,120 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 15px;
             margin-bottom: 25px;
-            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .page-header h1 {
             margin: 0;
         }
 
-        .primary-btn {
-            background: #0d6efd;
-            color: white;
+        .page-header p {
+            margin: 5px 0 0;
+            color: #777;
+        }
+
+        .btn {
             border: none;
-            padding: 11px 18px;
             border-radius: 6px;
+            padding: 10px 16px;
             cursor: pointer;
             font-size: 14px;
         }
 
-        .primary-btn:hover {
-            background: #0b5ed7;
+        .btn-primary {
+            background: #2563eb;
+            color: white;
         }
 
-        .secondary-btn {
-            background: #6c757d;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 6px;
-            cursor: pointer;
+        .btn-primary:hover {
+            background: #1d4ed8;
         }
 
-        .danger-btn {
-            background: #dc3545;
+        .btn-secondary {
+            background: #6b7280;
             color: white;
-            border: none;
-            padding: 7px 11px;
-            border-radius: 5px;
-            cursor: pointer;
         }
 
-        .edit-btn {
-            background: #198754;
+        .btn-warning {
+            background: #f59e0b;
             color: white;
-            border: none;
-            padding: 7px 11px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-right: 5px;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
         }
 
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+            gap: 20px;
             margin-bottom: 25px;
         }
 
         .summary-card {
             background: white;
+            border-radius: 10px;
             padding: 20px;
-            border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .summary-card h3 {
-            margin: 0 0 8px;
-            font-size: 14px;
+            margin: 0 0 10px;
             color: #666;
+            font-size: 14px;
         }
 
         .summary-card .number {
-            font-size: 27px;
+            font-size: 28px;
             font-weight: bold;
+            color: #1f2937;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .toolbar {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
             display: flex;
-            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
         }
 
-        .toolbar input,
-        .toolbar select {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            min-width: 180px;
+        .search-box {
+            flex: 1;
+            min-width: 250px;
         }
 
-        .table-container {
+        .search-box input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+        }
+
+        .hotel-selector {
+            min-width: 220px;
+        }
+
+        .hotel-selector select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
             background: white;
-            border-radius: 8px;
+        }
+
+        .table-wrapper {
             overflow-x: auto;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         table {
@@ -131,64 +145,102 @@
 
         th,
         td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
+            padding: 13px 12px;
+            border-bottom: 1px solid #e5e7eb;
             text-align: left;
             white-space: nowrap;
         }
 
         th {
-            background: #f5f5f5;
-            font-weight: 600;
+            background: #f8fafc;
+            color: #374151;
+            font-size: 13px;
+        }
+
+        td {
+            font-size: 14px;
+        }
+
+        .empty-state,
+        .loading-state {
+            text-align: center;
+            padding: 35px;
+            color: #777;
+        }
+
+        .error-message {
+            display: none;
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
         }
 
         .status {
             display: inline-block;
             padding: 5px 9px;
-            border-radius: 15px;
+            border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
         }
 
         .status-pending {
-            background: #fff3cd;
-            color: #856404;
+            background: #fef3c7;
+            color: #92400e;
         }
 
         .status-confirmed {
-            background: #d1e7dd;
-            color: #0f5132;
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-checked-in {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-checked-out {
+            background: #e5e7eb;
+            color: #374151;
         }
 
         .status-cancelled {
-            background: #f8d7da;
-            color: #842029;
+            background: #fee2e2;
+            color: #991b1b;
         }
 
-        .status-completed {
-            background: #cff4fc;
-            color: #055160;
+        .status-other {
+            background: #f3f4f6;
+            color: #374151;
         }
+
+        /* Modal */
 
         .modal {
             display: none;
             position: fixed;
+            inset: 0;
             z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.55);
-            overflow-y: auto;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
         }
 
         .modal-content {
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
             background: white;
-            width: 90%;
-            max-width: 650px;
-            margin: 50px auto;
-            padding: 25px;
             border-radius: 10px;
+            padding: 25px;
+            box-sizing: border-box;
         }
 
         .modal-header {
@@ -204,94 +256,82 @@
 
         .close-btn {
             border: none;
-            background: none;
-            font-size: 28px;
+            background: transparent;
+            font-size: 27px;
             cursor: pointer;
+            color: #666;
         }
 
-        .form-grid {
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #2563eb;
+        }
+
+        .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group.full {
-            grid-column: 1 / -1;
-        }
-
-        .form-group label {
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
-        .form-group input,
-        .form-group select {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
         .form-actions {
-            margin-top: 20px;
             display: flex;
             justify-content: flex-end;
             gap: 10px;
+            margin-top: 20px;
         }
 
-        .message {
+        .info-box {
+            background: #eff6ff;
+            color: #1e40af;
             padding: 12px;
             border-radius: 6px;
             margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .system-owner-only {
             display: none;
         }
 
-        .message.success {
-            background: #d1e7dd;
-            color: #0f5132;
-            display: block;
-        }
-
-        .message.error {
-            background: #f8d7da;
-            color: #842029;
-            display: block;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 30px;
-        }
-
-        .no-data {
-            text-align: center;
-            padding: 30px;
-            color: #777;
-        }
-
-        @media (max-width: 900px) {
+        @media (max-width: 1000px) {
             .summary-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 700px) {
             .summary-grid {
                 grid-template-columns: 1fr;
             }
 
-            .form-grid {
+            .form-row {
                 grid-template-columns: 1fr;
             }
 
-            .form-group.full {
-                grid-column: auto;
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
     </style>
@@ -299,171 +339,160 @@
 
 <body>
 
-<div class="app-container">
+<!-- ==========================================================
+     SIDEBAR
+     ========================================================== -->
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
+<aside class="sidebar">
 
-        <div class="sidebar-header">
-            <h2>EDU TECH</h2>
-            <span>Hotel Management</span>
+    <div class="sidebar-header">
+        <h2>EDU TECH</h2>
+        <p>Hotel Management</p>
+    </div>
+
+    <nav>
+
+        <a href="./index.html" data-module="dashboard">Dashboard</a>
+        <a href="./rooms.html" data-module="rooms">Rooms</a>
+        <a href="./guests.html" data-module="guests">Guests</a>
+        <a href="./reservations.html" data-module="reservations">Reservations</a>
+        <a href="./checkin.html" data-module="checkin">Check-in</a>
+        <a href="./checkout.html" data-module="checkout">Check-out</a>
+        <a href="./restaurant.html" data-module="restaurant">Restaurant</a>
+        <a href="./inventory.html" data-module="inventory">Inventory</a>
+        <a href="./payments.html" data-module="payments">Payments</a>
+        <a href="./expenses.html" data-module="expenses">Expenses</a>
+        <a href="./employees.html" data-module="employees">Employees</a>
+        <a href="./housekeeping.html" data-module="housekeeping">Housekeeping</a>
+        <a href="./maintenance.html" data-module="maintenance">Maintenance</a>
+        <a href="./reports.html" data-module="reports">Reports</a>
+        <a href="./settings.html" data-module="settings">Settings</a>
+        <a href="./hotels.html" data-module="hotels">Hotels</a>
+
+        <a href="#" data-action="logout">Logout</a>
+
+    </nav>
+
+</aside>
+
+
+<!-- ==========================================================
+     MAIN CONTENT
+     ========================================================== -->
+
+<main class="main-content">
+
+    <div class="page-container">
+
+        <div class="page-header">
+
+            <div>
+                <h1>Reservations</h1>
+                <p>Manage guest room reservations.</p>
+            </div>
+
+            <button
+                class="btn btn-primary"
+                id="addReservationBtn"
+            >
+                + New Reservation
+            </button>
+
         </div>
 
-        <nav class="sidebar-nav">
 
-            <a href="./index.html" data-module="dashboard">Dashboard</a>
-
-            <a href="./rooms.html" data-module="rooms">Rooms</a>
-
-            <a href="./guests.html" data-module="guests">Guests</a>
-
-            <a href="./reservations.html" data-module="reservations">
-                Reservations
-            </a>
-
-            <a href="./checkin.html" data-module="checkin">
-                Check-in
-            </a>
-
-            <a href="./checkout.html" data-module="checkout">
-                Check-out
-            </a>
-
-            <a href="./restaurant.html" data-module="restaurant">
-                Restaurant
-            </a>
-
-            <a href="./inventory.html" data-module="inventory">
-                Inventory
-            </a>
-
-            <a href="./payments.html" data-module="payments">
-                Payments
-            </a>
-
-            <a href="./expenses.html" data-module="expenses">
-                Expenses
-            </a>
-
-            <a href="./employees.html" data-module="employees">
-                Employees
-            </a>
-
-            <a href="./housekeeping.html" data-module="housekeeping">
-                Housekeeping
-            </a>
-
-            <a href="./maintenance.html" data-module="maintenance">
-                Maintenance
-            </a>
-
-            <a href="./reports.html" data-module="reports">
-                Reports
-            </a>
-
-            <a href="./settings.html" data-module="settings">
-                Settings
-            </a>
-
-            <a href="./hotels.html" data-module="hotels">
-                Hotels
-            </a>
-
-            <a href="#" data-action="logout">
-                Logout
-            </a>
-
-        </nav>
-
-    </aside>
+        <div
+            id="errorMessage"
+            class="error-message"
+        ></div>
 
 
-    <!-- MAIN CONTENT -->
-    <main class="main-content">
+        <!-- ==================================================
+             SUMMARY
+             ================================================== -->
 
-        <div class="page-container">
+        <div class="summary-grid">
 
-            <div class="page-header">
-
-                <div>
-                    <h1>Reservations</h1>
-                    <p>Manage hotel guest reservations</p>
+            <div class="summary-card">
+                <h3>Total Reservations</h3>
+                <div
+                    class="number"
+                    id="totalReservations"
+                >
+                    0
                 </div>
-
-                <button class="primary-btn" onclick="openReservationModal()">
-                    + New Reservation
-                </button>
-
             </div>
 
-
-            <!-- MESSAGE -->
-            <div id="message" class="message"></div>
-
-
-            <!-- SUMMARY -->
-            <div class="summary-grid">
-
-                <div class="summary-card">
-                    <h3>Total Reservations</h3>
-                    <div class="number" id="totalReservations">0</div>
+            <div class="summary-card">
+                <h3>Pending</h3>
+                <div
+                    class="number"
+                    id="pendingReservations"
+                >
+                    0
                 </div>
-
-                <div class="summary-card">
-                    <h3>Pending</h3>
-                    <div class="number" id="pendingReservations">0</div>
-                </div>
-
-                <div class="summary-card">
-                    <h3>Confirmed</h3>
-                    <div class="number" id="confirmedReservations">0</div>
-                </div>
-
-                <div class="summary-card">
-                    <h3>Cancelled</h3>
-                    <div class="number" id="cancelledReservations">0</div>
-                </div>
-
             </div>
 
+            <div class="summary-card">
+                <h3>Confirmed</h3>
+                <div
+                    class="number"
+                    id="confirmedReservations"
+                >
+                    0
+                </div>
+            </div>
 
-            <!-- SEARCH / FILTER -->
+            <div class="summary-card">
+                <h3>Checked In</h3>
+                <div
+                    class="number"
+                    id="checkedInReservations"
+                >
+                    0
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             RESERVATION TABLE
+             ================================================== -->
+
+        <div class="table-card">
+
             <div class="toolbar">
 
-                <input
-                    type="text"
-                    id="searchInput"
-                    placeholder="Search guest or room..."
-                    oninput="renderReservations()"
+                <div class="search-box">
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search by guest, room or status..."
+                    >
+
+                </div>
+
+                <div
+                    class="hotel-selector system-owner-only"
+                    id="hotelSelectorContainer"
                 >
 
-                <select id="statusFilter" onchange="renderReservations()">
+                    <select id="hotelSelector">
 
-                    <option value="">All Statuses</option>
+                        <option value="">
+                            Select Hotel
+                        </option>
 
-                    <option value="Pending">
-                        Pending
-                    </option>
+                    </select>
 
-                    <option value="Confirmed">
-                        Confirmed
-                    </option>
-
-                    <option value="Cancelled">
-                        Cancelled
-                    </option>
-
-                    <option value="Completed">
-                        Completed
-                    </option>
-
-                </select>
+                </div>
 
             </div>
 
 
-            <!-- TABLE -->
-            <div class="table-container">
+            <div class="table-wrapper">
 
                 <table>
 
@@ -471,20 +500,14 @@
 
                         <tr>
 
-                            <th>ID</th>
-
+                            <th>#</th>
                             <th>Guest</th>
-
                             <th>Room</th>
-
                             <th>Check-in</th>
-
                             <th>Check-out</th>
-
-                            <th>Amount</th>
-
+                            <th>Nights</th>
+                            <th>Total</th>
                             <th>Status</th>
-
                             <th>Actions</th>
 
                         </tr>
@@ -494,7 +517,10 @@
                     <tbody id="reservationsTableBody">
 
                         <tr>
-                            <td colspan="8" class="loading">
+                            <td
+                                colspan="9"
+                                class="loading-state"
+                            >
                                 Loading reservations...
                             </td>
                         </tr>
@@ -507,14 +533,19 @@
 
         </div>
 
-    </main>
+    </div>
 
-</div>
+</main>
 
 
-<!-- RESERVATION MODAL -->
+<!-- ==========================================================
+     RESERVATION MODAL
+     ========================================================== -->
 
-<div id="reservationModal" class="modal">
+<div
+    class="modal"
+    id="reservationModal"
+>
 
     <div class="modal-content">
 
@@ -526,11 +557,16 @@
 
             <button
                 class="close-btn"
-                onclick="closeReservationModal()"
+                id="closeModalBtn"
             >
                 &times;
             </button>
 
+        </div>
+
+
+        <div class="info-box">
+            Select a guest and room, then enter the reservation dates.
         </div>
 
 
@@ -542,54 +578,72 @@
             >
 
 
-            <div class="form-grid">
+            <!-- GUEST -->
+
+            <div class="form-group">
+
+                <label for="guestSelect">
+                    Guest *
+                </label>
+
+                <select
+                    id="guestSelect"
+                    required
+                >
+
+                    <option value="">
+                        Loading guests...
+                    </option>
+
+                </select>
+
+            </div>
 
 
-                <!-- GUEST -->
+            <!-- ROOM -->
 
-                <div class="form-group full">
+            <div class="form-group">
 
-                    <label for="guestId">
-                        Guest *
-                    </label>
+                <label for="roomSelect">
+                    Room *
+                </label>
 
-                    <select
-                        id="guestId"
-                        required
-                    >
+                <select
+                    id="roomSelect"
+                    required
+                >
 
-                        <option value="">
-                            Loading guests...
-                        </option>
+                    <option value="">
+                        Loading rooms...
+                    </option>
 
-                    </select>
+                </select>
 
-                </div>
-
-
-                <!-- ROOM -->
-
-                <div class="form-group full">
-
-                    <label for="roomId">
-                        Room *
-                    </label>
-
-                    <select
-                        id="roomId"
-                        required
-                    >
-
-                        <option value="">
-                            Loading rooms...
-                        </option>
-
-                    </select>
-
-                </div>
+            </div>
 
 
-                <!-- CHECK IN -->
+            <!-- ROOM PRICE -->
+
+            <div class="form-group">
+
+                <label for="roomPrice">
+                    Room Price Per Night
+                </label>
+
+                <input
+                    type="number"
+                    id="roomPrice"
+                    step="0.01"
+                    min="0"
+                    readonly
+                >
+
+            </div>
+
+
+            <!-- DATES -->
+
+            <div class="form-row">
 
                 <div class="form-group">
 
@@ -606,8 +660,6 @@
                 </div>
 
 
-                <!-- CHECK OUT -->
-
                 <div class="form-group">
 
                     <label for="checkOut">
@@ -622,76 +674,96 @@
 
                 </div>
 
-
-                <!-- AMOUNT -->
-
-                <div class="form-group">
-
-                    <label for="amount">
-                        Amount *
-                    </label>
-
-                    <input
-                        type="number"
-                        id="amount"
-                        min="0"
-                        step="0.01"
-                        required
-                    >
-
-                </div>
+            </div>
 
 
-                <!-- STATUS -->
+            <!-- NIGHTS -->
 
-                <div class="form-group">
+            <div class="form-group">
 
-                    <label for="reservationStatus">
-                        Status *
-                    </label>
+                <label for="nights">
+                    Number of Nights
+                </label>
 
-                    <select
-                        id="reservationStatus"
-                        required
-                    >
-
-                        <option value="Pending">
-                            Pending
-                        </option>
-
-                        <option value="Confirmed">
-                            Confirmed
-                        </option>
-
-                        <option value="Cancelled">
-                            Cancelled
-                        </option>
-
-                        <option value="Completed">
-                            Completed
-                        </option>
-
-                    </select>
-
-                </div>
-
+                <input
+                    type="number"
+                    id="nights"
+                    readonly
+                    value="0"
+                >
 
             </div>
 
+
+            <!-- TOTAL -->
+
+            <div class="form-group">
+
+                <label for="totalAmount">
+                    Total Amount
+                </label>
+
+                <input
+                    type="number"
+                    id="totalAmount"
+                    step="0.01"
+                    readonly
+                    value="0"
+                >
+
+            </div>
+
+
+            <!-- STATUS -->
+
+            <div class="form-group">
+
+                <label for="status">
+                    Status
+                </label>
+
+                <select id="status">
+
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="Confirmed">
+                        Confirmed
+                    </option>
+
+                    <option value="Checked In">
+                        Checked In
+                    </option>
+
+                    <option value="Checked Out">
+                        Checked Out
+                    </option>
+
+                    <option value="Cancelled">
+                        Cancelled
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- ACTIONS -->
 
             <div class="form-actions">
 
                 <button
                     type="button"
-                    class="secondary-btn"
-                    onclick="closeReservationModal()"
+                    class="btn btn-secondary"
+                    id="cancelBtn"
                 >
                     Cancel
                 </button>
 
                 <button
                     type="submit"
-                    class="primary-btn"
+                    class="btn btn-primary"
                 >
                     Save Reservation
                 </button>
@@ -706,332 +778,424 @@
 
 
 <script>
+/* ==========================================================
+   EDU TECH HOTEL MANAGEMENT SYSTEM
+   RESERVATIONS MODULE
+   ========================================================== */
+
+
+/* ==========================================================
+   DATA
+   ========================================================== */
 
 let reservations = [];
 let guests = [];
 let rooms = [];
+let hotels = [];
 
 let editingReservationId = null;
 
 
-/* =========================================================
-   HOTEL ID
-========================================================= */
+/* ==========================================================
+   DOM
+   ========================================================== */
 
-function getHotelId() {
+const reservationModal =
+    document.getElementById("reservationModal");
 
-    const role =
+const reservationForm =
+    document.getElementById("reservationForm");
+
+const reservationsTableBody =
+    document.getElementById("reservationsTableBody");
+
+const searchInput =
+    document.getElementById("searchInput");
+
+const errorMessage =
+    document.getElementById("errorMessage");
+
+const guestSelect =
+    document.getElementById("guestSelect");
+
+const roomSelect =
+    document.getElementById("roomSelect");
+
+const roomPrice =
+    document.getElementById("roomPrice");
+
+const checkIn =
+    document.getElementById("checkIn");
+
+const checkOut =
+    document.getElementById("checkOut");
+
+const nights =
+    document.getElementById("nights");
+
+const totalAmount =
+    document.getElementById("totalAmount");
+
+const statusSelect =
+    document.getElementById("status");
+
+const hotelSelector =
+    document.getElementById("hotelSelector");
+
+const hotelSelectorContainer =
+    document.getElementById("hotelSelectorContainer");
+
+
+/* ==========================================================
+   ROLE
+   ========================================================== */
+
+function getCurrentRole() {
+
+    return String(
         sessionStorage.getItem("userRole") ||
         localStorage.getItem("userRole") ||
-        "";
+        ""
+    )
+    .toLowerCase()
+    .trim();
 
-    const hotelId =
+}
+
+
+function getCurrentHotelId() {
+
+    return (
         sessionStorage.getItem("hotelId") ||
         localStorage.getItem("hotelId") ||
-        "";
+        ""
+    );
 
-    return {
-        role: role.toLowerCase().trim(),
-        hotelId: hotelId
-    };
 }
 
 
-/* =========================================================
-   MESSAGE
-========================================================= */
+/* ==========================================================
+   ERROR
+   ========================================================== */
 
-function showMessage(message, type = "success") {
+function showError(message) {
 
-    const element =
-        document.getElementById("message");
+    errorMessage.textContent = message;
+    errorMessage.style.display = "block";
 
-    element.textContent = message;
-
-    element.className =
-        "message " + type;
-
-    setTimeout(() => {
-
-        element.className = "message";
-
-    }, 4000);
 }
 
 
-/* =========================================================
+function hideError() {
+
+    errorMessage.textContent = "";
+    errorMessage.style.display = "none";
+
+}
+
+
+/* ==========================================================
+   INITIALIZATION
+   ========================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    initializeReservations
+);
+
+
+async function initializeReservations() {
+
+    try {
+
+        hideError();
+
+        if (!window.supabaseClient) {
+
+            throw new Error(
+                "Supabase client is not available. Check supabase.js."
+            );
+
+        }
+
+
+        setupEvents();
+
+
+        const role = getCurrentRole();
+
+
+        if (!role) {
+
+            throw new Error(
+                "User role is missing from the current session."
+            );
+
+        }
+
+
+        /* SYSTEM OWNER */
+
+        if (role === "system_owner") {
+
+            hotelSelectorContainer.style.display =
+                "block";
+
+            await loadHotels();
+
+            reservations = [];
+
+            renderReservations();
+
+        }
+
+
+        /* OTHER USERS */
+
+        else {
+
+            hotelSelectorContainer.style.display =
+                "none";
+
+            const hotelId =
+                getCurrentHotelId();
+
+            if (!hotelId) {
+
+                throw new Error(
+                    "Hotel ID is missing from the current session."
+                );
+
+            }
+
+            await loadGuests();
+            await loadRooms();
+            await loadReservations();
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Reservation initialization error:",
+            error
+        );
+
+        showError(
+            "Failed to initialize Reservations: " +
+            (error.message || error)
+        );
+
+    }
+
+}
+
+
+/* ==========================================================
+   EVENTS
+   ========================================================== */
+
+function setupEvents() {
+
+    document
+        .getElementById("addReservationBtn")
+        .addEventListener(
+            "click",
+            openAddReservationModal
+        );
+
+
+    document
+        .getElementById("closeModalBtn")
+        .addEventListener(
+            "click",
+            closeReservationModal
+        );
+
+
+    document
+        .getElementById("cancelBtn")
+        .addEventListener(
+            "click",
+            closeReservationModal
+        );
+
+
+    reservationForm.addEventListener(
+        "submit",
+        saveReservation
+    );
+
+
+    searchInput.addEventListener(
+        "input",
+        renderReservations
+    );
+
+
+    hotelSelector.addEventListener(
+        "change",
+        async () => {
+
+            const selectedHotel =
+                hotelSelector.value;
+
+            if (!selectedHotel) {
+
+                guests = [];
+                rooms = [];
+                reservations = [];
+
+                populateGuestSelect();
+                populateRoomSelect();
+                renderReservations();
+
+                return;
+
+            }
+
+
+            await loadGuests();
+            await loadRooms();
+            await loadReservations();
+
+        }
+    );
+
+
+    roomSelect.addEventListener(
+        "change",
+        updateRoomPrice
+    );
+
+
+    checkIn.addEventListener(
+        "change",
+        calculateReservationTotal
+    );
+
+
+    checkOut.addEventListener(
+        "change",
+        calculateReservationTotal
+    );
+
+
+    reservationModal.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target === reservationModal
+            ) {
+
+                closeReservationModal();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   LOAD HOTELS
+   ========================================================== */
+
+async function loadHotels() {
+
+    const {
+        data,
+        error
+    } = await window.supabaseClient
+        .from("hotels")
+        .select("id, hotel_name")
+        .order("hotel_name", {
+            ascending: true
+        });
+
+
+    if (error) {
+        throw error;
+    }
+
+
+    hotels = data || [];
+
+
+    hotelSelector.innerHTML =
+        `<option value="">
+            Select Hotel
+        </option>`;
+
+
+    hotels.forEach(hotel => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = hotel.id;
+        option.textContent = hotel.hotel_name;
+
+        hotelSelector.appendChild(option);
+
+    });
+
+}
+
+
+/* ==========================================================
    LOAD GUESTS
-========================================================= */
+   IMPORTANT:
+   Uses actual table "guests"
+   ========================================================== */
 
 async function loadGuests() {
 
-    const guestSelect =
-        document.getElementById("guestId");
-
-    guestSelect.innerHTML =
-        `<option value="">Loading guests...</option>`;
-
-    const { role, hotelId } = getHotelId();
-
     try {
+
+        const role = getCurrentRole();
+
+        let hotelId = null;
+
+
+        if (role === "system_owner") {
+
+            hotelId = hotelSelector.value;
+
+            if (!hotelId) {
+
+                guests = [];
+
+                populateGuestSelect();
+
+                return;
+
+            }
+
+        } else {
+
+            hotelId = getCurrentHotelId();
+
+        }
+
 
         let query =
             window.supabaseClient
                 .from("guests")
-                .select("id, full_name, phone, email, hotel_id")
-                .order("full_name", { ascending: true });
-
-
-        if (role !== "system_owner") {
-
-            if (!hotelId) {
-
-                throw new Error(
-                    "Hotel ID is missing from the current session."
-                );
-
-            }
-
-            query =
-                query.eq("hotel_id", hotelId);
-
-        }
-
-
-        const { data, error } = await query;
-
-
-        if (error) {
-
-            throw error;
-
-        }
-
-
-        guests = data || [];
-
-
-        guestSelect.innerHTML =
-            `<option value="">Select Guest</option>`;
-
-
-        if (guests.length === 0) {
-
-            guestSelect.innerHTML +=
-                `<option value="">
-                    No guests found
-                </option>`;
-
-            return;
-
-        }
-
-
-        guests.forEach(guest => {
-
-            const option =
-                document.createElement("option");
-
-            option.value = guest.id;
-
-            option.textContent =
-                guest.full_name +
-                (guest.phone
-                    ? " - " + guest.phone
-                    : "");
-
-            guestSelect.appendChild(option);
-
-        });
-
-    } catch (error) {
-
-        console.error(
-            "Failed to load guests:",
-            error
-        );
-
-        guestSelect.innerHTML =
-            `<option value="">
-                Failed to load guests
-            </option>`;
-
-        showMessage(
-            "Failed to load guests: " +
-            error.message,
-            "error"
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   LOAD ROOMS
-========================================================= */
-
-async function loadRooms() {
-
-    const roomSelect =
-        document.getElementById("roomId");
-
-    roomSelect.innerHTML =
-        `<option value="">Loading rooms...</option>`;
-
-    const { role, hotelId } = getHotelId();
-
-    try {
-
-        let query =
-            window.supabaseClient
-                .from("rooms")
                 .select(
-                    "id, room_number, room_type, status, price, hotel_id"
+                    "id, full_name, phone, email, hotel_id"
                 )
-                .order("room_number", {
-                    ascending: true
-                });
-
-
-        if (role !== "system_owner") {
-
-            if (!hotelId) {
-
-                throw new Error(
-                    "Hotel ID is missing from the current session."
+                .order(
+                    "full_name",
+                    {
+                        ascending: true
+                    }
                 );
 
-            }
 
-            query =
-                query.eq("hotel_id", hotelId);
-
-        }
-
-
-        const { data, error } =
-            await query;
-
-
-        if (error) {
-
-            throw error;
-
-        }
-
-
-        rooms = data || [];
-
-
-        roomSelect.innerHTML =
-            `<option value="">Select Room</option>`;
-
-
-        if (rooms.length === 0) {
-
-            roomSelect.innerHTML +=
-                `<option value="">
-                    No rooms found
-                </option>`;
-
-            return;
-
-        }
-
-
-        rooms.forEach(room => {
-
-            const option =
-                document.createElement("option");
-
-            option.value = room.id;
-
-            option.textContent =
-                "Room " +
-                room.room_number +
-                " - " +
-                (room.room_type || "") +
-                " - " +
-                (room.status || "Unknown");
-
-
-            option.dataset.price =
-                room.price || 0;
-
-
-            roomSelect.appendChild(option);
-
-        });
-
-    } catch (error) {
-
-        console.error(
-            "Failed to load rooms:",
-            error
-        );
-
-        roomSelect.innerHTML =
-            `<option value="">
-                Failed to load rooms
-            </option>`;
-
-        showMessage(
-            "Failed to load rooms: " +
-            error.message,
-            "error"
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   LOAD RESERVATIONS
-========================================================= */
-
-async function loadReservations() {
-
-    const tbody =
-        document.getElementById(
-            "reservationsTableBody"
-        );
-
-    tbody.innerHTML =
-        `<tr>
-            <td colspan="8" class="loading">
-                Loading reservations...
-            </td>
-        </tr>`;
-
-
-    const { role, hotelId } =
-        getHotelId();
-
-
-    try {
-
-        let query =
-            window.supabaseClient
-                .from("reservation")
-                .select(
-                    "id, created_at, guest_id, room_id, check_in, check_out, status, amount, hotel_id"
-                )
-                .order("created_at", {
-                    ascending: false
-                });
-
-
-        if (role !== "system_owner") {
-
-            if (!hotelId) {
-
-                throw new Error(
-                    "Hotel ID is missing from the current session."
-                );
-
-            }
+        if (hotelId) {
 
             query =
                 query.eq(
@@ -1042,14 +1206,449 @@ async function loadReservations() {
         }
 
 
-        const { data, error } =
-            await query;
+        const {
+            data,
+            error
+        } = await query;
 
 
         if (error) {
-
             throw error;
+        }
 
+
+        guests = data || [];
+
+
+        populateGuestSelect();
+
+
+    } catch (error) {
+
+        console.error(
+            "Load guests error:",
+            error
+        );
+
+        throw new Error(
+            "Failed to load guests: " +
+            (error.message || error)
+        );
+
+    }
+
+}
+
+
+/* ==========================================================
+   POPULATE GUEST SELECT
+   ========================================================== */
+
+function populateGuestSelect(
+    selectedId = ""
+) {
+
+    guestSelect.innerHTML =
+        `<option value="">
+            Select Guest
+        </option>`;
+
+
+    guests.forEach(guest => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = guest.id;
+
+        let label =
+            guest.full_name || "Unnamed Guest";
+
+
+        if (guest.phone) {
+
+            label +=
+                " - " +
+                guest.phone;
+
+        }
+
+
+        option.textContent = label;
+
+
+        if (
+            String(guest.id) ===
+            String(selectedId)
+        ) {
+
+            option.selected = true;
+
+        }
+
+
+        guestSelect.appendChild(option);
+
+    });
+
+}
+
+
+/* ==========================================================
+   LOAD ROOMS
+   ========================================================== */
+
+async function loadRooms() {
+
+    try {
+
+        const role = getCurrentRole();
+
+        let hotelId = null;
+
+
+        if (role === "system_owner") {
+
+            hotelId = hotelSelector.value;
+
+            if (!hotelId) {
+
+                rooms = [];
+
+                populateRoomSelect();
+
+                return;
+
+            }
+
+        } else {
+
+            hotelId = getCurrentHotelId();
+
+        }
+
+
+        let query =
+            window.supabaseClient
+                .from("rooms")
+                .select(
+                    "id, room_number, room_type, status, price, hotel_id"
+                )
+                .order(
+                    "room_number",
+                    {
+                        ascending: true
+                    }
+                );
+
+
+        if (hotelId) {
+
+            query =
+                query.eq(
+                    "hotel_id",
+                    hotelId
+                );
+
+        }
+
+
+        const {
+            data,
+            error
+        } = await query;
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        rooms = data || [];
+
+
+        populateRoomSelect();
+
+
+    } catch (error) {
+
+        console.error(
+            "Load rooms error:",
+            error
+        );
+
+        throw new Error(
+            "Failed to load rooms: " +
+            (error.message || error)
+        );
+
+    }
+
+}
+
+
+/* ==========================================================
+   POPULATE ROOM SELECT
+   ========================================================== */
+
+function populateRoomSelect(
+    selectedId = ""
+) {
+
+    roomSelect.innerHTML =
+        `<option value="">
+            Select Room
+        </option>`;
+
+
+    rooms.forEach(room => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = room.id;
+
+
+        let label =
+            "Room " +
+            room.room_number;
+
+
+        if (room.room_type) {
+
+            label +=
+                " - " +
+                room.room_type;
+
+        }
+
+
+        if (room.price !== null) {
+
+            label +=
+                " - KSh " +
+                Number(room.price).toLocaleString();
+
+        }
+
+
+        if (room.status) {
+
+            label +=
+                " (" +
+                room.status +
+                ")";
+
+        }
+
+
+        option.textContent = label;
+
+
+        if (
+            String(room.id) ===
+            String(selectedId)
+        ) {
+
+            option.selected = true;
+
+        }
+
+
+        roomSelect.appendChild(option);
+
+    });
+
+
+    updateRoomPrice();
+
+}
+
+
+/* ==========================================================
+   UPDATE ROOM PRICE
+   ========================================================== */
+
+function updateRoomPrice() {
+
+    const roomId =
+        roomSelect.value;
+
+
+    const room =
+        rooms.find(
+            item =>
+                String(item.id) ===
+                String(roomId)
+        );
+
+
+    if (!room) {
+
+        roomPrice.value = "";
+        calculateReservationTotal();
+
+        return;
+
+    }
+
+
+    roomPrice.value =
+        Number(room.price || 0);
+
+
+    calculateReservationTotal();
+
+}
+
+
+/* ==========================================================
+   CALCULATE NIGHTS AND TOTAL
+   ========================================================== */
+
+function calculateReservationTotal() {
+
+    const start =
+        checkIn.value;
+
+    const end =
+        checkOut.value;
+
+
+    if (!start || !end) {
+
+        nights.value = 0;
+        totalAmount.value = 0;
+
+        return;
+
+    }
+
+
+    const startDate =
+        new Date(
+            start +
+            "T00:00:00"
+        );
+
+
+    const endDate =
+        new Date(
+            end +
+            "T00:00:00"
+        );
+
+
+    const difference =
+        endDate.getTime() -
+        startDate.getTime();
+
+
+    const numberOfNights =
+        Math.ceil(
+            difference /
+            (1000 * 60 * 60 * 24)
+        );
+
+
+    if (numberOfNights <= 0) {
+
+        nights.value = 0;
+        totalAmount.value = 0;
+
+        return;
+
+    }
+
+
+    nights.value =
+        numberOfNights;
+
+
+    const price =
+        Number(
+            roomPrice.value || 0
+        );
+
+
+    totalAmount.value =
+        (
+            numberOfNights *
+            price
+        ).toFixed(2);
+
+}
+
+
+/* ==========================================================
+   LOAD RESERVATIONS
+   ========================================================== */
+
+async function loadReservations() {
+
+    try {
+
+        const role = getCurrentRole();
+
+        let hotelId = null;
+
+
+        if (role === "system_owner") {
+
+            hotelId =
+                hotelSelector.value;
+
+            if (!hotelId) {
+
+                reservations = [];
+
+                renderReservations();
+
+                return;
+
+            }
+
+        } else {
+
+            hotelId =
+                getCurrentHotelId();
+
+        }
+
+
+        let query =
+            window.supabaseClient
+                .from("reservation")
+                .select(
+                    "id, created_at, guest_id, room_id, check_in, check_out, status, amount, hotel_id"
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (hotelId) {
+
+            query =
+                query.eq(
+                    "hotel_id",
+                    hotelId
+                );
+
+        }
+
+
+        const {
+            data,
+            error
+        } = await query;
+
+
+        if (error) {
+            throw error;
         }
 
 
@@ -1058,28 +1657,17 @@ async function loadReservations() {
 
         renderReservations();
 
-        updateSummary();
-
 
     } catch (error) {
 
         console.error(
-            "Failed to load reservations:",
+            "Load reservations error:",
             error
         );
 
-        tbody.innerHTML =
-            `<tr>
-                <td colspan="8" class="no-data">
-                    Failed to load reservations.
-                </td>
-            </tr>`;
-
-
-        showMessage(
+        throw new Error(
             "Failed to load reservations: " +
-            error.message,
-            "error"
+            (error.message || error)
         );
 
     }
@@ -1087,16 +1675,19 @@ async function loadReservations() {
 }
 
 
-/* =========================================================
+/* ==========================================================
    GET GUEST NAME
-========================================================= */
+   ========================================================== */
 
 function getGuestName(guestId) {
 
     const guest =
         guests.find(
-            item => String(item.id) === String(guestId)
+            item =>
+                String(item.id) ===
+                String(guestId)
         );
+
 
     return guest
         ? guest.full_name
@@ -1105,124 +1696,280 @@ function getGuestName(guestId) {
 }
 
 
-/* =========================================================
+/* ==========================================================
    GET ROOM
-========================================================= */
+   ========================================================== */
 
 function getRoom(roomId) {
 
     return rooms.find(
-        room =>
-            String(room.id) ===
+        item =>
+            String(item.id) ===
             String(roomId)
     );
 
 }
 
 
-/* =========================================================
-   RENDER RESERVATIONS
-========================================================= */
+/* ==========================================================
+   ROOM NUMBER
+   ========================================================== */
 
-function renderReservations() {
+function getRoomNumber(roomId) {
 
-    const tbody =
-        document.getElementById(
-            "reservationsTableBody"
+    const room =
+        getRoom(roomId);
+
+    return room
+        ? room.room_number
+        : "Unknown";
+
+}
+
+
+/* ==========================================================
+   CALCULATE NIGHTS FROM DB VALUES
+   ========================================================== */
+
+function calculateNights(
+    checkInDate,
+    checkOutDate
+) {
+
+    if (
+        !checkInDate ||
+        !checkOutDate
+    ) {
+
+        return 0;
+
+    }
+
+
+    const start =
+        new Date(
+            checkInDate +
+            "T00:00:00"
         );
 
 
-    const search =
-        String(
-            document.getElementById(
-                "searchInput"
-            ).value || ""
+    const end =
+        new Date(
+            checkOutDate +
+            "T00:00:00"
+        );
+
+
+    const difference =
+        end.getTime() -
+        start.getTime();
+
+
+    return Math.max(
+        0,
+        Math.ceil(
+            difference /
+            (1000 * 60 * 60 * 24)
         )
-        .toLowerCase()
-        .trim();
+    );
+
+}
 
 
-    const statusFilter =
-        document.getElementById(
-            "statusFilter"
-        ).value;
+/* ==========================================================
+   FORMAT DATE
+   ========================================================== */
+
+function formatDate(dateValue) {
+
+    if (!dateValue) {
+        return "-";
+    }
 
 
-    let filtered =
+    const date =
+        new Date(
+            dateValue +
+            "T00:00:00"
+        );
+
+
+    if (isNaN(date.getTime())) {
+        return dateValue;
+    }
+
+
+    return date.toLocaleDateString();
+
+}
+
+
+/* ==========================================================
+   STATUS CLASS
+   ========================================================== */
+
+function getStatusClass(status) {
+
+    const value =
+        String(status || "")
+            .toLowerCase()
+            .trim();
+
+
+    if (value === "pending") {
+        return "status-pending";
+    }
+
+    if (value === "confirmed") {
+        return "status-confirmed";
+    }
+
+    if (
+        value === "checked in" ||
+        value === "checked-in"
+    ) {
+        return "status-checked-in";
+    }
+
+    if (
+        value === "checked out" ||
+        value === "checked-out"
+    ) {
+        return "status-checked-out";
+    }
+
+    if (value === "cancelled") {
+        return "status-cancelled";
+    }
+
+    return "status-other";
+
+}
+
+
+/* ==========================================================
+   RENDER RESERVATIONS
+   ========================================================== */
+
+function renderReservations() {
+
+    const search =
+        searchInput.value
+            .toLowerCase()
+            .trim();
+
+
+    const filtered =
         reservations.filter(
             reservation => {
 
                 const guestName =
                     getGuestName(
                         reservation.guest_id
-                    );
-
-
-                const room =
-                    getRoom(
-                        reservation.room_id
-                    );
+                    )
+                    .toLowerCase();
 
 
                 const roomNumber =
-                    room
-                        ? String(room.room_number)
-                        : "";
+                    String(
+                        getRoomNumber(
+                            reservation.room_id
+                        )
+                    )
+                    .toLowerCase();
 
 
-                const matchesSearch =
-                    !search ||
-                    guestName
-                        .toLowerCase()
-                        .includes(search) ||
-                    roomNumber
-                        .toLowerCase()
-                        .includes(search);
-
-
-                const matchesStatus =
-                    !statusFilter ||
-                    reservation.status ===
-                    statusFilter;
+                const status =
+                    String(
+                        reservation.status || ""
+                    )
+                    .toLowerCase();
 
 
                 return (
-                    matchesSearch &&
-                    matchesStatus
+                    guestName.includes(search) ||
+                    roomNumber.includes(search) ||
+                    status.includes(search)
                 );
 
             }
         );
 
 
+    /* SUMMARY */
+
+    document.getElementById(
+        "totalReservations"
+    ).textContent =
+        reservations.length;
+
+
+    document.getElementById(
+        "pendingReservations"
+    ).textContent =
+        reservations.filter(
+            item =>
+                String(item.status)
+                    .toLowerCase() ===
+                "pending"
+        ).length;
+
+
+    document.getElementById(
+        "confirmedReservations"
+    ).textContent =
+        reservations.filter(
+            item =>
+                String(item.status)
+                    .toLowerCase() ===
+                "confirmed"
+        ).length;
+
+
+    document.getElementById(
+        "checkedInReservations"
+    ).textContent =
+        reservations.filter(
+            item =>
+                String(item.status)
+                    .toLowerCase() ===
+                "checked in"
+        ).length;
+
+
+    /* EMPTY */
+
     if (filtered.length === 0) {
 
-        tbody.innerHTML =
-            `<tr>
-                <td colspan="8" class="no-data">
-                    No reservations found.
+        reservationsTableBody.innerHTML =
+            `
+            <tr>
+                <td
+                    colspan="9"
+                    class="empty-state"
+                >
+                    ${
+                        reservations.length === 0
+                        ? "No reservations found."
+                        : "No reservations match your search."
+                    }
                 </td>
-            </tr>`;
+            </tr>
+            `;
 
         return;
 
     }
 
 
-    tbody.innerHTML = "";
+    reservationsTableBody.innerHTML = "";
 
 
     filtered.forEach(
-        reservation => {
+        (reservation, index) => {
 
             const row =
                 document.createElement("tr");
-
-
-            const room =
-                getRoom(
-                    reservation.room_id
-                );
 
 
             const guestName =
@@ -1232,34 +1979,44 @@ function renderReservations() {
 
 
             const roomNumber =
-                room
-                    ? room.room_number
-                    : "N/A";
-
-
-            const statusClass =
-                getStatusClass(
-                    reservation.status
+                getRoomNumber(
+                    reservation.room_id
                 );
 
 
-            row.innerHTML = `
+            const numberOfNights =
+                calculateNights(
+                    reservation.check_in,
+                    reservation.check_out
+                );
+
+
+            const amount =
+                Number(
+                    reservation.amount || 0
+                );
+
+
+            const status =
+                reservation.status ||
+                "Pending";
+
+
+            row.innerHTML =
+                `
+                <td>
+                    ${index + 1}
+                </td>
 
                 <td>
-                    ${escapeHtml(
-                        reservation.id
-                    )}
+                    <strong>
+                        ${escapeHtml(guestName)}
+                    </strong>
                 </td>
 
                 <td>
                     ${escapeHtml(
-                        guestName
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHtml(
-                        roomNumber
+                        String(roomNumber)
                     )}
                 </td>
 
@@ -1276,42 +2033,42 @@ function renderReservations() {
                 </td>
 
                 <td>
-                    KSh ${formatMoney(
-                        reservation.amount
-                    )}
+                    ${numberOfNights}
                 </td>
 
                 <td>
-                    <span class="status ${statusClass}">
-                        ${escapeHtml(
-                            reservation.status ||
-                            ""
-                        )}
+                    KSh ${amount.toLocaleString()}
+                </td>
+
+                <td>
+                    <span
+                        class="status ${getStatusClass(status)}"
+                    >
+                        ${escapeHtml(status)}
                     </span>
                 </td>
 
                 <td>
 
                     <button
-                        class="edit-btn"
+                        class="btn btn-warning"
                         onclick="editReservation('${reservation.id}')"
                     >
                         Edit
                     </button>
 
                     <button
-                        class="danger-btn"
+                        class="btn btn-danger"
                         onclick="deleteReservation('${reservation.id}')"
                     >
                         Delete
                     </button>
 
                 </td>
+                `;
 
-            `;
 
-
-            tbody.appendChild(row);
+            reservationsTableBody.appendChild(row);
 
         }
     );
@@ -1319,126 +2076,137 @@ function renderReservations() {
 }
 
 
-/* =========================================================
-   SUMMARY
-========================================================= */
+/* ==========================================================
+   OPEN ADD MODAL
+   ========================================================== */
 
-function updateSummary() {
+async function openAddReservationModal() {
 
-    const total =
-        reservations.length;
+    editingReservationId = null;
 
-
-    const pending =
-        reservations.filter(
-            r => r.status === "Pending"
-        ).length;
-
-
-    const confirmed =
-        reservations.filter(
-            r => r.status === "Confirmed"
-        ).length;
-
-
-    const cancelled =
-        reservations.filter(
-            r => r.status === "Cancelled"
-        ).length;
+    document.getElementById(
+        "reservationId"
+    ).value = "";
 
 
     document.getElementById(
-        "totalReservations"
-    ).textContent = total;
+        "modalTitle"
+    ).textContent =
+        "New Reservation";
 
 
-    document.getElementById(
-        "pendingReservations"
-    ).textContent = pending;
+    reservationForm.reset();
 
 
-    document.getElementById(
-        "confirmedReservations"
-    ).textContent = confirmed;
+    statusSelect.value =
+        "Pending";
 
 
-    document.getElementById(
-        "cancelledReservations"
-    ).textContent = cancelled;
-
-}
+    const role =
+        getCurrentRole();
 
 
-/* =========================================================
-   STATUS CLASS
-========================================================= */
+    try {
 
-function getStatusClass(status) {
+        if (role === "system_owner") {
 
-    switch (
-        String(status || "")
-            .toLowerCase()
-    ) {
+            if (!hotelSelector.value) {
 
-        case "pending":
-            return "status-pending";
+                alert(
+                    "Please select a hotel first."
+                );
 
-        case "confirmed":
-            return "status-confirmed";
+                return;
 
-        case "cancelled":
-            return "status-cancelled";
+            }
 
-        case "completed":
-            return "status-completed";
+        }
 
-        default:
-            return "";
+
+        await loadGuests();
+        await loadRooms();
+
+
+        guestSelect.value = "";
+        roomSelect.value = "";
+        roomPrice.value = "";
+        nights.value = "0";
+        totalAmount.value = "0";
+
+
+        reservationModal.classList.add(
+            "show"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Open reservation error:",
+            error
+        );
+
+        showError(
+            error.message || error
+        );
 
     }
 
 }
 
 
-/* =========================================================
-   OPEN MODAL
-========================================================= */
+/* ==========================================================
+   EDIT RESERVATION
+   ========================================================== */
 
-async function openReservationModal(
-    reservation = null
-) {
+async function editReservation(id) {
 
-    editingReservationId =
-        reservation
-            ? reservation.id
-            : null;
+    try {
 
-
-    document.getElementById(
-        "reservationModal"
-    ).style.display = "block";
+        const reservation =
+            reservations.find(
+                item =>
+                    String(item.id) ===
+                    String(id)
+            );
 
 
-    document.getElementById(
-        "modalTitle"
-    ).textContent =
-        reservation
-            ? "Edit Reservation"
-            : "New Reservation";
+        if (!reservation) {
+
+            alert(
+                "Reservation could not be found."
+            );
+
+            return;
+
+        }
 
 
-    document.getElementById(
-        "reservationForm"
-    ).reset();
+        editingReservationId =
+            reservation.id;
 
 
-    await Promise.all([
-        loadGuests(),
-        loadRooms()
-    ]);
+        const role =
+            getCurrentRole();
 
 
-    if (reservation) {
+        if (
+            role === "system_owner" &&
+            !hotelSelector.value
+        ) {
+
+            alert(
+                "Please select the hotel first."
+            );
+
+            return;
+
+        }
+
+
+        await loadGuests();
+        await loadRooms();
+
 
         document.getElementById(
             "reservationId"
@@ -1447,72 +2215,430 @@ async function openReservationModal(
 
 
         document.getElementById(
-            "guestId"
-        ).value =
-            reservation.guest_id || "";
+            "modalTitle"
+        ).textContent =
+            "Edit Reservation";
 
 
-        document.getElementById(
-            "roomId"
-        ).value =
-            reservation.room_id || "";
+        populateGuestSelect(
+            reservation.guest_id
+        );
 
 
-        document.getElementById(
-            "checkIn"
-        ).value =
+        populateRoomSelect(
+            reservation.room_id
+        );
+
+
+        guestSelect.value =
+            reservation.guest_id;
+
+
+        roomSelect.value =
+            reservation.room_id;
+
+
+        updateRoomPrice();
+
+
+        checkIn.value =
             reservation.check_in || "";
 
 
-        document.getElementById(
-            "checkOut"
-        ).value =
+        checkOut.value =
             reservation.check_out || "";
 
 
-        document.getElementById(
-            "amount"
-        ).value =
-            reservation.amount || 0;
-
-
-        document.getElementById(
-            "reservationStatus"
-        ).value =
+        statusSelect.value =
             reservation.status ||
             "Pending";
+
+
+        calculateReservationTotal();
+
+
+        /* Keep DB amount when editing
+           instead of losing it if room
+           price has changed. */
+
+        if (
+            reservation.amount !== null &&
+            reservation.amount !== undefined
+        ) {
+
+            totalAmount.value =
+                Number(
+                    reservation.amount
+                ).toFixed(2);
+
+        }
+
+
+        reservationModal.classList.add(
+            "show"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Edit reservation error:",
+            error
+        );
+
+        showError(
+            "Failed to edit reservation: " +
+            (error.message || error)
+        );
 
     }
 
 }
 
 
-/* =========================================================
-   CLOSE MODAL
-========================================================= */
+/* ==========================================================
+   SAVE RESERVATION
+   ========================================================== */
 
-function closeReservationModal() {
+async function saveReservation(event) {
 
-    document.getElementById(
-        "reservationModal"
-    ).style.display = "none";
+    event.preventDefault();
 
+    try {
 
-    document.getElementById(
-        "reservationForm"
-    ).reset();
+        hideError();
 
 
-    editingReservationId = null;
+        const role =
+            getCurrentRole();
+
+
+        const guestId =
+            guestSelect.value;
+
+
+        const roomId =
+            roomSelect.value;
+
+
+        const checkInDate =
+            checkIn.value;
+
+
+        const checkOutDate =
+            checkOut.value;
+
+
+        const status =
+            statusSelect.value;
+
+
+        if (!guestId) {
+
+            alert(
+                "Please select a guest."
+            );
+
+            return;
+
+        }
+
+
+        if (!roomId) {
+
+            alert(
+                "Please select a room."
+            );
+
+            return;
+
+        }
+
+
+        if (!checkInDate) {
+
+            alert(
+                "Please select the check-in date."
+            );
+
+            return;
+
+        }
+
+
+        if (!checkOutDate) {
+
+            alert(
+                "Please select the check-out date."
+            );
+
+            return;
+
+        }
+
+
+        const numberOfNights =
+            calculateNights(
+                checkInDate,
+                checkOutDate
+            );
+
+
+        if (numberOfNights <= 0) {
+
+            alert(
+                "Check-out date must be after the check-in date."
+            );
+
+            return;
+
+        }
+
+
+        const amount =
+            Number(
+                totalAmount.value || 0
+            );
+
+
+        let hotelId = null;
+
+
+        if (role === "system_owner") {
+
+            hotelId =
+                hotelSelector.value;
+
+
+            if (!hotelId) {
+
+                alert(
+                    "Please select a hotel."
+                );
+
+                return;
+
+            }
+
+        } else {
+
+            hotelId =
+                getCurrentHotelId();
+
+
+            if (!hotelId) {
+
+                throw new Error(
+                    "Hotel ID is missing from the current session."
+                );
+
+            }
+
+        }
+
+
+        /* ==================================================
+           CHECK ROOM CONFLICT
+           ================================================== */
+
+        let conflictQuery =
+            window.supabaseClient
+                .from("reservation")
+                .select(
+                    "id, check_in, check_out, status"
+                )
+                .eq(
+                    "room_id",
+                    roomId
+                )
+                .eq(
+                    "hotel_id",
+                    hotelId
+                )
+                .neq(
+                    "status",
+                    "Cancelled"
+                )
+                .lt(
+                    "check_in",
+                    checkOutDate
+                )
+                .gt(
+                    "check_out",
+                    checkInDate
+                );
+
+
+        if (editingReservationId) {
+
+            conflictQuery =
+                conflictQuery.neq(
+                    "id",
+                    editingReservationId
+                );
+
+        }
+
+
+        const {
+            data: conflicts,
+            error: conflictError
+        } = await conflictQuery;
+
+
+        if (conflictError) {
+            throw conflictError;
+        }
+
+
+        if (
+            conflicts &&
+            conflicts.length > 0
+        ) {
+
+            alert(
+                "This room is already reserved for the selected dates."
+            );
+
+            return;
+
+        }
+
+
+        /* ==================================================
+           UPDATE
+           ================================================== */
+
+        if (editingReservationId) {
+
+            const {
+                error
+            } =
+                await window.supabaseClient
+                    .from("reservation")
+                    .update({
+
+                        guest_id:
+                            guestId,
+
+                        room_id:
+                            roomId,
+
+                        check_in:
+                            checkInDate,
+
+                        check_out:
+                            checkOutDate,
+
+                        status:
+                            status,
+
+                        amount:
+                            amount,
+
+                        hotel_id:
+                            hotelId
+
+                    })
+                    .eq(
+                        "id",
+                        editingReservationId
+                    )
+                    .eq(
+                        "hotel_id",
+                        hotelId
+                    );
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            alert(
+                "Reservation updated successfully."
+            );
+
+        }
+
+
+        /* ==================================================
+           INSERT
+           ================================================== */
+
+        else {
+
+            const {
+                error
+            } =
+                await window.supabaseClient
+                    .from("reservation")
+                    .insert([{
+
+                        guest_id:
+                            guestId,
+
+                        room_id:
+                            roomId,
+
+                        check_in:
+                            checkInDate,
+
+                        check_out:
+                            checkOutDate,
+
+                        status:
+                            status,
+
+                        amount:
+                            amount,
+
+                        hotel_id:
+                            hotelId
+
+                    }]);
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            alert(
+                "Reservation created successfully."
+            );
+
+        }
+
+
+        closeReservationModal();
+
+
+        await loadReservations();
+
+
+    } catch (error) {
+
+        console.error(
+            "Save reservation error:",
+            error
+        );
+
+        showError(
+            "Failed to save reservation: " +
+            (error.message || error)
+        );
+
+    }
 
 }
 
 
-/* =========================================================
-   EDIT
-========================================================= */
+/* ==========================================================
+   DELETE RESERVATION
+   ========================================================== */
 
-function editReservation(id) {
+async function deleteReservation(id) {
 
     const reservation =
         reservations.find(
@@ -1524,9 +2650,8 @@ function editReservation(id) {
 
     if (!reservation) {
 
-        showMessage(
-            "Reservation not found.",
-            "error"
+        alert(
+            "Reservation could not be found."
         );
 
         return;
@@ -1534,345 +2659,97 @@ function editReservation(id) {
     }
 
 
-    openReservationModal(
-        reservation
-    );
+    const guestName =
+        getGuestName(
+            reservation.guest_id
+        );
 
-}
-
-
-/* =========================================================
-   SAVE
-========================================================= */
-
-document.getElementById(
-    "reservationForm"
-).addEventListener(
-    "submit",
-    async function(event) {
-
-        event.preventDefault();
-
-
-        const guestId =
-            document.getElementById(
-                "guestId"
-            ).value;
-
-
-        const roomId =
-            document.getElementById(
-                "roomId"
-            ).value;
-
-
-        const checkIn =
-            document.getElementById(
-                "checkIn"
-            ).value;
-
-
-        const checkOut =
-            document.getElementById(
-                "checkOut"
-            ).value;
-
-
-        const amount =
-            Number(
-                document.getElementById(
-                    "amount"
-                ).value
-            );
-
-
-        const status =
-            document.getElementById(
-                "reservationStatus"
-            ).value;
-
-
-        if (!guestId) {
-
-            showMessage(
-                "Please select a guest.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        if (!roomId) {
-
-            showMessage(
-                "Please select a room.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        if (!checkIn || !checkOut) {
-
-            showMessage(
-                "Please select check-in and check-out dates.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        if (
-            new Date(checkOut) <=
-            new Date(checkIn)
-        ) {
-
-            showMessage(
-                "Check-out date must be after check-in date.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        if (amount < 0) {
-
-            showMessage(
-                "Amount cannot be negative.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        const {
-            role,
-            hotelId
-        } = getHotelId();
-
-
-        if (
-            role !== "system_owner" &&
-            !hotelId
-        ) {
-
-            showMessage(
-                "Hotel ID is missing from the current session.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        try {
-
-            const reservationData = {
-
-                guest_id:
-                    Number(guestId),
-
-                room_id:
-                    Number(roomId),
-
-                check_in:
-                    checkIn,
-
-                check_out:
-                    checkOut,
-
-                status:
-                    status,
-
-                amount:
-                    amount
-
-            };
-
-
-            if (role === "system_owner") {
-
-                /*
-                 * For system owner, use the selected
-                 * guest's hotel as the reservation hotel.
-                 */
-
-                const selectedGuest =
-                    guests.find(
-                        guest =>
-                            String(guest.id) ===
-                            String(guestId)
-                    );
-
-
-                if (
-                    !selectedGuest ||
-                    !selectedGuest.hotel_id
-                ) {
-
-                    throw new Error(
-                        "The selected guest does not have a hotel assigned."
-                    );
-
-                }
-
-
-                reservationData.hotel_id =
-                    selectedGuest.hotel_id;
-
-            } else {
-
-                reservationData.hotel_id =
-                    Number(hotelId);
-
-            }
-
-
-            if (editingReservationId) {
-
-                const {
-                    error
-                } =
-                    await window.supabaseClient
-                        .from("reservation")
-                        .update(
-                            reservationData
-                        )
-                        .eq(
-                            "id",
-                            editingReservationId
-                        );
-
-
-                if (error) {
-
-                    throw error;
-
-                }
-
-
-                showMessage(
-                    "Reservation updated successfully."
-                );
-
-            } else {
-
-                const {
-                    error
-                } =
-                    await window.supabaseClient
-                        .from("reservation")
-                        .insert(
-                            reservationData
-                        );
-
-
-                if (error) {
-
-                    throw error;
-
-                }
-
-
-                showMessage(
-                    "Reservation created successfully."
-                );
-
-            }
-
-
-            closeReservationModal();
-
-
-            await loadReservations();
-
-        } catch (error) {
-
-            console.error(
-                "Failed to save reservation:",
-                error
-            );
-
-
-            showMessage(
-                "Failed to save reservation: " +
-                error.message,
-                "error"
-            );
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   DELETE
-========================================================= */
-
-async function deleteReservation(id) {
 
     const confirmed =
         confirm(
-            "Are you sure you want to delete this reservation?"
+            `Are you sure you want to delete the reservation for ${guestName}?`
         );
 
 
     if (!confirmed) {
-
         return;
-
     }
 
 
     try {
 
-        const {
-            error
-        } =
-            await window.supabaseClient
-                .from("reservation")
-                .delete()
-                .eq("id", id);
+        hideError();
 
 
-        if (error) {
+        const role =
+            getCurrentRole();
 
-            throw error;
+
+        let hotelId = null;
+
+
+        if (role === "system_owner") {
+
+            hotelId =
+                hotelSelector.value;
+
+        } else {
+
+            hotelId =
+                getCurrentHotelId();
 
         }
 
 
-        showMessage(
+        let query =
+            window.supabaseClient
+                .from("reservation")
+                .delete()
+                .eq(
+                    "id",
+                    id
+                );
+
+
+        if (hotelId) {
+
+            query =
+                query.eq(
+                    "hotel_id",
+                    hotelId
+                );
+
+        }
+
+
+        const {
+            error
+        } = await query;
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        alert(
             "Reservation deleted successfully."
         );
 
 
         await loadReservations();
 
+
     } catch (error) {
 
         console.error(
-            "Failed to delete reservation:",
+            "Delete reservation error:",
             error
         );
 
-
-        showMessage(
+        showError(
             "Failed to delete reservation: " +
-            error.message,
-            "error"
+            (error.message || error)
         );
 
     }
@@ -1880,119 +2757,38 @@ async function deleteReservation(id) {
 }
 
 
-/* =========================================================
-   ROOM PRICE AUTO-FILL
-========================================================= */
+/* ==========================================================
+   CLOSE MODAL
+   ========================================================== */
 
-document.getElementById(
-    "roomId"
-).addEventListener(
-    "change",
-    function() {
+function closeReservationModal() {
 
-        const selectedOption =
-            this.options[
-                this.selectedIndex
-            ];
-
-
-        if (
-            selectedOption &&
-            selectedOption.dataset.price
-        ) {
-
-            const amountInput =
-                document.getElementById(
-                    "amount"
-                );
-
-
-            if (
-                !editingReservationId ||
-                !amountInput.value
-            ) {
-
-                amountInput.value =
-                    selectedOption.dataset.price;
-
-            }
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   FORMAT DATE
-========================================================= */
-
-function formatDate(dateValue) {
-
-    if (!dateValue) {
-
-        return "";
-
-    }
-
-
-    const date =
-        new Date(
-            dateValue + "T00:00:00"
-        );
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return dateValue;
-
-    }
-
-
-    return date.toLocaleDateString(
-        "en-KE",
-        {
-            year: "numeric",
-            month: "short",
-            day: "numeric"
-        }
+    reservationModal.classList.remove(
+        "show"
     );
+
+    reservationForm.reset();
+
+    editingReservationId = null;
+
+    document.getElementById(
+        "reservationId"
+    ).value = "";
+
+    nights.value = "0";
+    totalAmount.value = "0";
+    roomPrice.value = "";
 
 }
 
 
-/* =========================================================
-   FORMAT MONEY
-========================================================= */
-
-function formatMoney(value) {
-
-    const number =
-        Number(value || 0);
-
-
-    return number.toLocaleString(
-        "en-KE",
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }
-    );
-
-}
-
-
-/* =========================================================
+/* ==========================================================
    ESCAPE HTML
-========================================================= */
+   ========================================================== */
 
 function escapeHtml(value) {
 
-    return String(value ?? "")
+    return String(value)
         .replace(
             /&/g,
             "&amp;"
@@ -2017,95 +2813,67 @@ function escapeHtml(value) {
 }
 
 
-/* =========================================================
-   INITIALIZE
-========================================================= */
+/* ==========================================================
+   LOGOUT
+   ========================================================== */
 
 document.addEventListener(
     "DOMContentLoaded",
-    async function() {
+    () => {
 
-        if (!window.supabaseClient) {
+        document
+            .querySelectorAll(
+                '[data-action="logout"]'
+            )
+            .forEach(button => {
 
-            showMessage(
-                "Supabase is not connected. Check supabase.js.",
-                "error"
-            );
-
-            return;
-
-        }
+                if (
+                    button.dataset.logoutBound ===
+                    "true"
+                ) {
+                    return;
+                }
 
 
-        await loadGuests();
+                button.dataset.logoutBound =
+                    "true";
 
-        await loadRooms();
 
-        await loadReservations();
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        sessionStorage.removeItem(
+                            "userRole"
+                        );
+
+                        sessionStorage.removeItem(
+                            "userName"
+                        );
+
+                        sessionStorage.removeItem(
+                            "hotelId"
+                        );
+
+                        sessionStorage.removeItem(
+                            "hotelName"
+                        );
+
+                        localStorage.removeItem(
+                            "userRole"
+                        );
+
+                        window.location.href =
+                            "./login.html";
+
+                    }
+                );
+
+            });
 
     }
 );
-
-
-/* =========================================================
-   CLOSE MODAL WHEN CLICKING OUTSIDE
-========================================================= */
-
-window.addEventListener(
-    "click",
-    function(event) {
-
-        const modal =
-            document.getElementById(
-                "reservationModal"
-            );
-
-
-        if (
-            event.target === modal
-        ) {
-
-            closeReservationModal();
-
-        }
-
-    }
-);
-
 </script>
 
 </body>
 </html>
-```
-**Important:** This specifically changes the guest query to:
-
-```js
-.from("guests")
-```
-
-instead of:
-
-```js
-.from("guest")
-```
-
-### Now do this exactly
-
-1. Open **VS Code**.
-2. Open `reservations.html`.
-3. Press **Ctrl + A**.
-4. Delete everything.
-5. Paste the complete code above.
-6. Press **Ctrl + S**.
-7. Open the website.
-8. Go to **Reservations**.
-9. Click **+ New Reservation**.
-10. Click the **Guest** dropdown.
-
-The previous error:
-
-> `Could not find the table 'public.guest' in the schema cache`
-
-should no longer occur because the code now uses **`guests`**.
-
-**Do not sync to GitHub yet.** First test whether the Guest dropdown actually displays your guests. If it does, then we'll test **Room → dates → amount → Save Reservation**, and only after that sync.
