@@ -8,6 +8,11 @@
     <title>Guests - EDU TECH Hotel Management System</title>
 
     <link rel="stylesheet" href="./style.css">
+
+    <!-- SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase.js"></script>
+    <script src="./script.js"></script>
 </head>
 
 <body>
@@ -82,6 +87,14 @@
                 ⚙️ Settings
             </a>
 
+            <a href="./hotels.html" data-module="hotels">
+                🏨 Hotels
+            </a>
+
+            <a href="#" data-action="logout">
+                🚪 Logout
+            </a>
+
         </nav>
 
     </aside>
@@ -122,58 +135,42 @@
         <section class="cards">
 
             <div class="card">
-
-                <div class="card-icon">
-                    👥
-                </div>
+                <div class="card-icon">👥</div>
 
                 <div>
                     <h3>Total Guests</h3>
                     <p id="totalGuests">0</p>
                 </div>
-
             </div>
 
 
             <div class="card">
-
-                <div class="card-icon">
-                    🟢
-                </div>
+                <div class="card-icon">🟢</div>
 
                 <div>
                     <h3>Currently Staying</h3>
                     <p id="stayingGuests">0</p>
                 </div>
-
             </div>
 
 
             <div class="card">
-
-                <div class="card-icon">
-                    📅
-                </div>
+                <div class="card-icon">📅</div>
 
                 <div>
                     <h3>Today's Arrivals</h3>
                     <p id="arrivalGuests">0</p>
                 </div>
-
             </div>
 
 
             <div class="card">
-
-                <div class="card-icon">
-                    🚪
-                </div>
+                <div class="card-icon">🚪</div>
 
                 <div>
                     <h3>Today's Departures</h3>
                     <p id="departureGuests">0</p>
                 </div>
-
             </div>
 
         </section>
@@ -223,21 +220,13 @@
                     <thead>
 
                         <tr>
-
                             <th>Full Name</th>
-
                             <th>Phone</th>
-
                             <th>ID / Passport</th>
-
                             <th>Email</th>
-
                             <th>Country</th>
-
                             <th>Address</th>
-
                             <th>Actions</th>
-
                         </tr>
 
                     </thead>
@@ -360,918 +349,659 @@
     </div>
 
 
-    <!-- SUPABASE -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
 
-    <script src="./supabase.js"></script>
-
-    <script src="./script.js"></script>
+"use strict";
 
 
-    <!-- GUEST PAGE SCRIPT -->
-    <script>
+/* =========================================================
+   VARIABLES
+========================================================= */
 
-        "use strict";
+let guests = [];
+let editingGuestId = null;
 
+const guestForm =
+    document.getElementById("guestForm");
 
-        /* =========================================================
-           GUEST PAGE VARIABLES
-        ========================================================= */
+const guestTable =
+    document.getElementById("guestTable");
 
-        let guests = [];
+const guestSearch =
+    document.getElementById("guestSearch");
 
-        let editingGuestId = null;
-
-
-        const guestForm =
-            document.getElementById("guestForm");
-
-        const guestTable =
-            document.getElementById("guestTable");
-
-        const guestSearch =
-            document.getElementById("guestSearch");
-
-        const guestModal =
-            document.getElementById("guestModal");
+const guestModal =
+    document.getElementById("guestModal");
 
 
-        /* =========================================================
-           PAGE ACCESS
-        ========================================================= */
+/* =========================================================
+   ROLE
+========================================================= */
 
-        const guestAllowedRoles = [
-            "system_owner",
-            "hotel_owner",
-            "manager",
-            "receptionist"
-        ];
+function getGuestRole() {
 
+    return String(
+        sessionStorage.getItem("userRole") ||
+        localStorage.getItem("userRole") ||
+        ""
+    )
+    .toLowerCase()
+    .trim();
 
-        function getGuestRole() {
-
-            return String(
-                sessionStorage.getItem("userRole") ||
-                localStorage.getItem("userRole") ||
-                ""
-            )
-                .toLowerCase()
-                .trim();
-
-        }
+}
 
 
-        function protectGuestPage() {
+/* =========================================================
+   USER INFORMATION
+========================================================= */
 
-            const role = getGuestRole();
+function displayGuestUser() {
 
-            if (!role) {
-                return;
-            }
+    const userName =
+        sessionStorage.getItem("userName") ||
+        localStorage.getItem("userName") ||
+        "Administrator";
 
-            if (!guestAllowedRoles.includes(role)) {
-
-                window.location.href = "./index.html";
-
-            }
-
-        }
-
-
-        /* =========================================================
-           USER INFORMATION
-        ========================================================= */
-
-        function displayGuestUser() {
-
-            const userName =
-                sessionStorage.getItem("userName") ||
-                localStorage.getItem("userName") ||
-                "Administrator";
-
-            const role =
-                getGuestRole() ||
-                "system_admin";
+    const role =
+        getGuestRole() ||
+        "system_admin";
 
 
-            const userNameElement =
-                document.getElementById("loggedInUser");
+    const userNameElement =
+        document.getElementById("loggedInUser");
 
-            const roleElement =
-                document.getElementById("loggedInRole");
+    const roleElement =
+        document.getElementById("loggedInRole");
 
-            const iconElement =
-                document.getElementById("userIcon");
-
-
-            if (userNameElement) {
-
-                userNameElement.textContent =
-                    userName;
-
-            }
+    const iconElement =
+        document.getElementById("userIcon");
 
 
-            if (roleElement) {
+    if (userNameElement) {
 
-                roleElement.textContent =
-                    role
-                        .replace(/_/g, " ")
-                        .replace(/\b\w/g, letter =>
-                            letter.toUpperCase()
-                        );
+        userNameElement.textContent =
+            userName;
 
-            }
+    }
 
 
-            if (iconElement) {
+    if (roleElement) {
 
-                iconElement.textContent =
-                    userName
-                        .charAt(0)
-                        .toUpperCase();
-
-            }
-
-        }
-
-
-        /* =========================================================
-           HOTEL ID
-        ========================================================= */
-
-        function getGuestHotelId() {
-
-            return sessionStorage.getItem("hotelId") ||
-                   localStorage.getItem("hotelId") ||
-                   "";
-
-        }
-
-
-        /* =========================================================
-           LOAD GUESTS
-        ========================================================= */
-
-        async function loadGuests() {
-
-            if (!window.supabaseClient) {
-
-                console.error(
-                    "Supabase client is not available."
+        roleElement.textContent =
+            role
+                .replace(/_/g, " ")
+                .replace(/\b\w/g, letter =>
+                    letter.toUpperCase()
                 );
 
-                alert(
-                    "Supabase connection is not available. Please check supabase.js."
+    }
+
+
+    if (iconElement) {
+
+        iconElement.textContent =
+            userName
+                .charAt(0)
+                .toUpperCase();
+
+    }
+
+}
+
+
+/* =========================================================
+   HOTEL ID
+========================================================= */
+
+function getGuestHotelId() {
+
+    return (
+        sessionStorage.getItem("hotelId") ||
+        localStorage.getItem("hotelId") ||
+        ""
+    );
+
+}
+
+
+/* =========================================================
+   LOAD GUESTS
+========================================================= */
+
+async function loadGuests() {
+
+    if (!window.supabaseClient) {
+
+        alert(
+            "Supabase connection is not available. Please check supabase.js."
+        );
+
+        return;
+
+    }
+
+
+    guestTable.innerHTML = `
+        <tr>
+            <td colspan="7" style="text-align:center;">
+                Loading guests...
+            </td>
+        </tr>
+    `;
+
+
+    const role =
+        getGuestRole();
+
+    const hotelId =
+        getGuestHotelId();
+
+
+    try {
+
+        /*
+         * IMPORTANT:
+         * The actual Supabase table is:
+         *
+         * guests
+         *
+         * NOT guest.
+         */
+
+        let query =
+            window.supabaseClient
+                .from("guests")
+                .select(`
+                    id,
+                    created_at,
+                    full_name,
+                    phone,
+                    email,
+                    hotel_id,
+                    id_passport,
+                    country,
+                    address
+                `)
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
                 );
+
+
+        if (role !== "system_owner") {
+
+            if (!hotelId) {
+
+                guestTable.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align:center;">
+                            No hotel is assigned to this account.
+                        </td>
+                    </tr>
+                `;
 
                 return;
 
             }
 
+
+            query =
+                query.eq(
+                    "hotel_id",
+                    hotelId
+                );
+
+        }
+
+
+        const {
+            data,
+            error
+        } = await query;
+
+
+        if (error) {
+
+            console.error(
+                "Guest loading error:",
+                error
+            );
 
             guestTable.innerHTML = `
                 <tr>
                     <td colspan="7" style="text-align:center;">
-                        Loading guests...
+                        Failed to load guests.
                     </td>
                 </tr>
             `;
 
+            alert(
+                "Failed to load guests: " +
+                error.message
+            );
 
-            const role = getGuestRole();
-
-            const hotelId = getGuestHotelId();
-
-
-            try {
-
-                let query =
-                    window.supabaseClient
-                        .from("guest")
-                        .select(`
-                            id,
-                            created_at,
-                            full_name,
-                            phone,
-                            email,
-                            hotel_id,
-                            id_passport,
-                            country,
-                            address
-                        `)
-                        .order("created_at", {
-                            ascending: false
-                        });
-
-
-                /*
-                   Hotel users see only their own hotel.
-                   System owner can see all hotels.
-                */
-
-                if (role !== "system_owner") {
-
-                    if (!hotelId) {
-
-                        guestTable.innerHTML = `
-                            <tr>
-                                <td colspan="7" style="text-align:center;">
-                                    No hotel is assigned to this account.
-                                </td>
-                            </tr>
-                        `;
-
-                        return;
-
-                    }
-
-                    query =
-                        query.eq(
-                            "hotel_id",
-                            hotelId
-                        );
-
-                }
-
-
-                const {
-                    data,
-                    error
-                } = await query;
-
-
-                if (error) {
-
-                    console.error(
-                        "Guest loading error:",
-                        error
-                    );
-
-                    guestTable.innerHTML = `
-                        <tr>
-                            <td colspan="7" style="text-align:center;">
-                                Failed to load guests.
-                            </td>
-                        </tr>
-                    `;
-
-                    alert(
-                        "Failed to load guests: " +
-                        error.message
-                    );
-
-                    return;
-
-                }
-
-
-                guests = data || [];
-
-                renderGuests();
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    "Unexpected guest loading error:",
-                    error
-                );
-
-                guestTable.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align:center;">
-                            Failed to load guests.
-                        </td>
-                    </tr>
-                `;
-
-            }
+            return;
 
         }
 
 
-        /* =========================================================
-           HTML ESCAPE
-        ========================================================= */
+        guests =
+            data || [];
 
-        function escapeGuestHtml(value) {
 
-            return String(value ?? "")
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+        renderGuests();
 
-        }
+    }
 
+    catch (error) {
 
-        /* =========================================================
-           RENDER GUESTS
-        ========================================================= */
-
-        function renderGuests() {
-
-            const searchText =
-                guestSearch.value
-                    .toLowerCase()
-                    .trim();
-
-
-            const filteredGuests =
-                guests.filter(guest => {
-
-                    const searchableText = [
-
-                        guest.full_name,
-
-                        guest.phone,
-
-                        guest.email,
-
-                        guest.id_passport,
-
-                        guest.country,
-
-                        guest.address
-
-                    ]
-                        .filter(Boolean)
-                        .join(" ")
-                        .toLowerCase();
-
-
-                    return searchableText
-                        .includes(searchText);
-
-                });
-
-
-            if (filteredGuests.length === 0) {
-
-                guestTable.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align:center;">
-                            ${
-                                searchText
-                                    ? "No guests match your search."
-                                    : "No guests registered yet."
-                            }
-                        </td>
-                    </tr>
-                `;
-
-                updateGuestSummary();
-
-                return;
-
-            }
-
-
-            guestTable.innerHTML =
-                filteredGuests.map(guest => {
-
-                    return `
-
-                        <tr data-guest-id="${escapeGuestHtml(guest.id)}">
-
-                            <td>
-                                ${escapeGuestHtml(
-                                    guest.full_name
-                                )}
-                            </td>
-
-                            <td>
-                                ${escapeGuestHtml(
-                                    guest.phone
-                                )}
-                            </td>
-
-                            <td>
-                                ${
-                                    guest.id_passport
-                                        ? escapeGuestHtml(
-                                            guest.id_passport
-                                          )
-                                        : "-"
-                                }
-                            </td>
-
-                            <td>
-                                ${
-                                    guest.email
-                                        ? escapeGuestHtml(
-                                            guest.email
-                                          )
-                                        : "-"
-                                }
-                            </td>
-
-                            <td>
-                                ${
-                                    guest.country
-                                        ? escapeGuestHtml(
-                                            guest.country
-                                          )
-                                        : "-"
-                                }
-                            </td>
-
-                            <td>
-                                ${
-                                    guest.address
-                                        ? escapeGuestHtml(
-                                            guest.address
-                                          )
-                                        : "-"
-                                }
-                            </td>
-
-                            <td>
-
-                                <button
-                                    type="button"
-                                    class="edit-btn"
-                                    onclick="editGuest('${escapeGuestHtml(guest.id)}')"
-                                >
-                                    Edit
-                                </button>
-
-                                <button
-                                    type="button"
-                                    class="delete-btn"
-                                    onclick="deleteGuestRecord('${escapeGuestHtml(guest.id)}')"
-                                >
-                                    Delete
-                                </button>
-
-                            </td>
-
-                        </tr>
-
-                    `;
-
-                }).join("");
-
-
-            updateGuestSummary();
-
-        }
-
-
-        /* =========================================================
-           SUMMARY
-        ========================================================= */
-
-        async function updateGuestSummary() {
-
-            document.getElementById(
-                "totalGuests"
-            ).textContent = guests.length;
-
-
-            /*
-               Staying, arrivals and departures will later be
-               calculated from the reservation/check-in data.
-
-               For now they remain zero because the Guests table
-               itself does not contain stay dates.
-            */
-
-            document.getElementById(
-                "stayingGuests"
-            ).textContent = "0";
-
-            document.getElementById(
-                "arrivalGuests"
-            ).textContent = "0";
-
-            document.getElementById(
-                "departureGuests"
-            ).textContent = "0";
-
-        }
-
-
-        /* =========================================================
-           OPEN GUEST FORM
-        ========================================================= */
-
-        function openGuestForm() {
-
-            guestModal.style.display = "flex";
-
-            guestForm.reset();
-
-            editingGuestId = null;
-
-
-            document.getElementById(
-                "guestModalTitle"
-            ).textContent =
-                "Register New Guest";
-
-
-            document.getElementById(
-                "guestSubmitButton"
-            ).textContent =
-                "Register Guest";
-
-        }
-
-
-        /* =========================================================
-           CLOSE GUEST FORM
-        ========================================================= */
-
-        function closeGuestForm() {
-
-            guestModal.style.display = "none";
-
-            guestForm.reset();
-
-            editingGuestId = null;
-
-        }
-
-
-        /* =========================================================
-           ADD / UPDATE GUEST
-        ========================================================= */
-
-        guestForm.addEventListener(
-            "submit",
-            async function(event) {
-
-                event.preventDefault();
-
-
-                const name =
-                    document.getElementById(
-                        "guestName"
-                    ).value.trim();
-
-
-                const phone =
-                    document.getElementById(
-                        "guestPhone"
-                    ).value.trim();
-
-
-                const guestID =
-                    document.getElementById(
-                        "guestID"
-                    ).value.trim();
-
-
-                const email =
-                    document.getElementById(
-                        "guestEmail"
-                    ).value.trim();
-
-
-                const country =
-                    document.getElementById(
-                        "guestCountry"
-                    ).value.trim();
-
-
-                const address =
-                    document.getElementById(
-                        "guestAddress"
-                    ).value.trim();
-
-
-                if (!name || !phone) {
-
-                    alert(
-                        "Please enter the guest's full name and phone number."
-                    );
-
-                    return;
-
-                }
-
-
-                const role =
-                    getGuestRole();
-
-
-                const hotelId =
-                    getGuestHotelId();
-
-
-                if (
-                    role !== "system_owner" &&
-                    !hotelId
-                ) {
-
-                    alert(
-                        "This account does not have a hotel assigned."
-                    );
-
-                    return;
-
-                }
-
-
-                const submitButton =
-                    document.getElementById(
-                        "guestSubmitButton"
-                    );
-
-
-                submitButton.disabled = true;
-
-
-                try {
-
-                    /*
-                       Prevent duplicate phone numbers within
-                       the same hotel.
-                    */
-
-                    let duplicateQuery =
-                        window.supabaseClient
-                            .from("guest")
-                            .select("id")
-                            .eq("phone", phone);
-
-
-                    if (role !== "system_owner") {
-
-                        duplicateQuery =
-                            duplicateQuery.eq(
-                                "hotel_id",
-                                hotelId
-                            );
-
-                    }
-
-
-                    if (editingGuestId) {
-
-                        duplicateQuery =
-                            duplicateQuery.neq(
-                                "id",
-                                editingGuestId
-                            );
-
-                    }
-
-
-                    const {
-                        data: duplicateGuests,
-                        error: duplicateError
-                    } =
-                        await duplicateQuery;
-
-
-                    if (duplicateError) {
-
-                        console.error(
-                            duplicateError
-                        );
-
-                    }
-
-
-                    if (
-                        duplicateGuests &&
-                        duplicateGuests.length > 0
-                    ) {
-
-                        alert(
-                            "A guest with this phone number already exists."
-                        );
-
-                        submitButton.disabled = false;
-
-                        return;
-
-                    }
-
-
-                    const guestData = {
-
-                        full_name: name,
-
-                        phone: phone,
-
-                        email:
-                            email || null,
-
-                        id_passport:
-                            guestID || null,
-
-                        country:
-                            country || null,
-
-                        address:
-                            address || null
-
-                    };
-
-
-                    /*
-                       Hotel ID is assigned automatically
-                       for hotel users.
-                    */
-
-                    if (
-                        role !== "system_owner"
-                    ) {
-
-                        guestData.hotel_id =
-                            Number(hotelId);
-
-                    }
-
-
-                    let result;
-
-
-                    if (editingGuestId) {
-
-                        result =
-                            await window.supabaseClient
-                                .from("guest")
-                                .update(guestData)
-                                .eq(
-                                    "id",
-                                    editingGuestId
-                                );
-
-                    }
-
-                    else {
-
-                        result =
-                            await window.supabaseClient
-                                .from("guest")
-                                .insert([
-                                    guestData
-                                ]);
-
-                    }
-
-
-                    if (result.error) {
-
-                        console.error(
-                            "Guest save error:",
-                            result.error
-                        );
-
-                        alert(
-                            "Failed to save guest: " +
-                            result.error.message
-                        );
-
-                        return;
-
-                    }
-
-
-                    alert(
-                        editingGuestId
-                            ? "Guest updated successfully."
-                            : "Guest registered successfully."
-                    );
-
-
-                    closeGuestForm();
-
-                    await loadGuests();
-
-                }
-
-                catch (error) {
-
-                    console.error(
-                        "Guest save error:",
-                        error
-                    );
-
-                    alert(
-                        "An unexpected error occurred while saving the guest."
-                    );
-
-                }
-
-                finally {
-
-                    submitButton.disabled = false;
-
-                }
-
-            }
+        console.error(
+            "Unexpected guest loading error:",
+            error
         );
 
+        guestTable.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align:center;">
+                    Failed to load guests.
+                </td>
+            </tr>
+        `;
 
-        /* =========================================================
-           EDIT GUEST
-        ========================================================= */
+    }
 
-        async function editGuest(guestId) {
-
-            const guest =
-                guests.find(
-                    item =>
-                        String(item.id) ===
-                        String(guestId)
-                );
+}
 
 
-            if (!guest) {
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
 
-                alert(
-                    "Guest record could not be found."
-                );
+function escapeGuestHtml(value) {
 
-                return;
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
-            }
+}
 
 
-            editingGuestId =
-                guest.id;
+/* =========================================================
+   RENDER
+========================================================= */
+
+function renderGuests() {
+
+    const searchText =
+        guestSearch.value
+            .toLowerCase()
+            .trim();
 
 
+    const filteredGuests =
+        guests.filter(guest => {
+
+            const searchableText = [
+
+                guest.full_name,
+                guest.phone,
+                guest.email,
+                guest.id_passport,
+                guest.country,
+                guest.address
+
+            ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
+
+
+            return searchableText
+                .includes(searchText);
+
+        });
+
+
+    if (filteredGuests.length === 0) {
+
+        guestTable.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align:center;">
+                    ${
+                        searchText
+                            ? "No guests match your search."
+                            : "No guests registered yet."
+                    }
+                </td>
+            </tr>
+        `;
+
+        updateGuestSummary();
+
+        return;
+
+    }
+
+
+    guestTable.innerHTML =
+        filteredGuests.map(guest => {
+
+            return `
+
+                <tr>
+
+                    <td>
+                        ${escapeGuestHtml(
+                            guest.full_name
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeGuestHtml(
+                            guest.phone
+                        )}
+                    </td>
+
+                    <td>
+                        ${
+                            guest.id_passport
+                                ? escapeGuestHtml(
+                                    guest.id_passport
+                                  )
+                                : "-"
+                        }
+                    </td>
+
+                    <td>
+                        ${
+                            guest.email
+                                ? escapeGuestHtml(
+                                    guest.email
+                                  )
+                                : "-"
+                        }
+                    </td>
+
+                    <td>
+                        ${
+                            guest.country
+                                ? escapeGuestHtml(
+                                    guest.country
+                                  )
+                                : "-"
+                        }
+                    </td>
+
+                    <td>
+                        ${
+                            guest.address
+                                ? escapeGuestHtml(
+                                    guest.address
+                                  )
+                                : "-"
+                        }
+                    </td>
+
+                    <td>
+
+                        <button
+                            type="button"
+                            class="edit-btn"
+                            onclick="editGuest('${guest.id}')"
+                        >
+                            Edit
+                        </button>
+
+                        <button
+                            type="button"
+                            class="delete-btn"
+                            onclick="deleteGuestRecord('${guest.id}')"
+                        >
+                            Delete
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }).join("");
+
+
+    updateGuestSummary();
+
+}
+
+
+/* =========================================================
+   SUMMARY
+========================================================= */
+
+function updateGuestSummary() {
+
+    document.getElementById(
+        "totalGuests"
+    ).textContent =
+        guests.length;
+
+    document.getElementById(
+        "stayingGuests"
+    ).textContent =
+        "0";
+
+    document.getElementById(
+        "arrivalGuests"
+    ).textContent =
+        "0";
+
+    document.getElementById(
+        "departureGuests"
+    ).textContent =
+        "0";
+
+}
+
+
+/* =========================================================
+   OPEN FORM
+========================================================= */
+
+function openGuestForm() {
+
+    guestModal.style.display =
+        "flex";
+
+    guestForm.reset();
+
+    editingGuestId =
+        null;
+
+
+    document.getElementById(
+        "guestModalTitle"
+    ).textContent =
+        "Register New Guest";
+
+
+    document.getElementById(
+        "guestSubmitButton"
+    ).textContent =
+        "Register Guest";
+
+}
+
+
+/* =========================================================
+   CLOSE FORM
+========================================================= */
+
+function closeGuestForm() {
+
+    guestModal.style.display =
+        "none";
+
+    guestForm.reset();
+
+    editingGuestId =
+        null;
+
+}
+
+
+/* =========================================================
+   SAVE GUEST
+========================================================= */
+
+guestForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const name =
             document.getElementById(
                 "guestName"
-            ).value =
-                guest.full_name || "";
+            ).value.trim();
 
 
+        const phone =
             document.getElementById(
                 "guestPhone"
-            ).value =
-                guest.phone || "";
+            ).value.trim();
 
 
+        const guestID =
             document.getElementById(
                 "guestID"
-            ).value =
-                guest.id_passport || "";
+            ).value.trim();
 
 
+        const email =
             document.getElementById(
                 "guestEmail"
-            ).value =
-                guest.email || "";
+            ).value.trim();
 
 
+        const country =
             document.getElementById(
                 "guestCountry"
-            ).value =
-                guest.country || "";
+            ).value.trim();
 
 
+        const address =
             document.getElementById(
                 "guestAddress"
-            ).value =
-                guest.address || "";
+            ).value.trim();
 
 
-            document.getElementById(
-                "guestModalTitle"
-            ).textContent =
-                "Edit Guest";
+        if (!name || !phone) {
+
+            alert(
+                "Please enter the guest's full name and phone number."
+            );
+
+            return;
+
+        }
 
 
+        const role =
+            getGuestRole();
+
+        const hotelId =
+            getGuestHotelId();
+
+
+        if (
+            role !== "system_owner" &&
+            !hotelId
+        ) {
+
+            alert(
+                "This account does not have a hotel assigned."
+            );
+
+            return;
+
+        }
+
+
+        const submitButton =
             document.getElementById(
                 "guestSubmitButton"
-            ).textContent =
-                "Update Guest";
+            );
 
 
-            guestModal.style.display =
-                "flex";
-
-        }
+        submitButton.disabled =
+            true;
 
 
-        /* =========================================================
-           DELETE GUEST
-        ========================================================= */
+        try {
 
-        async function deleteGuestRecord(guestId) {
+            /*
+             * Check duplicate phone.
+             */
 
-            const guest =
-                guests.find(
-                    item =>
-                        String(item.id) ===
-                        String(guestId)
-                );
+            let duplicateQuery =
+                window.supabaseClient
+                    .from("guests")
+                    .select("id")
+                    .eq(
+                        "phone",
+                        phone
+                    );
 
 
-            if (!guest) {
+            if (role !== "system_owner") {
+
+                duplicateQuery =
+                    duplicateQuery.eq(
+                        "hotel_id",
+                        hotelId
+                    );
+
+            }
+
+
+            if (editingGuestId) {
+
+                duplicateQuery =
+                    duplicateQuery.neq(
+                        "id",
+                        editingGuestId
+                    );
+
+            }
+
+
+            const {
+                data: duplicateGuests,
+                error: duplicateError
+            } =
+                await duplicateQuery;
+
+
+            if (duplicateError) {
+
+                throw duplicateError;
+
+            }
+
+
+            if (
+                duplicateGuests &&
+                duplicateGuests.length > 0
+            ) {
 
                 alert(
-                    "Guest record could not be found."
+                    "A guest with this phone number already exists."
                 );
 
                 return;
@@ -1279,128 +1009,333 @@
             }
 
 
-            const confirmed =
-                confirm(
-                    `Are you sure you want to delete ${guest.full_name}?`
-                );
+            const guestData = {
+
+                full_name:
+                    name,
+
+                phone:
+                    phone,
+
+                email:
+                    email || null,
+
+                id_passport:
+                    guestID || null,
+
+                country:
+                    country || null,
+
+                address:
+                    address || null
+
+            };
 
 
-            if (!confirmed) {
+            if (
+                role !== "system_owner"
+            ) {
 
-                return;
+                guestData.hotel_id =
+                    Number(hotelId);
 
             }
 
 
-            try {
+            let result;
 
-                const {
-                    error
-                } =
+
+            if (editingGuestId) {
+
+                result =
                     await window.supabaseClient
-                        .from("guest")
-                        .delete()
+                        .from("guests")
+                        .update(
+                            guestData
+                        )
                         .eq(
                             "id",
-                            guestId
+                            editingGuestId
                         );
 
+            } else {
 
-                if (error) {
-
-                    console.error(
-                        "Guest delete error:",
-                        error
-                    );
-
-                    alert(
-                        "Failed to delete guest: " +
-                        error.message
-                    );
-
-                    return;
-
-                }
-
-
-                alert(
-                    "Guest deleted successfully."
-                );
-
-
-                await loadGuests();
+                result =
+                    await window.supabaseClient
+                        .from("guests")
+                        .insert([
+                            guestData
+                        ]);
 
             }
 
-            catch (error) {
 
-                console.error(
-                    error
-                );
+            if (result.error) {
 
-                alert(
-                    "An unexpected error occurred while deleting the guest."
-                );
+                throw result.error;
 
             }
+
+
+            alert(
+                editingGuestId
+                    ? "Guest updated successfully."
+                    : "Guest registered successfully."
+            );
+
+
+            closeGuestForm();
+
+            await loadGuests();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Guest save error:",
+                error
+            );
+
+            alert(
+                "Failed to save guest: " +
+                error.message
+            );
+
+        }
+
+        finally {
+
+            submitButton.disabled =
+                false;
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   EDIT GUEST
+========================================================= */
+
+function editGuest(guestId) {
+
+    const guest =
+        guests.find(
+            item =>
+                String(item.id) ===
+                String(guestId)
+        );
+
+
+    if (!guest) {
+
+        alert(
+            "Guest record could not be found."
+        );
+
+        return;
+
+    }
+
+
+    editingGuestId =
+        guest.id;
+
+
+    document.getElementById(
+        "guestName"
+    ).value =
+        guest.full_name || "";
+
+
+    document.getElementById(
+        "guestPhone"
+    ).value =
+        guest.phone || "";
+
+
+    document.getElementById(
+        "guestID"
+    ).value =
+        guest.id_passport || "";
+
+
+    document.getElementById(
+        "guestEmail"
+    ).value =
+        guest.email || "";
+
+
+    document.getElementById(
+        "guestCountry"
+    ).value =
+        guest.country || "";
+
+
+    document.getElementById(
+        "guestAddress"
+    ).value =
+        guest.address || "";
+
+
+    document.getElementById(
+        "guestModalTitle"
+    ).textContent =
+        "Edit Guest";
+
+
+    document.getElementById(
+        "guestSubmitButton"
+    ).textContent =
+        "Update Guest";
+
+
+    guestModal.style.display =
+        "flex";
+
+}
+
+
+/* =========================================================
+   DELETE
+========================================================= */
+
+async function deleteGuestRecord(
+    guestId
+) {
+
+    const guest =
+        guests.find(
+            item =>
+                String(item.id) ===
+                String(guestId)
+        );
+
+
+    if (!guest) {
+
+        alert(
+            "Guest record could not be found."
+        );
+
+        return;
+
+    }
+
+
+    const confirmed =
+        confirm(
+            `Are you sure you want to delete ${guest.full_name}?`
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const {
+            error
+        } =
+            await window.supabaseClient
+                .from("guests")
+                .delete()
+                .eq(
+                    "id",
+                    guestId
+                );
+
+
+        if (error) {
+
+            throw error;
 
         }
 
 
-        /* =========================================================
-           SEARCH
-        ========================================================= */
-
-        guestSearch.addEventListener(
-            "input",
-            function() {
-
-                renderGuests();
-
-            }
+        alert(
+            "Guest deleted successfully."
         );
 
 
-        /* =========================================================
-           CLOSE MODAL WHEN CLICKING OUTSIDE
-        ========================================================= */
+        await loadGuests();
 
-        guestModal.addEventListener(
-            "click",
-            function(event) {
+    }
 
-                if (
-                    event.target ===
-                    guestModal
-                ) {
+    catch (error) {
 
-                    closeGuestForm();
-
-                }
-
-            }
+        console.error(
+            "Guest delete error:",
+            error
         );
 
-
-        /* =========================================================
-           INITIALIZE
-        ========================================================= */
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            async function() {
-
-                protectGuestPage();
-
-                displayGuestUser();
-
-                await loadGuests();
-
-            }
+        alert(
+            "Failed to delete guest: " +
+            error.message
         );
 
-    </script>
+    }
+
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+guestSearch.addEventListener(
+    "input",
+    function() {
+
+        renderGuests();
+
+    }
+);
+
+
+/* =========================================================
+   CLOSE MODAL OUTSIDE
+========================================================= */
+
+guestModal.addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            event.target ===
+            guestModal
+        ) {
+
+            closeGuestForm();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function() {
+
+        displayGuestUser();
+
+        await loadGuests();
+
+    }
+);
+
+</script>
 
 </body>
-
 </html>
