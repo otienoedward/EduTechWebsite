@@ -4,283 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guests - EDU TECH Hotel Management System</title>
-
     <link rel="stylesheet" href="./style.css">
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="./supabase.js"></script>
-
     <style>
-        .guest-page {
-            padding: 25px;
+        .sidebar a.role-hidden,
+        .action-hidden {
+            display: none !important;
         }
 
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            gap: 15px;
-        }
-
-        .page-header h1 {
-            margin: 0;
-        }
-
-        .page-header p {
-            margin: 5px 0 0;
-            color: #777;
-        }
-
-        .btn {
-            border: none;
-            border-radius: 6px;
-            padding: 10px 16px;
+        .sidebar a.logout-link {
             cursor: pointer;
-            font-size: 14px;
         }
 
-        .btn-primary {
-            background: #2563eb;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #1d4ed8;
-        }
-
-        .btn-edit {
-            background: #f59e0b;
-            color: white;
-            margin-right: 5px;
-        }
-
-        .btn-delete {
-            background: #dc2626;
-            color: white;
-        }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .summary-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .summary-card h3 {
-            margin: 0 0 10px;
-            color: #666;
-            font-size: 14px;
-        }
-
-        .summary-card .number {
-            font-size: 28px;
-            font-weight: bold;
-            color: #1f2937;
-        }
-
-        .table-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .table-toolbar {
+        .guest-actions {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
-        .search-box {
-            flex: 1;
-            min-width: 250px;
-        }
-
-        .search-box input {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 11px 13px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            outline: none;
-        }
-
-        .hotel-select {
-            min-width: 220px;
-        }
-
-        .hotel-select select {
-            width: 100%;
-            padding: 11px 13px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            background: white;
-        }
-
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th,
-        td {
-            padding: 13px 12px;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-            white-space: nowrap;
-        }
-
-        th {
-            background: #f8fafc;
+        .guest-actions button {
+            border: none;
+            padding: 7px 12px;
+            border-radius: 5px;
+            cursor: pointer;
             font-size: 13px;
-            color: #374151;
         }
 
-        td {
-            font-size: 14px;
-            color: #374151;
+        .view-btn {
+            background: #e7f1ff;
+            color: #0d6efd;
         }
 
-        .empty-state,
-        .loading-state {
-            text-align: center;
-            padding: 35px;
-            color: #777;
+        .edit-btn {
+            background: #fff3cd;
+            color: #856404;
         }
 
-        .error-message {
-            background: #fee2e2;
-            color: #991b1b;
-            padding: 12px 15px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            display: none;
+        .delete-btn {
+            background: #f8d7da;
+            color: #842029;
         }
 
-        .success-message {
-            background: #dcfce7;
-            color: #166534;
-            padding: 12px 15px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            display: none;
+        .guest-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: capitalize;
         }
 
-        .modal {
+        .guest-status.active {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .guest-status.inactive {
+            background: #e2e3e5;
+            color: #41464b;
+        }
+
+        #guestModal {
             display: none;
             position: fixed;
-            z-index: 9999;
             inset: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.55);
             align-items: center;
             justify-content: center;
+            z-index: 9999;
             padding: 20px;
         }
 
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-content {
+        #guestModal .modal-content {
             width: 100%;
-            max-width: 550px;
-            background: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-sizing: border-box;
+            max-width: 600px;
             max-height: 90vh;
             overflow-y: auto;
+            background: #fff;
+            border-radius: 10px;
+            padding: 25px;
         }
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+        .view-only-message {
+            background: #e7f1ff;
+            color: #084298;
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin-bottom: 15px;
         }
 
-        .modal-header h2 {
-            margin: 0;
-        }
-
-        .close-btn {
-            border: none;
-            background: transparent;
-            font-size: 25px;
-            cursor: pointer;
-            color: #666;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
+        #guestForm label {
             display: block;
-            margin-bottom: 7px;
+            margin-top: 12px;
+            margin-bottom: 5px;
             font-weight: 600;
-            color: #374151;
         }
 
-        .form-group input {
+        #guestForm input,
+        #guestForm select {
             width: 100%;
             box-sizing: border-box;
-            padding: 11px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            outline: none;
-            font-size: 14px;
         }
 
-        .form-group input:focus {
-            border-color: #2563eb;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .btn-secondary {
-            background: #6b7280;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #4b5563;
-        }
-
-        .system-owner-only {
-            display: none;
-        }
-
-        @media (max-width: 900px) {
-            .summary-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .page-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+        #saveGuestButton:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -290,362 +118,237 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
 
-        <div class="sidebar-header">
+        <div class="logo">
             <h2>EDU TECH</h2>
-            <p>Hotel Management</p>
+            <span>HOTEL SYSTEM</span>
         </div>
 
         <nav>
-
-            <a href="./index.html" data-module="dashboard">
-                Dashboard
-            </a>
-
-            <a href="./rooms.html" data-module="rooms">
-                Rooms
-            </a>
-
-            <a href="./guests.html" data-module="guests" class="active">
-                Guests
-            </a>
-
-            <a href="./reservations.html" data-module="reservations">
-                Reservations
-            </a>
-
-            <a href="./checkin.html" data-module="checkin">
-                Check-in
-            </a>
-
-            <a href="./checkout.html" data-module="checkout">
-                Check-out
-            </a>
-
-            <a href="./restaurant.html" data-module="restaurant">
-                Restaurant
-            </a>
-
-            <a href="./inventory.html" data-module="inventory">
-                Inventory
-            </a>
-
-            <a href="./payments.html" data-module="payments">
-                Payments
-            </a>
-
-            <a href="./expenses.html" data-module="expenses">
-                Expenses
-            </a>
-
-            <a href="./employees.html" data-module="employees">
-                Employees
-            </a>
-
-            <a href="./housekeeping.html" data-module="housekeeping">
-                Housekeeping
-            </a>
-
-            <a href="./maintenance.html" data-module="maintenance">
-                Maintenance
-            </a>
-
-            <a href="./reports.html" data-module="reports">
-                Reports
-            </a>
-
-            <a href="./settings.html" data-module="settings">
-                Settings
-            </a>
-
-            <a href="./hotels.html" data-module="hotels">
-                Hotels
-            </a>
-
-            <a href="#" data-action="logout">
-                Logout
-            </a>
-
+            <a href="./index.html" id="navDashboard" data-module="dashboard">🏠 Dashboard</a>
+            <a href="./rooms.html" id="navRooms" data-module="rooms">🛏️ Rooms</a>
+            <a href="./guests.html" id="navGuests" class="active" data-module="guests">👤 Guests</a>
+            <a href="./reservations.html" id="navReservations" data-module="reservations">📅 Reservations</a>
+            <a href="./checkin.html" id="navCheckin" data-module="checkin">🛎️ Check-in</a>
+            <a href="./checkout.html" id="navCheckout" data-module="checkout">🚪 Check-out</a>
+            <a href="./restaurant.html" id="navRestaurant" data-module="restaurant">🍽️ Restaurant</a>
+            <a href="./inventory.html" id="navInventory" data-module="inventory">📦 Inventory</a>
+            <a href="./payments.html" id="navPayments" data-module="payments">💰 Payments</a>
+            <a href="./expenses.html" id="navExpenses" data-module="expenses">💸 Expenses</a>
+            <a href="./employees.html" id="navEmployees" data-module="employees">👨‍💼 Employees</a>
+            <a href="./housekeeping.html" id="navHousekeeping" data-module="housekeeping">🧹 Housekeeping</a>
+            <a href="./maintenance.html" id="navMaintenance" data-module="maintenance">🔧 Maintenance</a>
+            <a href="./reports.html" id="navReports" data-module="reports">📊 Reports</a>
+            <a href="./settings.html" id="navSettings" data-module="settings">⚙️ Settings</a>
+            <a href="#" id="logoutLink" class="logout-link">🚪 Logout</a>
         </nav>
 
     </aside>
 
-
     <!-- MAIN CONTENT -->
     <main class="main-content">
 
-        <div class="guest-page">
+        <header class="topbar">
 
-            <div class="page-header">
+            <div>
+                <h1>Guest Management</h1>
+                <p>Manage hotel guests and their contact information</p>
+            </div>
+
+            <div class="user">
+                <div class="user-icon" id="userIcon">A</div>
 
                 <div>
-                    <h1>Guests</h1>
-                    <p>
-                        Manage hotel guests and their contact information.
-                    </p>
+                    <strong id="userName">Administrator</strong>
+                    <small id="userRole">System Admin</small>
+                </div>
+            </div>
+
+        </header>
+
+        <!-- SUMMARY CARDS -->
+        <section class="cards">
+
+            <div class="card">
+                <div class="card-icon">👥</div>
+                <div>
+                    <h3>Total Guests</h3>
+                    <p id="totalGuests">0</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🟢</div>
+                <div>
+                    <h3>Active Guests</h3>
+                    <p id="activeGuests">0</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📅</div>
+                <div>
+                    <h3>Today's Guests</h3>
+                    <p id="todayGuests">0</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🏨</div>
+                <div>
+                    <h3>Active Hotel</h3>
+                    <p id="hotelGuestCount" style="font-size:14px;">Loading...</p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- GUEST CONTAINER -->
+        <section class="room-container">
+
+            <div class="room-header">
+
+                <div>
+                    <h2>Hotel Guests</h2>
+                    <p id="guestDescription">Loading hotel information...</p>
                 </div>
 
                 <button
+                    class="add-room-btn"
+                    id="addGuestButton"
                     type="button"
-                    class="btn btn-primary"
-                    id="addGuestBtn"
-                >
-                    + Add Guest
+                    onclick="openGuestForm()">
+                    + Add New Guest
                 </button>
 
             </div>
 
-
             <div
-                id="errorMessage"
-                class="error-message"
-            ></div>
+                id="viewOnlyMessage"
+                class="view-only-message"
+                style="display:none;">
+                You are logged in as a Receptionist. Guest records are view-only.
+            </div>
 
+            <!-- SEARCH AND FILTER -->
+            <div class="room-tools">
 
-            <div
-                id="successMessage"
-                class="success-message"
-            ></div>
+                <input
+                    type="text"
+                    id="searchGuest"
+                    placeholder="Search guest name, phone or email...">
 
-
-            <!-- SUMMARY -->
-            <div class="summary-grid">
-
-                <div class="summary-card">
-
-                    <h3>Total Guests</h3>
-
-                    <div
-                        class="number"
-                        id="totalGuests"
-                    >
-                        0
-                    </div>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <h3>Guests With Email</h3>
-
-                    <div
-                        class="number"
-                        id="guestsWithEmail"
-                    >
-                        0
-                    </div>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <h3>Guests With Phone</h3>
-
-                    <div
-                        class="number"
-                        id="guestsWithPhone"
-                    >
-                        0
-                    </div>
-
-                </div>
+                <select id="guestStatusFilter">
+                    <option value="all">All Guests</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
 
             </div>
 
+            <div
+                id="guestsMessage"
+                style="display:none; margin:15px 0; padding:12px; border-radius:6px;">
+            </div>
 
-            <!-- TABLE -->
-            <div class="table-card">
+            <!-- GUEST TABLE -->
+            <div class="table-container">
 
-                <div class="table-toolbar">
+                <table id="guestsTable">
 
-                    <div class="search-box">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Registered</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
 
-                        <input
-                            type="text"
-                            id="searchInput"
-                            placeholder="Search guest by name, phone or email..."
-                        >
+                    <tbody id="guestsTableBody">
+                        <tr>
+                            <td colspan="7">Loading guests...</td>
+                        </tr>
+                    </tbody>
 
-                    </div>
-
-
-                    <div
-                        class="hotel-select system-owner-only"
-                        id="hotelSelectorContainer"
-                    >
-
-                        <select id="hotelSelector">
-
-                            <option value="">
-                                Select Hotel
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                </div>
-
-
-                <div class="table-wrapper">
-
-                    <table>
-
-                        <thead>
-
-                            <tr>
-
-                                <th>#</th>
-
-                                <th>
-                                    Full Name
-                                </th>
-
-                                <th>
-                                    Phone
-                                </th>
-
-                                <th>
-                                    Email
-                                </th>
-
-                                <th>
-                                    Created
-                                </th>
-
-                                <th>
-                                    Actions
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody id="guestsTableBody">
-
-                            <tr>
-
-                                <td
-                                    colspan="6"
-                                    class="loading-state"
-                                >
-                                    Loading guests...
-                                </td>
-
-                            </tr>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
+                </table>
 
             </div>
 
-        </div>
+        </section>
 
     </main>
 
-
-    <!-- ADD / EDIT GUEST MODAL -->
-    <div
-        class="modal"
-        id="guestModal"
-    >
+    <!-- GUEST MODAL -->
+    <div id="guestModal">
 
         <div class="modal-content">
 
             <div class="modal-header">
 
-                <h2 id="modalTitle">
-                    Add Guest
-                </h2>
+                <h2 id="guestModalTitle">Add New Guest</h2>
 
                 <button
                     type="button"
-                    class="close-btn"
-                    id="closeModalBtn"
-                >
-                    &times;
+                    onclick="closeGuestForm()">
+                    ×
                 </button>
 
             </div>
 
-
             <form id="guestForm">
 
+                <label for="guestFullName">Full Name</label>
+
                 <input
-                    type="hidden"
-                    id="guestId"
-                >
+                    type="text"
+                    id="guestFullName"
+                    placeholder="Enter guest full name"
+                    required
+                    maxlength="150">
 
+                <label for="guestPhone">Phone Number</label>
 
-                <div class="form-group">
+                <input
+                    type="text"
+                    id="guestPhone"
+                    placeholder="e.g. 0739829270"
+                    maxlength="30">
 
-                    <label for="fullName">
-                        Full Name *
-                    </label>
+                <label for="guestEmail">Email Address</label>
 
-                    <input
-                        type="text"
-                        id="fullName"
-                        required
-                        placeholder="Enter guest full name"
-                    >
+                <input
+                    type="email"
+                    id="guestEmail"
+                    placeholder="guest@example.com"
+                    maxlength="150">
 
-                </div>
+                <label for="guestStatus">Status</label>
 
+                <select id="guestStatus">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
 
-                <div class="form-group">
+                <!-- SYSTEM OWNER HOTEL SELECTOR -->
+                <div id="hotelSelectorContainer" style="display:none;">
 
-                    <label for="phone">
-                        Phone
-                    </label>
+                    <label for="guestHotel">Hotel</label>
 
-                    <input
-                        type="text"
-                        id="phone"
-                        placeholder="Enter phone number"
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="email">
-                        Email
-                    </label>
-
-                    <input
-                        type="email"
-                        id="email"
-                        placeholder="Enter email address"
-                    >
+                    <select id="guestHotel">
+                        <option value="">Select hotel</option>
+                    </select>
 
                 </div>
 
-
-                <div class="form-actions">
-
-                    <button
-                        type="button"
-                        class="btn btn-secondary"
-                        id="cancelBtn"
-                    >
-                        Cancel
-                    </button>
-
-                    <button
-                        type="submit"
-                        class="btn btn-primary"
-                    >
-                        Save Guest
-                    </button>
-
-                </div>
+                <button
+                    type="submit"
+                    class="save-room-btn"
+                    id="saveGuestButton">
+                    Save Guest
+                </button>
 
             </form>
 
@@ -653,1262 +356,2033 @@
 
     </div>
 
+    <!-- SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase.js"></script>
 
-    <!-- SUPABASE + GLOBAL SCRIPT -->
-    <script src="./script.js"></script>
-
-
-    <!-- GUESTS JAVASCRIPT -->
     <script>
-
-        "use strict";
-
 
         /* =====================================================
            GLOBAL VARIABLES
-           ===================================================== */
+        ===================================================== */
 
         let guestsData = [];
-        let hotelsData = [];
         let editingGuestId = null;
+        let editingGuestHotelId = null;
 
+        let currentRole = "";
+        let currentHotelId = "";
+        let currentHotelName = "";
+
+        const db = window.supabaseClient;
+
+        /* =====================================================
+           ROLE PERMISSIONS
+        ===================================================== */
+
+        const ROLE_PERMISSIONS = {
+
+            system_owner: [
+                "dashboard", "rooms", "guests", "reservations",
+                "checkin", "checkout", "restaurant", "inventory",
+                "payments", "expenses", "employees", "housekeeping",
+                "maintenance", "reports", "settings"
+            ],
+
+            hotel_owner: [
+                "dashboard", "rooms", "guests", "reservations",
+                "checkin", "checkout", "restaurant", "inventory",
+                "payments", "expenses", "employees", "housekeeping",
+                "maintenance", "reports", "settings"
+            ],
+
+            manager: [
+                "dashboard", "rooms", "guests", "reservations",
+                "checkin", "checkout", "restaurant", "inventory",
+                "payments", "expenses", "employees", "housekeeping",
+                "maintenance", "reports"
+            ],
+
+            receptionist: [
+                "dashboard", "rooms", "guests", "reservations",
+                "checkin", "checkout", "restaurant", "payments",
+                "housekeeping"
+            ]
+
+        };
+
+        const SIDEBAR_MODULES = {
+            dashboard: "navDashboard",
+            rooms: "navRooms",
+            guests: "navGuests",
+            reservations: "navReservations",
+            checkin: "navCheckin",
+            checkout: "navCheckout",
+            restaurant: "navRestaurant",
+            inventory: "navInventory",
+            payments: "navPayments",
+            expenses: "navExpenses",
+            employees: "navEmployees",
+            housekeeping: "navHousekeeping",
+            maintenance: "navMaintenance",
+            reports: "navReports",
+            settings: "navSettings"
+        };
+
+        function canAddGuest() {
+            return [
+                "system_owner",
+                "hotel_owner",
+                "manager"
+            ].includes(currentRole);
+        }
+
+        function canEditGuest() {
+            return [
+                "system_owner",
+                "hotel_owner",
+                "manager"
+            ].includes(currentRole);
+        }
+
+        function canDeleteGuest() {
+            return currentRole === "system_owner";
+        }
+
+        function normalizeRole(role) {
+
+            let value = String(role || "")
+                .toLowerCase()
+                .trim()
+                .replace(/[\s-]+/g, "_");
+
+            if (value === "systemowner") {
+                value = "system_owner";
+            }
+
+            if (value === "hotelowner") {
+                value = "hotel_owner";
+            }
+
+            return value;
+        }
+
+        function formatRoleName(role) {
+
+            if (!role) {
+                return "User";
+            }
+
+            return role
+                .replace(/_/g, " ")
+                .replace(/\b\w/g, letter => letter.toUpperCase());
+        }
+
+        /* =====================================================
+           SIDEBAR PERMISSIONS
+        ===================================================== */
+
+        function applyRolePermissions() {
+
+            const allowedModules =
+                ROLE_PERMISSIONS[currentRole] || [];
+
+            Object.keys(SIDEBAR_MODULES).forEach(moduleName => {
+
+                const element = document.getElementById(
+                    SIDEBAR_MODULES[moduleName]
+                );
+
+                if (!element) {
+                    return;
+                }
+
+                element.classList.toggle(
+                    "role-hidden",
+                    !allowedModules.includes(moduleName)
+                );
+
+            });
+
+            const addButton =
+                document.getElementById("addGuestButton");
+
+            if (addButton) {
+                addButton.style.display =
+                    canAddGuest() ? "" : "none";
+            }
+
+            const viewOnlyMessage =
+                document.getElementById("viewOnlyMessage");
+
+            if (viewOnlyMessage) {
+                viewOnlyMessage.style.display =
+                    currentRole === "receptionist"
+                        ? "block"
+                        : "none";
+            }
+        }
+
+        /* =====================================================
+           ACTIVE HOTEL
+        ===================================================== */
+
+        function getActiveHotelFromSession() {
+
+            const id =
+                sessionStorage.getItem("activeHotelId");
+
+            const name =
+                sessionStorage.getItem("activeHotelName");
+
+            if (!id) {
+                return null;
+            }
+
+            return {
+                id: String(id),
+                name: name || ""
+            };
+        }
+
+        /* =====================================================
+           USER INFORMATION
+        ===================================================== */
+
+        function displayUserInformation(nameFromProfile) {
+
+            const name =
+                nameFromProfile ||
+                sessionStorage.getItem("userName") ||
+                "Administrator";
+
+            document.getElementById("userName").textContent = name;
+
+            document.getElementById("userRole").textContent =
+                formatRoleName(currentRole);
+
+            document.getElementById("userIcon").textContent =
+                name.charAt(0).toUpperCase();
+        }
+
+        /* =====================================================
+           AUTHENTICATION AND ROLE SETUP
+        ===================================================== */
+
+        async function setupGuestsRole() {
+
+            if (!db) {
+
+                alert(
+                    "Supabase client is not available. Check supabase.js."
+                );
+
+                window.location.href = "./login.html";
+
+                return false;
+            }
+
+            try {
+
+                const {
+                    data: sessionData,
+                    error: sessionError
+                } = await db.auth.getSession();
+
+                if (sessionError) {
+
+                    console.error(
+                        "Session error:",
+                        sessionError
+                    );
+
+                    window.location.href = "./login.html";
+
+                    return false;
+                }
+
+                if (!sessionData?.session) {
+
+                    window.location.href = "./login.html";
+
+                    return false;
+                }
+
+                const user =
+                    sessionData.session.user;
+
+                const {
+                    data: profile,
+                    error: profileError
+                } = await db
+                    .from("profiles")
+                    .select(
+                        "id, full_name, role, hotel_id"
+                    )
+                    .eq("id", user.id)
+                    .maybeSingle();
+
+                if (profileError) {
+
+                    console.error(
+                        "Profile loading error:",
+                        profileError
+                    );
+
+                    alert(
+                        "Unable to load your user profile. Please contact the system administrator."
+                    );
+
+                    return false;
+                }
+
+                if (!profile) {
+
+                    alert(
+                        "Your user profile was not found. Please contact the system administrator."
+                    );
+
+                    return false;
+                }
+
+                currentRole =
+                    normalizeRole(profile.role);
+
+                if (!ROLE_PERMISSIONS[currentRole]) {
+
+                    alert(
+                        "Your account has an unrecognized role."
+                    );
+
+                    return false;
+                }
+
+                /* =========================
+                   SYSTEM OWNER
+                ========================= */
+
+                if (currentRole === "system_owner") {
+
+                    const activeHotel =
+                        getActiveHotelFromSession();
+
+                    if (activeHotel) {
+
+                        currentHotelId =
+                            activeHotel.id;
+
+                        currentHotelName =
+                            activeHotel.name;
+
+                        if (!currentHotelName) {
+
+                            const {
+                                data: hotel,
+                                error: hotelError
+                            } = await db
+                                .from("hotels")
+                                .select("hotel_name")
+                                .eq(
+                                    "id",
+                                    Number(currentHotelId)
+                                )
+                                .maybeSingle();
+
+                            if (hotelError) {
+
+                                console.error(
+                                    "Hotel loading error:",
+                                    hotelError
+                                );
+
+                            }
+
+                            currentHotelName =
+                                hotel?.hotel_name || "";
+                        }
+
+                    } else {
+
+                        currentHotelId = "";
+                        currentHotelName = "";
+
+                    }
+
+                }
+
+                /* =========================
+                   HOTEL OWNER / MANAGER /
+                   RECEPTIONIST
+                ========================= */
+
+                else {
+
+                    if (
+                        profile.hotel_id === null ||
+                        profile.hotel_id === undefined
+                    ) {
+
+                        alert(
+                            "Your account is not assigned to a hotel."
+                        );
+
+                        return false;
+                    }
+
+                    currentHotelId =
+                        String(profile.hotel_id);
+
+                    const {
+                        data: hotel,
+                        error: hotelError
+                    } = await db
+                        .from("hotels")
+                        .select(
+                            "id, hotel_name, location, status"
+                        )
+                        .eq(
+                            "id",
+                            Number(currentHotelId)
+                        )
+                        .maybeSingle();
+
+                    if (hotelError) {
+
+                        console.error(
+                            "Hotel loading error:",
+                            hotelError
+                        );
+
+                        alert(
+                            "Unable to load your assigned hotel."
+                        );
+
+                        return false;
+                    }
+
+                    if (!hotel) {
+
+                        alert(
+                            "Your assigned hotel could not be found."
+                        );
+
+                        return false;
+                    }
+
+                    currentHotelName =
+                        hotel.hotel_name || "";
+                }
+
+                /* =========================
+                   SAVE SESSION INFORMATION
+                ========================= */
+
+                if (currentHotelId) {
+
+                    sessionStorage.setItem(
+                        "hotelId",
+                        currentHotelId
+                    );
+
+                }
+
+                sessionStorage.setItem(
+                    "userRole",
+                    currentRole
+                );
+
+                sessionStorage.setItem(
+                    "userName",
+                    profile.full_name ||
+                    user.email ||
+                    "Administrator"
+                );
+
+                sessionStorage.setItem(
+                    "userId",
+                    user.id
+                );
+
+                if (currentHotelName) {
+
+                    sessionStorage.setItem(
+                        "hotelName",
+                        currentHotelName
+                    );
+
+                }
+
+                applyRolePermissions();
+
+                displayUserInformation(
+                    profile.full_name ||
+                    user.email
+                );
+
+                return true;
+
+            } catch (error) {
+
+                console.error(
+                    "Guest role setup error:",
+                    error
+                );
+
+                alert(
+                    "Unable to initialize the Guests page: " +
+                    (error.message || "Unknown error")
+                );
+
+                return false;
+            }
+        }
+
+        /* =====================================================
+           LOGOUT
+        ===================================================== */
+
+        async function logoutUser(event) {
+
+            if (event) {
+                event.preventDefault();
+            }
+
+            try {
+
+                if (db) {
+                    await db.auth.signOut();
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Logout error:",
+                    error
+                );
+
+            }
+
+            sessionStorage.clear();
+
+            window.location.href =
+                "./login.html";
+        }
+
+        document
+            .getElementById("logoutLink")
+            .addEventListener(
+                "click",
+                logoutUser
+            );
 
         /* =====================================================
            DOM ELEMENTS
-           ===================================================== */
-
-        const guestModal =
-            document.getElementById("guestModal");
+        ===================================================== */
 
         const guestForm =
             document.getElementById("guestForm");
 
+        const guestModal =
+            document.getElementById("guestModal");
+
+        const guestModalTitle =
+            document.getElementById("guestModalTitle");
+
         const guestsTableBody =
             document.getElementById("guestsTableBody");
 
-        const searchInput =
-            document.getElementById("searchInput");
+        const searchGuest =
+            document.getElementById("searchGuest");
 
-        const errorMessage =
-            document.getElementById("errorMessage");
+        const guestStatusFilter =
+            document.getElementById("guestStatusFilter");
 
-        const successMessage =
-            document.getElementById("successMessage");
-
-        const totalGuests =
-            document.getElementById("totalGuests");
-
-        const guestsWithEmail =
-            document.getElementById("guestsWithEmail");
-
-        const guestsWithPhone =
-            document.getElementById("guestsWithPhone");
-
-        const hotelSelector =
-            document.getElementById("hotelSelector");
+        const guestsMessage =
+            document.getElementById("guestsMessage");
 
         const hotelSelectorContainer =
             document.getElementById(
                 "hotelSelectorContainer"
             );
 
-        const fullNameInput =
-            document.getElementById("fullName");
+        const guestHotel =
+            document.getElementById("guestHotel");
 
-        const phoneInput =
-            document.getElementById("phone");
-
-        const emailInput =
-            document.getElementById("email");
-
-        const guestIdInput =
-            document.getElementById("guestId");
-
-        const modalTitle =
-            document.getElementById("modalTitle");
-
-
-        /* =====================================================
-           ROLE
-           ===================================================== */
-
-        function getCurrentRole() {
-
-            return String(
-                sessionStorage.getItem("userRole") ||
-                localStorage.getItem("userRole") ||
-                ""
-            )
-            .toLowerCase()
-            .trim();
-
-        }
-
-
-        /* =====================================================
-           HOTEL ID
-           ===================================================== */
-
-        function getCurrentHotelId() {
-
-            return (
-                sessionStorage.getItem("hotelId") ||
-                localStorage.getItem("hotelId") ||
-                ""
+        const saveGuestButton =
+            document.getElementById(
+                "saveGuestButton"
             );
 
-        }
-
-
         /* =====================================================
-           ERROR / SUCCESS
-           ===================================================== */
-
-        function showError(message) {
-
-            errorMessage.textContent =
-                message;
-
-            errorMessage.style.display =
-                "block";
-
-        }
-
-
-        function hideError() {
-
-            errorMessage.textContent =
-                "";
-
-            errorMessage.style.display =
-                "none";
-
-        }
-
-
-        function showSuccess(message) {
-
-            successMessage.textContent =
-                message;
-
-            successMessage.style.display =
-                "block";
-
-            setTimeout(
-                function () {
-
-                    successMessage.style.display =
-                        "none";
-
-                },
-                4000
-            );
-
-        }
-
-
-        /* =====================================================
-           HTML ESCAPE
-           ===================================================== */
+           HTML ESCAPING
+        ===================================================== */
 
         function escapeHtml(value) {
 
-            return String(
-                value === null ||
-                value === undefined
-                    ? ""
-                    : value
-            )
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
 
-
         /* =====================================================
-           INITIALIZATION
-           ===================================================== */
+           MESSAGE DISPLAY
+        ===================================================== */
 
-        document.addEventListener(
-            "DOMContentLoaded",
-            async function () {
+        function showGuestsMessage(
+            message,
+            type = "success"
+        ) {
 
-                try {
+            guestsMessage.textContent =
+                message;
 
-                    hideError();
+            guestsMessage.style.display =
+                "block";
 
-                    if (
-                        !window.supabaseClient
-                    ) {
+            if (type === "error") {
 
-                        throw new Error(
-                            "Supabase client is not available. Check supabase.js."
-                        );
+                guestsMessage.style.background =
+                    "#f8d7da";
 
-                    }
+                guestsMessage.style.color =
+                    "#842029";
 
+            } else if (type === "info") {
 
-                    setupEvents();
+                guestsMessage.style.background =
+                    "#e7f1ff";
 
-                    const role =
-                        getCurrentRole();
+                guestsMessage.style.color =
+                    "#084298";
 
+            } else {
 
-                    if (
-                        role ===
-                        "system_owner"
-                    ) {
+                guestsMessage.style.background =
+                    "#d1e7dd";
 
-                        hotelSelectorContainer.style.display =
-                            "block";
-
-                        await loadHotels();
-
-                    }
-
-
-                    await loadGuests();
-
-                }
-                catch (error) {
-
-                    console.error(
-                        "Guests initialization error:",
-                        error
-                    );
-
-                    showError(
-                        "Failed to initialize Guests module: " +
-                        error.message
-                    );
-
-                }
-
+                guestsMessage.style.color =
+                    "#0f5132";
             }
-        );
-
-
-        /* =====================================================
-           EVENTS
-           ===================================================== */
-
-        function setupEvents() {
-
-            document
-                .getElementById("addGuestBtn")
-                .addEventListener(
-                    "click",
-                    openAddGuestModal
-                );
-
-
-            document
-                .getElementById("closeModalBtn")
-                .addEventListener(
-                    "click",
-                    closeGuestModal
-                );
-
-
-            document
-                .getElementById("cancelBtn")
-                .addEventListener(
-                    "click",
-                    closeGuestModal
-                );
-
-
-            guestForm.addEventListener(
-                "submit",
-                saveGuest
-            );
-
-
-            searchInput.addEventListener(
-                "input",
-                renderGuests
-            );
-
-
-            hotelSelector.addEventListener(
-                "change",
-                async function () {
-
-                    await loadGuests();
-
-                }
-            );
-
-
-            guestModal.addEventListener(
-                "click",
-                function (event) {
-
-                    if (
-                        event.target ===
-                        guestModal
-                    ) {
-
-                        closeGuestModal();
-
-                    }
-
-                }
-            );
-
         }
 
+        /* =====================================================
+           DATE FORMATTING
+        ===================================================== */
+
+        function formatDate(value) {
+
+            if (!value) {
+                return "-";
+            }
+
+            const date =
+                new Date(value);
+
+            if (Number.isNaN(date.getTime())) {
+                return "-";
+            }
+
+            return date.toLocaleDateString(
+                "en-GB",
+                {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric"
+                }
+            );
+        }
+
+        function getGuestName(guest) {
+
+            return (
+                guest["full name"] ||
+                guest.full_name ||
+                guest.name ||
+                "Unnamed Guest"
+            );
+        }
 
         /* =====================================================
            LOAD HOTELS
-           ===================================================== */
+        ===================================================== */
 
         async function loadHotels() {
+
+            if (currentRole !== "system_owner") {
+                return;
+            }
 
             const {
                 data,
                 error
-            } =
-                await window.supabaseClient
-                    .from("hotels")
-                    .select(
-                        "id, hotel_name"
-                    )
-                    .order(
-                        "hotel_name",
-                        {
-                            ascending: true
-                        }
-                    );
-
+            } = await db
+                .from("hotels")
+                .select(
+                    "id, hotel_name, location, status"
+                )
+                .order(
+                    "hotel_name",
+                    {
+                        ascending: true
+                    }
+                );
 
             if (error) {
 
-                throw error;
+                console.error(
+                    "Hotel loading error:",
+                    error
+                );
 
+                showGuestsMessage(
+                    "Unable to load hotels: " +
+                    error.message,
+                    "error"
+                );
+
+                throw error;
             }
 
+            guestHotel.innerHTML =
+                '<option value="">Select hotel</option>';
 
-            hotelsData =
-                data || [];
+            (data || []).forEach(hotel => {
 
-
-            hotelSelector.innerHTML =
-                '<option value="">Select Hotel</option>';
-
-
-            hotelsData.forEach(
-                function (hotel) {
-
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
-
-                    option.value =
-                        hotel.id;
-
-                    option.textContent =
-                        hotel.hotel_name;
-
-                    hotelSelector.appendChild(
-                        option
+                const option =
+                    document.createElement(
+                        "option"
                     );
 
-                }
-            );
+                option.value =
+                    String(hotel.id);
 
+                option.textContent =
+                    hotel.hotel_name +
+                    (
+                        hotel.location
+                            ? " — " +
+                              hotel.location
+                            : ""
+                    );
+
+                guestHotel.appendChild(
+                    option
+                );
+
+            });
         }
-
 
         /* =====================================================
            LOAD GUESTS
-           
-           VERY IMPORTANT:
-           THE ACTUAL DATABASE COLUMN IS:
-
-           "full name"
-
-           NOT:
-
-           "full_name"
-           ===================================================== */
+        ===================================================== */
 
         async function loadGuests() {
 
-            try {
+            guestsTableBody.innerHTML = `
+                <tr>
+                    <td colspan="7">
+                        Loading guests...
+                    </td>
+                </tr>
+            `;
 
-                hideError();
+            if (!currentHotelId) {
 
+                guestsData = [];
+
+                updateGuestSummary([]);
+
+                document.getElementById(
+                    "guestDescription"
+                ).textContent =
+                    "No hotel selected. Return to Dashboard and select a hotel.";
+
+                document.getElementById(
+                    "hotelGuestCount"
+                ).textContent =
+                    "No hotel selected";
 
                 guestsTableBody.innerHTML = `
                     <tr>
-                        <td
-                            colspan="6"
-                            class="loading-state"
-                        >
-                            Loading guests...
+                        <td colspan="7">
+                            No hotel selected. Return to Dashboard and select a hotel.
                         </td>
                     </tr>
                 `;
 
-
-                const role =
-                    getCurrentRole();
-
-
-                let hotelId = "";
-
-
-                if (
-                    role ===
-                    "system_owner"
-                ) {
-
-                    hotelId =
-                        hotelSelector.value;
-
-
-                    if (!hotelId) {
-
-                        guestsData =
-                            [];
-
-                        renderGuests();
-
-                        return;
-
-                    }
-
-                }
-                else {
-
-                    hotelId =
-                        getCurrentHotelId();
-
-
-                    if (!hotelId) {
-
-                        throw new Error(
-                            "Hotel ID is missing from the current user session."
-                        );
-
-                    }
-
-                }
-
-
-                /*
-                 EXACT DATABASE COLUMN:
-
-                 "full name"
-                */
-
-                const {
-                    data,
-                    error
-                } =
-                    await window.supabaseClient
-                        .from("guests")
-                        .select(
-                            'id, created_at, "full name", phone, email, hotel_id'
-                        )
-                        .eq(
-                            "hotel_id",
-                            hotelId
-                        )
-                        .order(
-                            "created_at",
-                            {
-                                ascending: false
-                            }
-                        );
-
-
-                if (error) {
-
-                    throw error;
-
-                }
-
-
-                guestsData =
-                    data || [];
-
-
-                renderGuests();
-
+                return;
             }
-            catch (error) {
+
+            const {
+                data,
+                error
+            } = await db
+                .from("guests")
+                .select("*")
+                .eq(
+                    "hotel_id",
+                    Number(currentHotelId)
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+            if (error) {
 
                 console.error(
-                    "Load guests error:",
+                    "Guest loading error:",
                     error
                 );
 
-                guestsData =
-                    [];
-
-
                 guestsTableBody.innerHTML = `
                     <tr>
-                        <td
-                            colspan="6"
-                            class="empty-state"
-                        >
-                            Failed to load guests.
+                        <td colspan="7">
+                            Unable to load guests.
                         </td>
                     </tr>
                 `;
 
-
-                showError(
-                    "Failed to load guests: " +
-                    error.message
+                showGuestsMessage(
+                    "Unable to load guests: " +
+                    error.message,
+                    "error"
                 );
 
+                return;
             }
 
+            guestsData =
+                data || [];
+
+            updateGuestSummary(
+                guestsData
+            );
+
+            renderGuests(
+                guestsData
+            );
+
+            document.getElementById(
+                "guestDescription"
+            ).textContent =
+                currentHotelName
+                    ? "Manage guests for " +
+                      currentHotelName
+                    : "Manage hotel guests.";
         }
 
+        /* =====================================================
+           SUMMARY CARDS
+        ===================================================== */
+
+        function updateGuestSummary(
+            guests
+        ) {
+
+            const total =
+                guests.length;
+
+            const active =
+                guests.filter(
+                    guest =>
+                        String(
+                            guest.status ||
+                            "active"
+                        )
+                            .toLowerCase()
+                            .trim() ===
+                        "active"
+                ).length;
+
+            const today =
+                new Date();
+
+            const todayString =
+                today.getFullYear() +
+                "-" +
+                String(
+                    today.getMonth() + 1
+                ).padStart(2, "0") +
+                "-" +
+                String(
+                    today.getDate()
+                ).padStart(2, "0");
+
+            const todayGuests =
+                guests.filter(
+                    guest => {
+
+                        if (!guest.created_at) {
+                            return false;
+                        }
+
+                        const date =
+                            new Date(
+                                guest.created_at
+                            );
+
+                        const guestDate =
+                            date.getFullYear() +
+                            "-" +
+                            String(
+                                date.getMonth() + 1
+                            ).padStart(2, "0") +
+                            "-" +
+                            String(
+                                date.getDate()
+                            ).padStart(2, "0");
+
+                        return (
+                            guestDate ===
+                            todayString
+                        );
+                    }
+                ).length;
+
+            document.getElementById(
+                "totalGuests"
+            ).textContent =
+                total;
+
+            document.getElementById(
+                "activeGuests"
+            ).textContent =
+                active;
+
+            document.getElementById(
+                "todayGuests"
+            ).textContent =
+                todayGuests;
+
+            document.getElementById(
+                "hotelGuestCount"
+            ).textContent =
+                total + " guests";
+        }
 
         /* =====================================================
            RENDER GUESTS
-           ===================================================== */
+        ===================================================== */
 
-        function renderGuests() {
+        function renderGuests(
+            guests
+        ) {
 
-            const searchTerm =
-                searchInput.value
+            const search =
+                String(
+                    searchGuest.value ||
+                    ""
+                )
                     .toLowerCase()
                     .trim();
 
+            const selectedStatus =
+                String(
+                    guestStatusFilter.value ||
+                    "all"
+                )
+                    .toLowerCase();
 
-            const filteredGuests =
-                guestsData.filter(
-                    function (guest) {
-
-                        /*
-                         EXACT DATABASE COLUMN:
-
-                         guest["full name"]
-                        */
+            const filtered =
+                guests.filter(
+                    guest => {
 
                         const name =
-                            String(
-                                guest["full name"] ||
-                                ""
+                            getGuestName(
+                                guest
                             )
-                            .toLowerCase();
-
+                                .toLowerCase();
 
                         const phone =
                             String(
                                 guest.phone ||
                                 ""
                             )
-                            .toLowerCase();
-
+                                .toLowerCase();
 
                         const email =
                             String(
                                 guest.email ||
                                 ""
                             )
-                            .toLowerCase();
+                                .toLowerCase();
 
+                        const status =
+                            String(
+                                guest.status ||
+                                "active"
+                            )
+                                .toLowerCase()
+                                .trim();
 
-                        return (
+                        const matchesSearch =
                             name.includes(
-                                searchTerm
+                                search
                             ) ||
                             phone.includes(
-                                searchTerm
+                                search
                             ) ||
                             email.includes(
-                                searchTerm
-                            )
-                        );
+                                search
+                            );
 
+                        const matchesStatus =
+                            selectedStatus ===
+                                "all" ||
+                            status ===
+                                selectedStatus;
+
+                        return (
+                            matchesSearch &&
+                            matchesStatus
+                        );
                     }
                 );
 
-
-            totalGuests.textContent =
-                guestsData.length;
-
-
-            guestsWithEmail.textContent =
-                guestsData.filter(
-                    function (guest) {
-
-                        return String(
-                            guest.email ||
-                            ""
-                        ).trim() !== "";
-
-                    }
-                ).length;
-
-
-            guestsWithPhone.textContent =
-                guestsData.filter(
-                    function (guest) {
-
-                        return String(
-                            guest.phone ||
-                            ""
-                        ).trim() !== "";
-
-                    }
-                ).length;
-
-
-            if (
-                filteredGuests.length ===
-                0
-            ) {
+            if (!filtered.length) {
 
                 guestsTableBody.innerHTML = `
                     <tr>
-                        <td
-                            colspan="6"
-                            class="empty-state"
-                        >
-                            ${
-                                guestsData.length === 0
-                                    ? "No guests found."
-                                    : "No guests match your search."
-                            }
+                        <td colspan="7">
+                            No guests found.
                         </td>
                     </tr>
                 `;
 
                 return;
-
             }
 
-
             guestsTableBody.innerHTML =
-                "";
+                filtered.map(
+                    guest => {
 
+                        const name =
+                            escapeHtml(
+                                getGuestName(
+                                    guest
+                                )
+                            );
 
-            filteredGuests.forEach(
-                function (guest, index) {
-
-                    const row =
-                        document.createElement(
-                            "tr"
-                        );
-
-
-                    const createdDate =
-                        guest.created_at
-                            ? new Date(
-                                guest.created_at
-                            ).toLocaleDateString()
-                            : "-";
-
-
-                    row.innerHTML = `
-                        <td>
-                            ${index + 1}
-                        </td>
-
-                        <td>
-                            <strong>
-                                ${escapeHtml(
-                                    guest["full name"] ||
-                                    "-"
-                                )}
-                            </strong>
-                        </td>
-
-                        <td>
-                            ${escapeHtml(
+                        const phone =
+                            escapeHtml(
                                 guest.phone ||
                                 "-"
-                            )}
-                        </td>
+                            );
 
-                        <td>
-                            ${escapeHtml(
+                        const email =
+                            escapeHtml(
                                 guest.email ||
                                 "-"
-                            )}
-                        </td>
+                            );
 
-                        <td>
-                            ${escapeHtml(
-                                createdDate
-                            )}
-                        </td>
+                        const status =
+                            String(
+                                guest.status ||
+                                "active"
+                            )
+                                .toLowerCase()
+                                .trim();
 
-                        <td>
+                        const statusClass =
+                            status ===
+                                "active"
+                                ? "active"
+                                : "inactive";
 
+                        const viewButton = `
                             <button
                                 type="button"
-                                class="btn btn-edit"
-                                onclick="editGuest('${escapeHtml(guest.id)}')"
-                            >
-                                Edit
+                                class="view-btn"
+                                onclick="viewGuest('${escapeHtml(guest.id)}')">
+                                View
                             </button>
+                        `;
 
-                            <button
-                                type="button"
-                                class="btn btn-delete"
-                                onclick="deleteGuest('${escapeHtml(guest.id)}')"
-                            >
-                                Delete
-                            </button>
+                        const editButton =
+                            canEditGuest()
+                                ? `
+                                    <button
+                                        type="button"
+                                        class="edit-btn"
+                                        onclick="editGuest('${escapeHtml(guest.id)}')">
+                                        Edit
+                                    </button>
+                                  `
+                                : "";
 
-                        </td>
-                    `;
+                        const deleteButton =
+                            canDeleteGuest()
+                                ? `
+                                    <button
+                                        type="button"
+                                        class="delete-btn"
+                                        onclick="deleteGuest('${escapeHtml(guest.id)}')">
+                                        Delete
+                                    </button>
+                                  `
+                                : "";
 
+                        return `
+                            <tr>
+                                <td>
+                                    ${escapeHtml(guest.id)}
+                                </td>
 
-                    guestsTableBody.appendChild(
-                        row
-                    );
+                                <td>
+                                    <strong>
+                                        ${name}
+                                    </strong>
+                                </td>
 
-                }
-            );
+                                <td>
+                                    ${phone}
+                                </td>
 
-        }
+                                <td>
+                                    ${email}
+                                </td>
 
+                                <td>
+                                    <span
+                                        class="guest-status ${statusClass}">
+                                        ${escapeHtml(status)}
+                                    </span>
+                                </td>
 
-        /* =====================================================
-           OPEN ADD GUEST
-           ===================================================== */
+                                <td>
+                                    ${formatDate(
+                                        guest.created_at
+                                    )}
+                                </td>
 
-        function openAddGuestModal() {
-
-            editingGuestId =
-                null;
-
-            guestForm.reset();
-
-            guestIdInput.value =
-                "";
-
-            modalTitle.textContent =
-                "Add Guest";
-
-            guestModal.classList.add(
-                "show"
-            );
-
-
-            setTimeout(
-                function () {
-
-                    fullNameInput.focus();
-
-                },
-                100
-            );
-
-        }
-
-
-        /* =====================================================
-           EDIT GUEST
-           ===================================================== */
-
-        function editGuest(id) {
-
-            const guest =
-                guestsData.find(
-                    function (item) {
-
-                        return String(
-                            item.id
-                        ) === String(
-                            id
-                        );
-
+                                <td>
+                                    <div class="guest-actions">
+                                        ${viewButton}
+                                        ${editButton}
+                                        ${deleteButton}
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
                     }
+                ).join("");
+        }
+
+        /* =====================================================
+           SEARCH AND FILTER
+        ===================================================== */
+
+        searchGuest.addEventListener(
+            "input",
+            function() {
+                renderGuests(
+                    guestsData
                 );
+            }
+        );
 
+        guestStatusFilter.addEventListener(
+            "change",
+            function() {
+                renderGuests(
+                    guestsData
+                );
+            }
+        );
 
-            if (!guest) {
+        /* =====================================================
+           OPEN ADD GUEST FORM
+        ===================================================== */
 
-                showError(
-                    "Guest could not be found."
+        async function openGuestForm() {
+
+            if (!canAddGuest()) {
+
+                showGuestsMessage(
+                    "You do not have permission to add guests.",
+                    "error"
                 );
 
                 return;
-
             }
 
+            editingGuestId = null;
+            editingGuestHotelId = null;
+
+            guestForm.reset();
+
+            guestModalTitle.textContent =
+                "Add New Guest";
+
+            saveGuestButton.textContent =
+                "Save Guest";
+
+            saveGuestButton.disabled =
+                false;
+
+            document.getElementById(
+                "guestStatus"
+            ).value =
+                "active";
+
+            if (
+                currentRole ===
+                "system_owner"
+            ) {
+
+                hotelSelectorContainer.style.display =
+                    "block";
+
+                try {
+
+                    await loadHotels();
+
+                } catch (error) {
+
+                    return;
+                }
+
+                guestHotel.value =
+                    currentHotelId ||
+                    "";
+
+            } else {
+
+                hotelSelectorContainer.style.display =
+                    "none";
+            }
+
+            guestModal.style.display =
+                "flex";
+        }
+
+        /* =====================================================
+           CLOSE FORM
+        ===================================================== */
+
+        function closeGuestForm() {
+
+            guestModal.style.display =
+                "none";
+
+            editingGuestId = null;
+            editingGuestHotelId = null;
+
+            guestForm.reset();
+
+            guestModalTitle.textContent =
+                "Add New Guest";
+
+            saveGuestButton.textContent =
+                "Save Guest";
+
+            saveGuestButton.disabled =
+                false;
+        }
+
+        /* =====================================================
+           EDIT GUEST
+        ===================================================== */
+
+        async function editGuest(
+            guestId
+        ) {
+
+            if (!canEditGuest()) {
+
+                showGuestsMessage(
+                    "You do not have permission to edit guests.",
+                    "error"
+                );
+
+                return;
+            }
+
+            const guest =
+                guestsData.find(
+                    item =>
+                        String(item.id) ===
+                        String(guestId)
+                );
+
+            if (!guest) {
+
+                showGuestsMessage(
+                    "Guest could not be found.",
+                    "error"
+                );
+
+                return;
+            }
 
             editingGuestId =
                 guest.id;
 
-            guestIdInput.value =
-                guest.id;
+            editingGuestHotelId =
+                guest.hotel_id;
 
+            guestForm.reset();
 
-            /*
-             EXACT DATABASE COLUMN:
+            guestModalTitle.textContent =
+                "Edit Guest";
 
-             "full name"
-            */
+            saveGuestButton.textContent =
+                "Update Guest";
 
-            fullNameInput.value =
-                guest["full name"] ||
-                "";
+            document.getElementById(
+                "guestFullName"
+            ).value =
+                getGuestName(
+                    guest
+                );
 
-
-            phoneInput.value =
+            document.getElementById(
+                "guestPhone"
+            ).value =
                 guest.phone ||
                 "";
 
-
-            emailInput.value =
+            document.getElementById(
+                "guestEmail"
+            ).value =
                 guest.email ||
                 "";
 
+            document.getElementById(
+                "guestStatus"
+            ).value =
+                String(
+                    guest.status ||
+                    "active"
+                )
+                    .toLowerCase();
 
-            modalTitle.textContent =
-                "Edit Guest";
+            if (
+                currentRole ===
+                "system_owner"
+            ) {
 
+                hotelSelectorContainer.style.display =
+                    "block";
 
-            guestModal.classList.add(
-                "show"
-            );
+                try {
 
+                    await loadHotels();
 
-            setTimeout(
-                function () {
+                } catch (error) {
 
-                    fullNameInput.focus();
+                    return;
+                }
 
-                },
-                100
-            );
+                guestHotel.value =
+                    String(
+                        guest.hotel_id ||
+                        ""
+                    );
 
+            } else {
+
+                hotelSelectorContainer.style.display =
+                    "none";
+            }
+
+            guestModal.style.display =
+                "flex";
         }
 
-
         /* =====================================================
-           SAVE GUEST
-           ===================================================== */
+           SAVE OR UPDATE GUEST
+        ===================================================== */
 
-        async function saveGuest(event) {
+        guestForm.addEventListener(
+            "submit",
+            async function(event) {
 
-            event.preventDefault();
+                event.preventDefault();
 
+                const isEditing =
+                    editingGuestId !== null;
 
-            try {
+                if (
+                    isEditing &&
+                    !canEditGuest()
+                ) {
 
-                hideError();
+                    showGuestsMessage(
+                        "You do not have permission to edit guests.",
+                        "error"
+                    );
 
+                    return;
+                }
 
-                const role =
-                    getCurrentRole();
+                if (
+                    !isEditing &&
+                    !canAddGuest()
+                ) {
 
+                    showGuestsMessage(
+                        "You do not have permission to add guests.",
+                        "error"
+                    );
+
+                    return;
+                }
 
                 const fullName =
-                    fullNameInput.value
+                    document.getElementById(
+                        "guestFullName"
+                    )
+                        .value
                         .trim();
-
 
                 const phone =
-                    phoneInput.value
+                    document.getElementById(
+                        "guestPhone"
+                    )
+                        .value
                         .trim();
-
 
                 const email =
-                    emailInput.value
+                    document.getElementById(
+                        "guestEmail"
+                    )
+                        .value
                         .trim();
 
+                const status =
+                    document.getElementById(
+                        "guestStatus"
+                    )
+                        .value
+                        .toLowerCase();
+
+                let hotelId =
+                    currentHotelId;
+
+                if (
+                    currentRole ===
+                    "system_owner"
+                ) {
+                    hotelId =
+                        guestHotel.value;
+                }
 
                 if (!fullName) {
 
-                    showError(
-                        "Please enter the guest's full name."
-                    );
-
-                    fullNameInput.focus();
-
-                    return;
-
-                }
-
-
-                let hotelId = "";
-
-
-                if (
-                    role ===
-                    "system_owner"
-                ) {
-
-                    hotelId =
-                        hotelSelector.value;
-
-
-                    if (!hotelId) {
-
-                        showError(
-                            "Please select a hotel first."
-                        );
-
-                        return;
-
-                    }
-
-                }
-                else {
-
-                    hotelId =
-                        getCurrentHotelId();
-
-
-                    if (!hotelId) {
-
-                        throw new Error(
-                            "Hotel ID is missing from the current user session."
-                        );
-
-                    }
-
-                }
-
-
-                /*
-                 CHECK FOR DUPLICATE NAME.
-
-                 IMPORTANT:
-                 The column is "full name".
-                */
-
-                let duplicateQuery =
-                    window.supabaseClient
-                        .from("guests")
-                        .select(
-                            'id, "full name", phone, email'
-                        )
-                        .eq(
-                            "hotel_id",
-                            hotelId
-                        )
-                        .eq(
-                            "full name",
-                            fullName
-                        );
-
-
-                if (editingGuestId) {
-
-                    duplicateQuery =
-                        duplicateQuery.neq(
-                            "id",
-                            editingGuestId
-                        );
-
-                }
-
-
-                const {
-                    data: duplicateGuests,
-                    error: duplicateError
-                } =
-                    await duplicateQuery;
-
-
-                if (duplicateError) {
-
-                    throw duplicateError;
-
-                }
-
-
-                if (
-                    duplicateGuests &&
-                    duplicateGuests.length > 0
-                ) {
-
-                    showError(
-                        "A guest with this name already exists for this hotel."
+                    showGuestsMessage(
+                        "Please enter the guest's full name.",
+                        "error"
                     );
 
                     return;
-
                 }
 
+                if (!hotelId) {
 
-                /* UPDATE */
+                    showGuestsMessage(
+                        "Please select a hotel before saving the guest.",
+                        "error"
+                    );
 
-                if (editingGuestId) {
+                    return;
+                }
 
-                    const {
-                        error
-                    } =
-                        await window.supabaseClient
+                const guestRecord = {
+                    "full name":
+                        fullName,
+
+                    phone:
+                        phone ||
+                        null,
+
+                    email:
+                        email ||
+                        null,
+
+                    status:
+                        status
+                };
+
+                saveGuestButton.disabled =
+                    true;
+
+                saveGuestButton.textContent =
+                    isEditing
+                        ? "Updating..."
+                        : "Saving...";
+
+                try {
+
+                    if (isEditing) {
+
+                        const originalHotelId =
+                            currentRole ===
+                                "system_owner"
+                                ? editingGuestHotelId
+                                : currentHotelId;
+
+                        guestRecord.hotel_id =
+                            Number(
+                                hotelId
+                            );
+
+                        const {
+                            data,
+                            error
+                        } = await db
                             .from("guests")
-                            .update({
-                                "full name":
-                                    fullName,
-
-                                phone:
-                                    phone ||
-                                    null,
-
-                                email:
-                                    email ||
-                                    null
-                            })
+                            .update(
+                                guestRecord
+                            )
                             .eq(
                                 "id",
                                 editingGuestId
                             )
                             .eq(
                                 "hotel_id",
+                                Number(
+                                    originalHotelId
+                                )
+                            )
+                            .select("id");
+
+                        if (error) {
+                            throw error;
+                        }
+
+                        if (
+                            !data ||
+                            data.length === 0
+                        ) {
+
+                            throw new Error(
+                                "No guest record was updated. Check your permissions and hotel assignment."
+                            );
+                        }
+
+                        showGuestsMessage(
+                            "Guest updated successfully."
+                        );
+
+                    } else {
+
+                        guestRecord.hotel_id =
+                            Number(
                                 hotelId
                             );
 
-
-                    if (error) {
-
-                        throw error;
-
-                    }
-
-
-                    closeGuestModal();
-
-                    showSuccess(
-                        "Guest updated successfully."
-                    );
-
-                }
-
-
-                /* INSERT */
-
-                else {
-
-                    const {
-                        error
-                    } =
-                        await window.supabaseClient
+                        const {
+                            data,
+                            error
+                        } = await db
                             .from("guests")
-                            .insert([
-                                {
-                                    "full name":
-                                        fullName,
+                            .insert(
+                                guestRecord
+                            )
+                            .select("id");
 
-                                    phone:
-                                        phone ||
-                                        null,
+                        if (error) {
+                            throw error;
+                        }
 
-                                    email:
-                                        email ||
-                                        null,
+                        if (
+                            !data ||
+                            data.length === 0
+                        ) {
 
-                                    hotel_id:
-                                        hotelId
-                                }
-                            ]);
+                            throw new Error(
+                                "Guest was not added."
+                            );
+                        }
 
-
-                    if (error) {
-
-                        throw error;
-
+                        showGuestsMessage(
+                            "Guest added successfully."
+                        );
                     }
 
+                    if (
+                        currentRole ===
+                        "system_owner"
+                    ) {
 
-                    closeGuestModal();
+                        currentHotelId =
+                            String(
+                                hotelId
+                            );
 
-                    showSuccess(
-                        "Guest added successfully."
+                        const selectedOption =
+                            guestHotel.options[
+                                guestHotel
+                                    .selectedIndex
+                            ];
+
+                        currentHotelName =
+                            selectedOption
+                                ? selectedOption.textContent
+                                    .split(" — ")[0]
+                                : "";
+
+                        sessionStorage.setItem(
+                            "activeHotelId",
+                            currentHotelId
+                        );
+
+                        sessionStorage.setItem(
+                            "activeHotelName",
+                            currentHotelName
+                        );
+
+                        sessionStorage.setItem(
+                            "hotelId",
+                            currentHotelId
+                        );
+
+                        sessionStorage.setItem(
+                            "hotelName",
+                            currentHotelName
+                        );
+                    }
+
+                    closeGuestForm();
+
+                    await loadGuests();
+
+                } catch (error) {
+
+                    console.error(
+                        "Guest save error:",
+                        error
                     );
 
+                    showGuestsMessage(
+                        "Unable to save guest: " +
+                        error.message,
+                        "error"
+                    );
+
+                } finally {
+
+                    saveGuestButton.disabled =
+                        false;
+
+                    saveGuestButton.textContent =
+                        "Save Guest";
                 }
 
-
-                await loadGuests();
-
             }
-            catch (error) {
-
-                console.error(
-                    "Save guest error:",
-                    error
-                );
-
-                showError(
-                    "Failed to save guest: " +
-                    error.message
-                );
-
-            }
-
-        }
-
+        );
 
         /* =====================================================
-           DELETE GUEST
-           ===================================================== */
+           VIEW GUEST
+        ===================================================== */
 
-        async function deleteGuest(id) {
+        function viewGuest(
+            guestId
+        ) {
 
             const guest =
                 guestsData.find(
-                    function (item) {
-
-                        return String(
-                            item.id
-                        ) === String(
-                            id
-                        );
-
-                    }
+                    item =>
+                        String(item.id) ===
+                        String(guestId)
                 );
-
 
             if (!guest) {
 
-                showError(
-                    "Guest could not be found."
+                showGuestsMessage(
+                    "Guest could not be found.",
+                    "error"
                 );
 
                 return;
-
             }
 
+            alert(
+                "GUEST DETAILS\n\n" +
+                "Name: " +
+                getGuestName(guest) +
+                "\n" +
+                "Phone: " +
+                (guest.phone || "-") +
+                "\n" +
+                "Email: " +
+                (guest.email || "-") +
+                "\n" +
+                "Status: " +
+                (guest.status || "Active") +
+                "\n" +
+                "Registered: " +
+                formatDate(
+                    guest.created_at
+                )
+            );
+        }
+
+        /* =====================================================
+           DELETE GUEST
+           
+           IMPORTANT:
+           A guest with reservation history must not be
+           permanently deleted because reservations reference
+           that guest.
+           
+           In that situation we mark the guest INACTIVE.
+        ===================================================== */
+
+        async function deleteGuest(
+            guestId
+        ) {
+
+            if (!canDeleteGuest()) {
+
+                showGuestsMessage(
+                    "Only the System Owner can delete guests.",
+                    "error"
+                );
+
+                return;
+            }
+
+            const guest =
+                guestsData.find(
+                    item =>
+                        String(item.id) ===
+                        String(guestId)
+                );
+
+            if (!guest) {
+
+                showGuestsMessage(
+                    "Guest could not be found.",
+                    "error"
+                );
+
+                return;
+            }
 
             const guestName =
-                guest["full name"] ||
-                "this guest";
-
+                getGuestName(
+                    guest
+                );
 
             const confirmed =
                 window.confirm(
-                    "Are you sure you want to delete " +
+                    "Are you sure you want to delete guest " +
                     guestName +
-                    "?"
+                    "?\n\n" +
+                    "If this guest has reservation history, " +
+                    "the system will keep the guest record and " +
+                    "mark it as INACTIVE instead of deleting it."
                 );
 
-
             if (!confirmed) {
-
                 return;
-
             }
-
 
             try {
 
-                hideError();
-
-
-                const role =
-                    getCurrentRole();
-
-
-                let hotelId = "";
-
-
-                if (
-                    role ===
-                    "system_owner"
-                ) {
-
-                    hotelId =
-                        hotelSelector.value;
-
-                }
-                else {
-
-                    hotelId =
-                        getCurrentHotelId();
-
-                }
-
-
-                let query =
-                    window.supabaseClient
-                        .from("guests")
-                        .delete()
-                        .eq(
-                            "id",
-                            id
-                        );
-
-
-                if (hotelId) {
-
-                    query =
-                        query.eq(
-                            "hotel_id",
-                            hotelId
-                        );
-
-                }
-
+                /*
+                 * STEP 1:
+                 * Check whether this guest is referenced by
+                 * any reservation.
+                 *
+                 * The reservation guest column in your system
+                 * is named: "guest   id"
+                 */
 
                 const {
-                    error
-                } =
-                    await query;
+                    data: reservations,
+                    error: reservationCheckError
+                } = await db
+                    .from("reservations")
+                    .select("id")
+                    .eq(
+                        "guest   id",
+                        guest.id
+                    )
+                    .limit(1);
 
+                if (reservationCheckError) {
 
-                if (error) {
+                    console.error(
+                        "Reservation check error:",
+                        reservationCheckError
+                    );
 
-                    throw error;
+                    showGuestsMessage(
+                        "The system could not check this guest's reservation history. The guest was not deleted.",
+                        "error"
+                    );
 
+                    return;
                 }
 
+                /*
+                 * STEP 2:
+                 * Guest has reservation history.
+                 *
+                 * DO NOT DELETE.
+                 * Mark inactive instead.
+                 */
 
-                showSuccess(
+                if (
+                    reservations &&
+                    reservations.length > 0
+                ) {
+
+                    const {
+                        error: inactiveError
+                    } = await db
+                        .from("guests")
+                        .update({
+                            status: "inactive"
+                        })
+                        .eq(
+                            "id",
+                            guest.id
+                        )
+                        .eq(
+                            "hotel_id",
+                            Number(
+                                guest.hotel_id
+                            )
+                        );
+
+                    if (inactiveError) {
+
+                        console.error(
+                            "Unable to mark guest inactive:",
+                            inactiveError
+                        );
+
+                        showGuestsMessage(
+                            "This guest has reservation history and cannot be deleted. The system also could not mark the guest inactive: " +
+                            inactiveError.message,
+                            "error"
+                        );
+
+                        return;
+                    }
+
+                    showGuestsMessage(
+                        "This guest has reservation history and cannot be permanently deleted. The guest has been marked as inactive instead.",
+                        "info"
+                    );
+
+                    await loadGuests();
+
+                    return;
+                }
+
+                /*
+                 * STEP 3:
+                 * No reservation exists.
+                 * It is safe to delete the guest.
+                 */
+
+                const {
+                    data,
+                    error
+                } = await db
+                    .from("guests")
+                    .delete()
+                    .eq(
+                        "id",
+                        guest.id
+                    )
+                    .eq(
+                        "hotel_id",
+                        Number(
+                            guest.hotel_id
+                        )
+                    )
+                    .select("id");
+
+                if (error) {
+                    throw error;
+                }
+
+                if (
+                    !data ||
+                    data.length === 0
+                ) {
+
+                    throw new Error(
+                        "No guest was deleted. The guest may have been removed already or your database permissions may prevent deletion."
+                    );
+                }
+
+                showGuestsMessage(
                     "Guest deleted successfully."
                 );
 
-
                 await loadGuests();
 
-            }
-            catch (error) {
+            } catch (error) {
 
                 console.error(
-                    "Delete guest error:",
+                    "Guest delete error:",
                     error
                 );
 
-                showError(
-                    "Failed to delete guest: " +
-                    error.message
+                /*
+                 * Extra protection:
+                 * If the database still reports the foreign-key
+                 * constraint, automatically mark the guest inactive
+                 * instead of showing the technical database error.
+                 */
+
+                const errorText =
+                    String(
+                        error?.message ||
+                        error ||
+                        ""
+                    ).toLowerCase();
+
+                const isReservationForeignKeyError =
+                    errorText.includes(
+                        "reservations"
+                    ) &&
+                    (
+                        errorText.includes(
+                            "foreign key"
+                        ) ||
+                        errorText.includes(
+                            "violates"
+                        ) ||
+                        errorText.includes(
+                            "constraint"
+                        )
+                    );
+
+                if (
+                    isReservationForeignKeyError
+                ) {
+
+                    const {
+                        error: fallbackError
+                    } = await db
+                        .from("guests")
+                        .update({
+                            status: "inactive"
+                        })
+                        .eq(
+                            "id",
+                            guest.id
+                        )
+                        .eq(
+                            "hotel_id",
+                            Number(
+                                guest.hotel_id
+                            )
+                        );
+
+                    if (!fallbackError) {
+
+                        showGuestsMessage(
+                            "This guest has reservation history and cannot be permanently deleted. The guest has been marked as inactive instead.",
+                            "info"
+                        );
+
+                        await loadGuests();
+
+                        return;
+                    }
+                }
+
+                showGuestsMessage(
+                    "Unable to delete guest: " +
+                    error.message,
+                    "error"
                 );
-
             }
-
         }
 
+        /* =====================================================
+           CLOSE MODAL WHEN CLICKING OUTSIDE
+        ===================================================== */
+
+        guestModal.addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    event.target ===
+                    guestModal
+                ) {
+
+                    closeGuestForm();
+                }
+            }
+        );
 
         /* =====================================================
-           CLOSE MODAL
-           ===================================================== */
+           INITIALIZE PAGE
+        ===================================================== */
 
-        function closeGuestModal() {
+        async function initializeGuestsPage() {
 
-            guestModal.classList.remove(
-                "show"
+            const authenticated =
+                await setupGuestsRole();
+
+            if (!authenticated) {
+                return;
+            }
+
+            if (!currentHotelId) {
+
+                guestsData = [];
+
+                updateGuestSummary([]);
+
+                document.getElementById(
+                    "guestDescription"
+                ).textContent =
+                    "No hotel selected. Return to Dashboard and select a hotel.";
+
+                document.getElementById(
+                    "hotelGuestCount"
+                ).textContent =
+                    "No hotel selected";
+
+                guestsTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7">
+                            No hotel selected. Return to Dashboard and select a hotel.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+            await loadGuests();
+        }
+
+        /* =====================================================
+           START PAGE
+        ===================================================== */
+
+        if (
+            document.readyState ===
+            "loading"
+        ) {
+
+            document.addEventListener(
+                "DOMContentLoaded",
+                initializeGuestsPage
             );
 
-            guestForm.reset();
+        } else {
 
-            guestIdInput.value =
-                "";
-
-            editingGuestId =
-                null;
-
+            initializeGuestsPage();
         }
 
     </script>
