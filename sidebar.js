@@ -1,26 +1,40 @@
 /* =========================================================
    EDU TECH HOTEL MANAGEMENT SYSTEM
-   UNIVERSAL SIDEBAR
+   UNIVERSAL RESPONSIVE SIDEBAR
    ---------------------------------------------------------
    ONE SIDEBAR
    ONE LOGOUT
    ONE NAVIGATION SYSTEM
 
-   IMPORTANT:
-   - This file ONLY controls the sidebar.
-   - It does NOT replace document.body.
-   - It does NOT replace page content.
-   - It does NOT perform access denial.
-   - Access control is handled by access-control.js.
+   FEATURES
+   ---------------------------------------------------------
+   Desktop:
+   - Fixed sidebar
+   - All authorized modules visible
+   - Stable navigation
+
+   Mobile:
+   - Hamburger menu
+   - Slide-out sidebar
+   - Dark overlay
+   - Tap outside to close
+   - Module click closes sidebar
+
+   IMPORTANT
+   ---------------------------------------------------------
+   - This file controls ONLY the sidebar/navigation.
+   - It NEVER replaces document.body.
+   - It NEVER replaces page content.
+   - It NEVER performs access denial.
+   - Access control remains in access-control.js.
    ========================================================= */
 
 (function () {
 
     "use strict";
 
-
     /* =====================================================
-       PREVENT DUPLICATE SIDEBAR INITIALIZATION
+       PREVENT DUPLICATE INITIALIZATION
        ===================================================== */
 
     if (window.__EDUTECH_UNIVERSAL_SIDEBAR__) {
@@ -34,11 +48,19 @@
        CONFIGURATION
        ===================================================== */
 
-    const SIDEBAR_ID =
-        "appSidebar";
+    const SIDEBAR_ID = "appSidebar";
 
     const PROFILE_CACHE_KEY =
         "EDUTECH_SIDEBAR_PROFILE";
+
+    const MOBILE_HEADER_ID =
+        "edutechMobileHeader";
+
+    const MOBILE_OVERLAY_ID =
+        "edutechMobileOverlay";
+
+    const MOBILE_BUTTON_ID =
+        "edutechMobileMenuButton";
 
 
     /* =====================================================
@@ -163,8 +185,6 @@
             key: "bank_accounts",
             label: "Bank Accounts",
             icon: "🏦",
-
-            /* ACTUAL FILE NAME IN THE REPOSITORY */
             page: "bank_accounts.html"
         },
 
@@ -172,10 +192,9 @@
             key: "financial_transactions",
             label: "Financial Transactions",
             icon: "📒",
-
-            /* ACTUAL FILE NAME IN THE REPOSITORY */
             page: "financial_transactions.html"
         }
+
     ];
 
 
@@ -261,6 +280,7 @@
             "housekeeping",
             "maintenance"
         ]
+
     };
 
 
@@ -272,68 +292,42 @@
 
         if (
             window.supabase &&
-            typeof window.supabase.from ===
-            "function"
+            typeof window.supabase.from === "function"
         ) {
             return window.supabase;
         }
 
-
         if (
             window.supabaseClient &&
-            typeof window.supabaseClient.from ===
-            "function"
+            typeof window.supabaseClient.from === "function"
         ) {
             return window.supabaseClient;
         }
-
 
         return null;
     }
 
 
     /* =====================================================
-       FIND / CREATE SIDEBAR
+       GET OR CREATE SIDEBAR
        ===================================================== */
 
     function getSidebar() {
 
         let sidebar =
-            document.getElementById(
-                SIDEBAR_ID
-            );
-
+            document.getElementById(SIDEBAR_ID);
 
         if (sidebar) {
             return sidebar;
         }
 
-
-        /*
-         * Create the sidebar ourselves if the page
-         * does not already contain it.
-         *
-         * This prevents pages from depending on
-         * different sidebar HTML.
-         */
-
         sidebar =
             document.createElement("aside");
 
-
-        sidebar.id =
-            SIDEBAR_ID;
-
+        sidebar.id = SIDEBAR_ID;
 
         sidebar.className =
             "edutech-universal-sidebar";
-
-
-        /*
-         * IMPORTANT:
-         * append only the sidebar.
-         * Never replace document.body.
-         */
 
         if (document.body) {
 
@@ -343,7 +337,6 @@
             );
 
         }
-
 
         return sidebar;
     }
@@ -361,18 +354,16 @@
                 .pop()
                 .toLowerCase();
 
-
         if (!page) {
             page = "index.html";
         }
-
 
         return page;
     }
 
 
     /* =====================================================
-       ROLE DISPLAY
+       FORMAT ROLE
        ===================================================== */
 
     function formatRole(role) {
@@ -380,7 +371,6 @@
         if (!role) {
             return "User";
         }
-
 
         return String(role)
             .replace(/_/g, " ")
@@ -391,7 +381,7 @@
 
 
     /* =====================================================
-       CACHE PROFILE
+       SAVE PROFILE
        ===================================================== */
 
     function saveProfile(profile) {
@@ -399,7 +389,6 @@
         if (!profile) {
             return;
         }
-
 
         try {
 
@@ -418,6 +407,10 @@
     }
 
 
+    /* =====================================================
+       GET CACHED PROFILE
+       ===================================================== */
+
     function getCachedProfile() {
 
         try {
@@ -427,11 +420,9 @@
                     PROFILE_CACHE_KEY
                 );
 
-
             if (!value) {
                 return null;
             }
-
 
             return JSON.parse(value);
 
@@ -451,21 +442,12 @@
         const cached =
             getCachedProfile();
 
-
         const supabase =
             getSupabase();
 
-
-        /*
-         * If Supabase is not ready yet,
-         * immediately use the cached profile.
-         */
-
         if (!supabase) {
-
             return cached;
         }
-
 
         try {
 
@@ -474,20 +456,16 @@
             } =
                 await supabase.auth.getSession();
 
-
             const session =
                 sessionData &&
                 sessionData.session;
-
 
             if (
                 !session ||
                 !session.user
             ) {
-
                 return cached;
             }
-
 
             const {
                 data: profile,
@@ -504,7 +482,6 @@
                     )
                     .maybeSingle();
 
-
             if (
                 error ||
                 !profile
@@ -517,7 +494,6 @@
 
                 return cached;
             }
-
 
             saveProfile(profile);
 
@@ -545,15 +521,12 @@
             return null;
         }
 
-
         const supabase =
             getSupabase();
-
 
         if (!supabase) {
             return null;
         }
-
 
         try {
 
@@ -572,7 +545,6 @@
                     )
                     .maybeSingle();
 
-
             if (
                 error ||
                 !hotel
@@ -585,7 +557,6 @@
 
                 return null;
             }
-
 
             return hotel;
 
@@ -617,6 +588,306 @@
 
 
     /* =====================================================
+       MOBILE SIDEBAR HELPERS
+       ===================================================== */
+
+    function getMobileOverlay() {
+
+        return document.getElementById(
+            MOBILE_OVERLAY_ID
+        );
+    }
+
+
+    function getMobileButton() {
+
+        return document.getElementById(
+            MOBILE_BUTTON_ID
+        );
+    }
+
+
+    function openMobileSidebar() {
+
+        const sidebar =
+            getSidebar();
+
+        const overlay =
+            getMobileOverlay();
+
+        if (sidebar) {
+
+            sidebar.classList.add(
+                "mobile-open"
+            );
+        }
+
+        if (overlay) {
+
+            overlay.classList.add(
+                "active"
+            );
+        }
+
+        document.body.classList.add(
+            "edutech-mobile-sidebar-open"
+        );
+    }
+
+
+    function closeMobileSidebar() {
+
+        const sidebar =
+            document.getElementById(
+                SIDEBAR_ID
+            );
+
+        const overlay =
+            getMobileOverlay();
+
+        if (sidebar) {
+
+            sidebar.classList.remove(
+                "mobile-open"
+            );
+        }
+
+        if (overlay) {
+
+            overlay.classList.remove(
+                "active"
+            );
+        }
+
+        document.body.classList.remove(
+            "edutech-mobile-sidebar-open"
+        );
+    }
+
+
+    function toggleMobileSidebar() {
+
+        const sidebar =
+            getSidebar();
+
+        if (!sidebar) {
+            return;
+        }
+
+        if (
+            sidebar.classList.contains(
+                "mobile-open"
+            )
+        ) {
+
+            closeMobileSidebar();
+
+        } else {
+
+            openMobileSidebar();
+        }
+    }
+
+
+    /* =====================================================
+       CREATE MOBILE HEADER
+       ===================================================== */
+
+    function createMobileHeader() {
+
+        if (
+            document.getElementById(
+                MOBILE_HEADER_ID
+            )
+        ) {
+            return;
+        }
+
+        if (!document.body) {
+            return;
+        }
+
+        const header =
+            document.createElement("header");
+
+        header.id =
+            MOBILE_HEADER_ID;
+
+        header.className =
+            "edutech-mobile-header";
+
+        header.innerHTML = `
+
+            <button
+                type="button"
+                id="${MOBILE_BUTTON_ID}"
+                class="edutech-mobile-menu-button"
+                aria-label="Open hotel menu"
+                aria-expanded="false"
+            >
+                ☰
+            </button>
+
+            <div class="edutech-mobile-title">
+                EDU TECH HMS
+            </div>
+
+        `;
+
+        document.body.insertBefore(
+            header,
+            document.body.firstChild
+        );
+
+        const button =
+            document.getElementById(
+                MOBILE_BUTTON_ID
+            );
+
+        if (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    toggleMobileSidebar();
+
+                    const sidebar =
+                        getSidebar();
+
+                    button.setAttribute(
+                        "aria-expanded",
+                        sidebar &&
+                        sidebar.classList.contains(
+                            "mobile-open"
+                        )
+                            ? "true"
+                            : "false"
+                    );
+                }
+            );
+        }
+    }
+
+
+    /* =====================================================
+       CREATE MOBILE OVERLAY
+       ===================================================== */
+
+    function createMobileOverlay() {
+
+        if (
+            document.getElementById(
+                MOBILE_OVERLAY_ID
+            )
+        ) {
+            return;
+        }
+
+        if (!document.body) {
+            return;
+        }
+
+        const overlay =
+            document.createElement("div");
+
+        overlay.id =
+            MOBILE_OVERLAY_ID;
+
+        overlay.className =
+            "edutech-mobile-overlay";
+
+        overlay.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+        document.body.appendChild(
+            overlay
+        );
+
+        overlay.addEventListener(
+            "click",
+            function () {
+
+                closeMobileSidebar();
+
+                const button =
+                    getMobileButton();
+
+                if (button) {
+
+                    button.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+                }
+            }
+        );
+    }
+
+
+    /* =====================================================
+       MOBILE RESPONSIVE ELEMENTS
+       ===================================================== */
+
+    function setupMobileInterface() {
+
+        createMobileHeader();
+
+        createMobileOverlay();
+
+        window.addEventListener(
+            "resize",
+            function () {
+
+                if (
+                    window.innerWidth >= 1000
+                ) {
+
+                    closeMobileSidebar();
+
+                    const button =
+                        getMobileButton();
+
+                    if (button) {
+
+                        button.setAttribute(
+                            "aria-expanded",
+                            "false"
+                        );
+                    }
+                }
+            }
+        );
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Escape"
+                ) {
+
+                    closeMobileSidebar();
+
+                    const button =
+                        getMobileButton();
+
+                    if (button) {
+
+                        button.setAttribute(
+                            "aria-expanded",
+                            "false"
+                        );
+                    }
+                }
+            }
+        );
+    }
+
+
+    /* =====================================================
        INSTALL SIDEBAR CSS
        ===================================================== */
 
@@ -630,32 +901,32 @@
             return;
         }
 
-
         const style =
             document.createElement("style");
-
 
         style.id =
             "edutech-universal-sidebar-css";
 
-
         style.textContent = `
 
             /* =================================================
-               SIDEBAR
+               DESKTOP SIDEBAR
                ================================================= */
 
             #appSidebar {
+
                 position: fixed !important;
+
                 left: 0 !important;
                 top: 0 !important;
                 bottom: 0 !important;
 
-                width: 225px !important;
-                min-width: 225px !important;
-                max-width: 225px !important;
+                width: 180px !important;
+                min-width: 180px !important;
+                max-width: 180px !important;
 
                 height: 100vh !important;
+                height: 100dvh !important;
 
                 margin: 0 !important;
                 padding: 0 !important;
@@ -663,6 +934,7 @@
                 z-index: 99999 !important;
 
                 display: flex !important;
+
                 flex-direction: column !important;
 
                 background: #111827 !important;
@@ -677,6 +949,9 @@
                     Arial,
                     Helvetica,
                     sans-serif !important;
+
+                transition:
+                    left 0.25s ease !important;
             }
 
 
@@ -685,15 +960,19 @@
                ================================================= */
 
             #appSidebar .edutech-brand {
+
                 flex-shrink: 0 !important;
+
+                min-height: 66px !important;
 
                 height: 66px !important;
 
                 display: flex !important;
+
                 align-items: center !important;
 
                 padding:
-                    0 16px !important;
+                    0 12px !important;
 
                 box-sizing: border-box !important;
 
@@ -704,8 +983,11 @@
 
 
             #appSidebar .edutech-brand-title {
-                font-size: 18px !important;
+
+                font-size: 17px !important;
+
                 font-weight: 800 !important;
+
                 line-height: 1.1 !important;
 
                 color: #ffffff !important;
@@ -713,10 +995,14 @@
 
 
             #appSidebar .edutech-brand-subtitle {
-                font-size: 10px !important;
+
+                font-size: 9px !important;
+
                 color: #9ca3af !important;
 
                 margin-top: 3px !important;
+
+                line-height: 1.2 !important;
             }
 
 
@@ -725,10 +1011,11 @@
                ================================================= */
 
             #appSidebar .edutech-hotel {
+
                 flex-shrink: 0 !important;
 
                 padding:
-                    13px 15px !important;
+                    10px 12px !important;
 
                 border-bottom:
                     1px solid
@@ -737,23 +1024,30 @@
 
 
             #appSidebar .edutech-hotel-name {
+
                 color: #ffffff !important;
 
-                font-size: 14px !important;
+                font-size: 12px !important;
+
                 font-weight: 700 !important;
 
                 line-height: 1.3 !important;
+
+                overflow-wrap: anywhere !important;
             }
 
 
             #appSidebar .edutech-hotel-location {
+
                 color: #9ca3af !important;
 
-                font-size: 11px !important;
+                font-size: 9px !important;
 
                 margin-top: 3px !important;
 
                 line-height: 1.3 !important;
+
+                overflow-wrap: anywhere !important;
             }
 
 
@@ -762,10 +1056,11 @@
                ================================================= */
 
             #appSidebar .edutech-user {
+
                 flex-shrink: 0 !important;
 
                 padding:
-                    11px 15px !important;
+                    9px 12px !important;
 
                 border-bottom:
                     1px solid
@@ -774,17 +1069,22 @@
 
 
             #appSidebar .edutech-user-name {
+
                 color: #ffffff !important;
 
-                font-size: 13px !important;
+                font-size: 11px !important;
+
                 font-weight: 700 !important;
+
+                overflow-wrap: anywhere !important;
             }
 
 
             #appSidebar .edutech-user-role {
+
                 color: #9ca3af !important;
 
-                font-size: 11px !important;
+                font-size: 9px !important;
 
                 margin-top: 3px !important;
             }
@@ -795,56 +1095,62 @@
                ================================================= */
 
             #appSidebar .edutech-nav {
+
                 flex: 1 1 auto !important;
 
                 min-height: 0 !important;
 
                 overflow-y: auto !important;
+
                 overflow-x: hidden !important;
 
                 padding:
-                    8px 7px !important;
+                    6px 5px !important;
 
                 box-sizing: border-box !important;
             }
 
 
             #appSidebar .edutech-nav::-webkit-scrollbar {
-                width: 6px !important;
+
+                width: 5px !important;
             }
 
 
             #appSidebar .edutech-nav::-webkit-scrollbar-track {
+
                 background: transparent !important;
             }
 
 
             #appSidebar .edutech-nav::-webkit-scrollbar-thumb {
+
                 background:
-                    rgba(255,255,255,.20) !important;
+                    rgba(255,255,255,.22) !important;
 
                 border-radius: 10px !important;
             }
 
 
             #appSidebar .edutech-nav a {
+
                 display: flex !important;
 
                 align-items: center !important;
 
                 width: 100% !important;
 
-                min-height: 38px !important;
+                min-height: 32px !important;
 
                 margin:
-                    2px 0 !important;
+                    1px 0 !important;
 
                 padding:
-                    8px 10px !important;
+                    6px 6px !important;
 
                 box-sizing: border-box !important;
 
-                border-radius: 7px !important;
+                border-radius: 6px !important;
 
                 text-decoration: none !important;
 
@@ -852,7 +1158,7 @@
 
                 background: transparent !important;
 
-                font-size: 12px !important;
+                font-size: 10px !important;
 
                 font-weight: 600 !important;
 
@@ -861,10 +1167,13 @@
                 transition:
                     background .15s ease,
                     color .15s ease !important;
+
+                touch-action: manipulation !important;
             }
 
 
             #appSidebar .edutech-nav a:hover {
+
                 background:
                     rgba(255,255,255,.10) !important;
 
@@ -873,6 +1182,7 @@
 
 
             #appSidebar .edutech-nav a.active {
+
                 background:
                     #2563eb !important;
 
@@ -881,18 +1191,161 @@
 
 
             #appSidebar .edutech-nav-icon {
-                width: 24px !important;
-                min-width: 24px !important;
 
-                margin-right: 7px !important;
+                width: 22px !important;
+
+                min-width: 22px !important;
+
+                margin-right: 4px !important;
 
                 text-align: center !important;
 
-                font-size: 15px !important;
+                font-size: 13px !important;
             }
 
 
             #appSidebar .edutech-nav-text {
+
+                flex: 1 !important;
+
+                min-width: 0 !important;
+
+                white-space: normal !important;
+
+                overflow-wrap: anywhere !important;
+            }
+
+
+            /* =================================================
+               LOGOUT
+               ================================================= */
+
+            #appSidebar .edutech-logout-area {
+
+                flex-shrink: 0 !important;
+
+                padding:
+                    7px 6px !important;
+
+                border-top:
+                    1px solid
+                    rgba(255,255,255,.10) !important;
+            }
+
+
+            #appSidebar .edutech-logout {
+
+                width: 100% !important;
+
+                min-height: 34px !important;
+
+                border: none !important;
+
+                border-radius: 6px !important;
+
+                background:
+                    #b91c1c !important;
+
+                color: #ffffff !important;
+
+                cursor: pointer !important;
+
+                font-size: 10px !important;
+
+                font-weight: 700 !important;
+
+                touch-action: manipulation !important;
+            }
+
+
+            #appSidebar .edutech-logout:hover {
+
+                background:
+                    #dc2626 !important;
+            }
+
+
+            /* =================================================
+               MOBILE HEADER
+               ================================================= */
+
+            .edutech-mobile-header {
+
+                display: none !important;
+
+                position: sticky !important;
+
+                top: 0 !important;
+
+                width: 100% !important;
+
+                min-height: 54px !important;
+
+                align-items: center !important;
+
+                gap: 10px !important;
+
+                padding:
+                    5px 9px !important;
+
+                background:
+                    #0d47a1 !important;
+
+                color: #ffffff !important;
+
+                z-index: 99998 !important;
+
+                box-sizing: border-box !important;
+
+                box-shadow:
+                    0 2px 8px
+                    rgba(0,0,0,.20) !important;
+            }
+
+
+            .edutech-mobile-menu-button {
+
+                width: 44px !important;
+
+                height: 44px !important;
+
+                min-width: 44px !important;
+
+                border: none !important;
+
+                border-radius: 8px !important;
+
+                background:
+                    rgba(255,255,255,.16) !important;
+
+                color: #ffffff !important;
+
+                font-size: 24px !important;
+
+                display: flex !important;
+
+                align-items: center !important;
+
+                justify-content: center !important;
+
+                cursor: pointer !important;
+
+                touch-action: manipulation !important;
+            }
+
+
+            .edutech-mobile-title {
+
+                flex: 1 !important;
+
+                min-width: 0 !important;
+
+                color: #ffffff !important;
+
+                font-size: 15px !important;
+
+                font-weight: 700 !important;
+
                 white-space: nowrap !important;
 
                 overflow: hidden !important;
@@ -902,67 +1355,295 @@
 
 
             /* =================================================
-               LOGOUT
+               MOBILE OVERLAY
                ================================================= */
 
-            #appSidebar .edutech-logout-area {
-                flex-shrink: 0 !important;
+            .edutech-mobile-overlay {
 
-                padding:
-                    9px 8px !important;
+                position: fixed !important;
 
-                border-top:
-                    1px solid
-                    rgba(255,255,255,.10) !important;
+                inset: 0 !important;
+
+                width: 100vw !important;
+
+                height: 100vh !important;
+
+                height: 100dvh !important;
+
+                background:
+                    rgba(0,0,0,.45) !important;
+
+                z-index: 99998 !important;
+
+                display: none !important;
             }
 
 
-            #appSidebar .edutech-logout {
-                width: 100% !important;
+            .edutech-mobile-overlay.active {
 
-                min-height: 40px !important;
-
-                border: none !important;
-
-                border-radius: 7px !important;
-
-                background:
-                    #b91c1c !important;
-
-                color: #ffffff !important;
-
-                cursor: pointer !important;
-
-                font-size: 12px !important;
-
-                font-weight: 700 !important;
-            }
-
-
-            #appSidebar .edutech-logout:hover {
-                background:
-                    #dc2626 !important;
+                display: block !important;
             }
 
 
             /* =================================================
-               MOBILE
+               MOBILE SIDEBAR
                ================================================= */
 
-            @media (max-width: 700px) {
+            @media (max-width: 999px) {
 
                 #appSidebar {
-                    width: 215px !important;
-                    min-width: 215px !important;
-                    max-width: 215px !important;
+
+                    left: -285px !important;
+
+                    width: 270px !important;
+
+                    min-width: 270px !important;
+
+                    max-width: 270px !important;
+
+                    height: 100vh !important;
+
+                    height: 100dvh !important;
+
+                    z-index: 999999 !important;
+
+                    box-shadow:
+                        4px 0 20px
+                        rgba(0,0,0,.35) !important;
                 }
 
+
+                #appSidebar.mobile-open {
+
+                    left: 0 !important;
+                }
+
+
+                .edutech-mobile-header {
+
+                    display: flex !important;
+                }
+
+
+                #appSidebar .edutech-brand {
+
+                    min-height: 70px !important;
+
+                    height: 70px !important;
+
+                    padding:
+                        0 14px !important;
+                }
+
+
+                #appSidebar .edutech-brand-title {
+
+                    font-size: 18px !important;
+                }
+
+
+                #appSidebar .edutech-brand-subtitle {
+
+                    font-size: 10px !important;
+                }
+
+
+                #appSidebar .edutech-hotel {
+
+                    padding:
+                        12px 14px !important;
+                }
+
+
+                #appSidebar .edutech-hotel-name {
+
+                    font-size: 14px !important;
+                }
+
+
+                #appSidebar .edutech-hotel-location {
+
+                    font-size: 11px !important;
+                }
+
+
+                #appSidebar .edutech-user {
+
+                    padding:
+                        11px 14px !important;
+                }
+
+
+                #appSidebar .edutech-user-name {
+
+                    font-size: 13px !important;
+                }
+
+
+                #appSidebar .edutech-user-role {
+
+                    font-size: 11px !important;
+                }
+
+
+                #appSidebar .edutech-nav {
+
+                    padding:
+                        8px 7px !important;
+                }
+
+
+                #appSidebar .edutech-nav a {
+
+                    min-height: 46px !important;
+
+                    margin:
+                        2px 0 !important;
+
+                    padding:
+                        10px 10px !important;
+
+                    border-radius: 7px !important;
+
+                    font-size: 14px !important;
+                }
+
+
+                #appSidebar .edutech-nav-icon {
+
+                    width: 30px !important;
+
+                    min-width: 30px !important;
+
+                    margin-right: 7px !important;
+
+                    font-size: 18px !important;
+                }
+
+
+                #appSidebar .edutech-nav-text {
+
+                    font-size: 14px !important;
+
+                    line-height: 1.25 !important;
+                }
+
+
+                #appSidebar .edutech-logout-area {
+
+                    padding:
+                        9px 8px !important;
+                }
+
+
+                #appSidebar .edutech-logout {
+
+                    min-height: 44px !important;
+
+                    font-size: 13px !important;
+                }
+            }
+
+
+            /* =================================================
+               SMALL PHONES
+               ================================================= */
+
+            @media (max-width: 480px) {
+
+                #appSidebar {
+
+                    left: -275px !important;
+
+                    width: 260px !important;
+
+                    min-width: 260px !important;
+
+                    max-width: 260px !important;
+                }
+
+
+                #appSidebar.mobile-open {
+
+                    left: 0 !important;
+                }
+
+
+                .edutech-mobile-header {
+
+                    min-height: 52px !important;
+
+                    padding:
+                        4px 8px !important;
+                }
+
+
+                .edutech-mobile-menu-button {
+
+                    width: 42px !important;
+
+                    height: 42px !important;
+
+                    min-width: 42px !important;
+
+                    font-size: 23px !important;
+                }
+
+
+                .edutech-mobile-title {
+
+                    font-size: 14px !important;
+                }
             }
 
         `;
 
-
         document.head.appendChild(style);
+    }
+
+
+    /* =====================================================
+       CLOSE SIDEBAR WHEN MODULE IS CLICKED
+       ===================================================== */
+
+    function installNavigationHandlers() {
+
+        const sidebar =
+            document.getElementById(
+                SIDEBAR_ID
+            );
+
+        if (!sidebar) {
+            return;
+        }
+
+        const links =
+            sidebar.querySelectorAll(
+                ".edutech-nav a"
+            );
+
+        links.forEach(function (link) {
+
+            link.addEventListener(
+                "click",
+                function () {
+
+                    closeMobileSidebar();
+
+                    const button =
+                        getMobileButton();
+
+                    if (button) {
+
+                        button.setAttribute(
+                            "aria-expanded",
+                            "false"
+                        );
+                    }
+                }
+            );
+
+        });
     }
 
 
@@ -978,11 +1659,9 @@
         const sidebar =
             getSidebar();
 
-
         if (!sidebar) {
             return;
         }
-
 
         const role =
             profile &&
@@ -992,15 +1671,12 @@
                     .trim()
                 : "receptionist";
 
-
         const allowedModules =
             ROLE_PERMISSIONS[role] ||
             ROLE_PERMISSIONS.receptionist;
 
-
         const currentPage =
             getCurrentPage();
-
 
         const hotelName =
             hotel &&
@@ -1008,13 +1684,11 @@
                 ? hotel.name
                 : "Hotel Management System";
 
-
         const hotelLocation =
             hotel &&
             hotel.location
                 ? hotel.location
                 : "";
-
 
         const userName =
             profile &&
@@ -1023,13 +1697,9 @@
                 : "System User";
 
 
-        /*
-         * Build HTML in memory first.
-         *
-         * Only the SIDEBAR itself is replaced.
-         *
-         * The rest of the page is completely untouched.
-         */
+        /* =================================================
+           BUILD NAVIGATION
+           ================================================= */
 
         let navHTML = "";
 
@@ -1043,7 +1713,6 @@
             ) {
                 return;
             }
-
 
             const isActive =
                 currentPage ===
@@ -1072,6 +1741,10 @@
         });
 
 
+        /* =================================================
+           SIDEBAR HTML
+           ================================================= */
+
         sidebar.innerHTML = `
 
             <div class="edutech-brand">
@@ -1099,12 +1772,12 @@
 
                 ${
                     hotelLocation
-                    ? `
-                        <div class="edutech-hotel-location">
-                            ${escapeHTML(hotelLocation)}
-                        </div>
-                    `
-                    : ""
+                        ? `
+                            <div class="edutech-hotel-location">
+                                ${escapeHTML(hotelLocation)}
+                            </div>
+                        `
+                        : ""
                 }
 
             </div>
@@ -1146,18 +1819,18 @@
                 </button>
 
             </div>
+
         `;
 
 
-        /*
-         * ONE logout handler.
-         */
+        /* =================================================
+           LOGOUT
+           ================================================= */
 
         const logoutButton =
             document.getElementById(
                 "edutechLogoutButton"
             );
-
 
         if (logoutButton) {
 
@@ -1166,6 +1839,13 @@
                 logoutUser
             );
         }
+
+
+        /* =================================================
+           MOBILE NAVIGATION
+           ================================================= */
+
+        installNavigationHandlers();
     }
 
 
@@ -1180,7 +1860,6 @@
                 "edutechLogoutButton"
             );
 
-
         if (button) {
 
             button.disabled = true;
@@ -1194,7 +1873,6 @@
 
             const supabase =
                 getSupabase();
-
 
             if (supabase) {
 
@@ -1225,7 +1903,8 @@
                 );
 
             } catch (error) {
-                // Ignore storage errors
+
+                /* Ignore storage errors */
             }
 
 
@@ -1240,10 +1919,6 @@
        ===================================================== */
 
     async function initialize() {
-
-        /*
-         * Wait until DOM exists.
-         */
 
         if (
             document.readyState ===
@@ -1260,28 +1935,31 @@
         }
 
 
-        /*
-         * Install CSS immediately.
-         */
+        /* =================================================
+           INSTALL CSS
+           ================================================= */
 
         installCSS();
 
 
-        /*
-         * Get cached profile first.
-         *
-         * This means the sidebar can appear immediately.
-         */
+        /* =================================================
+           CREATE MOBILE CONTROLS
+           ================================================= */
+
+        setupMobileInterface();
+
+
+        /* =================================================
+           GET CACHED PROFILE
+           ================================================= */
 
         let profile =
             getCachedProfile();
 
 
-        /*
-         * Create sidebar immediately.
-         *
-         * No waiting for Supabase.
-         */
+        /* =================================================
+           CREATE SIDEBAR IMMEDIATELY
+           ================================================= */
 
         buildSidebar(
             profile,
@@ -1289,15 +1967,14 @@
         );
 
 
-        /*
-         * Load fresh profile.
-         */
+        /* =================================================
+           LOAD FRESH PROFILE
+           ================================================= */
 
         try {
 
             const freshProfile =
                 await loadProfile();
-
 
             if (freshProfile) {
 
@@ -1305,9 +1982,9 @@
                     freshProfile;
 
 
-                /*
-                 * Load hotel information.
-                 */
+                /* =========================================
+                   LOAD HOTEL
+                   ========================================= */
 
                 const hotel =
                     await loadHotel(
@@ -1315,15 +1992,14 @@
                     );
 
 
-                /*
-                 * Rebuild ONLY the sidebar.
-                 */
+                /* =========================================
+                   REBUILD SIDEBAR ONLY
+                   ========================================= */
 
                 buildSidebar(
                     profile,
                     hotel
                 );
-
             }
 
         } catch (error) {
@@ -1334,12 +2010,11 @@
             );
 
             /*
-             * IMPORTANT:
-             * Existing page remains untouched.
-             *
-             * We do NOT blank the page.
-             * We do NOT reload the page.
-             * We do NOT remove the sidebar.
+             * IMPORTANT
+             * ---------------------------------------------
+             * Never blank the page.
+             * Never replace document.body.
+             * Never reload the page.
              */
         }
     }
@@ -1351,21 +2026,38 @@
 
     window.EDUTECH_SIDEBAR = {
 
-        modules: MODULES,
+        modules:
+            MODULES,
 
-        permissions: ROLE_PERMISSIONS,
+        permissions:
+            ROLE_PERMISSIONS,
 
-        getSidebar: getSidebar,
+        getSidebar:
+            getSidebar,
 
-        getCurrentPage: getCurrentPage,
+        getCurrentPage:
+            getCurrentPage,
 
-        loadProfile: loadProfile,
+        loadProfile:
+            loadProfile,
 
-        loadHotel: loadHotel,
+        loadHotel:
+            loadHotel,
 
-        buildSidebar: buildSidebar,
+        buildSidebar:
+            buildSidebar,
 
-        logout: logoutUser
+        logout:
+            logoutUser,
+
+        openMobileSidebar:
+            openMobileSidebar,
+
+        closeMobileSidebar:
+            closeMobileSidebar,
+
+        toggleMobileSidebar:
+            toggleMobileSidebar
     };
 
 
