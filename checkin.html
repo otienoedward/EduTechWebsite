@@ -1,2021 +1,2513 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check-in - EDU TECH Hotel Management System</title>
 
-    <title>Check-in - EDU TECH Hotel Management System</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase.js"></script>
 
-    <link rel="stylesheet" href="./style.css">
+<style>
+*{box-sizing:border-box}
 
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="./supabase.js"></script>
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f4f6f9;
+    color:#222;
+}
+
+.layout{display:flex;min-height:100vh}
+
+.sidebar{
+    width:250px;
+    background:#172033;
+    color:white;
+    min-height:100vh;
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    overflow-y:auto;
+    z-index:1000;
+}
+
+.brand{
+    padding:22px 18px;
+    font-size:20px;
+    font-weight:bold;
+    border-bottom:1px solid rgba(255,255,255,.1);
+    text-align:center;
+}
+
+.brand span{
+    display:block;
+    font-size:12px;
+    margin-top:5px;
+    color:#b9c2d0;
+    font-weight:normal;
+}
+
+.sidebar nav{padding:12px 0}
+
+.sidebar a{
+    display:block;
+    color:#dce2eb;
+    text-decoration:none;
+    padding:12px 20px;
+    font-size:14px;
+    transition:.2s;
+}
+
+.sidebar a:hover,
+.sidebar a.active{
+    background:#263653;
+    color:white;
+}
+
+.sidebar a.logout{
+    color:#ffb3b3;
+    margin-top:15px;
+    border-top:1px solid rgba(255,255,255,.08);
+}
+
+.main{
+    margin-left:250px;
+    width:calc(100% - 250px);
+    min-height:100vh;
+}
+
+.topbar{
+    background:white;
+    padding:18px 25px;
+    border-bottom:1px solid #ddd;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+.topbar h1{margin:0;font-size:24px}
+.topbar small{color:#666}
+
+.user-box{text-align:right;font-size:14px}
+.user-box strong{display:block}
+
+.content{padding:25px}
+
+.hotel-banner{
+    background:white;
+    padding:18px 20px;
+    border-radius:10px;
+    border:1px solid #ddd;
+    margin-bottom:20px;
+}
+
+.hotel-banner h2{margin:0 0 5px;font-size:20px}
+.hotel-banner p{margin:0;color:#666}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+    margin-bottom:25px;
+}
+
+.card{
+    background:white;
+    border-radius:10px;
+    padding:20px;
+    border:1px solid #ddd;
+}
+
+.card .label{
+    color:#666;
+    font-size:13px;
+    margin-bottom:8px;
+}
+
+.card .value{
+    font-size:28px;
+    font-weight:bold;
+}
+
+.toolbar{
+    background:white;
+    padding:15px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    margin-bottom:20px;
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.toolbar input,
+.toolbar select{
+    padding:10px 12px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    min-width:220px;
+    outline:none;
+}
+
+.toolbar input:focus,
+.toolbar select:focus{border-color:#2563eb}
+
+button{
+    border:none;
+    border-radius:6px;
+    padding:10px 14px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+button:disabled{
+    opacity:.6;
+    cursor:not-allowed;
+}
+
+.btn-primary{background:#2563eb;color:white}
+.btn-primary:hover{background:#1d4ed8}
+.btn-success{background:#16a34a;color:white}
+.btn-success:hover{background:#15803d}
+.btn-danger{background:#dc2626;color:white}
+.btn-secondary{background:#6b7280;color:white}
+.btn-light{background:#e5e7eb;color:#111827}
+.btn-slip{background:#7c3aed;color:white}
+.btn-slip:hover{background:#6d28d9}
+
+.table-container{
+    background:white;
+    border:1px solid #ddd;
+    border-radius:10px;
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:1150px;
+}
+
+th,td{
+    padding:13px 12px;
+    border-bottom:1px solid #eee;
+    text-align:left;
+    font-size:14px;
+}
+
+th{
+    background:#f8fafc;
+    font-weight:bold;
+    color:#374151;
+}
+
+tr:hover td{background:#fafafa}
+
+.actions{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+}
+
+.actions button{
+    padding:7px 10px;
+    font-size:12px;
+}
+
+.status{
+    display:inline-block;
+    padding:5px 9px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.status-expected{background:#dbeafe;color:#1d4ed8}
+.status-checked-in{background:#dcfce7;color:#15803d}
+.status-checked-out{background:#e5e7eb;color:#374151}
+.status-cancelled{background:#fee2e2;color:#b91c1c}
+.status-pending{background:#fef3c7;color:#92400e}
+
+#messageBox{
+    position:fixed;
+    top:20px;
+    right:20px;
+    z-index:3000;
+    display:none;
+    max-width:400px;
+    padding:14px 18px;
+    border-radius:8px;
+    color:white;
+    box-shadow:0 5px 20px rgba(0,0,0,.15);
+    font-size:14px;
+}
+
+#messageBox.success{background:#16a34a}
+#messageBox.error{background:#dc2626}
+#messageBox.info{background:#2563eb}
+
+.modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    z-index:2000;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal{
+    background:white;
+    width:100%;
+    max-width:650px;
+    max-height:90vh;
+    overflow-y:auto;
+    border-radius:12px;
+    box-shadow:0 20px 50px rgba(0,0,0,.2);
+}
+
+.modal-header{
+    padding:18px 20px;
+    border-bottom:1px solid #eee;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.modal-header h2{margin:0;font-size:20px}
+
+.close-btn{
+    background:transparent;
+    font-size:24px;
+    color:#666;
+    padding:0;
+}
+
+.modal-body{padding:20px}
+.form-group{margin-bottom:15px}
+
+.form-group label{
+    display:block;
+    margin-bottom:6px;
+    font-size:13px;
+    font-weight:bold;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    outline:none;
+}
+
+.form-group textarea{
+    min-height:90px;
+    resize:vertical;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{
+    border-color:#2563eb;
+}
+
+.form-group input[readonly]{
+    background:#f8fafc;
+    color:#374151;
+}
+
+.form-footer-note{
+    color:#92400e;
+    font-size:12px;
+    margin-top:5px;
+}
+
+.modal-footer{
+    padding:15px 20px;
+    border-top:1px solid #eee;
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+}
+
+.empty{
+    padding:40px;
+    text-align:center;
+    color:#777;
+}
+
+.loading{
+    padding:30px;
+    text-align:center;
+    color:#666;
+}
+
+/* CHECK-IN SLIP */
+
+.slip-modal{max-width:900px}
+
+.slip-preview{
+    background:white;
+    padding:35px;
+    border:1px solid #ddd;
+    margin:20px;
+}
+
+.slip-header{
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    border-bottom:2px solid #172033;
+    padding-bottom:20px;
+    margin-bottom:25px;
+}
+
+.slip-hotel h2{margin:0 0 8px;font-size:24px}
+.slip-hotel p{margin:3px 0;color:#555}
+.slip-title{text-align:right}
+
+.slip-title h1{
+    margin:0;
+    font-size:25px;
+    color:#172033;
+}
+
+.slip-title p{
+    margin:6px 0 0;
+    font-size:13px;
+    color:#666;
+}
+
+.slip-section-title{
+    font-size:15px;
+    font-weight:bold;
+    background:#f3f4f6;
+    padding:10px;
+    margin:20px 0 10px;
+    border-left:4px solid #2563eb;
+}
+
+.slip-info{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px 30px;
+}
+
+.slip-info div{
+    padding:8px 0;
+    border-bottom:1px solid #eee;
+}
+
+.slip-info strong{
+    display:inline-block;
+    min-width:120px;
+}
+
+.slip-total{
+    margin-top:20px;
+    margin-left:auto;
+    max-width:350px;
+    border:1px solid #ddd;
+    padding:15px;
+    border-radius:8px;
+}
+
+.slip-total-row{
+    display:flex;
+    justify-content:space-between;
+    padding:6px 0;
+}
+
+.slip-note{
+    margin-top:25px;
+    padding:15px;
+    background:#f8fafc;
+    border-radius:8px;
+    font-size:13px;
+    line-height:1.6;
+}
+
+.slip-signatures{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:50px;
+    margin-top:55px;
+}
+
+.signature-line{
+    border-top:1px solid #555;
+    padding-top:8px;
+    text-align:center;
+    font-size:13px;
+}
+
+.slip-actions{
+    padding:15px 20px;
+    border-top:1px solid #eee;
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+}
+
+@media(max-width:1000px){
+    .cards{grid-template-columns:repeat(2,1fr)}
+}
+
+@media(max-width:700px){
+    .sidebar{width:210px}
+    .main{margin-left:210px;width:calc(100% - 210px)}
+    .cards{grid-template-columns:1fr}
+    .content{padding:15px}
+    .slip-preview{padding:20px;margin:10px}
+    .slip-header{flex-direction:column}
+    .slip-title{text-align:left}
+    .slip-info{grid-template-columns:1fr}
+}
+
+@media print{
+    body.printing-slip *{visibility:hidden!important}
+
+    body.printing-slip #checkinSlipPrintArea,
+    body.printing-slip #checkinSlipPrintArea *{
+        visibility:visible!important;
+    }
+
+    body.printing-slip #checkinSlipPrintArea{
+        position:absolute;
+        left:0;
+        top:0;
+        width:100%;
+        margin:0;
+        padding:0;
+        border:none;
+    }
+
+    body.printing-slip .slip-preview{
+        margin:0;
+        border:none;
+        box-shadow:none;
+    }
+
+    body.printing-slip .slip-actions,
+    body.printing-slip .modal-header{
+        display:none!important;
+    }
+
+    @page{size:A4;margin:15mm}
+}
+</style>
 </head>
 
 <body>
 
-    <!-- =========================================================
-         SIDEBAR
-         ========================================================= -->
+<div id="messageBox"></div>
+
+<div class="layout">
+
+<aside class="sidebar">
+
+<div class="brand">
+EDU TECH
+<span>Hotel Management System</span>
+</div>
+
+<nav id="sidebarNav">
+
+<a href="./index.html" data-page="dashboard">Dashboard</a>
+<a href="./rooms.html" data-page="rooms">Rooms</a>
+<a href="./guests.html" data-page="guests">Guests</a>
+<a href="./reservations.html" data-page="reservations">Reservations</a>
+<a href="./checkin.html" class="active" data-page="checkin">Check-in</a>
+<a href="./checkout.html" data-page="checkout">Check-out</a>
+<a href="./restaurant.html" data-page="restaurant">Restaurant</a>
+<a href="./inventory.html" data-page="inventory">Inventory</a>
+<a href="./payments.html" data-page="payments">Payments</a>
+<a href="./expenses.html" data-page="expenses">Expenses</a>
+<a href="./employees.html" data-page="employees">Employees</a>
+<a href="./housekeeping.html" data-page="housekeeping">Housekeeping</a>
+<a href="./maintenance.html" data-page="maintenance">Maintenance</a>
+<a href="./reports.html" data-page="reports">Reports</a>
+<a href="./settings.html" data-page="settings">Settings</a>
+<a href="./hotels.html" data-page="hotels" id="hotelsLink">Hotels Management</a>
+<a href="#" class="logout" onclick="logoutUser(event)">Logout</a>
+
+</nav>
+</aside>
+
+<main class="main">
+
+<header class="topbar">
+
+<div>
+<h1>Check-in</h1>
+<small>Manage guest arrivals and hotel check-ins</small>
+</div>
+
+<div class="user-box">
+<strong id="currentUserName">Loading...</strong>
+<span id="currentUserRole">Loading...</span>
+</div>
+
+</header>
+
+<section class="content">
 
-    <aside class="sidebar">
+<div class="hotel-banner">
+<h2 id="hotelNameDisplay">Loading hotel...</h2>
+<p id="hotelLocationDisplay">Please wait...</p>
+</div>
+
+<div class="cards">
+
+<div class="card">
+<div class="label">Today's Check-ins</div>
+<div class="value" id="todayCheckins">0</div>
+</div>
+
+<div class="card">
+<div class="label">Checked In</div>
+<div class="value" id="checkedInCount">0</div>
+</div>
+
+<div class="card">
+<div class="label">Expected Arrivals</div>
+<div class="value" id="expectedArrivals">0</div>
+</div>
+
+<div class="card">
+<div class="label">Pending Check-ins</div>
+<div class="value" id="pendingCheckins">0</div>
+</div>
+
+</div>
+
+<div class="toolbar">
+
+<input
+type="text"
+id="searchInput"
+placeholder="Search guest, ID/passport, room or reservation..."
+oninput="searchCheckins"
+>
+
+<select id="statusFilter" onchange="filterCheckins()">
+<option value="all">All Statuses</option>
+<option value="expected">Expected</option>
+<option value="pending">Pending</option>
+<option value="checked_in">Checked In</option>
+<option value="checked_out">Checked Out</option>
+<option value="cancelled">Cancelled</option>
+</select>
+
+<button class="btn-primary" id="newCheckinButton" onclick="openCheckinForm()">
++ New Check-in
+</button>
+
+</div>
+
+<div class="table-container">
+
+<table>
+
+<thead>
+<tr>
+<th>Reservation</th>
+<th>Guest</th>
+<th>ID / Passport</th>
+<th>Room</th>
+<th>Arrival</th>
+<th>Check-out</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody id="checkinsTableBody">
+<tr>
+<td colspan="8" class="loading">Loading check-ins...</td>
+</tr>
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+</main>
+</div>
+
+<!-- CHECK-IN FORM -->
+
+<div class="modal-overlay" id="checkinModal">
+
+<div class="modal">
+
+<div class="modal-header">
+<h2>New Check-in</h2>
+<button class="close-btn" onclick="closeCheckinModal()">×</button>
+</div>
+
+<form id="checkinForm" onsubmit="submitCheckinForm(event)">
+
+<div class="modal-body">
+
+<div class="form-group">
+<label for="reservationSelect">Reservation</label>
+<select id="reservationSelect" required>
+<option value="">Select reservation</option>
+</select>
+</div>
+
+<div class="form-group">
+<label for="guestDisplay">Guest</label>
+<input type="text" id="guestDisplay" readonly>
+</div>
+
+<div class="form-group">
+<label for="guestIdPassportDisplay">National ID / Passport Number</label>
+<input
+type="text"
+id="guestIdPassportDisplay"
+readonly
+placeholder="Not provided"
+>
+</div>
+
+<div class="form-group">
+<label for="roomDisplay">Room</label>
+<input type="text" id="roomDisplay" readonly>
+</div>
+
+<div class="form-group">
+<label for="arrivalDisplay">Check-in Date</label>
+<input type="text" id="arrivalDisplay" readonly>
+</div>
+
+<div class="form-group">
+<label for="checkoutDisplay">Check-out Date</label>
+<input type="text" id="checkoutDisplay" readonly>
+</div>
+
+<div class="form-group">
+<label for="checkinNotes">Notes (not saved yet)</label>
+<textarea id="checkinNotes" placeholder="Optional reference notes"></textarea>
+<div class="form-footer-note">
+These notes are for reference only. They are not stored in the database.
+</div>
+</div>
+
+</div>
+
+<div class="modal-footer">
+<button type="button" class="btn-secondary" onclick="closeCheckinModal()">Cancel</button>
+<button type="submit" class="btn-success" id="submitCheckinButton">Check In Guest</button>
+</div>
+
+</form>
+</div>
+</div>
+
+<!-- CHECK-IN SLIP -->
+
+<div class="modal-overlay" id="checkinSlipModal">
+
+<div class="modal slip-modal">
+
+<div class="modal-header">
+<h2>Check-in Slip</h2>
+<button class="close-btn" onclick="closeCheckinSlip()">×</button>
+</div>
+
+<div id="checkinSlipPrintArea">
+<div class="slip-preview" id="checkinSlipContent">
+<div class="loading">Loading check-in slip...</div>
+</div>
+</div>
+
+<div class="slip-actions">
+<button class="btn-secondary" onclick="closeCheckinSlip()">Close</button>
+<button class="btn-primary" onclick="printCheckinSlip()">Print / Save PDF</button>
+</div>
+
+</div>
+</div>
+
+<script>
+
+/* =========================================
+   GLOBAL VARIABLES
+========================================= */
+
+let currentRole="";
+let currentUserId="";
+let currentUserName="";
+let currentUserHotelId=null;
+
+let hotelId=null;
+let hotelName="";
+let hotelLocation="";
+
+let reservations=[];
+let guests=[];
+let rooms=[];
+let filteredReservations=[];
+
+let initializationPromise=null;
+let messageTimer=null;
+let checkinInProgress=false;
 
-        <div class="sidebar-header">
-            <h2>EDU TECH</h2>
-            <p>Hotel Management</p>
-        </div>
 
-        <nav>
+/* =========================================
+   ROLE PERMISSIONS
+========================================= */
 
-            <a href="./index.html" data-module="dashboard">
-                🏠 Dashboard
-            </a>
+const ROLE_PERMISSIONS={
 
-            <a href="./rooms.html" data-module="rooms">
-                🛏️ Rooms
-            </a>
+system_owner:{
+pages:[
+"dashboard","rooms","guests","reservations","checkin","checkout",
+"restaurant","inventory","payments","expenses","employees",
+"housekeeping","maintenance","reports","settings","hotels"
+],
+createCheckin:true,
+performCheckin:true,
+cancelCheckin:true
+},
 
-            <a href="./guests.html" data-module="guests">
-                👤 Guests
-            </a>
+hotel_owner:{
+pages:[
+"dashboard","rooms","guests","reservations","checkin","checkout",
+"restaurant","inventory","payments","expenses","employees",
+"housekeeping","maintenance","reports","settings"
+],
+createCheckin:true,
+performCheckin:true,
+cancelCheckin:true
+},
 
-            <a href="./reservations.html" data-module="reservations">
-                📅 Reservations
-            </a>
+manager:{
+pages:[
+"dashboard","rooms","guests","reservations","checkin","checkout",
+"restaurant","inventory","payments","expenses","employees",
+"housekeeping","maintenance","reports"
+],
+createCheckin:true,
+performCheckin:true,
+cancelCheckin:true
+},
 
-            <a href="./checkin.html" data-module="checkin">
-                🛎️ Check-in
-            </a>
+receptionist:{
+pages:[
+"dashboard","rooms","guests","reservations","checkin","checkout",
+"restaurant","payments","housekeeping"
+],
+createCheckin:true,
+performCheckin:true,
+cancelCheckin:false
+}
 
-            <a href="./checkout.html" data-module="checkout">
-                🚪 Check-out
-            </a>
+};
 
-            <a href="./restaurant.html" data-module="restaurant">
-                🍽️ Restaurant
-            </a>
 
-            <a href="./inventory.html" data-module="inventory">
-                📦 Inventory
-            </a>
+/* =========================================
+   PAGE LOAD
+========================================= */
 
-            <a href="./payments.html" data-module="payments">
-                💰 Payments
-            </a>
+document.addEventListener("DOMContentLoaded",function(){
 
-            <a href="./expenses.html" data-module="expenses">
-                💸 Expenses
-            </a>
+hideRestrictedNavigation();
+initializeCheckin();
 
-            <a href="./employees.html" data-module="employees">
-                👨‍💼 Employees
-            </a>
+});
 
-            <a href="./housekeeping.html" data-module="housekeeping">
-                🧹 Housekeeping
-            </a>
 
-            <a href="./maintenance.html" data-module="maintenance">
-                🔧 Maintenance
-            </a>
+/* =========================================
+   NAVIGATION
+========================================= */
 
-            <a href="./reports.html" data-module="reports">
-                📊 Reports
-            </a>
+function hideRestrictedNavigation(){
 
-            <a href="./settings.html" data-module="settings">
-                ⚙️ Settings
-            </a>
+document.querySelectorAll("#sidebarNav a[data-page]").forEach(function(link){
+link.style.display="none";
+});
 
-            <a href="./hotels.html" data-module="hotels">
-                🏨 Hotels
-            </a>
+const logout=document.querySelector("#sidebarNav a.logout");
 
-            <a href="#" data-action="logout">
-                🚪 Logout
-            </a>
+if(logout){
+logout.style.display="block";
+}
 
-        </nav>
+}
 
-    </aside>
 
+/* =========================================
+   ROLE HELPERS
+========================================= */
 
-    <!-- =========================================================
-         MAIN CONTENT
-         ========================================================= -->
+function normalizeRole(role){
 
-    <main class="main-content">
+return String(role||"")
+.toLowerCase()
+.trim()
+.replace(/\s+/g,"_");
 
-        <header class="topbar">
+}
 
-            <div>
-                <h1>Check-in Management</h1>
-                <p>
-                    Manage hotel guest arrivals and room check-ins
-                </p>
-            </div>
 
-            <div class="user">
+function getRoleFromProfile(profile){
 
-                <div class="user-icon">
-                    A
-                </div>
+if(!profile)return "";
 
-                <div>
-                    <strong id="currentUserName">
-                        Administrator
-                    </strong>
+return normalizeRole(
+profile.role||
+profile.user_role||
+profile.userRole||
+""
+);
 
-                    <small id="currentUserRole">
-                        System Admin
-                    </small>
-                </div>
+}
 
-            </div>
 
-        </header>
+function canCreateCheckin(){
 
+return Boolean(
+ROLE_PERMISSIONS[currentRole] &&
+ROLE_PERMISSIONS[currentRole].createCheckin
+);
 
-        <!-- =====================================================
-             ERROR MESSAGE
-             ===================================================== -->
+}
 
-        <div
-            id="errorMessage"
-            style="
-                display:none;
-                margin:20px;
-                padding:14px;
-                border-radius:6px;
-                background:#fee2e2;
-                color:#991b1b;
-            "
-        ></div>
 
+function canPerformCheckin(){
 
-        <!-- =====================================================
-             SUMMARY CARDS
-             ===================================================== -->
+return Boolean(
+ROLE_PERMISSIONS[currentRole] &&
+ROLE_PERMISSIONS[currentRole].performCheckin
+);
 
-        <section class="cards">
+}
 
-            <div class="card">
 
-                <div class="card-icon">
-                    🛎️
-                </div>
+function canCancelCheckin(){
 
-                <div>
+return Boolean(
+ROLE_PERMISSIONS[currentRole] &&
+ROLE_PERMISSIONS[currentRole].cancelCheckin
+);
 
-                    <h3>
-                        Today's Check-ins
-                    </h3>
+}
 
-                    <p id="todayCheckins">
-                        0
-                    </p>
 
-                </div>
+/* =========================================
+   ACTIVE HOTEL
+========================================= */
 
-            </div>
+function getActiveHotelId(){
 
+if(currentRole==="system_owner"){
 
-            <div class="card">
+const possibleKeys=[
+"activeHotelId",
+"active_hotel_id",
+"selectedHotelId",
+"selectedHotelID",
+"hotelId"
+];
 
-                <div class="card-icon">
-                    🟢
-                </div>
+for(const key of possibleKeys){
 
-                <div>
+const value=sessionStorage.getItem(key);
 
-                    <h3>
-                        Checked In
-                    </h3>
+if(value && Number.isInteger(Number(value)) && Number(value)>0){
+return Number(value);
+}
 
-                    <p id="checkedInCount">
-                        0
-                    </p>
+}
 
-                </div>
+return null;
 
-            </div>
+}
 
+/* For hotel staff, use the hotel assigned to the profile. */
 
-            <div class="card">
+if(
+currentUserHotelId &&
+Number.isInteger(Number(currentUserHotelId)) &&
+Number(currentUserHotelId)>0
+){
 
-                <div class="card-icon">
-                    🟡
-                </div>
+return Number(currentUserHotelId);
 
-                <div>
+}
 
-                    <h3>
-                        Expected Arrivals
-                    </h3>
+return null;
 
-                    <p id="expectedArrivals">
-                        0
-                    </p>
+}
 
-                </div>
 
-            </div>
+/* =========================================
+   INITIALIZE
+   Prevent overlapping page initialization.
+========================================= */
 
+async function initializeCheckin(){
 
-            <div class="card">
+if(initializationPromise){
+return initializationPromise;
+}
 
-                <div class="card-icon">
-                    ⏳
-                </div>
+initializationPromise=(async function(){
 
-                <div>
+try{
 
-                    <h3>
-                        Pending Check-ins
-                    </h3>
+if(!window.supabaseClient){
+throw new Error("Supabase client was not loaded.");
+}
 
-                    <p id="pendingCheckins">
-                        0
-                    </p>
+await loadCurrentUser();
 
-                </div>
+hotelId=getActiveHotelId();
 
-            </div>
+if(!hotelId){
 
-        </section>
+showMessage("No active hotel is selected.","error");
 
+document.getElementById("hotelNameDisplay").textContent="No Hotel Selected";
+document.getElementById("hotelLocationDisplay").textContent="Please select a hotel before continuing.";
 
-        <!-- =====================================================
-             CHECK-IN SECTION
-             ===================================================== -->
+reservations=[];
+guests=[];
+rooms=[];
 
-        <section class="room-container">
+renderReservations([]);
+updateSummary();
+populateReservationSelect();
 
-            <div class="room-header">
+return;
 
-                <div>
+}
 
-                    <h2>
-                        Guest Check-ins
-                    </h2>
+await loadHotel();
+await loadGuests();
+await loadRooms();
+await loadReservations();
 
-                    <p>
-                        Register and manage guests arriving at the hotel
-                    </p>
+updateSummary();
+populateReservationSelect();
+applyFilters();
 
-                </div>
+}catch(error){
 
+console.error("Check-in initialization error:",error);
 
-                <button
-                    class="add-room-btn"
-                    type="button"
-                    id="newCheckinBtn"
-                >
-                    + New Check-in
-                </button>
+showMessage(
+"Failed to load Check-in page: "+(error.message||"Unknown error"),
+"error"
+);
 
-            </div>
+}
 
+})();
 
-            <!-- SEARCH / FILTER -->
+try{
+await initializationPromise;
+}finally{
+initializationPromise=null;
+}
 
-            <div class="room-tools">
+}
 
-                <input
-                    type="text"
-                    id="checkinSearch"
-                    placeholder="Search guest or room..."
-                >
 
+/* =========================================
+   CURRENT USER
+   Profile role is authoritative.
+========================================= */
 
-                <select id="checkinFilter">
+async function loadCurrentUser(){
 
-                    <option value="all">
-                        All Status
-                    </option>
+const {data:sessionData,error:sessionError}=
+await window.supabaseClient.auth.getSession();
 
-                    <option value="Expected">
-                        Expected
-                    </option>
+if(sessionError){
+throw sessionError;
+}
 
-                    <option value="Checked In">
-                        Checked In
-                    </option>
+if(
+!sessionData||
+!sessionData.session||
+!sessionData.session.user
+){
 
-                    <option value="Cancelled">
-                        Cancelled
-                    </option>
+throw new Error("No logged-in user found.");
 
-                </select>
+}
 
+currentUserId=sessionData.session.user.id;
 
-                <select
-                    id="hotelSelector"
-                    style="display:none;"
-                >
+const {data:profile,error}=
+await window.supabaseClient
+.from("profiles")
+.select("*")
+.eq("id",currentUserId)
+.maybeSingle();
 
-                    <option value="">
-                        Select Hotel
-                    </option>
+if(error){
+throw error;
+}
 
-                </select>
+if(!profile){
+throw new Error("User profile was not found.");
+}
 
-            </div>
+currentRole=getRoleFromProfile(profile);
 
+if(
+!Object.prototype.hasOwnProperty.call(
+ROLE_PERMISSIONS,
+currentRole
+)
+){
 
-            <!-- TABLE -->
+currentRole="";
 
-            <div class="table-container">
+}
 
-                <table id="checkinsTable">
+currentUserHotelId=profile.hotel_id
+?Number(profile.hotel_id)
+:null;
 
-                    <thead>
+sessionStorage.setItem("userRole",currentRole);
 
-                        <tr>
+currentUserName=
+profile.full_name||
+profile.name||
+profile.email||
+"User";
 
-                            <th>
-                                Reservation ID
-                            </th>
+document.getElementById("currentUserName").textContent=currentUserName;
+document.getElementById("currentUserRole").textContent=formatRole(currentRole);
 
-                            <th>
-                                Guest
-                            </th>
+/* Keep the assigned hotel available to other pages. */
 
-                            <th>
-                                Room
-                            </th>
+if(currentRole!=="system_owner" && currentUserHotelId){
 
-                            <th>
-                                Arrival Date
-                            </th>
+sessionStorage.setItem("hotelId",String(currentUserHotelId));
+sessionStorage.setItem("activeHotelId",String(currentUserHotelId));
 
-                            <th>
-                                Expected Check-out
-                            </th>
+}
 
-                            <th>
-                                Status
-                            </th>
+applyRoleNavigation();
 
-                            <th>
-                                Actions
-                            </th>
+}
 
-                        </tr>
 
-                    </thead>
+/* =========================================
+   FORMAT ROLE
+========================================= */
 
+function formatRole(role){
 
-                    <tbody id="checkinTable">
+const text=String(role||"").replace(/_/g," ").trim();
 
-                        <tr>
+if(!text)return "";
 
-                            <td
-                                colspan="7"
-                                style="
-                                    text-align:center;
-                                    padding:25px;
-                                "
-                            >
-                                Loading check-ins...
-                            </td>
+return text.split(" ").map(function(word){
 
-                        </tr>
+return word.charAt(0).toUpperCase()+word.slice(1);
 
-                    </tbody>
+}).join(" ");
 
-                </table>
+}
 
-            </div>
 
-        </section>
+/* =========================================
+   ROLE NAVIGATION
+========================================= */
 
-    </main>
+function applyRoleNavigation(){
 
+document.querySelectorAll("#sidebarNav a[data-page]").forEach(function(link){
+link.style.display="none";
+});
 
-    <!-- =========================================================
-         CHECK-IN MODAL
-         ========================================================= -->
+const permission=ROLE_PERMISSIONS[currentRole];
 
-    <div
-        id="checkinModal"
-        class="modal"
-        style="
-            display:none;
-            position:fixed;
-            inset:0;
-            background:rgba(0,0,0,0.5);
-            z-index:9999;
-            align-items:center;
-            justify-content:center;
-            padding:20px;
-        "
-    >
+if(!permission)return;
 
-        <div
-            class="modal-content"
-            style="
-                width:100%;
-                max-width:550px;
-                max-height:90vh;
-                overflow-y:auto;
-            "
-        >
+document.querySelectorAll("#sidebarNav a[data-page]").forEach(function(link){
 
-            <div class="modal-header">
+const page=link.getAttribute("data-page");
 
-                <h2>
-                    Guest Check-in
-                </h2>
+if(permission.pages.includes(page)){
+link.style.display="block";
+}
 
-                <button
-                    type="button"
-                    id="closeCheckinBtn"
-                >
-                    ×
-                </button>
+});
 
-            </div>
+const hotelsLink=document.getElementById("hotelsLink");
 
+if(hotelsLink){
+hotelsLink.style.display=currentRole==="system_owner"?"block":"none";
+}
 
-            <form id="checkinForm">
+const newButton=document.getElementById("newCheckinButton");
 
-                <!-- RESERVATION -->
+if(newButton){
+newButton.style.display=canCreateCheckin()?"inline-block":"none";
+}
 
-                <label>
-                    Reservation
-                </label>
+}
 
-                <select
-                    id="reservationSelector"
-                    required
-                >
 
-                    <option value="">
-                        Select Reservation
-                    </option>
+/* =========================================
+   LOAD HOTEL
+========================================= */
 
-                </select>
+async function loadHotel(){
 
+const {data,error}=await window.supabaseClient
+.from("hotels")
+.select("id, hotel_name, location, phone, email, status")
+.eq("id",hotelId)
+.maybeSingle();
 
-                <!-- GUEST -->
+if(error){
+throw error;
+}
 
-                <label>
-                    Guest
-                </label>
+if(!data){
+throw new Error("Active hotel was not found.");
+}
 
-                <input
-                    type="text"
-                    id="checkinGuest"
-                    readonly
-                    placeholder="Guest name"
-                >
+hotelName=data.hotel_name||"Hotel";
+hotelLocation=data.location||"";
 
+document.getElementById("hotelNameDisplay").textContent=hotelName;
 
-                <!-- ROOM -->
+document.getElementById("hotelLocationDisplay").textContent=
+hotelLocation||"Hotel ID: "+hotelId;
 
-                <label>
-                    Room Number
-                </label>
+}
 
-                <input
-                    type="text"
-                    id="checkinRoom"
-                    readonly
-                    placeholder="Room number"
-                >
 
+/* =========================================
+   LOAD GUESTS
+   Includes National ID / Passport Number.
+   This value remains stored in the guests
+   table and is not duplicated in reservations.
+========================================= */
 
-                <!-- ARRIVAL -->
+async function loadGuests(){
 
-                <label>
-                    Arrival Date
-                </label>
+const {data,error}=await window.supabaseClient
+.from("guests")
+.select('id, created_at, "full name", phone, email, id_passport_number, hotel_id')
+.eq("hotel_id",hotelId)
+.order("created_at",{ascending:false});
 
-                <input
-                    type="date"
-                    id="arrivalDate"
-                    readonly
-                >
+if(error){
+throw error;
+}
 
+guests=data||[];
 
-                <!-- CHECKOUT -->
+}
 
-                <label>
-                    Expected Check-out
-                </label>
 
-                <input
-                    type="date"
-                    id="expectedCheckout"
-                    readonly
-                >
+/* =========================================
+   LOAD ROOMS
+========================================= */
 
+async function loadRooms(){
 
-                <!-- STATUS -->
+const {data,error}=await window.supabaseClient
+.from("rooms")
+.select("id, room_number, room_type, status, price, guest_id, hotel_id")
+.eq("hotel_id",hotelId)
+.order("room_number",{ascending:true});
 
-                <label>
-                    Status
-                </label>
+if(error){
+throw error;
+}
 
-                <select id="checkinStatus">
+rooms=data||[];
 
-                    <option value="Checked In">
-                        Checked In
-                    </option>
+}
 
-                    <option value="Expected">
-                        Expected
-                    </option>
 
-                    <option value="Cancelled">
-                        Cancelled
-                    </option>
+/* =========================================
+   LOAD RESERVATIONS
+========================================= */
 
-                </select>
+async function loadReservations(){
 
+const {data,error}=await window.supabaseClient
+.from("reservations")
+.select('id, created_at, "guest   id", "room id", check_in, check_out, status, amount, hotel_id')
+.eq("hotel_id",hotelId)
+.order("check_in",{ascending:true});
 
-                <button
-                    type="submit"
-                    class="save-room-btn"
-                >
-                    Save Check-in
-                </button>
+if(error){
+throw error;
+}
 
-            </form>
+reservations=data||[];
 
-        </div>
+}
 
-    </div>
 
+/* =========================================
+   FIND GUEST / ROOM
+========================================= */
 
-    <!-- GLOBAL SCRIPT -->
+function findGuest(guestId){
 
-    <script src="./script.js"></script>
+return guests.find(function(guest){
+return Number(guest.id)===Number(guestId);
+})||null;
 
+}
 
-    <!-- =========================================================
-         CHECK-IN JAVASCRIPT
-         ========================================================= -->
 
-    <script>
+function findRoom(roomId){
 
-        /* ======================================================
-           GLOBAL VARIABLES
-           ====================================================== */
+return rooms.find(function(room){
+return Number(room.id)===Number(roomId);
+})||null;
 
-        let reservations = [];
-        let guests = [];
-        let rooms = [];
-        let hotels = [];
+}
 
-        let currentReservationId = null;
 
+/* =========================================
+   GUEST ID / PASSPORT
+========================================= */
 
-        /* ======================================================
-           DOM ELEMENTS
-           ====================================================== */
+function getGuestIdPassport(guest){
 
-        const checkinTable =
-            document.getElementById("checkinTable");
+if(!guest){
+return "";
+}
 
-        const checkinSearch =
-            document.getElementById("checkinSearch");
+return String(
+guest.id_passport_number||
+""
+).trim();
 
-        const checkinFilter =
-            document.getElementById("checkinFilter");
+}
 
-        const checkinModal =
-            document.getElementById("checkinModal");
 
-        const checkinForm =
-            document.getElementById("checkinForm");
+/* =========================================
+   STATUS
+========================================= */
 
-        const reservationSelector =
-            document.getElementById("reservationSelector");
+function normalizeStatus(status){
 
-        const checkinGuest =
-            document.getElementById("checkinGuest");
+const value=String(status||"").toLowerCase().trim();
 
-        const checkinRoom =
-            document.getElementById("checkinRoom");
+if(value==="confirmed"||value==="expected"){
+return "expected";
+}
 
-        const arrivalDate =
-            document.getElementById("arrivalDate");
+if(value==="pending"){
+return "pending";
+}
 
-        const expectedCheckout =
-            document.getElementById("expectedCheckout");
+if(
+value==="checked_in"||
+value==="checked-in"||
+value==="checked in"
+){
+return "checked_in";
+}
 
-        const checkinStatus =
-            document.getElementById("checkinStatus");
+if(
+value==="checked_out"||
+value==="checked-out"||
+value==="checked out"
+){
+return "checked_out";
+}
 
-        const hotelSelector =
-            document.getElementById("hotelSelector");
+if(value==="cancelled"||value==="canceled"){
+return "cancelled";
+}
 
-        const errorMessage =
-            document.getElementById("errorMessage");
+return value;
 
+}
 
-        /* ======================================================
-           ROLE
-           ====================================================== */
 
-        function getCurrentRole() {
+function isEligibleForCheckin(status){
 
-            return String(
-                sessionStorage.getItem("userRole") ||
-                localStorage.getItem("userRole") ||
-                ""
-            )
-            .toLowerCase()
-            .trim();
+const normalized=normalizeStatus(status);
 
-        }
+return normalized==="expected"||normalized==="pending";
 
+}
 
-        /* ======================================================
-           HOTEL
-           ====================================================== */
 
-        function getCurrentHotelId() {
+function formatStatus(status){
 
-            return (
-                sessionStorage.getItem("hotelId") ||
-                localStorage.getItem("hotelId") ||
-                ""
-            );
+const normalized=normalizeStatus(status);
 
-        }
+if(normalized==="expected")return "Expected";
+if(normalized==="pending")return "Pending";
+if(normalized==="checked_in")return "Checked In";
+if(normalized==="checked_out")return "Checked Out";
+if(normalized==="cancelled")return "Cancelled";
 
+return status||"Unknown";
 
-        /* ======================================================
-           ERROR
-           ====================================================== */
+}
 
-        function showError(message) {
 
-            errorMessage.textContent = message;
+function statusClass(status){
 
-            errorMessage.style.display = "block";
+const normalized=normalizeStatus(status);
 
-        }
+return "status status-"+normalized.replace(/_/g,"-");
 
+}
 
-        function hideError() {
 
-            errorMessage.textContent = "";
+/* =========================================
+   DATE
+========================================= */
 
-            errorMessage.style.display = "none";
+function formatDate(dateValue){
 
-        }
+if(!dateValue)return "-";
 
+const date=new Date(dateValue+"T00:00:00");
 
-        /* ======================================================
-           INITIALIZE
-           ====================================================== */
+if(Number.isNaN(date.getTime())){
+return dateValue;
+}
 
-        document.addEventListener(
-            "DOMContentLoaded",
-            initializeCheckin
-        );
+return date.toLocaleDateString("en-GB",{
+day:"2-digit",
+month:"2-digit",
+year:"numeric"
+});
 
+}
 
-        async function initializeCheckin() {
 
-            try {
+/* =========================================
+   NIGHTS
+========================================= */
 
-                hideError();
+function calculateNights(checkIn,checkOut){
 
+if(!checkIn||!checkOut)return 0;
 
-                if (!window.supabaseClient) {
+const start=new Date(checkIn+"T00:00:00Z");
+const end=new Date(checkOut+"T00:00:00Z");
 
-                    throw new Error(
-                        "Supabase client is not available. Check supabase.js."
-                    );
+const difference=end.getTime()-start.getTime();
 
-                }
+return Math.max(0,Math.round(difference/(1000*60*60*24)));
 
+}
 
-                const role =
-                    getCurrentRole();
 
+/* =========================================
+   SUMMARY
+========================================= */
 
-                if (!role) {
+function updateSummary(){
 
-                    throw new Error(
-                        "User role is missing from the current session."
-                    );
+const today=new Date();
 
-                }
+const todayString=
+today.getFullYear()+"-"+
+String(today.getMonth()+1).padStart(2,"0")+"-"+
+String(today.getDate()).padStart(2,"0");
 
+let todayCheckins=0;
+let checkedInCount=0;
+let expectedArrivals=0;
+let pendingCheckins=0;
 
-                document.getElementById(
-                    "currentUserName"
-                ).textContent =
-                    sessionStorage.getItem("userName") ||
-                    "Administrator";
+reservations.forEach(function(reservation){
 
+const status=normalizeStatus(reservation.status);
 
-                document.getElementById(
-                    "currentUserRole"
-                ).textContent =
-                    role.replace(
-                        /_/g,
-                        " "
-                    );
+if(status==="checked_in" && reservation.check_in===todayString){
+todayCheckins++;
+}
 
+if(status==="checked_in"){
+checkedInCount++;
+}
 
-                if (role === "system_owner") {
+if(status==="expected"){
+expectedArrivals++;
+}
 
-                    hotelSelector.style.display =
-                        "block";
+if(status==="pending"){
+pendingCheckins++;
+}
 
-                    await loadHotels();
+});
 
-                }
+document.getElementById("todayCheckins").textContent=todayCheckins;
+document.getElementById("checkedInCount").textContent=checkedInCount;
+document.getElementById("expectedArrivals").textContent=expectedArrivals;
+document.getElementById("pendingCheckins").textContent=pendingCheckins;
 
+}
 
-                await loadGuests();
 
-                await loadRooms();
+/* =========================================
+   RENDER RESERVATIONS
+========================================= */
 
-                await loadReservations();
+function renderReservations(list){
 
-                renderCheckins();
+const tbody=document.getElementById("checkinsTableBody");
 
-            } catch (error) {
+if(!list||list.length===0){
 
-                console.error(
-                    "Initialize check-in error:",
-                    error
-                );
+tbody.innerHTML=`
+<tr>
+<td colspan="8" class="empty">
+No reservations found for this hotel.
+</td>
+</tr>
+`;
 
-                showError(
-                    "Failed to initialize Check-in module: " +
-                    (error.message || error)
-                );
+return;
 
-            }
+}
 
-        }
+tbody.innerHTML=list.map(function(reservation){
 
+const guest=findGuest(reservation["guest   id"]);
+const room=findRoom(reservation["room id"]);
+const status=normalizeStatus(reservation.status);
 
-        /* ======================================================
-           LOAD HOTELS
-           ====================================================== */
+const guestName=guest?guest["full name"]||"Unknown Guest":"Unknown Guest";
 
-        async function loadHotels() {
+const guestIdPassport=getGuestIdPassport(guest);
 
-            const {
-                data,
-                error
-            } = await window.supabaseClient
-                .from("hotels")
-                .select(
-                    "id, hotel_name"
-                )
-                .order(
-                    "hotel_name",
-                    {
-                        ascending: true
-                    }
-                );
+const roomNumber=room?room.room_number:"Unassigned";
 
+let actions="";
 
-            if (error) {
+if(isEligibleForCheckin(status)){
 
-                throw error;
+if(canPerformCheckin()){
 
-            }
+actions+=`
+<button class="btn-success"
+onclick="performCheckin(${Number(reservation.id)})">
+Check In
+</button>
+`;
 
+}
 
-            hotels =
-                data || [];
+if(canCancelCheckin()){
 
+actions+=`
+<button class="btn-danger"
+onclick="cancelCheckin(${Number(reservation.id)})">
+Cancel
+</button>
+`;
 
-            hotelSelector.innerHTML =
-                '<option value="">Select Hotel</option>';
+}
 
+}else{
 
-            hotels.forEach(
-                function(hotel) {
+actions=`
+<button class="btn-light"
+onclick="viewReservation(${Number(reservation.id)})">
+View
+</button>
+`;
 
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
+if(status==="checked_in"||status==="checked_out"){
 
-                    option.value =
-                        hotel.id;
+actions+=`
+<button class="btn-slip"
+onclick="generateCheckinSlip(${Number(reservation.id)})">
+Check-in Slip
+</button>
+`;
 
-                    option.textContent =
-                        hotel.hotel_name;
+}
 
-                    hotelSelector.appendChild(
-                        option
-                    );
+}
 
-                }
-            );
+return `
+<tr>
 
+<td>#${Number(reservation.id)}</td>
 
-            hotelSelector.addEventListener(
-                "change",
-                async function() {
+<td>
+<strong>${escapeHtml(guestName)}</strong>
+<br>
+<small>${escapeHtml(guest&&guest.phone?guest.phone:"")}</small>
+</td>
 
-                    await reloadData();
+<td>
+<strong>${escapeHtml(guestIdPassport||"Not provided")}</strong>
+</td>
 
-                }
-            );
+<td>
+${escapeHtml(String(roomNumber))}
+${room&&room.room_type?`<br><small>${escapeHtml(room.room_type)}</small>`:""}
+</td>
 
-        }
+<td>${formatDate(reservation.check_in)}</td>
 
+<td>${formatDate(reservation.check_out)}</td>
 
-        /* ======================================================
-           GET SELECTED HOTEL
-           ====================================================== */
+<td>
+<span class="${statusClass(status)}">${formatStatus(status)}</span>
+</td>
 
-        function getSelectedHotelId() {
+<td>
+<div class="actions">${actions}</div>
+</td>
 
-            const role =
-                getCurrentRole();
+</tr>
+`;
 
+}).join("");
 
-            if (role === "system_owner") {
+}
 
-                return hotelSelector.value;
 
-            }
+/* =========================================
+   FILTERS
+========================================= */
 
+function applyFilters(){
 
-            return getCurrentHotelId();
+const search=String(document.getElementById("searchInput").value||"")
+.toLowerCase()
+.trim();
 
-        }
+const selectedStatus=document.getElementById("statusFilter").value;
 
+filteredReservations=reservations.filter(function(reservation){
 
-        /* ======================================================
-           LOAD GUESTS
-           ====================================================== */
+const guest=findGuest(reservation["guest   id"]);
+const room=findRoom(reservation["room id"]);
 
-        async function loadGuests() {
+const guestName=guest?guest["full name"]||"":"";
+const guestIdPassport=getGuestIdPassport(guest);
+const roomNumber=room?String(room.room_number||""):"";
+const reservationText=String(reservation.id||"");
 
-            let query =
-                window.supabaseClient
-                    .from("guests")
-                    .select(
-                        'id, "full name", phone, email, hotel_id'
-                    );
+const matchesSearch=
+!search||
+String(guestName).toLowerCase().includes(search)||
+String(guestIdPassport).toLowerCase().includes(search)||
+roomNumber.toLowerCase().includes(search)||
+reservationText.toLowerCase().includes(search);
 
+const normalizedStatus=normalizeStatus(reservation.status);
 
-            const hotelId =
-                getSelectedHotelId();
+const matchesStatus=
+selectedStatus==="all"||
+normalizedStatus===selectedStatus;
 
+return matchesSearch&&matchesStatus;
 
-            if (hotelId) {
+});
 
-                query =
-                    query.eq(
-                        "hotel_id",
-                        hotelId
-                    );
+renderReservations(filteredReservations);
 
-            }
+}
 
 
-            const {
-                data,
-                error
-            } =
-                await query;
+function searchCheckins(){
+applyFilters();
+}
 
 
-            if (error) {
+function filterCheckins(){
+applyFilters();
+}
 
-                throw error;
 
-            }
+/* =========================================
+   SELECT RESERVATION
+========================================= */
 
+function populateReservationSelect(){
 
-            guests =
-                data || [];
+const select=document.getElementById("reservationSelect");
 
-        }
+if(!select)return;
 
+const eligible=reservations.filter(function(reservation){
+return isEligibleForCheckin(reservation.status);
+});
 
-        /* ======================================================
-           LOAD ROOMS
-           ====================================================== */
+select.innerHTML='<option value="">Select reservation</option>';
 
-        async function loadRooms() {
+eligible.forEach(function(reservation){
 
-            let query =
-                window.supabaseClient
-                    .from("rooms")
-                    .select(
-                        "id, room_number, room_type, status, price, hotel_id"
-                    )
-                    .order(
-                        "room_number",
-                        {
-                            ascending: true
-                        }
-                    );
+const guest=findGuest(reservation["guest   id"]);
+const room=findRoom(reservation["room id"]);
 
+const guestName=guest?guest["full name"]:"Unknown Guest";
+const roomNumber=room?room.room_number:"No Room";
 
-            const hotelId =
-                getSelectedHotelId();
+const option=document.createElement("option");
 
+option.value=reservation.id;
 
-            if (hotelId) {
+option.textContent=
+"#"+reservation.id+
+" - "+guestName+
+" - Room "+roomNumber+
+" - "+formatDate(reservation.check_in);
 
-                query =
-                    query.eq(
-                        "hotel_id",
-                        hotelId
-                    );
+select.appendChild(option);
 
-            }
+});
 
+select.onchange=updateSelectedReservation;
 
-            const {
-                data,
-                error
-            } =
-                await query;
+}
 
 
-            if (error) {
+/* =========================================
+   SELECTED RESERVATION
+========================================= */
 
-                throw error;
+function updateSelectedReservation(){
 
-            }
+const reservationId=Number(
+document.getElementById("reservationSelect").value
+);
 
+if(!reservationId){
 
-            rooms =
-                data || [];
+document.getElementById("guestDisplay").value="";
+document.getElementById("guestIdPassportDisplay").value="";
+document.getElementById("roomDisplay").value="";
+document.getElementById("arrivalDisplay").value="";
+document.getElementById("checkoutDisplay").value="";
 
-        }
+return;
 
+}
 
-        /* ======================================================
-           LOAD RESERVATIONS
-           ====================================================== */
+const reservation=reservations.find(function(item){
+return Number(item.id)===reservationId;
+});
 
-        async function loadReservations() {
+if(!reservation)return;
 
-            let query =
-                window.supabaseClient
-                    .from("reservation")
-                    .select(
-                        "id, guest_id, room_id, check_in, check_out, status, amount, hotel_id"
-                    )
-                    .order(
-                        "check_in",
-                        {
-                            ascending: true
-                        }
-                    );
+const guest=findGuest(reservation["guest   id"]);
+const room=findRoom(reservation["room id"]);
 
+document.getElementById("guestDisplay").value=
+guest?guest["full name"]||"":"Unknown Guest";
 
-            const hotelId =
-                getSelectedHotelId();
+document.getElementById("guestIdPassportDisplay").value=
+getGuestIdPassport(guest)||"Not provided";
 
+document.getElementById("roomDisplay").value=
+room?"Room "+room.room_number+" - "+(room.room_type||""):"No room assigned";
 
-            if (hotelId) {
+document.getElementById("arrivalDisplay").value=formatDate(reservation.check_in);
+document.getElementById("checkoutDisplay").value=formatDate(reservation.check_out);
 
-                query =
-                    query.eq(
-                        "hotel_id",
-                        hotelId
-                    );
+}
 
-            }
 
+/* =========================================
+   OPEN CHECK-IN
+========================================= */
 
-            const {
-                data,
-                error
-            } =
-                await query;
+function openCheckinForm(){
 
+if(!canCreateCheckin()){
 
-            if (error) {
+showMessage("You do not have permission to create a check-in.","error");
+return;
 
-                throw error;
+}
 
-            }
+if(!hotelId){
 
+showMessage("No active hotel is selected.","error");
+return;
 
-            reservations =
-                data || [];
+}
 
-        }
+document.getElementById("checkinForm").reset();
 
+populateReservationSelect();
 
-        /* ======================================================
-           GET GUEST NAME
-           ====================================================== */
+updateSelectedReservation();
 
-        function getGuestName(guestId) {
+document.getElementById("checkinModal").style.display="flex";
 
-            const guest =
-                guests.find(
-                    function(item) {
+}
 
-                        return String(item.id) ===
-                               String(guestId);
 
-                    }
-                );
+function closeCheckinModal(){
 
+document.getElementById("checkinModal").style.display="none";
 
-            if (!guest) {
+}
 
-                return "Unknown Guest";
 
-            }
+/* =========================================
+   SUBMIT
+========================================= */
 
+async function submitCheckinForm(event){
 
-            return (
-                guest["full name"] ||
-                "Unknown Guest"
-            );
+event.preventDefault();
 
-        }
+const reservationId=Number(
+document.getElementById("reservationSelect").value
+);
 
+if(!reservationId){
 
-        /* ======================================================
-           GET ROOM NUMBER
-           ====================================================== */
+showMessage("Please select a reservation.","error");
+return;
 
-        function getRoomNumber(roomId) {
+}
 
-            const room =
-                rooms.find(
-                    function(item) {
+await performCheckin(reservationId);
 
-                        return String(item.id) ===
-                               String(roomId);
+}
 
-                    }
-                );
 
+/* =========================================
+   SECURE CHECK-IN
+========================================= */
 
-            if (!room) {
+async function performCheckin(reservationId){
 
-                return "Unknown Room";
+if(checkinInProgress){
+return false;
+}
 
-            }
+if(!canPerformCheckin()){
 
+showMessage("You do not have permission to perform check-in.","error");
+return false;
 
-            return (
-                room.room_number ||
-                "Unknown Room"
-            );
+}
 
-        }
+if(!hotelId){
 
+showMessage("No active hotel is selected.","error");
+return false;
 
-        /* ======================================================
-           FORMAT DATE
-           ====================================================== */
+}
 
-        function formatDate(value) {
+const reservation=reservations.find(function(item){
+return Number(item.id)===Number(reservationId);
+});
 
-            if (!value) {
+if(!reservation){
 
-                return "-";
+showMessage("Reservation not found.","error");
+return false;
 
-            }
+}
 
+if(Number(reservation.hotel_id)!==Number(hotelId)){
 
-            const date =
-                new Date(value);
+showMessage("This reservation does not belong to the active hotel.","error");
+return false;
 
+}
 
-            if (Number.isNaN(
-                date.getTime()
-            )) {
+if(!isEligibleForCheckin(reservation.status)){
 
-                return value;
+showMessage("Only expected or pending reservations can be checked in.","error");
+return false;
 
-            }
+}
 
+const roomId=reservation["room id"];
 
-            return date.toLocaleDateString();
+if(!roomId){
 
-        }
+showMessage("This reservation has no room assigned.","error");
+return false;
 
+}
 
-        /* ======================================================
-           FORMAT DATE FOR INPUT
-           ====================================================== */
+const room=findRoom(roomId);
 
-        function formatInputDate(value) {
+if(!room){
 
-            if (!value) {
+showMessage("The assigned room could not be found.","error");
+return false;
 
-                return "";
+}
 
-            }
+const roomStatus=String(room.status||"").toLowerCase().trim();
 
+if(roomStatus!=="available"){
 
-            return String(value)
-                .split("T")[0];
+showMessage("Room "+room.room_number+" is not currently available.","error");
+return false;
 
-        }
+}
 
+if(!confirm("Are you sure you want to check in this guest?")){
+return false;
+}
 
-        /* ======================================================
-           CHECK-IN RECORDS
-           ====================================================== */
+checkinInProgress=true;
 
-        function getCheckinReservations() {
+const submitButton=document.getElementById("submitCheckinButton");
 
-            return reservations.filter(
-                function(reservation) {
+if(submitButton){
+submitButton.disabled=true;
+submitButton.textContent="Processing...";
+}
 
-                    return (
-                        reservation.status ===
-                            "Expected" ||
+try{
 
-                        reservation.status ===
-                            "Checked In" ||
+if(!window.supabaseClient){
+throw new Error("Supabase client was not loaded.");
+}
 
-                        reservation.status ===
-                            "Cancelled"
-                    );
+showMessage("Processing check-in...","info");
 
-                }
-            );
+const result=await window.supabaseClient.rpc(
+"perform_checkin",
+{
+p_reservation_id:Number(reservationId)
+}
+);
 
-        }
+if(result.error){
+throw result.error;
+}
 
+if(!result.data||result.data.success!==true){
 
-        /* ======================================================
-           DISPLAY CHECK-INS
-           ====================================================== */
+throw new Error(
+result.data&&result.data.message
+?result.data.message
+:"The check-in operation was not completed."
+);
 
-        function renderCheckins() {
+}
 
-            checkinTable.innerHTML = "";
+showMessage(
+"Guest checked in successfully. Room "+room.room_number+" is now occupied.",
+"success"
+);
 
+closeCheckinModal();
 
-            const searchText =
-                checkinSearch.value
-                    .toLowerCase()
-                    .trim();
+await initializeCheckin();
 
+return true;
 
-            const selectedStatus =
-                checkinFilter.value;
+}catch(error){
 
+console.error("Secure check-in error:",error);
 
-            const filtered =
-                getCheckinReservations()
-                .filter(
-                    function(reservation) {
+let message=error&&error.message?error.message:"Unknown check-in error.";
 
-                        const guest =
-                            getGuestName(
-                                reservation.guest_id
-                            )
-                            .toLowerCase();
+const lowerMessage=message.toLowerCase();
 
+if(lowerMessage.includes("already occupied")){
+message="This room is already occupied.";
+}
 
-                        const room =
-                            String(
-                                getRoomNumber(
-                                    reservation.room_id
-                                )
-                            )
-                            .toLowerCase();
+if(lowerMessage.includes("permission")){
+message="You do not have permission to perform this check-in.";
+}
 
+if(lowerMessage.includes("another hotel")){
+message="You cannot check in a reservation belonging to another hotel.";
+}
 
-                        const reservationId =
-                            String(
-                                reservation.id
-                            )
-                            .toLowerCase();
+if(lowerMessage.includes("reservation not found")){
+message="Reservation not found.";
+}
 
+showMessage("Check-in failed: "+message,"error");
 
-                        const matchesSearch =
-                            guest.includes(
-                                searchText
-                            ) ||
+return false;
 
-                            room.includes(
-                                searchText
-                            ) ||
+}finally{
 
-                            reservationId.includes(
-                                searchText
-                            );
+checkinInProgress=false;
 
+if(submitButton){
+submitButton.disabled=false;
+submitButton.textContent="Check In Guest";
+}
 
-                        const matchesStatus =
-                            selectedStatus ===
-                                "all" ||
+}
 
-                            reservation.status ===
-                                selectedStatus;
+}
 
 
-                        return (
-                            matchesSearch &&
-                            matchesStatus
-                        );
+/* =========================================
+   CHECK-IN SLIP
+========================================= */
 
-                    }
-                );
+async function generateCheckinSlip(reservationId){
 
+try{
 
-            if (filtered.length === 0) {
+if(!hotelId){
+showMessage("No active hotel is selected.","error");
+return;
+}
 
-                checkinTable.innerHTML = `
+showMessage("Preparing check-in slip...","info");
 
-                    <tr>
+const {data:reservation,error:reservationError}=
+await window.supabaseClient
+.from("reservations")
+.select('id, created_at, "guest   id", "room id", check_in, check_out, status, amount, hotel_id')
+.eq("id",reservationId)
+.eq("hotel_id",hotelId)
+.maybeSingle();
 
-                        <td
-                            colspan="7"
-                            style="
-                                text-align:center;
-                                padding:25px;
-                            "
-                        >
-                            No check-ins found.
-                        </td>
+if(reservationError)throw reservationError;
 
-                    </tr>
+if(!reservation){
+throw new Error("Reservation not found.");
+}
 
-                `;
 
-                updateSummary();
+/* =========================================
+   GUEST
+   Includes National ID / Passport Number.
+========================================= */
 
-                return;
+const {data:guest,error:guestError}=
+await window.supabaseClient
+.from("guests")
+.select('id, "full name", phone, email, id_passport_number')
+.eq("id",reservation["guest   id"])
+.eq("hotel_id",hotelId)
+.maybeSingle();
 
-            }
+if(guestError)throw guestError;
 
 
-            filtered.forEach(
-                function(reservation) {
+/* ROOM */
 
-                    const row =
-                        document.createElement(
-                            "tr"
-                        );
+const {data:room,error:roomError}=
+await window.supabaseClient
+.from("rooms")
+.select("id, room_number, room_type, price")
+.eq("id",reservation["room id"])
+.eq("hotel_id",hotelId)
+.maybeSingle();
 
+if(roomError)throw roomError;
 
-                    row.innerHTML = `
 
-                        <td>
-                            RES-${reservation.id}
-                        </td>
+/* HOTEL */
 
-                        <td>
-                            ${escapeHtml(
-                                getGuestName(
-                                    reservation.guest_id
-                                )
-                            )}
-                        </td>
+const {data:hotel,error:hotelError}=
+await window.supabaseClient
+.from("hotels")
+.select("id, hotel_name, location, phone, email")
+.eq("id",hotelId)
+.maybeSingle();
 
-                        <td>
-                            ${escapeHtml(
-                                getRoomNumber(
-                                    reservation.room_id
-                                )
-                            )}
-                        </td>
+if(hotelError)throw hotelError;
 
-                        <td>
-                            ${formatDate(
-                                reservation.check_in
-                            )}
-                        </td>
+if(!hotel){
+throw new Error("Hotel details could not be found.");
+}
 
-                        <td>
-                            ${formatDate(
-                                reservation.check_out
-                            )}
-                        </td>
+const guestName=guest&&guest["full name"]?guest["full name"]:"Guest";
 
-                        <td>
+const guestIdPassport=
+guest&&guest.id_passport_number
+?String(guest.id_passport_number).trim()
+:"Not provided";
 
-                            <span
-                                class="room-status"
-                            >
-                                ${escapeHtml(
-                                    reservation.status ||
-                                    "-"
-                                )}
-                            </span>
+const roomNumber=room&&room.room_number?room.room_number:"Unassigned";
 
-                        </td>
+const roomType=room&&room.room_type?room.room_type:"";
 
-                        <td>
+const nights=calculateNights(
+reservation.check_in,
+reservation.check_out
+);
 
-                            ${
-                                reservation.status ===
-                                "Expected"
+const roomRate=room&&Number(room.price)?Number(room.price):0;
 
-                                ?
+const accommodationAmount=
+Number(reservation.amount||0)>0
+?Number(reservation.amount)
+:roomRate*nights;
 
-                                `
-                                <button
-                                    class="edit-btn"
-                                    type="button"
-                                    onclick="openCheckinForm('${reservation.id}')"
-                                >
-                                    Check-in
-                                </button>
-                                `
+const slipNumber=
+"CIS-"+new Date().getFullYear()+"-"+String(reservation.id).padStart(6,"0");
 
-                                :
+const generatedDate=new Date().toLocaleDateString("en-GB",{
+day:"2-digit",
+month:"long",
+year:"numeric"
+});
 
-                                reservation.status ===
-                                "Checked In"
+const status=formatStatus(reservation.status);
 
-                                ?
+document.getElementById("checkinSlipContent").innerHTML=`
 
-                                `
-                                <button
-                                    class="edit-btn"
-                                    type="button"
-                                    onclick="openCheckinForm('${reservation.id}')"
-                                >
-                                    View
-                                </button>
-                                `
+<div class="slip-header">
 
-                                :
+<div class="slip-hotel">
 
-                                ""
-                            }
+<h2>${escapeHtml(hotel.hotel_name||"EDU TECH Hotel")}</h2>
 
-                        </td>
+<p>${escapeHtml(hotel.location||"")}</p>
 
-                    `;
+${hotel.phone?`<p>Phone: ${escapeHtml(hotel.phone)}</p>`:""}
 
+${hotel.email?`<p>Email: ${escapeHtml(hotel.email)}</p>`:""}
 
-                    checkinTable.appendChild(
-                        row
-                    );
+</div>
 
-                }
-            );
+<div class="slip-title">
 
+<h1>CHECK-IN SLIP</h1>
 
-            updateSummary();
+<p>Slip No: <strong>${escapeHtml(slipNumber)}</strong></p>
 
-        }
+<p>Date: ${escapeHtml(generatedDate)}</p>
 
+</div>
 
-        /* ======================================================
-           SUMMARY
-           ====================================================== */
+</div>
 
-        function updateSummary() {
+<div class="slip-section-title">Guest Information</div>
 
-            const today =
-                new Date()
-                    .toISOString()
-                    .split("T")[0];
+<div class="slip-info">
 
+<div>
+<strong>Guest Name:</strong>
+${escapeHtml(guestName)}
+</div>
 
-            const todayCheckins =
-                reservations.filter(
-                    function(reservation) {
+<div>
+<strong>ID / Passport:</strong>
+${escapeHtml(guestIdPassport)}
+</div>
 
-                        return (
-                            formatInputDate(
-                                reservation.check_in
-                            ) === today &&
+<div>
+<strong>Phone:</strong>
+${escapeHtml(guest&&guest.phone?guest.phone:"-")}
+</div>
 
-                            reservation.status !==
-                                "Cancelled"
-                        );
+<div>
+<strong>Email:</strong>
+${escapeHtml(guest&&guest.email?guest.email:"-")}
+</div>
 
-                    }
-                ).length;
+<div>
+<strong>Reservation:</strong>
+#${Number(reservation.id)}
+</div>
 
+</div>
 
-            const checkedIn =
-                reservations.filter(
-                    function(reservation) {
+<div class="slip-section-title">Room & Stay Information</div>
 
-                        return (
-                            reservation.status ===
-                            "Checked In"
-                        );
+<div class="slip-info">
 
-                    }
-                ).length;
+<div>
+<strong>Room:</strong>
+${escapeHtml(String(roomNumber))}
+</div>
 
+<div>
+<strong>Room Type:</strong>
+${escapeHtml(String(roomType||"-"))}
+</div>
 
-            const expected =
-                reservations.filter(
-                    function(reservation) {
+<div>
+<strong>Check-in:</strong>
+${escapeHtml(formatDate(reservation.check_in))}
+</div>
 
-                        return (
-                            reservation.status ===
-                            "Expected"
-                        );
+<div>
+<strong>Check-out:</strong>
+${escapeHtml(formatDate(reservation.check_out))}
+</div>
 
-                    }
-                ).length;
+<div>
+<strong>Nights:</strong>
+${nights}
+</div>
 
+<div>
+<strong>Room Rate:</strong>
+KSh ${roomRate.toLocaleString("en-KE",{
+minimumFractionDigits:2,
+maximumFractionDigits:2
+})}
+</div>
 
-            document.getElementById(
-                "todayCheckins"
-            ).textContent =
-                todayCheckins;
+<div>
+<strong>Current Status:</strong>
+${escapeHtml(status)}
+</div>
 
+<div>
+<strong>Check-in Time:</strong>
+${new Date().toLocaleTimeString("en-KE",{
+hour:"2-digit",
+minute:"2-digit"
+})}
+</div>
 
-            document.getElementById(
-                "checkedInCount"
-            ).textContent =
-                checkedIn;
+</div>
 
+<div class="slip-total">
 
-            document.getElementById(
-                "expectedArrivals"
-            ).textContent =
-                expected;
+<div class="slip-total-row">
+<span>Accommodation</span>
+<strong>
+KSh ${accommodationAmount.toLocaleString("en-KE",{
+minimumFractionDigits:2,
+maximumFractionDigits:2
+})}
+</strong>
+</div>
 
+<div class="slip-total-row">
+<span>Booking Status</span>
+<strong>${escapeHtml(status)}</strong>
+</div>
 
-            document.getElementById(
-                "pendingCheckins"
-            ).textContent =
-                expected;
+</div>
 
-        }
+<div class="slip-note">
 
+<strong>Guest Notice</strong>
 
-        /* ======================================================
-           OPEN CHECK-IN FORM
-           ====================================================== */
+<br>
 
-        async function openCheckinForm(
-            reservationId = null
-        ) {
+This check-in slip confirms the guest's check-in record for the stated hotel and room.
+Please retain this document for your records.
+Check-out is subject to the hotel's check-out policy and any outstanding charges must be settled before departure.
 
-            currentReservationId =
-                reservationId;
+</div>
 
+<div class="slip-signatures">
+<div class="signature-line">Guest Signature</div>
+<div class="signature-line">Receptionist / Authorized Staff</div>
+</div>
 
-            reservationSelector.innerHTML =
-                '<option value="">Select Reservation</option>';
+`;
 
+document.getElementById("checkinSlipModal").style.display="flex";
 
-            const expectedReservations =
-                reservations.filter(
-                    function(reservation) {
+}catch(error){
 
-                        return (
-                            reservation.status ===
-                            "Expected"
-                        );
+console.error("Check-in slip error:",error);
 
-                    }
-                );
+showMessage(
+"Failed to generate check-in slip: "+(error.message||"Unknown error"),
+"error"
+);
 
+}
 
-            expectedReservations.forEach(
-                function(reservation) {
+}
 
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
 
+/* =========================================
+   PRINT / SAVE PDF
+========================================= */
 
-                    option.value =
-                        reservation.id;
+function printCheckinSlip(){
 
+const content=document.getElementById("checkinSlipContent");
 
-                    option.textContent =
-                        "RES-" +
-                        reservation.id +
-                        " | " +
-                        getGuestName(
-                            reservation.guest_id
-                        ) +
-                        " | Room " +
-                        getRoomNumber(
-                            reservation.room_id
-                        ) +
-                        " | " +
-                        formatDate(
-                            reservation.check_in
-                        );
+if(!content||!content.innerHTML.trim()){
 
+showMessage("Check-in slip is not ready.","error");
+return;
 
-                    reservationSelector.appendChild(
-                        option
-                    );
+}
 
-                }
-            );
+document.body.classList.add("printing-slip");
 
+window.print();
 
-            if (reservationId) {
+}
 
-                reservationSelector.value =
-                    reservationId;
 
+/* =========================================
+   CLOSE SLIP
+========================================= */
 
-                fillReservationDetails(
-                    reservationId
-                );
+function closeCheckinSlip(){
 
-            } else {
+document.body.classList.remove("printing-slip");
 
-                checkinGuest.value = "";
+document.getElementById("checkinSlipModal").style.display="none";
 
-                checkinRoom.value = "";
+}
 
-                arrivalDate.value = "";
 
-                expectedCheckout.value = "";
+/* =========================================
+   CANCEL RESERVATION
+========================================= */
 
-                checkinStatus.value =
-                    "Checked In";
+async function cancelCheckin(reservationId){
 
-            }
+if(!canCancelCheckin()){
 
+showMessage("You do not have permission to cancel this reservation.","error");
+return;
 
-            checkinModal.style.display =
-                "flex";
+}
 
-        }
+const reservation=reservations.find(function(item){
+return Number(item.id)===Number(reservationId);
+});
 
+if(!reservation){
 
-        /* ======================================================
-           FILL RESERVATION DETAILS
-           ====================================================== */
+showMessage("Reservation not found.","error");
+return;
 
-        function fillReservationDetails(
-            reservationId
-        ) {
+}
 
-            const reservation =
-                reservations.find(
-                    function(item) {
+if(Number(reservation.hotel_id)!==Number(hotelId)){
 
-                        return String(item.id) ===
-                               String(reservationId);
+showMessage("This reservation does not belong to the active hotel.","error");
+return;
 
-                    }
-                );
+}
 
+if(!isEligibleForCheckin(reservation.status)){
 
-            if (!reservation) {
+showMessage("Only pending or expected reservations can be cancelled here.","error");
+return;
 
-                return;
+}
 
-            }
+if(!confirm("Are you sure you want to cancel reservation #"+reservationId+"?")){
+return;
+}
 
+try{
 
-            checkinGuest.value =
-                getGuestName(
-                    reservation.guest_id
-                );
+const {error}=await window.supabaseClient
+.from("reservations")
+.update({status:"cancelled"})
+.eq("id",reservationId)
+.eq("hotel_id",hotelId);
 
+if(error){
+throw error;
+}
 
-            checkinRoom.value =
-                getRoomNumber(
-                    reservation.room_id
-                );
+showMessage("Reservation cancelled successfully.","success");
 
+await initializeCheckin();
 
-            arrivalDate.value =
-                formatInputDate(
-                    reservation.check_in
-                );
+}catch(error){
 
+console.error("Cancel reservation error:",error);
 
-            expectedCheckout.value =
-                formatInputDate(
-                    reservation.check_out
-                );
+showMessage(
+"Failed to cancel reservation: "+(error.message||"Unknown error"),
+"error"
+);
 
+}
 
-            checkinStatus.value =
-                reservation.status ||
-                "Expected";
+}
 
-        }
 
+/* =========================================
+   VIEW RESERVATION
+========================================= */
 
-        /* ======================================================
-           RESERVATION SELECT CHANGE
-           ====================================================== */
+function viewReservation(reservationId){
 
-        reservationSelector.addEventListener(
-            "change",
-            function() {
+const reservation=reservations.find(function(item){
+return Number(item.id)===Number(reservationId);
+});
 
-                const id =
-                    reservationSelector.value;
+if(!reservation){
 
+showMessage("Reservation not found.","error");
+return;
 
-                if (!id) {
+}
 
-                    checkinGuest.value = "";
+const guest=findGuest(reservation["guest   id"]);
+const room=findRoom(reservation["room id"]);
 
-                    checkinRoom.value = "";
+const guestName=guest?guest["full name"]:"Unknown Guest";
 
-                    arrivalDate.value = "";
+const guestIdPassport=
+getGuestIdPassport(guest)||"Not provided";
 
-                    expectedCheckout.value = "";
+const roomNumber=room?room.room_number:"Unassigned";
 
-                    return;
+alert(
+"Reservation #"+reservation.id+
+"\n\nGuest: "+guestName+
+"\nNational ID / Passport: "+guestIdPassport+
+"\nRoom: "+roomNumber+
+"\nCheck-in: "+formatDate(reservation.check_in)+
+"\nCheck-out: "+formatDate(reservation.check_out)+
+"\nStatus: "+formatStatus(reservation.status)
+);
 
-                }
+}
 
 
-                currentReservationId =
-                    id;
+/* =========================================
+   ESCAPE HTML
+========================================= */
 
+function escapeHtml(value){
 
-                fillReservationDetails(
-                    id
-                );
+return String(value??"")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
 
-            }
-        );
+}
 
 
-        /* ======================================================
-           SAVE CHECK-IN
-           ====================================================== */
+/* =========================================
+   MESSAGE
+========================================= */
 
-        checkinForm.addEventListener(
-            "submit",
-            async function(event) {
+function showMessage(message,type){
 
-                event.preventDefault();
+const box=document.getElementById("messageBox");
 
+box.textContent=message;
+box.className=type||"info";
+box.style.display="block";
 
-                try {
+if(messageTimer){
+clearTimeout(messageTimer);
+}
 
-                    hideError();
+messageTimer=setTimeout(function(){
+box.style.display="none";
+},5000);
 
+}
 
-                    const reservationId =
-                        reservationSelector.value;
 
+/* =========================================
+   LOGOUT
+========================================= */
 
-                    if (!reservationId) {
+async function logoutUser(event){
 
-                        alert(
-                            "Please select a reservation."
-                        );
+if(event){
+event.preventDefault();
+}
 
-                        return;
+try{
 
-                    }
+if(window.supabaseClient){
+await window.supabaseClient.auth.signOut();
+}
 
+}catch(error){
 
-                    const status =
-                        checkinStatus.value;
+console.error("Logout error:",error);
 
+}
 
-                    const reservation =
-                        reservations.find(
-                            function(item) {
+sessionStorage.removeItem("activeHotelId");
+sessionStorage.removeItem("activeHotelName");
+sessionStorage.removeItem("hotelId");
+sessionStorage.removeItem("userRole");
+sessionStorage.removeItem("userName");
+sessionStorage.removeItem("userId");
 
-                                return String(
-                                    item.id
-                                ) ===
-                                String(
-                                    reservationId
-                                );
+localStorage.removeItem("hotelId");
 
-                            }
-                        );
+window.location.href="./index.html";
 
+}
 
-                    if (!reservation) {
 
-                        throw new Error(
-                            "Reservation could not be found."
-                        );
+/* =========================================
+   CLOSE MODALS OUTSIDE
+========================================= */
 
-                    }
+document.addEventListener("click",function(event){
 
+const checkinModal=document.getElementById("checkinModal");
+const slipModal=document.getElementById("checkinSlipModal");
 
-                    /* =========================================
-                       UPDATE RESERVATION STATUS
-                       ========================================= */
+if(event.target===checkinModal){
+closeCheckinModal();
+}
 
-                    const {
-                        error:
-                            reservationError
-                    } =
-                        await window.supabaseClient
-                            .from("reservation")
-                            .update({
-                                status:
-                                    status
-                            })
-                            .eq(
-                                "id",
-                                reservationId
-                            );
+if(event.target===slipModal){
+closeCheckinSlip();
+}
 
+});
 
-                    if (reservationError) {
 
-                        throw reservationError;
+/* =========================================
+   PAGE RESTORE
+   Do not reload on every visibility change.
+========================================= */
 
-                    }
+window.addEventListener("pageshow",function(event){
 
+if(event.persisted){
+initializeCheckin();
+}
 
-                    /* =========================================
-                       UPDATE ROOM STATUS
-                       ========================================= */
+});
 
-                    if (
-                        status ===
-                        "Checked In"
-                    ) {
 
-                        const {
-                            error:
-                                roomError
-                        } =
-                            await window.supabaseClient
-                                .from("rooms")
-                                .update({
-                                    status:
-                                        "Occupied"
-                                })
-                                .eq(
-                                    "id",
-                                    reservation.room_id
-                                );
+/* =========================================
+   PRINT CLEANUP
+========================================= */
 
+window.addEventListener("afterprint",function(){
 
-                        if (roomError) {
+document.body.classList.remove("printing-slip");
 
-                            throw roomError;
+});
 
-                        }
-
-                    }
-
-
-                    /* =========================================
-                       IF CANCELLED
-                       ========================================= */
-
-                    if (
-                        status ===
-                        "Cancelled"
-                    ) {
-
-                        const {
-                            error:
-                                roomError
-                        } =
-                            await window.supabaseClient
-                                .from("rooms")
-                                .update({
-                                    status:
-                                        "Available"
-                                })
-                                .eq(
-                                    "id",
-                                    reservation.room_id
-                                );
-
-
-                        if (roomError) {
-
-                            throw roomError;
-
-                        }
-
-                    }
-
-
-                    alert(
-                        status ===
-                        "Checked In"
-
-                        ?
-
-                        "Guest checked in successfully."
-
-                        :
-
-                        "Reservation status updated successfully."
-                    );
-
-
-                    closeCheckinForm();
-
-
-                    await reloadData();
-
-
-                } catch (error) {
-
-                    console.error(
-                        "Save check-in error:",
-                        error
-                    );
-
-
-                    showError(
-                        "Failed to save check-in: " +
-                        (
-                            error.message ||
-                            error
-                        )
-                    );
-
-                }
-
-            }
-        );
-
-
-        /* ======================================================
-           CLOSE FORM
-           ====================================================== */
-
-        function closeCheckinForm() {
-
-            checkinModal.style.display =
-                "none";
-
-            checkinForm.reset();
-
-            currentReservationId =
-                null;
-
-        }
-
-
-        document.getElementById(
-            "closeCheckinBtn"
-        ).addEventListener(
-            "click",
-            closeCheckinForm
-        );
-
-
-        document.getElementById(
-            "newCheckinBtn"
-        ).addEventListener(
-            "click",
-            function() {
-
-                openCheckinForm();
-
-            }
-        );
-
-
-        /* ======================================================
-           MODAL OUTSIDE CLICK
-           ====================================================== */
-
-        checkinModal.addEventListener(
-            "click",
-            function(event) {
-
-                if (
-                    event.target ===
-                    checkinModal
-                ) {
-
-                    closeCheckinForm();
-
-                }
-
-            }
-        );
-
-
-        /* ======================================================
-           SEARCH
-           ====================================================== */
-
-        checkinSearch.addEventListener(
-            "input",
-            renderCheckins
-        );
-
-
-        /* ======================================================
-           FILTER
-           ====================================================== */
-
-        checkinFilter.addEventListener(
-            "change",
-            renderCheckins
-        );
-
-
-        /* ======================================================
-           RELOAD ALL DATA
-           ====================================================== */
-
-        async function reloadData() {
-
-            try {
-
-                hideError();
-
-
-                await loadGuests();
-
-                await loadRooms();
-
-                await loadReservations();
-
-                renderCheckins();
-
-            } catch (error) {
-
-                console.error(
-                    "Reload check-in data error:",
-                    error
-                );
-
-
-                showError(
-                    "Failed to reload Check-in data: " +
-                    (
-                        error.message ||
-                        error
-                    )
-                );
-
-            }
-
-        }
-
-
-        /* ======================================================
-           HTML ESCAPE
-           ====================================================== */
-
-        function escapeHtml(value) {
-
-            return String(value)
-                .replace(
-                    /&/g,
-                    "&amp;"
-                )
-                .replace(
-                    /</g,
-                    "&lt;"
-                )
-                .replace(
-                    />/g,
-                    "&gt;"
-                )
-                .replace(
-                    /"/g,
-                    "&quot;"
-                )
-                .replace(
-                    /'/g,
-                    "&#039;"
-                );
-
-        }
-
-
-        /* ======================================================
-           CLOSE WITH ESCAPE KEY
-           ====================================================== */
-
-        document.addEventListener(
-            "keydown",
-            function(event) {
-
-                if (
-                    event.key ===
-                    "Escape"
-                ) {
-
-                    closeCheckinForm();
-
-                }
-
-            }
-        );
-
-    </script>
+</script>
 
 </body>
-
 </html>
+```

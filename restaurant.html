@@ -1,3007 +1,875 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Restaurant - EDU TECH Hotel Management System</title>
 
     <link rel="stylesheet" href="./style.css">
 
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="./supabase.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        .page-container {
+            margin-left: 250px;
+            padding: 25px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .page-header p {
+            margin: 5px 0 0;
+            color: #666;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 6px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: #0d6efd;
+            color: white;
+        }
+
+        .btn-success {
+            background: #198754;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #111;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .summary-card h3 {
+            margin: 0 0 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .summary-card .value {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .search-box {
+            width: 280px;
+            max-width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        th,
+        td {
+            padding: 11px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-size: 13px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-preparing {
+            background: #cff4fc;
+            color: #055160;
+        }
+
+        .status-served,
+        .status-paid,
+        .status-completed {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .action-buttons button {
+            padding: 6px 9px;
+            font-size: 12px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 650px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 10px;
+            padding: 25px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+        }
+
+        .close {
+            border: none;
+            background: transparent;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font: inherit;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+
+        .total-preview {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 7px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .restaurant-document {
+            display: none;
+        }
+
+        @media (max-width: 1000px) {
+            .page-container {
+                margin-left: 0;
+            }
+
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+        }
+
+        @media print {
+            .sidebar,
+            .page-header,
+            .summary-grid,
+            .section:not(.print-section),
+            .modal {
+                display: none !important;
+            }
+
+            .page-container {
+                margin: 0;
+                padding: 0;
+            }
+
+            .restaurant-document {
+                display: block !important;
+            }
+        }
+    </style>
 </head>
-
 
 <body>
 
+    <aside id="appSidebar" class="sidebar"></aside>
 
-    <!-- =====================================================
-         SIDEBAR
-    ====================================================== -->
+    <main class="page-container">
 
-    <aside class="sidebar">
+        <div class="page-header">
+            <div>
+                <h1>Restaurant Management</h1>
+                <p>Manage restaurant menu items, orders and restaurant sales.</p>
+            </div>
 
-        <div class="logo">
+            <div>
+                <button type="button" class="btn btn-primary" id="newMenuItemBtn">
+                    + New Menu Item
+                </button>
 
-            <h2>EDU TECH</h2>
+                <button type="button" class="btn btn-success" id="newOrderBtn">
+                    + New Restaurant Order
+                </button>
+            </div>
+        </div>
 
-            <p>HOTEL SYSTEM</p>
+        <div class="summary-grid">
+
+            <div class="summary-card">
+                <h3>Menu Items</h3>
+                <div class="value" id="menuCount">0</div>
+            </div>
+
+            <div class="summary-card">
+                <h3>Today's Orders</h3>
+                <div class="value" id="todayOrders">0</div>
+            </div>
+
+            <div class="summary-card">
+                <h3>Today's Sales</h3>
+                <div class="value" id="todaySales">KSh 0.00</div>
+            </div>
+
+            <div class="summary-card">
+                <h3>Pending Orders</h3>
+                <div class="value" id="pendingOrders">0</div>
+            </div>
 
         </div>
 
+        <!-- MENU -->
 
-        <nav>
+        <section class="section">
 
-            <a href="./index.html" data-module="dashboard">
-                🏠 Dashboard
-            </a>
+            <div class="section-header">
+                <h2>Restaurant Menu</h2>
 
-            <a href="./rooms.html" data-module="rooms">
-                🛏️ Rooms
-            </a>
+                <input
+                    type="search"
+                    id="menuSearch"
+                    class="search-box"
+                    placeholder="Search menu items..."
+                >
+            </div>
 
-            <a href="./guests.html" data-module="guests">
-                👤 Guests
-            </a>
+            <div class="table-wrapper">
 
-            <a href="./reservations.html" data-module="reservations">
-                📅 Reservations
-            </a>
-
-            <a href="./checkin.html" data-module="checkin">
-                🛎️ Check-in
-            </a>
-
-            <a href="./checkout.html" data-module="checkout">
-                🚪 Check-out
-            </a>
+                <table>
 
-            <a
-                href="./restaurant.html"
-                class="active"
-                data-module="restaurant"
-            >
-                🍽️ Restaurant
-            </a>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Item</th>
+                            <th>Category</th>
+                            <th>Unit Price</th>
+                            <th>Status</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
 
-            <a href="./inventory.html" data-module="inventory">
-                📦 Inventory
-            </a>
+                    <tbody id="menuTableBody">
 
-            <a href="./payments.html" data-module="payments">
-                💰 Payments
-            </a>
+                        <tr>
+                            <td colspan="7" class="empty-state">
+                                Loading menu items...
+                            </td>
+                        </tr>
 
-            <a href="./expenses.html" data-module="expenses">
-                💸 Expenses
-            </a>
+                    </tbody>
 
-            <a href="./employees.html" data-module="employees">
-                👨‍💼 Employees
-            </a>
+                </table>
 
-            <a href="./housekeeping.html" data-module="housekeeping">
-                🧹 Housekeeping
-            </a>
+            </div>
 
-            <a href="./maintenance.html" data-module="maintenance">
-                🔧 Maintenance
-            </a>
+        </section>
 
-            <a href="./reports.html" data-module="reports">
-                📊 Reports
-            </a>
+        <!-- ORDERS -->
 
-            <a href="./settings.html" data-module="settings">
-                ⚙️ Settings
-            </a>
+        <section class="section">
 
-            <a href="./hotels.html" data-module="hotels">
-                🏨 Hotels
-            </a>
+            <div class="section-header">
 
-            <a href="#" data-action="logout">
-                🚪 Logout
-            </a>
+                <h2>Restaurant Orders</h2>
 
-        </nav>
+                <input
+                    type="search"
+                    id="orderSearch"
+                    class="search-box"
+                    placeholder="Search orders..."
+                >
 
-    </aside>
+            </div>
 
+            <div class="table-wrapper">
 
-    <!-- =====================================================
-         MAIN CONTENT
-    ====================================================== -->
+                <table>
 
-    <main class="main-content">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Item</th>
+                            <th>Guest</th>
+                            <th>Room</th>
+                            <th>Qty</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
 
+                    <tbody id="ordersTableBody">
 
-        <!-- =================================================
-             ACCESS DENIED
-        ================================================== -->
+                        <tr>
+                            <td colspan="11" class="empty-state">
+                                Loading restaurant orders...
+                            </td>
+                        </tr>
 
-        <div
-            id="accessDeniedScreen"
-            style="
-                display:none;
-                text-align:center;
-                padding:60px 20px;
-            "
-        >
+                    </tbody>
 
-            <h2 style="color:#c0392b;">
-                Access Denied
-            </h2>
+                </table>
 
-            <p>
-                You do not have permission to access the Restaurant module.
-            </p>
+            </div>
 
-            <a
-                href="./index.html"
-                style="
-                    display:inline-block;
-                    padding:10px 18px;
-                    background:#007bff;
-                    color:white;
-                    text-decoration:none;
-                    border-radius:6px;
-                "
-            >
-                Return to Dashboard
-            </a>
-
-        </div>
-
-
-        <!-- =================================================
-             RESTAURANT CONTENT
-        ================================================== -->
-
-        <div id="restaurantModuleContent">
-
-
-            <!-- =================================================
-                 TOPBAR
-            ================================================== -->
-
-            <header class="topbar">
-
-                <div>
-
-                    <h1>
-                        Restaurant Management
-                    </h1>
-
-                    <p>
-                        Manage restaurant orders and guest dining
-                    </p>
-
-                </div>
-
-
-                <div class="user">
-
-                    <div class="user-icon">
-                        A
-                    </div>
-
-                    <div>
-
-                        <strong id="currentUserName">
-                            Administrator
-                        </strong>
-
-                        <small id="currentUserRole">
-                            System Admin
-                        </small>
-
-                    </div>
-
-                </div>
-
-            </header>
-
-
-            <!-- =================================================
-                 ERROR MESSAGE
-            ================================================== -->
-
-            <div
-                id="restaurantError"
-                style="
-                    display:none;
-                    margin:20px 0;
-                    padding:14px;
-                    border-radius:6px;
-                    background:#fee2e2;
-                    color:#991b1b;
-                "
-            ></div>
-
-
-            <!-- =================================================
-                 SUMMARY CARDS
-            ================================================== -->
-
-            <section class="cards">
-
-
-                <div class="card">
-
-                    <div class="card-icon">
-                        🍽️
-                    </div>
-
-                    <div>
-
-                        <h3>
-                            Today's Orders
-                        </h3>
-
-                        <p id="todayOrders">
-                            0
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <div class="card">
-
-                    <div class="card-icon">
-                        🟡
-                    </div>
-
-                    <div>
-
-                        <h3>
-                            Pending Orders
-                        </h3>
-
-                        <p id="pendingOrders">
-                            0
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <div class="card">
-
-                    <div class="card-icon">
-                        🟢
-                    </div>
-
-                    <div>
-
-                        <h3>
-                            Completed Orders
-                        </h3>
-
-                        <p id="completedOrders">
-                            0
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <div class="card">
-
-                    <div class="card-icon">
-                        💰
-                    </div>
-
-                    <div>
-
-                        <h3>
-                            Today's Sales
-                        </h3>
-
-                        <p id="restaurantSales">
-                            KSh 0
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-            </section>
-
-
-            <!-- =================================================
-                 RESTAURANT ORDERS
-            ================================================== -->
-
-            <section class="room-container">
-
-
-                <div class="room-header">
-
-                    <div>
-
-                        <h2>
-                            Restaurant Orders
-                        </h2>
-
-                        <p>
-                            Record and manage food and drink orders
-                        </p>
-
-                    </div>
-
-
-                    <button
-                        type="button"
-                        class="add-room-btn"
-                        id="newRestaurantOrderBtn"
-                    >
-                        + New Order
-                    </button>
-
-                </div>
-
-
-                <!-- =================================================
-                     SEARCH / FILTER
-                ================================================== -->
-
-                <div class="room-tools">
-
-
-                    <input
-                        type="text"
-                        id="restaurantSearch"
-                        placeholder="Search guest, room or order..."
-                    >
-
-
-                    <select id="restaurantFilter">
-
-                        <option value="all">
-                            All Orders
-                        </option>
-
-                        <option value="Pending">
-                            Pending
-                        </option>
-
-                        <option value="Preparing">
-                            Preparing
-                        </option>
-
-                        <option value="Served">
-                            Served
-                        </option>
-
-                        <option value="Paid">
-                            Paid
-                        </option>
-
-                        <option value="Cancelled">
-                            Cancelled
-                        </option>
-
-                    </select>
-
-
-                    <select
-                        id="restaurantHotelSelector"
-                        style="display:none;"
-                    >
-
-                        <option value="">
-                            Select Hotel
-                        </option>
-
-                    </select>
-
-
-                </div>
-
-
-                <!-- =================================================
-                     TABLE
-                ================================================== -->
-
-                <div class="table-container">
-
-                    <table id="restaurantTableData">
-
-                        <thead>
-
-                            <tr>
-
-                                <th>
-                                    Order ID
-                                </th>
-
-                                <th>
-                                    Guest
-                                </th>
-
-                                <th>
-                                    Room
-                                </th>
-
-                                <th>
-                                    Order Items
-                                </th>
-
-                                <th>
-                                    Quantity
-                                </th>
-
-                                <th>
-                                    Total
-                                </th>
-
-                                <th>
-                                    Status
-                                </th>
-
-                                <th>
-                                    Actions
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody id="restaurantTable">
-
-                            <tr>
-
-                                <td
-                                    colspan="8"
-                                    style="
-                                        text-align:center;
-                                        padding:25px;
-                                    "
-                                >
-                                    Loading restaurant orders...
-                                </td>
-
-                            </tr>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-
-            </section>
-
-
-        </div>
-
+        </section>
 
     </main>
 
+    <!-- MENU MODAL -->
 
-    <!-- =====================================================
-         RESTAURANT MODAL
-    ====================================================== -->
-
-    <div
-        id="restaurantModal"
-        class="modal"
-        style="
-            display:none;
-        "
-    >
+    <div class="modal" id="menuModal">
 
         <div class="modal-content">
 
-
             <div class="modal-header">
 
-                <h2 id="restaurantModalTitle">
-                    New Restaurant Order
+                <h2 id="menuModalTitle">
+                    New Menu Item
                 </h2>
-
 
                 <button
                     type="button"
-                    id="closeRestaurantBtn"
+                    class="close"
+                    id="closeMenuModal"
                 >
                     ×
                 </button>
 
             </div>
 
+            <form id="menuForm">
 
-            <!-- =================================================
-                 FORM
-            ================================================== -->
+                <input type="hidden" id="menuId">
 
-            <form id="restaurantForm">
+                <div class="form-grid">
 
+                    <div class="form-group">
+                        <label for="menuItemName">
+                            Item Name *
+                        </label>
 
-                <!-- HOTEL -->
+                        <input
+                            type="text"
+                            id="menuItemName"
+                            required
+                        >
+                    </div>
 
-                <div
-                    id="restaurantHotelField"
-                    style="display:none;"
-                >
+                    <div class="form-group">
+                        <label for="menuCategory">
+                            Category
+                        </label>
 
-                    <label for="restaurantHotel">
-                        Hotel
-                    </label>
+                        <input
+                            type="text"
+                            id="menuCategory"
+                            placeholder="Breakfast, Lunch, Drinks..."
+                        >
+                    </div>
 
-                    <select
-                        id="restaurantHotel"
-                    >
+                    <div class="form-group">
+                        <label for="menuUnitPrice">
+                            Unit Price *
+                        </label>
 
-                        <option value="">
-                            Select Hotel
-                        </option>
+                        <input
+                            type="number"
+                            id="menuUnitPrice"
+                            min="0"
+                            step="0.01"
+                            required
+                        >
+                    </div>
 
-                    </select>
+                    <div class="form-group">
+                        <label for="menuStatus">
+                            Status
+                        </label>
+
+                        <select id="menuStatus">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full">
+                        <label for="menuDescription">
+                            Description
+                        </label>
+
+                        <textarea
+                            id="menuDescription"
+                            placeholder="Optional description"
+                        ></textarea>
+                    </div>
 
                 </div>
 
+                <div class="modal-footer">
 
-                <!-- RESERVATION -->
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        id="cancelMenuModal"
+                    >
+                        Cancel
+                    </button>
 
-                <label for="restaurantReservation">
-                    Reservation
-                </label>
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Save Menu Item
+                    </button>
 
-                <select
-                    id="restaurantReservation"
-                >
-
-                    <option value="">
-                        No Reservation / Walk-in
-                    </option>
-
-                </select>
-
-
-                <!-- GUEST -->
-
-                <label for="restaurantGuest">
-                    Guest
-                </label>
-
-                <select
-                    id="restaurantGuest"
-                    required
-                >
-
-                    <option value="">
-                        Select Guest
-                    </option>
-
-                </select>
-
-
-                <!-- ROOM -->
-
-                <label for="restaurantRoom">
-                    Room
-                </label>
-
-                <select
-                    id="restaurantRoom"
-                    required
-                >
-
-                    <option value="">
-                        Select Room
-                    </option>
-
-                </select>
-
-
-                <!-- ITEM -->
-
-                <label for="restaurantItems">
-                    Order Item
-                </label>
-
-                <input
-                    type="text"
-                    id="restaurantItems"
-                    placeholder="Example: Chicken and Chips"
-                    required
-                >
-
-
-                <!-- QUANTITY -->
-
-                <label for="restaurantQuantity">
-                    Quantity
-                </label>
-
-                <input
-                    type="number"
-                    id="restaurantQuantity"
-                    min="1"
-                    value="1"
-                    required
-                >
-
-
-                <!-- UNIT PRICE -->
-
-                <label for="restaurantUnitPrice">
-                    Unit Price (KSh)
-                </label>
-
-                <input
-                    type="number"
-                    id="restaurantUnitPrice"
-                    min="0"
-                    step="0.01"
-                    placeholder="Enter unit price"
-                    required
-                >
-
-
-                <!-- TOTAL -->
-
-                <label for="restaurantAmount">
-                    Total Amount (KSh)
-                </label>
-
-                <input
-                    type="number"
-                    id="restaurantAmount"
-                    readonly
-                >
-
-
-                <!-- STATUS -->
-
-                <label for="restaurantStatus">
-                    Order Status
-                </label>
-
-                <select
-                    id="restaurantStatus"
-                    required
-                >
-
-                    <option value="Pending">
-                        Pending
-                    </option>
-
-                    <option value="Preparing">
-                        Preparing
-                    </option>
-
-                    <option value="Served">
-                        Served
-                    </option>
-
-                    <option value="Paid">
-                        Paid
-                    </option>
-
-                    <option value="Cancelled">
-                        Cancelled
-                    </option>
-
-                </select>
-
-
-                <!-- NOTES -->
-
-                <label for="restaurantNotes">
-                    Notes
-                </label>
-
-                <textarea
-                    id="restaurantNotes"
-                    rows="3"
-                    placeholder="Optional notes"
-                ></textarea>
-
-
-                <!-- SAVE -->
-
-                <button
-                    type="submit"
-                    class="save-room-btn"
-                >
-                    Save Order
-                </button>
-
+                </div>
 
             </form>
-
 
         </div>
 
     </div>
 
+    <!-- ORDER MODAL -->
 
-    <!-- =====================================================
-         GLOBAL SCRIPT
-    ====================================================== -->
+    <div class="modal" id="orderModal">
 
-    <script src="./script.js"></script>
+        <div class="modal-content">
 
+            <div class="modal-header">
 
-    <!-- =====================================================
-         RESTAURANT SCRIPT
-    ====================================================== -->
+                <h2 id="orderModalTitle">
+                    New Restaurant Order
+                </h2>
 
-    <script>
+                <button
+                    type="button"
+                    class="close"
+                    id="closeOrderModal"
+                >
+                    ×
+                </button>
 
-        "use strict";
+            </div>
 
+            <form id="orderForm">
 
-        /* =====================================================
-           VARIABLES
-        ====================================================== */
+                <input type="hidden" id="orderId">
 
-        let restaurantOrders = [];
+                <div class="form-grid">
 
-        let restaurantGuests = [];
+                    <div class="form-group full">
 
-        let restaurantRooms = [];
+                        <label for="orderMenuItem">
+                            Menu Item *
+                        </label>
 
-        let restaurantReservations = [];
+                        <select id="orderMenuItem" required>
+                            <option value="">
+                                Select menu item
+                            </option>
+                        </select>
 
-        let restaurantHotels = [];
+                    </div>
 
-        let editingOrderId = null;
+                    <div class="form-group">
 
+                        <label for="orderGuest">
+                            Guest
+                        </label>
 
-        /* =====================================================
-           DOM
-        ====================================================== */
+                        <select id="orderGuest">
 
-        const restaurantForm =
-            document.getElementById(
-                "restaurantForm"
-            );
+                            <option value="">
+                                Walk-in / No Guest
+                            </option>
 
+                        </select>
 
-        const restaurantTable =
-            document.getElementById(
-                "restaurantTable"
-            );
+                    </div>
 
+                    <div class="form-group">
 
-        const restaurantModal =
-            document.getElementById(
-                "restaurantModal"
-            );
+                        <label for="orderRoom">
+                            Room
+                        </label>
 
+                        <select id="orderRoom">
 
-        const restaurantSearch =
-            document.getElementById(
-                "restaurantSearch"
-            );
+                            <option value="">
+                                No Room
+                            </option>
 
+                        </select>
 
-        const restaurantFilter =
-            document.getElementById(
-                "restaurantFilter"
-            );
+                    </div>
 
+                    <div class="form-group">
 
-        const restaurantHotelSelector =
-            document.getElementById(
-                "restaurantHotelSelector"
-            );
+                        <label for="orderQuantity">
+                            Quantity *
+                        </label>
 
-
-        const restaurantHotel =
-            document.getElementById(
-                "restaurantHotel"
-            );
-
-
-        const restaurantReservation =
-            document.getElementById(
-                "restaurantReservation"
-            );
-
-
-        const restaurantGuest =
-            document.getElementById(
-                "restaurantGuest"
-            );
-
-
-        const restaurantRoom =
-            document.getElementById(
-                "restaurantRoom"
-            );
-
-
-        const restaurantItems =
-            document.getElementById(
-                "restaurantItems"
-            );
-
-
-        const restaurantQuantity =
-            document.getElementById(
-                "restaurantQuantity"
-            );
-
-
-        const restaurantUnitPrice =
-            document.getElementById(
-                "restaurantUnitPrice"
-            );
-
-
-        const restaurantAmount =
-            document.getElementById(
-                "restaurantAmount"
-            );
-
-
-        const restaurantStatus =
-            document.getElementById(
-                "restaurantStatus"
-            );
-
-
-        const restaurantNotes =
-            document.getElementById(
-                "restaurantNotes"
-            );
-
-
-        const restaurantError =
-            document.getElementById(
-                "restaurantError"
-            );
-
-
-        /* =====================================================
-           ROLE
-        ====================================================== */
-
-        function getCurrentRole() {
-
-            return String(
-                sessionStorage.getItem("userRole") ||
-                localStorage.getItem("userRole") ||
-                ""
-            )
-                .toLowerCase()
-                .trim();
-
-        }
-
-
-        /* =====================================================
-           ACCESS
-        ====================================================== */
-
-        function restaurantAccessAllowed() {
-
-            const role =
-                getCurrentRole();
-
-
-            return (
-
-                role === "system_owner" ||
-
-                role === "hotel_owner" ||
-
-                role === "manager"
-
-            );
-
-        }
-
-
-        /* =====================================================
-           HOTEL ID
-        ====================================================== */
-
-        function getCurrentHotelId() {
-
-            return (
-
-                sessionStorage.getItem(
-                    "hotelId"
-                ) ||
-
-                localStorage.getItem(
-                    "hotelId"
-                ) ||
-
-                ""
-
-            );
-
-        }
-
-
-        /* =====================================================
-           SELECTED HOTEL
-        ====================================================== */
-
-        function getSelectedHotelId() {
-
-            const role =
-                getCurrentRole();
-
-
-            if (
-                role ===
-                "system_owner"
-            ) {
-
-                return restaurantHotelSelector.value;
-
-            }
-
-
-            return getCurrentHotelId();
-
-        }
-
-
-        /* =====================================================
-           ERROR
-        ====================================================== */
-
-        function showRestaurantError(
-            message
-        ) {
-
-            restaurantError.textContent =
-                message;
-
-            restaurantError.style.display =
-                "block";
-
-        }
-
-
-        function hideRestaurantError() {
-
-            restaurantError.textContent =
-                "";
-
-            restaurantError.style.display =
-                "none";
-
-        }
-
-
-        /* =====================================================
-           PAGE INITIALIZATION
-        ====================================================== */
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            initializeRestaurant
-        );
-
-
-        async function initializeRestaurant() {
-
-            try {
-
-                hideRestaurantError();
-
-
-                if (
-                    !restaurantAccessAllowed()
-                ) {
-
-                    document.getElementById(
-                        "restaurantModuleContent"
-                    ).style.display =
-                        "none";
-
-
-                    document.getElementById(
-                        "accessDeniedScreen"
-                    ).style.display =
-                        "block";
-
-
-                    return;
-
-                }
-
-
-                if (
-                    !window.supabaseClient
-                ) {
-
-                    throw new Error(
-                        "Supabase client is not available."
-                    );
-
-                }
-
-
-                document.getElementById(
-                    "currentUserName"
-                ).textContent =
-                    sessionStorage.getItem(
-                        "userName"
-                    ) ||
-                    "Administrator";
-
-
-                document.getElementById(
-                    "currentUserRole"
-                ).textContent =
-                    getCurrentRole()
-                        .replace(
-                            /_/g,
-                            " "
-                        );
-
-
-                if (
-                    getCurrentRole() ===
-                    "system_owner"
-                ) {
-
-                    document.getElementById(
-                        "restaurantHotelField"
-                    ).style.display =
-                        "block";
-
-
-                    restaurantHotelSelector.style.display =
-                        "block";
-
-
-                    await loadHotels();
-
-                }
-
-
-                await loadRestaurantData();
-
-            } catch (error) {
-
-                console.error(
-                    "Restaurant initialization error:",
-                    error
-                );
-
-
-                showRestaurantError(
-                    "Failed to load Restaurant module: " +
-                    (
-                        error.message ||
-                        error
-                    )
-                );
-
-            }
-
-        }
-
-
-        /* =====================================================
-           LOAD HOTELS
-        ====================================================== */
-
-        async function loadHotels() {
-
-            const {
-                data,
-                error
-            } =
-                await window.supabaseClient
-                    .from("hotels")
-                    .select(
-                        "id, hotel_name"
-                    )
-                    .order(
-                        "hotel_name",
-                        {
-                            ascending:true
-                        }
-                    );
-
-
-            if (error) {
-
-                throw error;
-
-            }
-
-
-            restaurantHotels =
-                data || [];
-
-
-            restaurantHotelSelector.innerHTML =
-                `
-                    <option value="">
-                        Select Hotel
-                    </option>
-                `;
-
-
-            restaurantHotel.innerHTML =
-                `
-                    <option value="">
-                        Select Hotel
-                    </option>
-                `;
-
-
-            restaurantHotels.forEach(
-                function(hotel) {
-
-                    const option1 =
-                        document.createElement(
-                            "option"
-                        );
-
-
-                    option1.value =
-                        hotel.id;
-
-
-                    option1.textContent =
-                        hotel.hotel_name;
-
-
-                    restaurantHotelSelector.appendChild(
-                        option1
-                    );
-
-
-                    const option2 =
-                        document.createElement(
-                            "option"
-                        );
-
-
-                    option2.value =
-                        hotel.id;
-
-
-                    option2.textContent =
-                        hotel.hotel_name;
-
-
-                    restaurantHotel.appendChild(
-                        option2
-                    );
-
-                }
-            );
-
-
-            restaurantHotelSelector.addEventListener(
-                "change",
-                async function() {
-
-                    restaurantHotel.value =
-                        restaurantHotelSelector.value;
-
-
-                    await loadRestaurantData();
-
-                }
-            );
-
-
-            restaurantHotel.addEventListener(
-                "change",
-                async function() {
-
-                    restaurantHotelSelector.value =
-                        restaurantHotel.value;
-
-
-                    await loadRestaurantData();
-
-                }
-            );
-
-        }
-
-
-        /* =====================================================
-           LOAD ALL DATA
-        ====================================================== */
-
-        async function loadRestaurantData() {
-
-            hideRestaurantError();
-
-
-            await Promise.all([
-
-                loadGuests(),
-
-                loadRooms(),
-
-                loadReservations(),
-
-                loadOrders()
-
-            ]);
-
-
-            populateGuestSelect();
-
-            populateRoomSelect();
-
-            populateReservationSelect();
-
-            renderRestaurantOrders();
-
-        }
-
-
-        /* =====================================================
-           LOAD GUESTS
-        ====================================================== */
-
-        async function loadGuests() {
-
-            let query =
-                window.supabaseClient
-                    .from("guests")
-                    .select(
-                        'id, "full name", phone, email, hotel_id'
-                    )
-                    .order(
-                        "full name",
-                        {
-                            ascending:true
-                        }
-                    );
-
-
-            const hotelId =
-                getSelectedHotelId();
-
-
-            if (hotelId) {
-
-                query =
-                    query.eq(
-                        "hotel_id",
-                        hotelId
-                    );
-
-            }
-
-
-            const {
-                data,
-                error
-            } =
-                await query;
-
-
-            if (error) {
-
-                throw error;
-
-            }
-
-
-            restaurantGuests =
-                data || [];
-
-        }
-
-
-        /* =====================================================
-           LOAD ROOMS
-        ====================================================== */
-
-        async function loadRooms() {
-
-            let query =
-                window.supabaseClient
-                    .from("rooms")
-                    .select(
-                        "id, room_number, room_type, status, price, hotel_id"
-                    )
-                    .order(
-                        "room_number",
-                        {
-                            ascending:true
-                        }
-                    );
-
-
-            const hotelId =
-                getSelectedHotelId();
-
-
-            if (hotelId) {
-
-                query =
-                    query.eq(
-                        "hotel_id",
-                        hotelId
-                    );
-
-            }
-
-
-            const {
-                data,
-                error
-            } =
-                await query;
-
-
-            if (error) {
-
-                throw error;
-
-            }
-
-
-            restaurantRooms =
-                data || [];
-
-        }
-
-
-        /* =====================================================
-           LOAD RESERVATIONS
-        ====================================================== */
-
-        async function loadReservations() {
-
-            let query =
-                window.supabaseClient
-                    .from("reservation")
-                    .select(
-                        "id, guest_id, room_id, check_in, check_out, status, amount, hotel_id"
-                    )
-                    .order(
-                        "check_in",
-                        {
-                            ascending:false
-                        }
-                    );
-
-
-            const hotelId =
-                getSelectedHotelId();
-
-
-            if (hotelId) {
-
-                query =
-                    query.eq(
-                        "hotel_id",
-                        hotelId
-                    );
-
-            }
-
-
-            const {
-                data,
-                error
-            } =
-                await query;
-
-
-            if (error) {
-
-                throw error;
-
-            }
-
-
-            restaurantReservations =
-                data || [];
-
-        }
-
-
-        /* =====================================================
-           LOAD ORDERS
-        ====================================================== */
-
-        async function loadOrders() {
-
-            let query =
-                window.supabaseClient
-                    .from("restaurant_orders")
-                    .select(
-                        "id, created_at, hotel_id, reservation_id, guest_id, room_id, item_name, quantity, unit_price, total, status, order_date, notes"
-                    )
-                    .order(
-                        "order_date",
-                        {
-                            ascending:false
-                        }
-                    );
-
-
-            const hotelId =
-                getSelectedHotelId();
-
-
-            if (hotelId) {
-
-                query =
-                    query.eq(
-                        "hotel_id",
-                        hotelId
-                    );
-
-            }
-
-
-            const {
-                data,
-                error
-            } =
-                await query;
-
-
-            if (error) {
-
-                throw error;
-
-            }
-
-
-            restaurantOrders =
-                data || [];
-
-        }
-
-
-        /* =====================================================
-           GUEST NAME
-        ====================================================== */
-
-        function getGuestName(
-            guestId
-        ) {
-
-            const guest =
-                restaurantGuests.find(
-                    function(item) {
-
-                        return String(
-                            item.id
-                        ) ===
-                        String(
-                            guestId
-                        );
-
-                    }
-                );
-
-
-            if (!guest) {
-
-                return "Walk-in Guest";
-
-            }
-
-
-            return (
-                guest["full name"] ||
-                "Walk-in Guest"
-            );
-
-        }
-
-
-        /* =====================================================
-           ROOM NUMBER
-        ====================================================== */
-
-        function getRoomNumber(
-            roomId
-        ) {
-
-            const room =
-                restaurantRooms.find(
-                    function(item) {
-
-                        return String(
-                            item.id
-                        ) ===
-                        String(
-                            roomId
-                        );
-
-                    }
-                );
-
-
-            if (!room) {
-
-                return "-";
-
-            }
-
-
-            return (
-                room.room_number ||
-                "-"
-            );
-
-        }
-
-
-        /* =====================================================
-           POPULATE GUESTS
-        ====================================================== */
-
-        function populateGuestSelect() {
-
-            const selected =
-                restaurantGuest.value;
-
-
-            restaurantGuest.innerHTML =
-                `
-                    <option value="">
-                        Select Guest
-                    </option>
-                `;
-
-
-            restaurantGuests.forEach(
-                function(guest) {
-
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
-
-
-                    option.value =
-                        guest.id;
-
-
-                    option.textContent =
-                        guest["full name"] ||
-                        "Unnamed Guest";
-
-
-                    restaurantGuest.appendChild(
-                        option
-                    );
-
-                }
-            );
-
-
-            if (selected) {
-
-                restaurantGuest.value =
-                    selected;
-
-            }
-
-        }
-
-
-        /* =====================================================
-           POPULATE ROOMS
-        ====================================================== */
-
-        function populateRoomSelect() {
-
-            const selected =
-                restaurantRoom.value;
-
-
-            restaurantRoom.innerHTML =
-                `
-                    <option value="">
-                        Select Room
-                    </option>
-                `;
-
-
-            restaurantRooms.forEach(
-                function(room) {
-
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
-
-
-                    option.value =
-                        room.id;
-
-
-                    option.textContent =
-                        "Room " +
-                        room.room_number +
-                        " - " +
-                        (
-                            room.status ||
-                            ""
-                        );
-
-
-                    restaurantRoom.appendChild(
-                        option
-                    );
-
-                }
-            );
-
-
-            if (selected) {
-
-                restaurantRoom.value =
-                    selected;
-
-            }
-
-        }
-
-
-        /* =====================================================
-           POPULATE RESERVATIONS
-        ====================================================== */
-
-        function populateReservationSelect() {
-
-            const selected =
-                restaurantReservation.value;
-
-
-            restaurantReservation.innerHTML =
-                `
-                    <option value="">
-                        No Reservation / Walk-in
-                    </option>
-                `;
-
-
-            restaurantReservations.forEach(
-                function(reservation) {
-
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
-
-
-                    option.value =
-                        reservation.id;
-
-
-                    option.textContent =
-                        "RES-" +
-                        reservation.id +
-                        " | " +
-                        getGuestName(
-                            reservation.guest_id
-                        ) +
-                        " | Room " +
-                        getRoomNumber(
-                            reservation.room_id
-                        );
-
-
-                    restaurantReservation.appendChild(
-                        option
-                    );
-
-                }
-            );
-
-
-            if (selected) {
-
-                restaurantReservation.value =
-                    selected;
-
-            }
-
-        }
-
-
-        /* =====================================================
-           RESERVATION SELECTION
-        ====================================================== */
-
-        restaurantReservation.addEventListener(
-            "change",
-            function() {
-
-                const reservationId =
-                    restaurantReservation.value;
-
-
-                if (!reservationId) {
-
-                    return;
-
-                }
-
-
-                const reservation =
-                    restaurantReservations.find(
-                        function(item) {
-
-                            return String(
-                                item.id
-                            ) ===
-                            String(
-                                reservationId
-                            );
-
-                        }
-                    );
-
-
-                if (!reservation) {
-
-                    return;
-
-                }
-
-
-                restaurantGuest.value =
-                    reservation.guest_id ||
-                    "";
-
-
-                restaurantRoom.value =
-                    reservation.room_id ||
-                    "";
-
-            }
-        );
-
-
-        /* =====================================================
-           CALCULATE TOTAL
-        ====================================================== */
-
-        function calculateRestaurantTotal() {
-
-            const quantity =
-                Number(
-                    restaurantQuantity.value
-                ) || 0;
-
-
-            const unitPrice =
-                Number(
-                    restaurantUnitPrice.value
-                ) || 0;
-
-
-            const total =
-                quantity *
-                unitPrice;
-
-
-            restaurantAmount.value =
-                total.toFixed(2);
-
-        }
-
-
-        restaurantQuantity.addEventListener(
-            "input",
-            calculateRestaurantTotal
-        );
-
-
-        restaurantUnitPrice.addEventListener(
-            "input",
-            calculateRestaurantTotal
-        );
-
-
-        /* =====================================================
-           OPEN FORM
-        ====================================================== */
-
-        function openRestaurantForm(
-            orderId = null
-        ) {
-
-            if (
-                !restaurantAccessAllowed()
-            ) {
-
-                alert(
-                    "You do not have permission to access the Restaurant module."
-                );
-
-                return;
-
-            }
-
-
-            editingOrderId =
-                orderId;
-
-
-            restaurantForm.reset();
-
-
-            restaurantQuantity.value =
-                "1";
-
-
-            restaurantAmount.value =
-                "0.00";
-
-
-            populateGuestSelect();
-
-            populateRoomSelect();
-
-            populateReservationSelect();
-
-
-            if (getCurrentRole() === "system_owner") {
-
-                restaurantHotel.value =
-                    restaurantHotelSelector.value;
-
-            }
-
-
-            if (orderId) {
-
-                const order =
-                    restaurantOrders.find(
-                        function(item) {
-
-                            return String(
-                                item.id
-                            ) ===
-                            String(
-                                orderId
-                            );
-
-                        }
-                    );
-
-
-                if (!order) {
-
-                    return;
-
-                }
-
-
-                document.getElementById(
-                    "restaurantModalTitle"
-                ).textContent =
-                    "Edit Restaurant Order";
-
-
-                restaurantReservation.value =
-                    order.reservation_id ||
-                    "";
-
-
-                restaurantGuest.value =
-                    order.guest_id ||
-                    "";
-
-
-                restaurantRoom.value =
-                    order.room_id ||
-                    "";
-
-
-                restaurantItems.value =
-                    order.item_name ||
-                    "";
-
-
-                restaurantQuantity.value =
-                    order.quantity ||
-                    1;
-
-
-                restaurantUnitPrice.value =
-                    order.unit_price ||
-                    0;
-
-
-                restaurantAmount.value =
-                    Number(
-                        order.total ||
-                        0
-                    ).toFixed(2);
-
-
-                restaurantStatus.value =
-                    order.status ||
-                    "Pending";
-
-
-                restaurantNotes.value =
-                    order.notes ||
-                    "";
-
-            } else {
-
-                document.getElementById(
-                    "restaurantModalTitle"
-                ).textContent =
-                    "New Restaurant Order";
-
-            }
-
-
-            restaurantModal.style.display =
-                "flex";
-
-        }
-
-
-        /* =====================================================
-           CLOSE FORM
-        ====================================================== */
-
-        function closeRestaurantForm() {
-
-            restaurantModal.style.display =
-                "none";
-
-
-            restaurantForm.reset();
-
-
-            restaurantQuantity.value =
-                "1";
-
-
-            restaurantAmount.value =
-                "0.00";
-
-
-            editingOrderId =
-                null;
-
-        }
-
-
-        document.getElementById(
-            "newRestaurantOrderBtn"
-        ).addEventListener(
-            "click",
-            function() {
-
-                openRestaurantForm();
-
-            }
-        );
-
-
-        document.getElementById(
-            "closeRestaurantBtn"
-        ).addEventListener(
-            "click",
-            closeRestaurantForm
-        );
-
-
-        /* =====================================================
-           SAVE ORDER
-        ====================================================== */
-
-        restaurantForm.addEventListener(
-            "submit",
-            async function(event) {
-
-                event.preventDefault();
-
-
-                try {
-
-                    hideRestaurantError();
-
-
-                    if (
-                        !restaurantAccessAllowed()
-                    ) {
-
-                        throw new Error(
-                            "You do not have permission to save restaurant orders."
-                        );
-
-                    }
-
-
-                    const hotelId =
-                        getSelectedHotelId();
-
-
-                    if (!hotelId) {
-
-                        throw new Error(
-                            "Please select a hotel before saving the order."
-                        );
-
-                    }
-
-
-                    const guestId =
-                        restaurantGuest.value;
-
-
-                    const roomId =
-                        restaurantRoom.value;
-
-
-                    const reservationId =
-                        restaurantReservation.value ||
-                        null;
-
-
-                    const itemName =
-                        restaurantItems.value
-                            .trim();
-
-
-                    const quantity =
-                        Number(
-                            restaurantQuantity.value
-                        );
-
-
-                    const unitPrice =
-                        Number(
-                            restaurantUnitPrice.value
-                        );
-
-
-                    const total =
-                        quantity *
-                        unitPrice;
-
-
-                    const status =
-                        restaurantStatus.value;
-
-
-                    const notes =
-                        restaurantNotes.value
-                            .trim() ||
-                        null;
-
-
-                    if (!guestId) {
-
-                        throw new Error(
-                            "Please select a guest."
-                        );
-
-                    }
-
-
-                    if (!roomId) {
-
-                        throw new Error(
-                            "Please select a room."
-                        );
-
-                    }
-
-
-                    if (!itemName) {
-
-                        throw new Error(
-                            "Please enter the order item."
-                        );
-
-                    }
-
-
-                    if (
-                        quantity < 1
-                    ) {
-
-                        throw new Error(
-                            "Quantity must be at least 1."
-                        );
-
-                    }
-
-
-                    if (
-                        unitPrice < 0
-                    ) {
-
-                        throw new Error(
-                            "Unit price cannot be negative."
-                        );
-
-                    }
-
-
-                    /* =========================================
-                       EDIT
-                    ========================================== */
-
-                    if (editingOrderId) {
-
-                        const {
-                            error
-                        } =
-                            await window.supabaseClient
-                                .from(
-                                    "restaurant_orders"
-                                )
-                                .update({
-
-                                    hotel_id:
-                                        Number(
-                                            hotelId
-                                        ),
-
-                                    reservation_id:
-                                        reservationId
-                                            ?
-                                            Number(
-                                                reservationId
-                                            )
-                                            :
-                                            null,
-
-                                    guest_id:
-                                        Number(
-                                            guestId
-                                        ),
-
-                                    room_id:
-                                        Number(
-                                            roomId
-                                        ),
-
-                                    item_name:
-                                        itemName,
-
-                                    quantity:
-                                        quantity,
-
-                                    unit_price:
-                                        unitPrice,
-
-                                    total:
-                                        total,
-
-                                    status:
-                                        status,
-
-                                    notes:
-                                        notes
-
-                                })
-                                .eq(
-                                    "id",
-                                    editingOrderId
-                                );
-
-
-                        if (error) {
-
-                            throw error;
-
-                        }
-
-
-                        alert(
-                            "Restaurant order updated successfully."
-                        );
-
-                    }
-
-
-                    /* =========================================
-                       NEW ORDER
-                    ========================================== */
-
-                    else {
-
-                        const {
-                            error
-                        } =
-                            await window.supabaseClient
-                                .from(
-                                    "restaurant_orders"
-                                )
-                                .insert({
-
-                                    hotel_id:
-                                        Number(
-                                            hotelId
-                                        ),
-
-                                    reservation_id:
-                                        reservationId
-                                            ?
-                                            Number(
-                                                reservationId
-                                            )
-                                            :
-                                            null,
-
-                                    guest_id:
-                                        Number(
-                                            guestId
-                                        ),
-
-                                    room_id:
-                                        Number(
-                                            roomId
-                                        ),
-
-                                    item_name:
-                                        itemName,
-
-                                    quantity:
-                                        quantity,
-
-                                    unit_price:
-                                        unitPrice,
-
-                                    total:
-                                        total,
-
-                                    status:
-                                        status,
-
-                                    notes:
-                                        notes
-
-                                });
-
-
-                        if (error) {
-
-                            throw error;
-
-                        }
-
-
-                        alert(
-                            "Restaurant order saved successfully."
-                        );
-
-                    }
-
-
-                    closeRestaurantForm();
-
-
-                    await loadRestaurantData();
-
-
-                } catch (error) {
-
-                    console.error(
-                        "Save restaurant order error:",
-                        error
-                    );
-
-
-                    showRestaurantError(
-                        "Failed to save restaurant order: " +
-                        (
-                            error.message ||
-                            error
-                        )
-                    );
-
-                }
-
-            }
-        );
-
-
-        /* =====================================================
-           RENDER ORDERS
-        ====================================================== */
-
-        function renderRestaurantOrders() {
-
-            restaurantTable.innerHTML =
-                "";
-
-
-            const searchText =
-                restaurantSearch.value
-                    .toLowerCase()
-                    .trim();
-
-
-            const selectedStatus =
-                restaurantFilter.value;
-
-
-            const filteredOrders =
-                restaurantOrders.filter(
-                    function(order) {
-
-                        const guest =
-                            getGuestName(
-                                order.guest_id
-                            )
-                            .toLowerCase();
-
-
-                        const room =
-                            getRoomNumber(
-                                order.room_id
-                            )
-                            .toLowerCase();
-
-
-                        const orderId =
-                            String(
-                                order.id
-                            )
-                            .toLowerCase();
-
-
-                        const item =
-                            String(
-                                order.item_name ||
-                                ""
-                            )
-                            .toLowerCase();
-
-
-                        const matchesSearch =
-
-                            guest.includes(
-                                searchText
-                            ) ||
-
-                            room.includes(
-                                searchText
-                            ) ||
-
-                            orderId.includes(
-                                searchText
-                            ) ||
-
-                            item.includes(
-                                searchText
-                            );
-
-
-                        const matchesStatus =
-
-                            selectedStatus ===
-                                "all" ||
-
-                            order.status ===
-                                selectedStatus;
-
-
-                        return (
-                            matchesSearch &&
-                            matchesStatus
-                        );
-
-                    }
-                );
-
-
-            if (
-                filteredOrders.length ===
-                0
-            ) {
-
-                restaurantTable.innerHTML = `
-
-                    <tr>
-
-                        <td
-                            colspan="8"
-                            style="
-                                text-align:center;
-                                padding:25px;
-                            "
+                        <input
+                            type="number"
+                            id="orderQuantity"
+                            min="1"
+                            step="1"
+                            value="1"
+                            required
                         >
-                            No restaurant orders found.
-                        </td>
 
-                    </tr>
+                    </div>
 
-                `;
+                    <div class="form-group">
 
+                        <label for="orderUnitPrice">
+                            Unit Price
+                        </label>
 
-                updateRestaurantSummary();
+                        <input
+                            type="number"
+                            id="orderUnitPrice"
+                            readonly
+                        >
 
-                return;
+                    </div>
 
-            }
+                    <div class="form-group full">
 
+                        <div class="total-preview">
 
-            filteredOrders.forEach(
-                function(order) {
-
-                    const row =
-                        document.createElement(
-                            "tr"
-                        );
-
-
-                    row.innerHTML = `
-
-                        <td>
-                            ORD-${escapeHtml(
-                                order.id
-                            )}
-                        </td>
-
-
-                        <td>
-                            ${escapeHtml(
-                                getGuestName(
-                                    order.guest_id
-                                )
-                            )}
-                        </td>
-
-
-                        <td>
-                            ${escapeHtml(
-                                getRoomNumber(
-                                    order.room_id
-                                )
-                            )}
-                        </td>
-
-
-                        <td>
-                            ${escapeHtml(
-                                order.item_name ||
-                                "-"
-                            )}
-                        </td>
-
-
-                        <td>
-                            ${escapeHtml(
-                                order.quantity ||
-                                0
-                            )}
-                        </td>
-
-
-                        <td>
-                            KSh ${Number(
-                                order.total ||
-                                0
-                            ).toLocaleString(
-                                undefined,
-                                {
-                                    minimumFractionDigits:2,
-                                    maximumFractionDigits:2
-                                }
-                            )}
-                        </td>
-
-
-                        <td>
-
-                            <span
-                                class="room-status
-                                ${getRestaurantStatusClass(
-                                    order.status
-                                )}"
-                            >
-                                ${escapeHtml(
-                                    order.status ||
-                                    "-"
-                                )}
+                            Order Total:
+                            <span id="orderTotalPreview">
+                                KSh 0.00
                             </span>
 
-                        </td>
+                        </div>
 
+                    </div>
 
-                        <td>
+                    <div class="form-group">
 
-                            <button
-                                type="button"
-                                class="edit-btn"
-                                onclick="editRestaurantRecord('${escapeHtml(
-                                    order.id
-                                )}')"
-                            >
-                                Edit
-                            </button>
+                        <label for="orderStatus">
+                            Status
+                        </label>
 
+                        <select id="orderStatus">
 
-                            <button
-                                type="button"
-                                class="delete-btn"
-                                onclick="deleteRestaurantRecord('${escapeHtml(
-                                    order.id
-                                )}')"
-                            >
-                                Delete
-                            </button>
+                            <option value="pending">
+                                Pending
+                            </option>
 
-                        </td>
+                            <option value="preparing">
+                                Preparing
+                            </option>
 
-                    `;
+                            <option value="served">
+                                Served
+                            </option>
 
+                            <option value="paid">
+                                Paid
+                            </option>
 
-                    restaurantTable.appendChild(
-                        row
-                    );
+                            <option value="completed">
+                                Completed
+                            </option>
 
-                }
-            );
+                            <option value="cancelled">
+                                Cancelled
+                            </option>
 
+                        </select>
 
-            updateRestaurantSummary();
+                    </div>
 
-        }
+                    <div class="form-group full">
 
+                        <label for="orderNotes">
+                            Notes
+                        </label>
 
-        /* =====================================================
-           STATUS CLASS
-        ====================================================== */
+                        <textarea
+                            id="orderNotes"
+                            placeholder="Special instructions..."
+                        ></textarea>
 
-        function getRestaurantStatusClass(
-            status
-        ) {
+                    </div>
 
-            if (
-                status ===
-                "Paid"
-            ) {
+                </div>
 
-                return "available-status";
+                <div class="modal-footer">
 
-            }
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        id="cancelOrderModal"
+                    >
+                        Cancel
+                    </button>
 
+                    <button
+                        type="submit"
+                        class="btn btn-success"
+                    >
+                        Save Restaurant Order
+                    </button>
 
-            if (
-                status ===
-                "Served"
-            ) {
+                </div>
 
-                return "available-status";
+            </form>
 
-            }
+        </div>
 
+    </div>
 
-            if (
-                status ===
-                "Pending"
-            ) {
+    <!-- VIEW ORDER MODAL -->
 
-                return "cleaning-status";
+    <div class="modal" id="viewOrderModal">
 
-            }
+        <div class="modal-content">
 
+            <div class="modal-header">
 
-            if (
-                status ===
-                "Preparing"
-            ) {
+                <h2>
+                    Restaurant Order
+                </h2>
 
-                return "cleaning-status";
+                <button
+                    type="button"
+                    class="close"
+                    id="closeViewOrderModal"
+                >
+                    ×
+                </button>
 
-            }
+            </div>
 
+            <div id="viewOrderContent"></div>
 
-            if (
-                status ===
-                "Cancelled"
-            ) {
+            <div class="modal-footer">
 
-                return "maintenance-status";
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="printOrderBtn"
+                >
+                    Print
+                </button>
 
-            }
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    id="cancelViewOrderModal"
+                >
+                    Close
+                </button>
 
+            </div>
 
-            return "";
+        </div>
 
-        }
+    </div>
 
+    <div class="restaurant-document" id="restaurantPrintDocument"></div>
 
-        /* =====================================================
-           SUMMARY
-        ====================================================== */
+    <!-- REQUIRED SCRIPT ORDER -->
 
-        function updateRestaurantSummary() {
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-            const today =
-                new Date()
-                    .toISOString()
-                    .split(
-                        "T"
-                    )[0];
+    <script src="./supabase.js"></script>
 
+    <script src="./access-control.js"></script>
 
-            const todayOrders =
-                restaurantOrders.filter(
-                    function(order) {
+    <script src="./sidebar.js"></script>
 
-                        if (
-                            order.status ===
-                            "Cancelled"
-                        ) {
+    <script src="./financial-engine.js"></script>
 
-                            return false;
-
-                        }
-
-
-                        const orderDate =
-                            String(
-                                order.order_date ||
-                                order.created_at ||
-                                ""
-                            )
-                            .split(
-                                "T"
-                            )[0];
-
-
-                        return (
-                            orderDate ===
-                            today
-                        );
-
-                    }
-                );
-
-
-            const pending =
-                restaurantOrders.filter(
-                    function(order) {
-
-                        return (
-                            order.status ===
-                                "Pending" ||
-
-                            order.status ===
-                                "Preparing"
-                        );
-
-                    }
-                ).length;
-
-
-            const completed =
-                restaurantOrders.filter(
-                    function(order) {
-
-                        return (
-                            order.status ===
-                                "Served" ||
-
-                            order.status ===
-                                "Paid"
-                        );
-
-                    }
-                ).length;
-
-
-            const sales =
-                restaurantOrders
-                    .filter(
-                        function(order) {
-
-                            const orderDate =
-                                String(
-                                    order.order_date ||
-                                    order.created_at ||
-                                    ""
-                                )
-                                .split(
-                                    "T"
-                                )[0];
-
-
-                            return (
-                                orderDate ===
-                                today &&
-
-                                order.status ===
-                                "Paid"
-                            );
-
-                        }
-                    )
-                    .reduce(
-                        function(total, order) {
-
-                            return (
-                                total +
-                                Number(
-                                    order.total ||
-                                    0
-                                )
-                            );
-
-                        },
-                        0
-                    );
-
-
-            document.getElementById(
-                "todayOrders"
-            ).textContent =
-                todayOrders.length;
-
-
-            document.getElementById(
-                "pendingOrders"
-            ).textContent =
-                pending;
-
-
-            document.getElementById(
-                "completedOrders"
-            ).textContent =
-                completed;
-
-
-            document.getElementById(
-                "restaurantSales"
-            ).textContent =
-                "KSh " +
-                sales.toLocaleString(
-                    undefined,
-                    {
-                        minimumFractionDigits:2,
-                        maximumFractionDigits:2
-                    }
-                );
-
-        }
-
-
-        /* =====================================================
-           EDIT
-        ====================================================== */
-
-        function editRestaurantRecord(
-            orderId
-        ) {
-
-            if (
-                !restaurantAccessAllowed()
-            ) {
-
-                alert(
-                    "You do not have permission to edit restaurant orders."
-                );
-
-                return;
-
-            }
-
-
-            openRestaurantForm(
-                orderId
-            );
-
-        }
-
-
-        /* =====================================================
-           DELETE
-        ====================================================== */
-
-        async function deleteRestaurantRecord(
-            orderId
-        ) {
-
-            if (
-                !restaurantAccessAllowed()
-            ) {
-
-                alert(
-                    "You do not have permission to delete restaurant orders."
-                );
-
-                return;
-
-            }
-
-
-            const confirmed =
-                confirm(
-                    "Are you sure you want to delete this restaurant order?"
-                );
-
-
-            if (!confirmed) {
-
-                return;
-
-            }
-
-
-            try {
-
-                hideRestaurantError();
-
-
-                const {
-                    error
-                } =
-                    await window.supabaseClient
-                        .from(
-                            "restaurant_orders"
-                        )
-                        .delete()
-                        .eq(
-                            "id",
-                            orderId
-                        );
-
-
-                if (error) {
-
-                    throw error;
-
-                }
-
-
-                alert(
-                    "Restaurant order deleted successfully."
-                );
-
-
-                await loadRestaurantData();
-
-
-            } catch (error) {
-
-                console.error(
-                    "Delete restaurant order error:",
-                    error
-                );
-
-
-                showRestaurantError(
-                    "Failed to delete restaurant order: " +
-                    (
-                        error.message ||
-                        error
-                    )
-                );
-
-            }
-
-        }
-
-
-        /* =====================================================
-           SEARCH
-        ====================================================== */
-
-        restaurantSearch.addEventListener(
-            "input",
-            renderRestaurantOrders
-        );
-
-
-        /* =====================================================
-           FILTER
-        ====================================================== */
-
-        restaurantFilter.addEventListener(
-            "change",
-            renderRestaurantOrders
-        );
-
-
-        /* =====================================================
-           MODAL OUTSIDE CLICK
-        ====================================================== */
-
-        restaurantModal.addEventListener(
-            "click",
-            function(event) {
-
-                if (
-                    event.target ===
-                    restaurantModal
-                ) {
-
-                    closeRestaurantForm();
-
-                }
-
-            }
-        );
-
-
-        /* =====================================================
-           ESCAPE KEY
-        ====================================================== */
-
-        document.addEventListener(
-            "keydown",
-            function(event) {
-
-                if (
-                    event.key ===
-                    "Escape"
-                ) {
-
-                    closeRestaurantForm();
-
-                }
-
-            }
-        );
-
-
-        /* =====================================================
-           HTML ESCAPE
-        ====================================================== */
-
-        function escapeHtml(
-            value
-        ) {
-
-            return String(
-                value ?? ""
-            )
-                .replace(
-                    /&/g,
-                    "&amp;"
-                )
-                .replace(
-                    /</g,
-                    "&lt;"
-                )
-                .replace(
-                    />/g,
-                    "&gt;"
-                )
-                .replace(
-                    /"/g,
-                    "&quot;"
-                )
-                .replace(
-                    /'/g,
-                    "&#039;"
-                );
-
-        }
-
-    </script>
+    <script src="./restaurant.js"></script>
 
 </body>
-
 </html>

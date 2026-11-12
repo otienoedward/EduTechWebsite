@@ -1,0 +1,2188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Bank Accounts - EDU TECH Hotel Management System</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100%;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f9;
+            color: #1f2937;
+        }
+
+        body {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .page {
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* =====================================================
+           TOP BAR
+           ===================================================== */
+
+        .topbar {
+            width: 100%;
+            min-height: 70px;
+            background: #1f2937;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 25px;
+        }
+
+        .brand {
+            font-size: 21px;
+            font-weight: 700;
+        }
+
+        .brand small {
+            display: block;
+            font-size: 12px;
+            font-weight: 400;
+            margin-top: 4px;
+            opacity: .8;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            background: #374151;
+            color: white;
+            text-decoration: none;
+            padding: 9px 14px;
+            border-radius: 6px;
+        }
+
+        .back-btn:hover {
+            background: #4b5563;
+        }
+
+        /* =====================================================
+           MAIN
+           ===================================================== */
+
+        .content {
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 25px;
+        }
+
+        .header {
+            background: white;
+            border-radius: 10px;
+            padding: 22px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .header p {
+            margin: 8px 0 0;
+            color: #6b7280;
+        }
+
+        /* =====================================================
+           HOTEL SELECTOR
+           ===================================================== */
+
+        #hotelSelectorBox {
+            display: none;
+            background: white;
+            border: 1px solid #e5e7eb;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        #hotelSelectorBox label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        #hotelSelector {
+            width: 100%;
+            max-width: 500px;
+            padding: 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background: white;
+        }
+
+        /* =====================================================
+           ACTIONS
+           ===================================================== */
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 6px;
+            padding: 11px 17px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .btn-refresh {
+            background: #e5e7eb;
+            color: #111827;
+        }
+
+        .btn-add {
+            background: #198754;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: .9;
+        }
+
+        /* =====================================================
+           MESSAGE
+           ===================================================== */
+
+        #message {
+            display: none;
+            padding: 13px 16px;
+            border-radius: 7px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        #message.success {
+            display: block;
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        #message.error {
+            display: block;
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        #message.info {
+            display: block;
+            background: #cff4fc;
+            color: #055160;
+        }
+
+        /* =====================================================
+           CARDS
+           ===================================================== */
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 19px;
+            box-shadow: 0 2px 6px rgba(0,0,0,.04);
+        }
+
+        .card-label {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .card-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        /* =====================================================
+           TABLE
+           ===================================================== */
+
+        .table-box {
+            width: 100%;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 1200px;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #374151;
+            padding: 14px 11px;
+            text-align: left;
+            font-size: 13px;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 14px 11px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        tr:hover td {
+            background: #fafafa;
+        }
+
+        .empty {
+            text-align: center !important;
+            padding: 55px 20px !important;
+        }
+
+        .empty-icon {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .empty-text {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .money {
+            white-space: nowrap;
+        }
+
+        .balance {
+            font-weight: 700;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .active {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .inactive {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .edit {
+            background: #0d6efd;
+            color: white;
+            border: 0;
+            border-radius: 5px;
+            padding: 7px 10px;
+            cursor: pointer;
+        }
+
+        .delete {
+            background: #dc3545;
+            color: white;
+            border: 0;
+            border-radius: 5px;
+            padding: 7px 10px;
+            cursor: pointer;
+            margin-left: 4px;
+        }
+
+        /* =====================================================
+           MODAL
+           ===================================================== */
+
+        #modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 999999;
+            background: rgba(0,0,0,.55);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #modal.show {
+            display: flex;
+        }
+
+        .modal-box {
+            width: 100%;
+            max-width: 650px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .modal-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-head h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .close {
+            background: transparent;
+            border: 0;
+            font-size: 27px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background: white;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .cancel {
+            background: #6c757d;
+            color: white;
+            border: 0;
+            border-radius: 6px;
+            padding: 10px 18px;
+            cursor: pointer;
+        }
+
+        .save {
+            background: #198754;
+            color: white;
+            border: 0;
+            border-radius: 6px;
+            padding: 10px 18px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+        @media (max-width: 1000px) {
+
+            .cards {
+                grid-template-columns: 1fr 1fr;
+            }
+
+        }
+
+        @media (max-width: 650px) {
+
+            .content {
+                padding: 14px;
+            }
+
+            .topbar {
+                padding: 14px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full {
+                grid-column: auto;
+            }
+
+            .topbar-right {
+                display: none;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <!-- =====================================================
+         TOP BAR
+         ===================================================== -->
+
+    <div class="topbar">
+
+        <div class="brand">
+            EDU TECH
+            <small>Hotel Management System</small>
+        </div>
+
+        <div class="topbar-right">
+
+            <span id="userDisplay">
+                System User
+            </span>
+
+            <a
+                href="index.html"
+                class="back-btn">
+                Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         CONTENT
+         ===================================================== -->
+
+    <div class="content">
+
+        <div class="header">
+
+            <h1>
+                🏦 Bank Accounts
+            </h1>
+
+            <p>
+                Manage hotel bank accounts and monitor account balances.
+            </p>
+
+        </div>
+
+
+        <!-- MESSAGE -->
+
+        <div id="message"></div>
+
+
+        <!-- SYSTEM OWNER HOTEL SELECTOR -->
+
+        <div id="hotelSelectorBox">
+
+            <label for="hotelSelector">
+                Select Hotel
+            </label>
+
+            <select id="hotelSelector">
+
+                <option value="">
+                    -- Select Hotel --
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div class="actions">
+
+            <button
+                class="btn btn-refresh"
+                id="refreshButton">
+                🔄 Refresh
+            </button>
+
+            <button
+                class="btn btn-add"
+                id="addButton">
+                + Add Bank Account
+            </button>
+
+        </div>
+
+
+        <!-- SUMMARY -->
+
+        <div class="cards">
+
+            <div class="card">
+
+                <div class="card-label">
+                    Total Accounts
+                </div>
+
+                <div
+                    class="card-value"
+                    id="totalAccounts">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-label">
+                    Active Accounts
+                </div>
+
+                <div
+                    class="card-value"
+                    id="activeAccounts">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-label">
+                    Total Opening Balance
+                </div>
+
+                <div
+                    class="card-value"
+                    id="openingBalance">
+                    KSh 0.00
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <div class="card-label">
+                    Current Total Balance
+                </div>
+
+                <div
+                    class="card-value"
+                    id="currentBalance">
+                    KSh 0.00
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             TABLE
+             ================================================= -->
+
+        <div class="table-box">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Bank</th>
+                        <th>Branch</th>
+                        <th>Account Name</th>
+                        <th>Account Number</th>
+                        <th>Opening Balance</th>
+                        <th>Money In</th>
+                        <th>Money Out</th>
+                        <th>Current Balance</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="tableBody">
+
+                    <!-- IMPORTANT:
+                         This is deliberately visible before
+                         Supabase loads. -->
+
+                    <tr>
+
+                        <td
+                            colspan="11"
+                            class="empty">
+
+                            <div class="empty-icon">
+                                🏦
+                            </div>
+
+                            <div class="empty-title">
+                                No bank accounts found
+                            </div>
+
+                            <div class="empty-text">
+                                No bank account has been configured
+                                for this hotel yet.
+                                Click "Add Bank Account" when the
+                                hotel's actual bank details are available.
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     MODAL
+     ========================================================= -->
+
+<div id="modal">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2 id="modalTitle">
+                Add Bank Account
+            </h2>
+
+            <button
+                class="close"
+                id="closeModal">
+                &times;
+            </button>
+
+        </div>
+
+
+        <form id="accountForm">
+
+            <div class="modal-body">
+
+                <input
+                    type="hidden"
+                    id="accountId">
+
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label>
+                            Bank Name *
+                        </label>
+
+                        <input
+                            id="bankName"
+                            type="text"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Branch
+                        </label>
+
+                        <input
+                            id="branchName"
+                            type="text">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Account Name *
+                        </label>
+
+                        <input
+                            id="accountName"
+                            type="text"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Account Number *
+                        </label>
+
+                        <input
+                            id="accountNumber"
+                            type="text"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Opening Balance *
+                        </label>
+
+                        <input
+                            id="openingAmount"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value="0"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Opening Balance Date *
+                        </label>
+
+                        <input
+                            id="openingDate"
+                            type="date"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group full">
+
+                        <label>
+                            Status *
+                        </label>
+
+                        <select id="accountStatus">
+
+                            <option value="active">
+                                Active
+                            </option>
+
+                            <option value="inactive">
+                                Inactive
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="cancel"
+                    id="cancelButton">
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="save">
+                    Save Account
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+"use strict";
+
+
+/* =========================================================
+   STATE
+   ========================================================= */
+
+let currentUser = null;
+let currentProfile = null;
+let currentHotelId = null;
+let accounts = [];
+let editingId = null;
+
+
+/* =========================================================
+   SUPABASE
+   ========================================================= */
+
+function getSupabaseClient() {
+
+    if (
+        window.supabaseClient &&
+        typeof window.supabaseClient.from === "function"
+    ) {
+        return window.supabaseClient;
+    }
+
+    if (
+        window.supabase &&
+        typeof window.supabase.from === "function"
+    ) {
+        return window.supabase;
+    }
+
+    throw new Error(
+        "Supabase client was not loaded."
+    );
+}
+
+
+let db;
+
+try {
+
+    db = getSupabaseClient();
+
+}
+
+catch (error) {
+
+    console.error(error);
+
+    showMessage(
+        "Supabase could not be loaded. Check supabase.js.",
+        "error"
+    );
+
+}
+
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
+function money(value) {
+
+    return new Intl.NumberFormat(
+        "en-KE",
+        {
+            style: "currency",
+            currency: "KES",
+            minimumFractionDigits: 2
+        }
+    ).format(
+        Number(value) || 0
+    );
+
+}
+
+
+function escapeHtml(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+        return "";
+    }
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+function showMessage(
+    message,
+    type
+) {
+
+    const box =
+        document.getElementById(
+            "message"
+        );
+
+    if (!box) return;
+
+    box.textContent =
+        message;
+
+    box.className =
+        type || "info";
+
+}
+
+
+function hideMessage() {
+
+    const box =
+        document.getElementById(
+            "message"
+        );
+
+    box.className = "";
+
+    box.textContent = "";
+
+}
+
+
+function today() {
+
+    const d =
+        new Date();
+
+    return (
+        d.getFullYear() +
+        "-" +
+        String(
+            d.getMonth() + 1
+        ).padStart(2, "0") +
+        "-" +
+        String(
+            d.getDate()
+        ).padStart(2, "0")
+    );
+
+}
+
+
+/* =========================================================
+   LOAD USER
+   ========================================================= */
+
+async function loadUser() {
+
+    if (!db) {
+        throw new Error(
+            "Supabase is unavailable."
+        );
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await db.auth.getUser();
+
+
+    if (error) {
+        throw error;
+    }
+
+
+    if (!data.user) {
+
+        throw new Error(
+            "You are not logged in."
+        );
+
+    }
+
+
+    currentUser =
+        data.user;
+
+
+    const {
+        data: profile,
+        error: profileError
+    } =
+        await db
+            .from("profiles")
+            .select(
+                "id, full_name, role, hotel_id, is_active"
+            )
+            .eq(
+                "id",
+                currentUser.id
+            )
+            .maybeSingle();
+
+
+    if (profileError) {
+        throw profileError;
+    }
+
+
+    if (!profile) {
+
+        throw new Error(
+            "Your user profile was not found."
+        );
+
+    }
+
+
+    currentProfile =
+        profile;
+
+
+    const role =
+        String(
+            profile.role || ""
+        ).toLowerCase();
+
+
+    if (
+        ![
+            "system_owner",
+            "hotel_owner",
+            "manager"
+        ].includes(role)
+    ) {
+
+        throw new Error(
+            "You do not have permission to use Bank Accounts."
+        );
+
+    }
+
+
+    if (
+        role === "system_owner"
+    ) {
+
+        await loadHotels();
+
+    }
+
+    else {
+
+        if (!profile.hotel_id) {
+
+            throw new Error(
+                "Your account has no hotel assigned."
+            );
+
+        }
+
+        currentHotelId =
+            Number(
+                profile.hotel_id
+            );
+
+    }
+
+
+    document.getElementById(
+        "userDisplay"
+    ).textContent =
+        profile.full_name ||
+        currentUser.email ||
+        "System User";
+
+}
+
+
+/* =========================================================
+   LOAD HOTELS
+   ========================================================= */
+
+async function loadHotels() {
+
+    const box =
+        document.getElementById(
+            "hotelSelectorBox"
+        );
+
+    const select =
+        document.getElementById(
+            "hotelSelector"
+        );
+
+
+    box.style.display =
+        "block";
+
+
+    const {
+        data,
+        error
+    } =
+        await db
+            .from("hotels")
+            .select(
+                "id, hotel_name, location, status"
+            )
+            .order(
+                "hotel_name",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+        throw error;
+    }
+
+
+    select.innerHTML = `
+        <option value="">
+            -- Select Hotel --
+        </option>
+    `;
+
+
+    (
+        data || []
+    ).forEach(
+        hotel => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                hotel.id;
+
+            option.textContent =
+                `${hotel.hotel_name || "Unnamed Hotel"}${
+                    hotel.location
+                        ? " - " +
+                          hotel.location
+                        : ""
+                }`;
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    select.addEventListener(
+        "change",
+        async function() {
+
+            currentHotelId =
+                this.value
+                    ? Number(
+                        this.value
+                    )
+                    : null;
+
+            await loadAccounts();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   LOAD BANK ACCOUNTS
+   ========================================================= */
+
+async function loadAccounts() {
+
+    if (!currentHotelId) {
+
+        accounts = [];
+
+        render();
+
+        return;
+
+    }
+
+
+    const tbody =
+        document.getElementById(
+            "tableBody"
+        );
+
+
+    tbody.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="11"
+                class="empty">
+
+                <div class="empty-icon">
+                    ⏳
+                </div>
+
+                <div class="empty-title">
+                    Loading bank accounts...
+                </div>
+
+            </td>
+
+        </tr>
+
+    `;
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await db
+                .from(
+                    "bank_accounts"
+                )
+                .select(`
+                    id,
+                    hotel_id,
+                    bank_name,
+                    branch_name,
+                    account_name,
+                    account_number,
+                    opening_balance,
+                    opening_balance_date,
+                    status,
+                    created_at,
+                    updated_at
+                `)
+                .eq(
+                    "hotel_id",
+                    currentHotelId
+                )
+                .order(
+                    "id",
+                    {
+                        ascending: true
+                    }
+                );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        accounts =
+            data || [];
+
+
+        accounts =
+            accounts.map(
+                account => ({
+
+                    ...account,
+
+                    moneyIn: 0,
+
+                    moneyOut: 0,
+
+                    currentBalance:
+                        Number(
+                            account.opening_balance
+                        ) || 0
+
+                })
+            );
+
+
+        render();
+
+        hideMessage();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        showMessage(
+            error.message ||
+            "Unable to load bank accounts.",
+            "error"
+        );
+
+
+        accounts = [];
+
+        render();
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+
+function render() {
+
+    const tbody =
+        document.getElementById(
+            "tableBody"
+        );
+
+
+    document.getElementById(
+        "totalAccounts"
+    ).textContent =
+        accounts.length;
+
+
+    document.getElementById(
+        "activeAccounts"
+    ).textContent =
+        accounts.filter(
+            account =>
+                String(
+                    account.status || ""
+                ).toLowerCase() ===
+                "active"
+        ).length;
+
+
+    const opening =
+        accounts.reduce(
+            (
+                total,
+                account
+            ) =>
+                total +
+                (
+                    Number(
+                        account.opening_balance
+                    ) || 0
+                ),
+            0
+        );
+
+
+    const current =
+        accounts.reduce(
+            (
+                total,
+                account
+            ) =>
+                total +
+                (
+                    Number(
+                        account.currentBalance
+                    ) || 0
+                ),
+            0
+        );
+
+
+    document.getElementById(
+        "openingBalance"
+    ).textContent =
+        money(opening);
+
+
+    document.getElementById(
+        "currentBalance"
+    ).textContent =
+        money(current);
+
+
+    if (!accounts.length) {
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="11"
+                    class="empty">
+
+                    <div class="empty-icon">
+                        🏦
+                    </div>
+
+                    <div class="empty-title">
+                        No bank accounts found
+                    </div>
+
+                    <div class="empty-text">
+                        No bank account has been configured
+                        for this hotel yet.
+                        Click "Add Bank Account" when the
+                        hotel's actual bank details are available.
+                    </div>
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    tbody.innerHTML =
+        accounts.map(
+            account => {
+
+                const status =
+                    String(
+                        account.status ||
+                        "active"
+                    ).toLowerCase();
+
+
+                return `
+
+                    <tr>
+
+                        <td>
+                            ${escapeHtml(
+                                account.id
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                account.bank_name
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                account.branch_name
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                account.account_name
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                account.account_number
+                            )}
+                        </td>
+
+                        <td class="money">
+                            ${money(
+                                account.opening_balance
+                            )}
+                        </td>
+
+                        <td class="money">
+                            ${money(
+                                account.moneyIn
+                            )}
+                        </td>
+
+                        <td class="money">
+                            ${money(
+                                account.moneyOut
+                            )}
+                        </td>
+
+                        <td class="money balance">
+                            ${money(
+                                account.currentBalance
+                            )}
+                        </td>
+
+                        <td>
+
+                            <span
+                                class="status ${
+                                    status === "active"
+                                        ? "active"
+                                        : "inactive"
+                                }">
+
+                                ${
+                                    status === "active"
+                                        ? "Active"
+                                        : "Inactive"
+                                }
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <button
+                                class="edit"
+                                onclick="editAccount(${Number(account.id)})">
+                                Edit
+                            </button>
+
+                            <button
+                                class="delete"
+                                onclick="deleteAccount(${Number(account.id)})">
+                                Delete
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        ).join("");
+
+}
+
+
+/* =========================================================
+   OPEN ADD
+   ========================================================= */
+
+function openAdd() {
+
+    editingId =
+        null;
+
+
+    document.getElementById(
+        "modalTitle"
+    ).textContent =
+        "Add Bank Account";
+
+
+    document.getElementById(
+        "accountForm"
+    ).reset();
+
+
+    document.getElementById(
+        "openingAmount"
+    ).value =
+        "0";
+
+
+    document.getElementById(
+        "openingDate"
+    ).value =
+        today();
+
+
+    document.getElementById(
+        "accountStatus"
+    ).value =
+        "active";
+
+
+    document.getElementById(
+        "modal"
+    ).classList.add(
+        "show"
+    );
+
+}
+
+
+/* =========================================================
+   EDIT
+   ========================================================= */
+
+window.editAccount =
+function(id) {
+
+    const account =
+        accounts.find(
+            item =>
+                Number(item.id) ===
+                Number(id)
+        );
+
+
+    if (!account) {
+
+        showMessage(
+            "Bank account not found.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    editingId =
+        Number(
+            account.id
+        );
+
+
+    document.getElementById(
+        "modalTitle"
+    ).textContent =
+        "Edit Bank Account";
+
+
+    document.getElementById(
+        "accountId"
+    ).value =
+        account.id;
+
+
+    document.getElementById(
+        "bankName"
+    ).value =
+        account.bank_name || "";
+
+
+    document.getElementById(
+        "branchName"
+    ).value =
+        account.branch_name || "";
+
+
+    document.getElementById(
+        "accountName"
+    ).value =
+        account.account_name || "";
+
+
+    document.getElementById(
+        "accountNumber"
+    ).value =
+        account.account_number || "";
+
+
+    document.getElementById(
+        "openingAmount"
+    ).value =
+        Number(
+            account.opening_balance
+        ) || 0;
+
+
+    document.getElementById(
+        "openingDate"
+    ).value =
+        account.opening_balance_date
+            ? String(
+                account.opening_balance_date
+            ).substring(
+                0,
+                10
+            )
+            : today();
+
+
+    document.getElementById(
+        "accountStatus"
+    ).value =
+        account.status ||
+        "active";
+
+
+    document.getElementById(
+        "modal"
+    ).classList.add(
+        "show"
+    );
+
+};
+
+
+/* =========================================================
+   CLOSE
+   ========================================================= */
+
+function closeModal() {
+
+    document.getElementById(
+        "modal"
+    ).classList.remove(
+        "show"
+    );
+
+    editingId =
+        null;
+
+}
+
+
+/* =========================================================
+   SAVE
+   ========================================================= */
+
+async function saveAccount(event) {
+
+    event.preventDefault();
+
+
+    if (!currentHotelId) {
+
+        showMessage(
+            "No hotel is selected.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const payload = {
+
+        hotel_id:
+            Number(
+                currentHotelId
+            ),
+
+        bank_name:
+            document
+                .getElementById(
+                    "bankName"
+                )
+                .value
+                .trim(),
+
+        branch_name:
+            document
+                .getElementById(
+                    "branchName"
+                )
+                .value
+                .trim() ||
+            null,
+
+        account_name:
+            document
+                .getElementById(
+                    "accountName"
+                )
+                .value
+                .trim(),
+
+        account_number:
+            document
+                .getElementById(
+                    "accountNumber"
+                )
+                .value
+                .trim(),
+
+        opening_balance:
+            Number(
+                document
+                    .getElementById(
+                        "openingAmount"
+                    )
+                    .value
+            ) || 0,
+
+        opening_balance_date:
+            document
+                .getElementById(
+                    "openingDate"
+                )
+                .value,
+
+        status:
+            document
+                .getElementById(
+                    "accountStatus"
+                )
+                .value,
+
+        updated_at:
+            new Date().toISOString()
+
+    };
+
+
+    try {
+
+        let result;
+
+
+        if (editingId) {
+
+            result =
+                await db
+                    .from(
+                        "bank_accounts"
+                    )
+                    .update(
+                        payload
+                    )
+                    .eq(
+                        "id",
+                        editingId
+                    )
+                    .eq(
+                        "hotel_id",
+                        currentHotelId
+                    );
+
+        }
+
+        else {
+
+            result =
+                await db
+                    .from(
+                        "bank_accounts"
+                    )
+                    .insert(
+                        payload
+                    );
+
+        }
+
+
+        if (result.error) {
+            throw result.error;
+        }
+
+
+        closeModal();
+
+
+        showMessage(
+            editingId
+                ? "Bank account updated successfully."
+                : "Bank account added successfully.",
+            "success"
+        );
+
+
+        await loadAccounts();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        showMessage(
+            error.message ||
+            "Unable to save bank account.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   DELETE
+   ========================================================= */
+
+window.deleteAccount =
+async function(id) {
+
+    const account =
+        accounts.find(
+            item =>
+                Number(item.id) ===
+                Number(id)
+        );
+
+
+    if (!account) {
+        return;
+    }
+
+
+    const confirmed =
+        confirm(
+            "Delete this bank account?\n\n" +
+            "If it has financial transactions, it should be made inactive instead."
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        const {
+            error
+        } =
+            await db
+                .from(
+                    "bank_accounts"
+                )
+                .delete()
+                .eq(
+                    "id",
+                    Number(id)
+                )
+                .eq(
+                    "hotel_id",
+                    currentHotelId
+                );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        showMessage(
+            "Bank account deleted successfully.",
+            "success"
+        );
+
+
+        await loadAccounts();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        showMessage(
+            error.message ||
+            "Unable to delete bank account.",
+            "error"
+        );
+
+    }
+
+};
+
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function() {
+
+        document
+            .getElementById(
+                "addButton"
+            )
+            .addEventListener(
+                "click",
+                openAdd
+            );
+
+
+        document
+            .getElementById(
+                "refreshButton"
+            )
+            .addEventListener(
+                "click",
+                loadAccounts
+            );
+
+
+        document
+            .getElementById(
+                "closeModal"
+            )
+            .addEventListener(
+                "click",
+                closeModal
+            );
+
+
+        document
+            .getElementById(
+                "cancelButton"
+            )
+            .addEventListener(
+                "click",
+                closeModal
+            );
+
+
+        document
+            .getElementById(
+                "accountForm"
+            )
+            .addEventListener(
+                "submit",
+                saveAccount
+            );
+
+
+        document
+            .getElementById(
+                "modal"
+            )
+            .addEventListener(
+                "click",
+                function(event) {
+
+                    if (
+                        event.target ===
+                        this
+                    ) {
+
+                        closeModal();
+
+                    }
+
+                }
+            );
+
+
+        /* ---------------------------------------------
+           FIRST RENDER
+           --------------------------------------------- */
+
+        render();
+
+
+        /* ---------------------------------------------
+           SUPABASE DATA
+           --------------------------------------------- */
+
+        try {
+
+            await loadUser();
+
+            await loadAccounts();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Initialization error:",
+                error
+            );
+
+
+            showMessage(
+                error.message ||
+                "Unable to load Bank Accounts.",
+                "error"
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>

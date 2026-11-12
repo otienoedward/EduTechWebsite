@@ -7,336 +7,736 @@
     <title>Maintenance - EDU TECH Hotel Management System</title>
 
     <link rel="stylesheet" href="./style.css">
-    <link rel="stylesheet" href="./supabase.css">
 
     <style>
-        .access-denied {
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .main-content {
+            min-height: 100vh;
+            padding: 25px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .page-title h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+            color: #1f2937;
+        }
+
+        .page-title p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 7px;
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.92;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-success {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #d97706;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+        }
+
+        .btn-light {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+        .hotel-banner {
+            background: white;
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .hotel-banner-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        .hotel-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .hotel-location {
+            margin-top: 4px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .summary-label {
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            font-size: 27px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .summary-blue {
+            border-left: 5px solid #2563eb;
+        }
+
+        .summary-yellow {
+            border-left: 5px solid #d97706;
+        }
+
+        .summary-orange {
+            border-left: 5px solid #ea580c;
+        }
+
+        .summary-green {
+            border-left: 5px solid #16a34a;
+        }
+
+        .module-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            overflow: hidden;
+        }
+
+        .module-card-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .module-card-header h2 {
+            margin: 0 0 5px;
+            font-size: 19px;
+        }
+
+        .module-card-header p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .toolbar {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .toolbar-left,
+        .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            min-width: 260px;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            outline: none;
+        }
+
+        .search-box:focus,
+        select:focus,
+        input:focus,
+        textarea:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37,99,235,0.1);
+        }
+
+        select {
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            background: white;
+            min-width: 150px;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 950px;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #475569;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            text-align: left;
+            padding: 13px 14px;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #eef2f7;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .task-id {
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .cost {
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-progress {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .status-completed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .small-btn {
+            border: none;
+            border-radius: 5px;
+            padding: 6px 9px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .empty-state,
+        .loading-state {
+            text-align: center;
+            padding: 45px 20px;
+            color: #64748b;
+        }
+
+        .error-state {
+            text-align: center;
+            padding: 35px 20px;
+            color: #b91c1c;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 650px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .modal-close {
+            border: none;
+            background: transparent;
+            font-size: 26px;
+            color: #64748b;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .view-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .view-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .view-item.full {
+            grid-column: 1 / -1;
+        }
+
+        .view-label {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .view-value {
+            font-weight: 600;
+            color: #111827;
+            word-break: break-word;
+        }
+
+        .toast-container {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 10000;
+        }
+
+        .toast {
+            background: #111827;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 7px;
+            margin-top: 8px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            max-width: 360px;
+            font-size: 13px;
+        }
+
+        .toast.success {
+            background: #166534;
+        }
+
+        .toast.error {
+            background: #b91c1c;
+        }
+
+        .toast.warning {
+            background: #92400e;
+        }
+
+        #accessDenied {
             display: none;
             padding: 50px 20px;
             text-align: center;
         }
 
-        .access-denied h2 {
-            margin-bottom: 10px;
+        #accessDenied h2 {
             color: #b91c1c;
         }
 
-        .access-denied p {
-            color: #666;
-            margin-bottom: 20px;
+        @media (max-width: 1000px) {
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
-        .access-denied a {
-            display: inline-block;
-            padding: 10px 18px;
-            background: #2563eb;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
+        @media (max-width: 700px) {
+            .main-content {
+                padding: 15px;
+            }
+
+            .page-header {
+                flex-direction: column;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid,
+            .view-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full,
+            .view-item.full {
+                grid-column: auto;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+
+            .toolbar-left,
+            .toolbar-right {
+                width: 100%;
+            }
         }
 
-        .sidebar-logout {
-            margin: 15px 10px;
-        }
+        @media print {
+            .sidebar,
+            .page-header .header-actions,
+            .toolbar,
+            .action-buttons,
+            .modal,
+            .toast-container {
+                display: none !important;
+            }
 
-        .sidebar-logout button {
-            width: 100%;
-            border: none;
-            padding: 11px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            background: #dc2626;
-            color: white;
-            font-size: 14px;
-        }
+            .main-content {
+                margin: 0 !important;
+                padding: 10px !important;
+            }
 
-        .sidebar-logout button:hover {
-            background: #b91c1c;
-        }
+            .module-card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
 
-        .maintenance-empty {
-            text-align: center;
-            padding: 30px;
-            color: #777;
-        }
-
-        .status-badge.low {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .status-badge.medium {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-badge.high {
-            background: #fed7aa;
-            color: #9a3412;
-        }
-
-        .status-badge.urgent {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .status-badge.pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-badge.in-progress {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .status-badge.completed {
-            background: #dcfce7;
-            color: #166534;
+            body {
+                background: white;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<div class="dashboard">
-
-    <!-- =====================================================
-         SIDEBAR
-    ====================================================== -->
-
-    <aside class="sidebar">
-
-        <div class="logo">
-            <h2>EDU TECH</h2>
-            <p>Hotel Management</p>
-        </div>
-
-        <nav class="sidebar-nav">
-
-            <a href="./index.html" data-module="dashboard">
-                🏠 Dashboard
-            </a>
-
-            <a href="./rooms.html" data-module="rooms">
-                🛏️ Rooms
-            </a>
-
-            <a href="./guests.html" data-module="guests">
-                👤 Guests
-            </a>
-
-            <a href="./reservations.html" data-module="reservations">
-                📅 Reservations
-            </a>
-
-            <a href="./checkin.html" data-module="checkin">
-                🛎️ Check-in
-            </a>
-
-            <a href="./checkout.html" data-module="checkout">
-                🚪 Check-out
-            </a>
-
-            <a href="./restaurant.html" data-module="restaurant">
-                🍽️ Restaurant
-            </a>
-
-            <a href="./inventory.html" data-module="inventory">
-                📦 Inventory
-            </a>
-
-            <a href="./payments.html" data-module="payments">
-                💰 Payments
-            </a>
-
-            <a href="./expenses.html" data-module="expenses">
-                💸 Expenses
-            </a>
-
-            <a href="./employees.html" data-module="employees">
-                👨‍💼 Employees
-            </a>
-
-            <a href="./housekeeping.html" data-module="housekeeping">
-                🧹 Housekeeping
-            </a>
-
-            <a
-                href="./maintenance.html"
-                data-module="maintenance"
-                class="active"
-            >
-                🔧 Maintenance
-            </a>
-
-            <a href="./reports.html" data-module="reports">
-                📊 Reports
-            </a>
-
-            <a href="./settings.html" data-module="settings">
-                ⚙️ Settings
-            </a>
-
-        </nav>
-
-        <!-- GLOBAL LOGOUT -->
-        <div class="sidebar-logout">
-            <button
-                type="button"
-                class="logout-btn"
-                data-action="logout"
-            >
-                🚪 Logout
-            </button>
-        </div>
-
-    </aside>
+    <!-- =========================================================
+         CENTRAL SIDEBAR
+         Same sidebar used by the other EDU TECH modules
+    ========================================================== -->
+    <aside id="appSidebar" class="sidebar"></aside>
 
 
-    <!-- =====================================================
+    <!-- =========================================================
          MAIN CONTENT
-    ====================================================== -->
-
+    ========================================================== -->
     <main class="main-content">
 
-        <!-- TOP BAR -->
+        <div id="accessDenied">
+            <h2>Access Denied</h2>
+            <p>You do not have permission to access the Maintenance module.</p>
+        </div>
 
-        <header class="topbar">
 
-            <div>
-                <h1>Maintenance</h1>
+        <div id="maintenanceModuleContent">
 
-                <p>
-                    Manage hotel maintenance requests and repairs
-                </p>
+            <!-- PAGE HEADER -->
+            <div class="page-header">
+
+                <div class="page-title">
+                    <h1>🔧 Maintenance</h1>
+
+                    <p>
+                        Manage hotel maintenance requests, repairs and maintenance costs.
+                    </p>
+                </div>
+
+                <div class="header-actions">
+
+                    <button
+                        type="button"
+                        id="printMaintenanceButton"
+                        class="btn btn-secondary">
+                        🖨️ Print Report
+                    </button>
+
+                    <button
+                        type="button"
+                        id="downloadMaintenancePDFButton"
+                        class="btn btn-success">
+                        📄 Save PDF
+                    </button>
+
+                    <button
+                        type="button"
+                        id="addMaintenanceButton"
+                        class="btn btn-primary">
+                        ＋ Add Maintenance Task
+                    </button>
+
+                </div>
+
             </div>
 
-            <button
-                class="primary-btn"
-                id="addMaintenanceBtn"
-                type="button"
-                onclick="openMaintenanceForm()"
-            >
-                + Add Maintenance Task
-            </button>
 
-        </header>
+            <!-- HOTEL -->
+            <div class="hotel-banner">
 
-
-        <!-- =================================================
-             ACCESS DENIED
-        ================================================== -->
-
-        <section
-            id="maintenanceAccessDenied"
-            class="access-denied"
-        >
-
-            <h2>Access Denied</h2>
-
-            <p>
-                You do not have permission to access the
-                Maintenance module.
-            </p>
-
-            <a href="./index.html">
-                Return to Dashboard
-            </a>
-
-        </section>
-
-
-        <!-- =================================================
-             MAINTENANCE CONTENT
-        ================================================== -->
-
-        <div id="maintenanceContent">
-
-
-            <!-- SUMMARY CARDS -->
-
-            <section class="summary-grid">
-
-                <div class="summary-card">
-
-                    <h3>Total Tasks</h3>
-
-                    <strong id="totalMaintenance">
-                        0
-                    </strong>
-
+                <div class="hotel-banner-title">
+                    Currently Managing
                 </div>
 
-
-                <div class="summary-card">
-
-                    <h3>Pending</h3>
-
-                    <strong id="pendingMaintenance">
-                        0
-                    </strong>
-
+                <div
+                    id="maintenanceHotelName"
+                    class="hotel-name">
+                    Loading hotel...
                 </div>
 
-
-                <div class="summary-card">
-
-                    <h3>In Progress</h3>
-
-                    <strong id="inProgressMaintenance">
-                        0
-                    </strong>
-
+                <div
+                    id="maintenanceHotelLocation"
+                    class="hotel-location">
+                    Loading hotel information...
                 </div>
 
-
-                <div class="summary-card">
-
-                    <h3>Completed</h3>
-
-                    <strong id="completedMaintenance">
-                        0
-                    </strong>
-
-                </div>
-
-            </section>
+            </div>
 
 
-            <!-- =================================================
-                 SEARCH AND FILTER
-            ================================================== -->
+            <!-- SUMMARY -->
+            <div class="summary-grid">
 
-            <section class="content-card">
-
-                <div class="section-header">
-
-                    <div>
-
-                        <h2>
-                            Maintenance Tasks
-                        </h2>
-
-                        <p>
-                            View and manage maintenance work
-                        </p>
-
+                <div class="summary-card summary-blue">
+                    <div class="summary-label">
+                        Total Tasks
                     </div>
 
+                    <div
+                        id="totalMaintenanceTasks"
+                        class="summary-value">
+                        0
+                    </div>
+                </div>
 
-                    <div class="filters">
+
+                <div class="summary-card summary-yellow">
+                    <div class="summary-label">
+                        Pending
+                    </div>
+
+                    <div
+                        id="pendingMaintenanceTasks"
+                        class="summary-value">
+                        0
+                    </div>
+                </div>
+
+
+                <div class="summary-card summary-orange">
+                    <div class="summary-label">
+                        In Progress
+                    </div>
+
+                    <div
+                        id="progressMaintenanceTasks"
+                        class="summary-value">
+                        0
+                    </div>
+                </div>
+
+
+                <div class="summary-card summary-green">
+                    <div class="summary-label">
+                        Completed
+                    </div>
+
+                    <div
+                        id="completedMaintenanceTasks"
+                        class="summary-value">
+                        0
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- MAINTENANCE TABLE -->
+            <section class="module-card">
+
+                <div class="module-card-header">
+
+                    <h2>
+                        Maintenance Tasks
+                    </h2>
+
+                    <p>
+                        View and manage maintenance work for the current hotel.
+                    </p>
+
+                </div>
+
+
+                <div class="toolbar">
+
+                    <div class="toolbar-left">
 
                         <input
                             type="text"
                             id="maintenanceSearch"
-                            placeholder="Search room or technician..."
-                        >
+                            class="search-box"
+                            placeholder="Search task, room, issue or technician...">
 
+                        <select id="maintenanceStatusFilter">
 
-                        <select id="maintenanceFilter">
-
-                            <option value="all">
+                            <option value="">
                                 All Status
                             </option>
 
@@ -352,63 +752,70 @@
                                 Completed
                             </option>
 
+                            <option value="Cancelled">
+                                Cancelled
+                            </option>
+
                         </select>
+
+                    </div>
+
+
+                    <div class="toolbar-right">
+
+                        <button
+                            type="button"
+                            id="refreshMaintenanceButton"
+                            class="btn btn-light">
+                            🔄 Refresh
+                        </button>
 
                     </div>
 
                 </div>
 
 
-                <!-- =================================================
-                     TABLE
-                ================================================== -->
-
                 <div class="table-container">
 
-                    <table>
+                    <table id="maintenanceTable">
 
                         <thead>
 
                             <tr>
 
-                                <th>
-                                    Task ID
-                                </th>
+                                <th>Task ID</th>
 
-                                <th>
-                                    Room
-                                </th>
+                                <th>Room</th>
 
-                                <th>
-                                    Maintenance Type
-                                </th>
+                                <th>Issue</th>
 
-                                <th>
-                                    Technician
-                                </th>
+                                <th>Technician</th>
 
-                                <th>
-                                    Date
-                                </th>
+                                <th>Date</th>
 
-                                <th>
-                                    Priority
-                                </th>
+                                <th>Cost</th>
 
-                                <th>
-                                    Status
-                                </th>
+                                <th>Status</th>
 
-                                <th>
-                                    Actions
-                                </th>
+                                <th>Actions</th>
 
                             </tr>
 
                         </thead>
 
+                        <tbody id="maintenanceTableBody">
 
-                        <tbody id="maintenanceTable">
+                            <tr>
+
+                                <td
+                                    colspan="8"
+                                    class="loading-state">
+
+                                    Loading maintenance tasks...
+
+                                </td>
+
+                            </tr>
 
                         </tbody>
 
@@ -422,1160 +829,253 @@
 
     </main>
 
-</div>
 
+    <!-- =========================================================
+         ADD / EDIT MODAL
+    ========================================================== -->
+    <div
+        id="maintenanceModal"
+        class="modal">
 
-<!-- =========================================================
-     MAINTENANCE MODAL
-========================================================== -->
+        <div class="modal-content">
 
-<div
-    id="maintenanceModal"
-    class="modal"
->
+            <div class="modal-header">
 
-    <div class="modal-content">
-
-
-        <!-- MODAL HEADER -->
-
-        <div class="modal-header">
-
-            <div>
-
-                <h2>
+                <h2 id="maintenanceModalTitle">
                     Add Maintenance Task
                 </h2>
 
-                <p>
-                    Create a new maintenance request
-                </p>
+                <button
+                    type="button"
+                    id="closeMaintenanceModal"
+                    class="modal-close">
+                    ×
+                </button>
 
             </div>
 
 
-            <button
-                type="button"
-                class="close-btn"
-                onclick="closeMaintenanceForm()"
-            >
-                &times;
-            </button>
+            <form id="maintenanceForm">
+
+                <div class="modal-body">
+
+                    <input
+                        type="hidden"
+                        id="maintenanceId">
+
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="maintenanceRoom">
+                                Room
+                            </label>
+
+                            <select id="maintenanceRoom">
+
+                                <option value="">
+                                    Select Room
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="maintenanceTechnician">
+                                Technician
+                            </label>
+
+                            <select id="maintenanceTechnician">
+
+                                <option value="">
+                                    Select Technician
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group full">
+
+                            <label for="maintenanceIssue">
+                                Issue
+                            </label>
+
+                            <input
+                                type="text"
+                                id="maintenanceIssue"
+                                required
+                                placeholder="Enter maintenance issue">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="maintenanceStatus">
+                                Status
+                            </label>
+
+                            <select id="maintenanceStatus">
+
+                                <option value="Pending">
+                                    Pending
+                                </option>
+
+                                <option value="In Progress">
+                                    In Progress
+                                </option>
+
+                                <option value="Completed">
+                                    Completed
+                                </option>
+
+                                <option value="Cancelled">
+                                    Cancelled
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="maintenanceCost">
+                                Cost (KSh)
+                            </label>
+
+                            <input
+                                type="number"
+                                id="maintenanceCost"
+                                min="0"
+                                step="0.01"
+                                value="0">
+
+                        </div>
+
+
+                        <div class="form-group full">
+
+                            <label for="maintenanceNotes">
+                                Notes
+                            </label>
+
+                            <textarea
+                                id="maintenanceNotes"
+                                placeholder="Additional maintenance notes"></textarea>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        id="cancelMaintenanceButton"
+                        class="btn btn-light">
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        id="saveMaintenanceButton"
+                        class="btn btn-primary">
+                        Save Maintenance Task
+                    </button>
+
+                </div>
+
+            </form>
 
         </div>
 
-
-        <!-- FORM -->
-
-        <form id="maintenanceForm">
+    </div>
 
 
-            <div class="form-grid">
+    <!-- =========================================================
+         VIEW MODAL
+    ========================================================== -->
+    <div
+        id="viewMaintenanceModal"
+        class="modal">
 
+        <div class="modal-content">
 
-                <!-- ROOM -->
+            <div class="modal-header">
 
-                <div class="form-group">
-
-                    <label for="maintenanceRoom">
-                        Room Number
-                    </label>
-
-                    <input
-                        type="text"
-                        id="maintenanceRoom"
-                        placeholder="e.g. 101"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- TYPE -->
-
-                <div class="form-group">
-
-                    <label for="maintenanceType">
-                        Maintenance Type
-                    </label>
-
-                    <select
-                        id="maintenanceType"
-                        required
-                    >
-
-                        <option value="">
-                            Select Maintenance Type
-                        </option>
-
-                        <option value="Electrical">
-                            Electrical
-                        </option>
-
-                        <option value="Plumbing">
-                            Plumbing
-                        </option>
-
-                        <option value="Air Conditioning">
-                            Air Conditioning
-                        </option>
-
-                        <option value="Furniture">
-                            Furniture
-                        </option>
-
-                        <option value="Television">
-                            Television
-                        </option>
-
-                        <option value="Network">
-                            Network
-                        </option>
-
-                        <option value="General Repair">
-                            General Repair
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <!-- TECHNICIAN -->
-
-                <div class="form-group">
-
-                    <label for="maintenanceTechnician">
-                        Assigned Technician
-                    </label>
-
-                    <input
-                        type="text"
-                        id="maintenanceTechnician"
-                        placeholder="Enter technician name"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- DATE -->
-
-                <div class="form-group">
-
-                    <label for="maintenanceDate">
-                        Maintenance Date
-                    </label>
-
-                    <input
-                        type="date"
-                        id="maintenanceDate"
-                        required
-                    >
-
-                </div>
-
-
-                <!-- PRIORITY -->
-
-                <div class="form-group">
-
-                    <label for="maintenancePriority">
-                        Priority
-                    </label>
-
-                    <select
-                        id="maintenancePriority"
-                        required
-                    >
-
-                        <option value="">
-                            Select Priority
-                        </option>
-
-                        <option value="Low">
-                            Low
-                        </option>
-
-                        <option value="Medium">
-                            Medium
-                        </option>
-
-                        <option value="High">
-                            High
-                        </option>
-
-                        <option value="Urgent">
-                            Urgent
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <!-- STATUS -->
-
-                <div class="form-group">
-
-                    <label for="maintenanceStatus">
-                        Status
-                    </label>
-
-                    <select
-                        id="maintenanceStatus"
-                        required
-                    >
-
-                        <option value="Pending">
-                            Pending
-                        </option>
-
-                        <option value="In Progress">
-                            In Progress
-                        </option>
-
-                        <option value="Completed">
-                            Completed
-                        </option>
-
-                    </select>
-
-                </div>
-
-            </div>
-
-
-            <!-- FORM ACTIONS -->
-
-            <div class="form-actions">
+                <h2>
+                    Maintenance Task Details
+                </h2>
 
                 <button
                     type="button"
-                    class="secondary-btn"
-                    onclick="closeMaintenanceForm()"
-                >
-                    Cancel
-                </button>
-
-
-                <button
-                    type="submit"
-                    class="primary-btn"
-                >
-                    Save Task
+                    id="closeViewMaintenanceModal"
+                    class="modal-close">
+                    ×
                 </button>
 
             </div>
 
-        </form>
+
+            <div class="modal-body">
+
+                <div
+                    id="maintenanceViewContent"
+                    class="view-grid">
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    id="closeViewMaintenanceButton"
+                    class="btn btn-light">
+                    Close
+                </button>
+
+            </div>
+
+        </div>
 
     </div>
 
-</div>
 
+    <!-- TOAST -->
+    <div
+        id="toastContainer"
+        class="toast-container">
+    </div>
 
-<!-- =========================================================
-     SUPABASE
-========================================================== -->
 
-<script src="./supabase.js"></script>
+    <!-- =========================================================
+         LIBRARIES / CENTRAL SYSTEM
+    ========================================================== -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <script src="./supabase.js"></script>
 
-<!-- =========================================================
-     GLOBAL SCRIPT
-     
-     IMPORTANT:
-     This replaces the old page-specific role-control system.
-========================================================== -->
+    <script src="./access-control.js"></script>
 
-<script src="./script.js"></script>
+    <script src="./sidebar.js"></script>
 
+    <!-- PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-<!-- =========================================================
-     MAINTENANCE SCRIPT
-========================================================== -->
-
-<script>
-
-let maintenanceTasks = [];
-
-
-// ============================================================
-// GET CURRENT ROLE
-// ============================================================
-
-function getMaintenanceRole() {
-
-    return (
-        sessionStorage.getItem("userRole") ||
-        localStorage.getItem("userRole") ||
-        ""
-    )
-        .toLowerCase()
-        .trim();
-
-}
-
-
-// ============================================================
-// CHECK MAINTENANCE ACCESS
-// ============================================================
-
-function maintenanceAccessAllowed(showMessage = true) {
-
-    const role = getMaintenanceRole();
-
-
-    const allowedRoles = [
-        "system_owner",
-        "hotel_owner",
-        "manager"
-    ];
-
-
-    if (!allowedRoles.includes(role)) {
-
-        if (showMessage) {
-
-            alert(
-                "Access denied. You do not have permission to use the Maintenance module."
-            );
-
-        }
-
-        return false;
-    }
-
-
-    return true;
-
-}
-
-
-// ============================================================
-// PROTECT MAINTENANCE PAGE
-// ============================================================
-
-function protectMaintenancePage() {
-
-    const role = getMaintenanceRole();
-
-
-    const allowedRoles = [
-        "system_owner",
-        "hotel_owner",
-        "manager"
-    ];
-
-
-    const content =
-        document.getElementById(
-            "maintenanceContent"
-        );
-
-
-    const denied =
-        document.getElementById(
-            "maintenanceAccessDenied"
-        );
-
-
-    const addButton =
-        document.getElementById(
-            "addMaintenanceBtn"
-        );
-
-
-    if (allowedRoles.includes(role)) {
-
-        if (content) {
-            content.style.display = "";
-        }
-
-        if (denied) {
-            denied.style.display = "none";
-        }
-
-        if (addButton) {
-            addButton.style.display = "";
-        }
-
-        return true;
-    }
-
-
-    if (content) {
-        content.style.display = "none";
-    }
-
-
-    if (addButton) {
-        addButton.style.display = "none";
-    }
-
-
-    if (denied) {
-        denied.style.display = "block";
-    }
-
-
-    /*
-     * Give the global authentication/session
-     * system a moment to finish loading.
-     */
-    setTimeout(function() {
-
-        const latestRole =
-            getMaintenanceRole();
-
-
-        if (!allowedRoles.includes(latestRole)) {
-
-            window.location.href =
-                "./index.html";
-
-        }
-
-    }, 1000);
-
-
-    return false;
-
-}
-
-
-// ============================================================
-// OPEN MAINTENANCE FORM
-// ============================================================
-
-function openMaintenanceForm() {
-
-    if (!maintenanceAccessAllowed()) {
-        return;
-    }
-
-
-    const modal =
-        document.getElementById(
-            "maintenanceModal"
-        );
-
-
-    const form =
-        document.getElementById(
-            "maintenanceForm"
-        );
-
-
-    if (!modal || !form) {
-        return;
-    }
-
-
-    form.reset();
-
-
-    const today =
-        new Date()
-            .toISOString()
-            .split("T")[0];
-
-
-    document.getElementById(
-        "maintenanceDate"
-    ).value = today;
-
-
-    modal.style.display = "flex";
-
-}
-
-
-// ============================================================
-// CLOSE FORM
-// ============================================================
-
-function closeMaintenanceForm() {
-
-    const modal =
-        document.getElementById(
-            "maintenanceModal"
-        );
-
-
-    if (modal) {
-        modal.style.display = "none";
-    }
-
-}
-
-
-// ============================================================
-// GENERATE TASK ID
-// ============================================================
-
-function generateMaintenanceId() {
-
-    return (
-        "MT-" +
-        String(
-            maintenanceTasks.length + 1
-        ).padStart(3, "0")
-    );
-
-}
-
-
-// ============================================================
-// ADD MAINTENANCE TASK
-// ============================================================
-
-function saveMaintenanceTask(event) {
-
-    event.preventDefault();
-
-
-    if (!maintenanceAccessAllowed()) {
-        return;
-    }
-
-
-    const room =
-        document.getElementById(
-            "maintenanceRoom"
-        ).value.trim();
-
-
-    const type =
-        document.getElementById(
-            "maintenanceType"
-        ).value;
-
-
-    const technician =
-        document.getElementById(
-            "maintenanceTechnician"
-        ).value.trim();
-
-
-    const date =
-        document.getElementById(
-            "maintenanceDate"
-        ).value;
-
-
-    const priority =
-        document.getElementById(
-            "maintenancePriority"
-        ).value;
-
-
-    const status =
-        document.getElementById(
-            "maintenanceStatus"
-        ).value;
-
-
-    const newTask = {
-
-        id: generateMaintenanceId(),
-
-        room: room,
-
-        type: type,
-
-        technician: technician,
-
-        date: date,
-
-        priority: priority,
-
-        status: status
-
-    };
-
-
-    maintenanceTasks.push(
-        newTask
-    );
-
-
-    renderMaintenanceTasks();
-
-    updateMaintenanceCounts();
-
-    closeMaintenanceForm();
-
-}
-
-
-// ============================================================
-// RENDER MAINTENANCE TABLE
-// ============================================================
-
-function renderMaintenanceTasks() {
-
-    const table =
-        document.getElementById(
-            "maintenanceTable"
-        );
-
-
-    if (!table) {
-        return;
-    }
-
-
-    table.innerHTML = "";
-
-
-    if (maintenanceTasks.length === 0) {
-
-        table.innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="8"
-                    class="maintenance-empty"
-                >
-                    No maintenance tasks found.
-                </td>
-
-            </tr>
-
-        `;
-
-        return;
-    }
-
-
-    maintenanceTasks.forEach(
-        function(item) {
-
-            const row =
-                document.createElement(
-                    "tr"
-                );
-
-
-            const priorityClass =
-                String(
-                    item.priority || ""
-                )
-                .toLowerCase();
-
-
-            const statusClass =
-                String(
-                    item.status || ""
-                )
-                .toLowerCase()
-                .replace(/\s+/g, "-");
-
-
-            row.innerHTML = `
-
-                <td>
-                    ${escapeMaintenanceHtml(item.id)}
-                </td>
-
-                <td>
-                    ${escapeMaintenanceHtml(item.room)}
-                </td>
-
-                <td>
-                    ${escapeMaintenanceHtml(item.type)}
-                </td>
-
-                <td>
-                    ${escapeMaintenanceHtml(item.technician)}
-                </td>
-
-                <td>
-                    ${escapeMaintenanceHtml(item.date)}
-                </td>
-
-                <td>
-
-                    <span
-                        class="status-badge ${priorityClass}"
-                    >
-                        ${escapeMaintenanceHtml(item.priority)}
-                    </span>
-
-                </td>
-
-                <td>
-
-                    <span
-                        class="status-badge ${statusClass}"
-                    >
-                        ${escapeMaintenanceHtml(item.status)}
-                    </span>
-
-                </td>
-
-                <td>
-
-                    <button
-                        type="button"
-                        class="action-btn"
-                        onclick="viewMaintenance('${escapeMaintenanceAttribute(item.id)}')"
-                    >
-                        View
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="action-btn danger"
-                        onclick="deleteMaintenance('${escapeMaintenanceAttribute(item.id)}')"
-                    >
-                        Delete
-                    </button>
-
-                </td>
-
-            `;
-
-
-            table.appendChild(row);
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// HTML ESCAPE
-// ============================================================
-
-function escapeMaintenanceHtml(value) {
-
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
-
-
-// ============================================================
-// ATTRIBUTE ESCAPE
-// ============================================================
-
-function escapeMaintenanceAttribute(value) {
-
-    return String(value ?? "")
-        .replace(/\\/g, "\\\\")
-        .replace(/'/g, "\\'");
-
-}
-
-
-// ============================================================
-// UPDATE COUNTS
-// ============================================================
-
-function updateMaintenanceCounts() {
-
-    const total =
-        document.getElementById(
-            "totalMaintenance"
-        );
-
-
-    const pending =
-        document.getElementById(
-            "pendingMaintenance"
-        );
-
-
-    const progress =
-        document.getElementById(
-            "inProgressMaintenance"
-        );
-
-
-    const completed =
-        document.getElementById(
-            "completedMaintenance"
-        );
-
-
-    if (total) {
-
-        total.textContent =
-            maintenanceTasks.length;
-
-    }
-
-
-    if (pending) {
-
-        pending.textContent =
-            maintenanceTasks.filter(
-                item =>
-                    item.status === "Pending"
-            ).length;
-
-    }
-
-
-    if (progress) {
-
-        progress.textContent =
-            maintenanceTasks.filter(
-                item =>
-                    item.status === "In Progress"
-            ).length;
-
-    }
-
-
-    if (completed) {
-
-        completed.textContent =
-            maintenanceTasks.filter(
-                item =>
-                    item.status === "Completed"
-            ).length;
-
-    }
-
-}
-
-
-// ============================================================
-// SEARCH + FILTER
-// ============================================================
-
-function applyMaintenanceFilters() {
-
-    const searchInput =
-        document.getElementById(
-            "maintenanceSearch"
-        );
-
-
-    const filterInput =
-        document.getElementById(
-            "maintenanceFilter"
-        );
-
-
-    const search =
-        (
-            searchInput
-                ? searchInput.value
-                : ""
-        )
-        .toLowerCase()
-        .trim();
-
-
-    const filter =
-        filterInput
-            ? filterInput.value
-            : "all";
-
-
-    const rows =
-        document.querySelectorAll(
-            "#maintenanceTable tr"
-        );
-
-
-    rows.forEach(function(row) {
-
-        const text =
-            row.textContent
-                .toLowerCase();
-
-
-        const matchesSearch =
-            !search ||
-            text.includes(search);
-
-
-        const matchesFilter =
-            filter === "all" ||
-            text.includes(
-                filter.toLowerCase()
-            );
-
-
-        row.style.display =
-            matchesSearch &&
-            matchesFilter
-                ? ""
-                : "none";
-
-    });
-
-}
-
-
-// ============================================================
-// SEARCH
-// ============================================================
-
-function searchMaintenance() {
-
-    if (!maintenanceAccessAllowed(false)) {
-        return;
-    }
-
-
-    applyMaintenanceFilters();
-
-}
-
-
-// ============================================================
-// FILTER
-// ============================================================
-
-function filterMaintenance() {
-
-    if (!maintenanceAccessAllowed(false)) {
-        return;
-    }
-
-
-    applyMaintenanceFilters();
-
-}
-
-
-// ============================================================
-// VIEW MAINTENANCE
-// ============================================================
-
-function viewMaintenance(id) {
-
-    if (!maintenanceAccessAllowed()) {
-        return;
-    }
-
-
-    const item =
-        maintenanceTasks.find(
-            task =>
-                task.id === id
-        );
-
-
-    if (!item) {
-        return;
-    }
-
-
-    alert(
-
-        "Task ID: " +
-        item.id +
-
-        "\nRoom: " +
-        item.room +
-
-        "\nMaintenance Type: " +
-        item.type +
-
-        "\nTechnician: " +
-        item.technician +
-
-        "\nDate: " +
-        item.date +
-
-        "\nPriority: " +
-        item.priority +
-
-        "\nStatus: " +
-        item.status
-
-    );
-
-}
-
-
-// ============================================================
-// DELETE MAINTENANCE
-// ============================================================
-
-function deleteMaintenance(id) {
-
-    if (!maintenanceAccessAllowed()) {
-        return;
-    }
-
-
-    const confirmed =
-        confirm(
-            "Are you sure you want to delete this maintenance task?"
-        );
-
-
-    if (!confirmed) {
-        return;
-    }
-
-
-    maintenanceTasks =
-        maintenanceTasks.filter(
-            task =>
-                task.id !== id
-        );
-
-
-    renderMaintenanceTasks();
-
-    updateMaintenanceCounts();
-
-    applyMaintenanceFilters();
-
-}
-
-
-// ============================================================
-// CLOSE MODAL WHEN CLICKING OUTSIDE
-// ============================================================
-
-window.addEventListener(
-    "click",
-    function(event) {
-
-        const modal =
-            document.getElementById(
-                "maintenanceModal"
-            );
-
-
-        if (
-            modal &&
-            event.target === modal
-        ) {
-
-            closeMaintenanceForm();
-
-        }
-
-    }
-);
-
-
-// ============================================================
-// INITIALIZE MAINTENANCE PAGE
-// ============================================================
-
-function initializeMaintenancePage() {
-
-    protectMaintenancePage();
-
-    renderMaintenanceTasks();
-
-    updateMaintenanceCounts();
-
-
-    const form =
-        document.getElementById(
-            "maintenanceForm"
-        );
-
-
-    if (form) {
-
-        form.addEventListener(
-            "submit",
-            saveMaintenanceTask
-        );
-
-    }
-
-
-    const search =
-        document.getElementById(
-            "maintenanceSearch"
-        );
-
-
-    if (search) {
-
-        search.addEventListener(
-            "input",
-            searchMaintenance
-        );
-
-    }
-
-
-    const filter =
-        document.getElementById(
-            "maintenanceFilter"
-        );
-
-
-    if (filter) {
-
-        filter.addEventListener(
-            "change",
-            filterMaintenance
-        );
-
-    }
-
-}
-
-
-// ============================================================
-// START PAGE
-// ============================================================
-
-if (
-    document.readyState ===
-    "loading"
-) {
-
-    document.addEventListener(
-        "DOMContentLoaded",
-        initializeMaintenancePage
-    );
-
-} else {
-
-    initializeMaintenancePage();
-
-}
-
-
-// ============================================================
-// MAKE FUNCTIONS AVAILABLE TO HTML
-// ============================================================
-
-window.openMaintenanceForm =
-    openMaintenanceForm;
-
-window.closeMaintenanceForm =
-    closeMaintenanceForm;
-
-window.searchMaintenance =
-    searchMaintenance;
-
-window.filterMaintenance =
-    filterMaintenance;
-
-window.viewMaintenance =
-    viewMaintenance;
-
-window.deleteMaintenance =
-    deleteMaintenance;
-
-</script>
+    <!-- MAINTENANCE LOGIC -->
+    <script src="./maintenance.js"></script>
 
 </body>
 </html>

@@ -1,842 +1,722 @@
-"use strict";
-
 /* =========================================================
    EDU TECH HOTEL MANAGEMENT SYSTEM
-   SAFE GLOBAL ROLE CONTROL + LOGOUT
+   GLOBAL SYSTEM SCRIPT
+   ---------------------------------------------------------
+   PURPOSE:
+   - Central role management
+   - Sidebar permissions
+   - Active module highlighting
+   - Hotel context
+   - Logout
    ========================================================= */
 
+(function () {
+    "use strict";
 
-/* =========================================================
-   ROLE PERMISSIONS
-   ========================================================= */
+    /* =====================================================
+       ROLE PERMISSIONS
+       ===================================================== */
 
-const ROLE_PERMISSIONS = {
+    const ROLE_PERMISSIONS = {
 
-    system_owner: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings",
-        "hotels"
-    ],
+        system_owner: [
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "bank_accounts",
+            "financial_transactions",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "hotels",
+            "users",
+            "settings"
+        ],
 
-    hotel_owner: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings"
-    ],
+        hotel_owner: [
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "bank_accounts",
+            "financial_transactions",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "users",
+            "settings"
+        ],
 
-    manager: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "restaurant",
-        "inventory",
-        "payments",
-        "expenses",
-        "employees",
-        "housekeeping",
-        "maintenance",
-        "reports",
-        "settings"
-    ],
+        manager: [
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "bank_accounts",
+            "financial_transactions",
+            "payments",
+            "expenses",
+            "employees",
+            "housekeeping",
+            "maintenance",
+            "reports",
+            "users",
+            "settings"
+        ],
 
-    receptionist: [
-        "dashboard",
-        "rooms",
-        "guests",
-        "reservations",
-        "checkin",
-        "checkout",
-        "payments",
-        "reports"
-    ]
+        receptionist: [
+            "dashboard",
+            "rooms",
+            "guests",
+            "reservations",
+            "checkin",
+            "checkout",
+            "restaurant",
+            "inventory",
+            "payments",
+            "settings"
+        ]
 
-};
-
-
-/* =========================================================
-   PROTECTED MODULES
-   ========================================================= */
-
-const PROTECTED_MODULES = [
-    "rooms",
-    "guests",
-    "reservations",
-    "checkin",
-    "checkout",
-    "restaurant",
-    "inventory",
-    "payments",
-    "expenses",
-    "employees",
-    "housekeeping",
-    "maintenance",
-    "reports",
-    "settings",
-    "hotels"
-];
+    };
 
 
-/* =========================================================
-   GET CURRENT USER ROLE
-   ========================================================= */
+    /* =====================================================
+       STORAGE HELPERS
+       ===================================================== */
 
-function getCurrentUserRole() {
+    function getStoredValue(key) {
 
-    const sessionRole =
-        sessionStorage.getItem("userRole");
-
-    const localRole =
-        localStorage.getItem("userRole");
-
-    return String(
-        sessionRole ||
-        localRole ||
-        ""
-    )
-        .toLowerCase()
-        .trim();
-
-}
-
-
-/* =========================================================
-   GET MODULE NAME FROM LINK
-   ========================================================= */
-
-function getModuleFromLink(element) {
-
-    if (!element) {
-        return "";
-    }
-
-    const dataModule =
-        element.getAttribute("data-module");
-
-    if (dataModule) {
-
-        return String(dataModule)
-            .toLowerCase()
-            .trim();
-
-    }
-
-    const href =
-        element.getAttribute("href") || "";
-
-    const cleanHref =
-        href
-            .split("?")[0]
-            .split("#")[0]
-            .toLowerCase()
-            .trim();
-
-    const fileName =
-        cleanHref.substring(
-            cleanHref.lastIndexOf("/") + 1
+        return (
+            sessionStorage.getItem(key) ||
+            localStorage.getItem(key) ||
+            ""
         );
 
-    return fileName
-        .replace(".html", "")
-        .trim();
-
-}
-
-
-/* =========================================================
-   CHECK DASHBOARD
-   ========================================================= */
-
-function isDashboardLink(element) {
-
-    if (!element) {
-        return false;
     }
 
-    const moduleName =
-        getModuleFromLink(element);
 
-    const href =
-        String(
-            element.getAttribute("href") || ""
-        )
-            .toLowerCase()
-            .trim();
+    function setStoredValue(key, value) {
 
-    return (
-        moduleName === "dashboard" ||
-        moduleName === "index" ||
-        href === "./" ||
-        href === "/" ||
-        href.endsWith("index.html")
-    );
-
-}
-
-
-/* =========================================================
-   CHECK LOGOUT
-   ========================================================= */
-
-function isLogoutElement(element) {
-
-    if (!element) {
-        return false;
-    }
-
-    const dataAction =
-        String(
-            element.getAttribute("data-action") || ""
-        )
-            .toLowerCase()
-            .trim();
-
-    const dataModule =
-        String(
-            element.getAttribute("data-module") || ""
-        )
-            .toLowerCase()
-            .trim();
-
-    const id =
-        String(
-            element.id || ""
-        )
-            .toLowerCase()
-            .trim();
-
-    const className =
-        String(
-            typeof element.className === "string"
-                ? element.className
-                : ""
-        )
-            .toLowerCase()
-            .trim();
-
-    const href =
-        String(
-            element.getAttribute("href") || ""
-        )
-            .toLowerCase()
-            .trim();
-
-    const text =
-        String(
-            element.textContent || ""
-        )
-            .toLowerCase()
-            .replace(/\s+/g, " ")
-            .trim();
-
-    if (
-        dataAction === "logout" ||
-        dataAction === "log-out" ||
-        dataAction === "signout" ||
-        dataAction === "sign-out"
-    ) {
-        return true;
-    }
-
-    if (
-        dataModule === "logout" ||
-        dataModule === "log-out" ||
-        dataModule === "signout" ||
-        dataModule === "sign-out"
-    ) {
-        return true;
-    }
-
-    if (
-        id.includes("logout") ||
-        id.includes("log-out") ||
-        id.includes("signout") ||
-        id.includes("sign-out")
-    ) {
-        return true;
-    }
-
-    if (
-        className.includes("logout") ||
-        className.includes("log-out") ||
-        className.includes("signout") ||
-        className.includes("sign-out")
-    ) {
-        return true;
-    }
-
-    if (
-        href.includes("logout") ||
-        href.includes("signout") ||
-        href.includes("sign-out")
-    ) {
-        return true;
-    }
-
-    if (
-        text === "logout" ||
-        text === "log out" ||
-        text === "signout" ||
-        text === "sign out"
-    ) {
-        return true;
-    }
-
-    return false;
-
-}
-
-
-/* =========================================================
-   LOGOUT FUNCTION
-   ========================================================= */
-
-async function logoutUser(event) {
-
-    if (event) {
-        event.preventDefault();
-    }
-
-    try {
-
-        if (
-            typeof supabaseClient !== "undefined" &&
-            supabaseClient &&
-            supabaseClient.auth
-        ) {
-
-            await supabaseClient.auth.signOut();
-
+        if (value === null || value === undefined) {
+            sessionStorage.removeItem(key);
+            localStorage.removeItem(key);
+            return;
         }
 
-    } catch (error) {
+        sessionStorage.setItem(key, String(value));
+        localStorage.setItem(key, String(value));
 
-        console.error(
-            "Logout error:",
-            error
+    }
+
+
+    function removeStoredValue(key) {
+
+        sessionStorage.removeItem(key);
+        localStorage.removeItem(key);
+
+    }
+
+
+    /* =====================================================
+       ROLE
+       ===================================================== */
+
+    function getUserRole() {
+
+        return (
+            getStoredValue("userRole") ||
+            getStoredValue("role") ||
+            getStoredValue("user_role") ||
+            ""
+        ).toLowerCase();
+
+    }
+
+
+    /* =====================================================
+       USER NAME
+       ===================================================== */
+
+    function getUserName() {
+
+        return (
+            getStoredValue("userName") ||
+            getStoredValue("full_name") ||
+            getStoredValue("user_name") ||
+            "System User"
         );
 
     }
 
 
-    /*
-       Remove only login/session information.
-       Do not clear the entire browser storage.
-    */
+    /* =====================================================
+       HOTEL CONTEXT
+       ===================================================== */
 
-    sessionStorage.removeItem("userRole");
-    sessionStorage.removeItem("userName");
-    sessionStorage.removeItem("hotelId");
+    function getActiveHotelId() {
 
-    localStorage.removeItem("userRole");
-    localStorage.removeItem("userName");
-    localStorage.removeItem("hotelId");
+        return (
+            getStoredValue("eduTechActiveHotelId") ||
+            getStoredValue("activeHotelId") ||
+            getStoredValue("selectedHotelId") ||
+            getStoredValue("hotelId") ||
+            getStoredValue("hotel_id") ||
+            ""
+        );
 
-
-    /*
-       Return to login.
-    */
-
-    window.location.href =
-        "./login.html";
-
-}
-
-
-window.logoutUser =
-    logoutUser;
-
-
-/* =========================================================
-   FIND EXISTING LOGOUT
-   ========================================================= */
-
-function findLogoutElement(sidebar) {
-
-    if (!sidebar) {
-        return null;
     }
 
 
-    /*
-       First look for explicit Logout.
-    */
+    function getActiveHotelName() {
 
-    const explicitLogout =
-        sidebar.querySelector(
-            '[data-action="logout"]'
+        return (
+            getStoredValue("eduTechActiveHotelName") ||
+            getStoredValue("activeHotelName") ||
+            getStoredValue("selectedHotelName") ||
+            getStoredValue("hotelName") ||
+            ""
         );
 
-    if (explicitLogout) {
-        return explicitLogout;
     }
 
 
-    /*
-       Then inspect existing links/buttons.
-    */
-
-    const elements =
-        sidebar.querySelectorAll(
-            "a, button"
-        );
-
-    for (
-        let i = 0;
-        i < elements.length;
-        i++
-    ) {
+    function setActiveHotel(hotelId, hotelName) {
 
         if (
-            isLogoutElement(
-                elements[i]
-            )
+            hotelId === null ||
+            hotelId === undefined ||
+            hotelId === ""
         ) {
-
-            return elements[i];
-
+            clearActiveHotel();
+            return;
         }
 
-    }
+        setStoredValue(
+            "eduTechActiveHotelId",
+            hotelId
+        );
 
+        setStoredValue(
+            "activeHotelId",
+            hotelId
+        );
 
-    return null;
+        setStoredValue(
+            "selectedHotelId",
+            hotelId
+        );
 
-}
+        setStoredValue(
+            "hotelId",
+            hotelId
+        );
 
+        setStoredValue(
+            "hotel_id",
+            hotelId
+        );
 
-/* =========================================================
-   CREATE LOGOUT IF MISSING
-   ========================================================= */
+        if (hotelName) {
 
-function ensureLogout(sidebar) {
-
-    if (!sidebar) {
-        return null;
-    }
-
-
-    let logout =
-        findLogoutElement(sidebar);
-
-
-    /*
-       If Logout already exists,
-       use it.
-    */
-
-    if (!logout) {
-
-        logout =
-            document.createElement(
-                "button"
+            setStoredValue(
+                "eduTechActiveHotelName",
+                hotelName
             );
 
-        logout.type =
-            "button";
+            setStoredValue(
+                "activeHotelName",
+                hotelName
+            );
 
-        logout.className =
-            "logout-btn";
+            setStoredValue(
+                "selectedHotelName",
+                hotelName
+            );
 
-        logout.textContent =
-            "Logout";
+            setStoredValue(
+                "hotelName",
+                hotelName
+            );
 
-        logout.setAttribute(
-            "data-action",
-            "logout"
-        );
+        }
 
-
-        sidebar.appendChild(
-            logout
+        window.dispatchEvent(
+            new CustomEvent(
+                "eduTechHotelChanged",
+                {
+                    detail: {
+                        hotelId: String(hotelId),
+                        hotelName: hotelName || ""
+                    }
+                }
+            )
         );
 
     }
 
 
-    /*
-       Give the Logout control a standard
-       identifier.
-    */
+    function clearActiveHotel() {
 
-    logout.setAttribute(
-        "data-action",
-        "logout"
+        [
+            "eduTechActiveHotelId",
+            "activeHotelId",
+            "selectedHotelId",
+            "hotelId",
+            "hotel_id",
+            "eduTechActiveHotelName",
+            "activeHotelName",
+            "selectedHotelName",
+            "hotelName"
+        ].forEach(removeStoredValue);
+
+        window.dispatchEvent(
+            new CustomEvent(
+                "eduTechHotelChanged",
+                {
+                    detail: {
+                        hotelId: "",
+                        hotelName: ""
+                    }
+                }
+            )
+        );
+
+    }
+
+
+    /* =====================================================
+       MODULE FROM CURRENT PAGE
+       ===================================================== */
+
+    function getCurrentModule() {
+
+        const fileName =
+            window.location.pathname
+                .split("/")
+                .pop()
+                .toLowerCase();
+
+        const modules = {
+
+            "index.html": "dashboard",
+            "rooms.html": "rooms",
+            "guests.html": "guests",
+            "reservations.html": "reservations",
+            "checkin.html": "checkin",
+            "checkout.html": "checkout",
+            "restaurant.html": "restaurant",
+            "inventory.html": "inventory",
+            "bank_accounts.html": "bank_accounts",
+            "financial_transactions.html":
+                "financial_transactions",
+            "payments.html": "payments",
+            "expenses.html": "expenses",
+            "employees.html": "employees",
+            "housekeeping.html": "housekeeping",
+            "maintenance.html": "maintenance",
+            "reports.html": "reports",
+            "hotels.html": "hotels",
+            "users.html": "users",
+            "settings.html": "settings"
+
+        };
+
+        return modules[fileName] || "";
+
+    }
+
+
+    /* =====================================================
+       APPLY ROLE PERMISSIONS
+       ===================================================== */
+
+    function applyRolePermissions() {
+
+        const role = getUserRole();
+
+        const allowed =
+            ROLE_PERMISSIONS[role] ||
+            ROLE_PERMISSIONS.receptionist;
+
+        const links =
+            document.querySelectorAll(
+                ".sidebar a[data-module]"
+            );
+
+        links.forEach(function (link) {
+
+            const module =
+                link.getAttribute("data-module");
+
+            if (
+                allowed.includes(module)
+            ) {
+
+                link.style.display = "";
+
+            } else {
+
+                link.style.display = "none";
+
+            }
+
+        });
+
+        /*
+         * Hotels must only be visible to System Owner.
+         */
+
+        const hotelLink =
+            document.querySelector(
+                '.sidebar a[data-module="hotels"]'
+            );
+
+        if (hotelLink) {
+
+            hotelLink.style.display =
+                role === "system_owner"
+                    ? ""
+                    : "none";
+
+        }
+
+    }
+
+
+    /* =====================================================
+       ACTIVE MODULE
+       ===================================================== */
+
+    function applyActiveModule() {
+
+        const currentModule =
+            getCurrentModule();
+
+        const links =
+            document.querySelectorAll(
+                ".sidebar a[data-module]"
+            );
+
+        links.forEach(function (link) {
+
+            link.classList.remove("active");
+
+            const module =
+                link.getAttribute("data-module");
+
+            if (
+                module === currentModule
+            ) {
+
+                link.classList.add("active");
+
+            }
+
+        });
+
+    }
+
+
+    /* =====================================================
+       DISPLAY USER
+       ===================================================== */
+
+    function updateUserDisplay() {
+
+        const userName =
+            getUserName();
+
+        const role =
+            getUserRole();
+
+        const userElements =
+            document.querySelectorAll(
+                "#userDisplay, #dashboardUserName"
+            );
+
+        userElements.forEach(function (element) {
+
+            element.textContent =
+                userName;
+
+        });
+
+        const roleElements =
+            document.querySelectorAll(
+                "#dashboardUserRole, #userRoleDisplay"
+            );
+
+        roleElements.forEach(function (element) {
+
+            element.textContent =
+                role || "User";
+
+        });
+
+    }
+
+
+    /* =====================================================
+       DISPLAY HOTEL
+       ===================================================== */
+
+    function updateHotelDisplay() {
+
+        const hotelId =
+            getActiveHotelId();
+
+        const hotelName =
+            getActiveHotelName();
+
+        const elements =
+            document.querySelectorAll(
+                "#activeHotelInfo, #dashboardHotelName"
+            );
+
+        elements.forEach(function (element) {
+
+            if (hotelName) {
+
+                element.textContent =
+                    hotelName;
+
+            } else if (hotelId) {
+
+                element.textContent =
+                    "Hotel ID " + hotelId;
+
+            } else {
+
+                element.textContent =
+                    "No hotel selected";
+
+            }
+
+        });
+
+    }
+
+
+    /* =====================================================
+       LOGOUT
+       ===================================================== */
+
+    async function logout() {
+
+        try {
+
+            if (
+                window.supabaseClient &&
+                window.supabaseClient.auth
+            ) {
+
+                await window.supabaseClient.auth.signOut();
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Logout error:",
+                error
+            );
+
+        }
+
+        [
+            "userRole",
+            "role",
+            "user_role",
+            "userName",
+            "full_name",
+            "user_name",
+            "eduTechActiveHotelId",
+            "activeHotelId",
+            "selectedHotelId",
+            "hotelId",
+            "hotel_id",
+            "eduTechActiveHotelName",
+            "activeHotelName",
+            "selectedHotelName",
+            "hotelName"
+        ].forEach(function (key) {
+
+            sessionStorage.removeItem(key);
+            localStorage.removeItem(key);
+
+        });
+
+        window.location.href =
+            "./login.html";
+
+    }
+
+
+    /* =====================================================
+       BIND LOGOUT
+       ===================================================== */
+
+    function bindLogout() {
+
+        const logoutButton =
+            document.getElementById(
+                "sidebarLogoutButton"
+            );
+
+        if (!logoutButton) {
+            return;
+        }
+
+        logoutButton.onclick =
+            function () {
+
+                logout();
+
+            };
+
+    }
+
+
+    /* =====================================================
+       INITIALIZE
+       ===================================================== */
+
+    function initialize() {
+
+        applyRolePermissions();
+
+        applyActiveModule();
+
+        updateUserDisplay();
+
+        updateHotelDisplay();
+
+        bindLogout();
+
+    }
+
+
+    /* =====================================================
+       SIDEBAR READY
+       ===================================================== */
+
+    document.addEventListener(
+        "eduTechSidebarReady",
+        function () {
+
+            initialize();
+
+        }
     );
 
 
-    logout.classList.add(
-        "logout-btn"
+    /* =====================================================
+       HOTEL CHANGED
+       ===================================================== */
+
+    window.addEventListener(
+        "eduTechHotelChanged",
+        function () {
+
+            updateHotelDisplay();
+
+        }
     );
 
 
-    /*
-       Remove any role hiding.
-    */
-
-    logout.classList.remove(
-        "role-hidden"
-    );
-
-    logout.classList.remove(
-        "hidden"
-    );
-
-    logout.classList.remove(
-        "d-none"
-    );
-
-    logout.removeAttribute(
-        "aria-hidden"
-    );
-
-
-    /*
-       Do NOT repeatedly force inline
-       display styles.
-
-       The CSS already controls the
-       appearance of the Logout button.
-    */
-
-
-    /*
-       Attach logout event only once.
-    */
+    /* =====================================================
+       PAGE LOAD
+       ===================================================== */
 
     if (
-        logout.dataset.logoutBound !== "true"
+        document.readyState === "loading"
     ) {
 
-        logout.addEventListener(
-            "click",
-            logoutUser
-        );
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
 
-        logout.dataset.logoutBound =
-            "true";
-
-    }
-
-
-    return logout;
-
-}
-
-
-/* =========================================================
-   SET MODULE VISIBILITY
-   ========================================================= */
-
-function setModuleVisibility(
-    element,
-    visible
-) {
-
-    if (!element) {
-        return;
-    }
-
-
-    /*
-       Never hide Logout.
-    */
-
-    if (
-        isLogoutElement(element)
-    ) {
-
-        element.classList.remove(
-            "role-hidden"
-        );
-
-        element.removeAttribute(
-            "aria-hidden"
-        );
-
-        return;
-
-    }
-
-
-    if (visible) {
-
-        element.classList.remove(
-            "role-hidden"
-        );
-
-        element.removeAttribute(
-            "aria-hidden"
-        );
-
-    } else {
-
-        element.classList.add(
-            "role-hidden"
-        );
-
-        element.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   APPLY ROLE CONTROL
-   ========================================================= */
-
-function applyGlobalRoleSidebar() {
-
-    const sidebars =
-        document.querySelectorAll(
-            ".sidebar"
-        );
-
-
-    if (!sidebars.length) {
-        return;
-    }
-
-
-    const role =
-        getCurrentUserRole();
-
-
-    /*
-       If no role is available yet,
-       don't hide anything.
-    */
-
-    if (!role) {
-
-        sidebars.forEach(
-            function(sidebar) {
-
-                ensureLogout(sidebar);
+                initialize();
 
             }
         );
 
-        return;
+    } else {
+
+        initialize();
 
     }
 
 
-    const allowedModules =
-        ROLE_PERMISSIONS[role] || [];
+    /* =====================================================
+       PUBLIC API
+       ===================================================== */
 
+    window.EDUTECH =
+        window.EDUTECH || {};
 
-    sidebars.forEach(
-        function(sidebar) {
+    window.EDUTECH.getCurrentModule =
+        getCurrentModule;
 
-            /*
-               Make sure Logout exists
-               on this page.
-            */
+    window.EDUTECH.getUserRole =
+        getUserRole;
 
-            ensureLogout(sidebar);
+    window.EDUTECH.getUserName =
+        getUserName;
 
+    window.EDUTECH.getActiveHotelId =
+        getActiveHotelId;
 
-            const links =
-                sidebar.querySelectorAll(
-                    "a"
-                );
+    window.EDUTECH.getActiveHotelName =
+        getActiveHotelName;
 
+    window.EDUTECH.setActiveHotel =
+        setActiveHotel;
 
-            links.forEach(
-                function(link) {
+    window.EDUTECH.clearActiveHotel =
+        clearActiveHotel;
 
-                    /*
-                       Never process Logout
-                       as a module.
-                    */
+    window.EDUTECH.logout =
+        logout;
 
-                    if (
-                        isLogoutElement(link)
-                    ) {
+    window.getCurrentModule =
+        getCurrentModule;
 
-                        setModuleVisibility(
-                            link,
-                            true
-                        );
+    window.getUserRole =
+        getUserRole;
 
-                        return;
+    window.getUserName =
+        getUserName;
 
-                    }
+    window.getActiveHotelId =
+        getActiveHotelId;
 
+    window.getActiveHotelName =
+        getActiveHotelName;
 
-                    /*
-                       Dashboard is always visible.
-                    */
+    window.setActiveHotel =
+        setActiveHotel;
 
-                    if (
-                        isDashboardLink(link)
-                    ) {
+    window.clearActiveHotel =
+        clearActiveHotel;
 
-                        setModuleVisibility(
-                            link,
-                            true
-                        );
-
-                        return;
-
-                    }
-
-
-                    /*
-                       Ignore anything that is
-                       not one of our protected
-                       hotel modules.
-                    */
-
-                    if (
-                        !PROTECTED_MODULES.includes(
-                            getModuleFromLink(link)
-                        )
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    const moduleName =
-                        getModuleFromLink(link);
-
-
-                    /*
-                       System Owner sees everything.
-                    */
-
-                    if (
-                        role === "system_owner"
-                    ) {
-
-                        setModuleVisibility(
-                            link,
-                            true
-                        );
-
-                        return;
-
-                    }
-
-
-                    /*
-                       Other roles use their
-                       permission list.
-                    */
-
-                    const allowed =
-                        allowedModules.includes(
-                            moduleName
-                        );
-
-
-                    setModuleVisibility(
-                        link,
-                        allowed
-                    );
-
-                }
-            );
-
-        }
-    );
-
-
-    /*
-       Mark role control as ready.
-    */
-
-    document.documentElement.classList.add(
-        "role-control-ready"
-    );
-
-    document.documentElement.classList.remove(
-        "role-control-pending"
-    );
-
-}
-
-
-/* =========================================================
-   EXPOSE GLOBAL ROLE FUNCTION
-   ========================================================= */
-
-window.applyGlobalRoleSidebar =
-    applyGlobalRoleSidebar;
-
-
-/* =========================================================
-   INITIALIZE ONCE
-   ========================================================= */
-
-function initializeGlobalControls() {
-
-    /*
-       Run only once.
-    */
-
-    applyGlobalRoleSidebar();
-
-}
-
-
-/* =========================================================
-   DOM READY
-   ========================================================= */
-
-if (
-    document.readyState === "loading"
-) {
-
-    document.addEventListener(
-        "DOMContentLoaded",
-        initializeGlobalControls,
-        {
-            once: true
-        }
-    );
-
-} else {
-
-    initializeGlobalControls();
-
-}
-
-
-/* =========================================================
-   END OF SAFE GLOBAL SCRIPT
-   ========================================================= */
+})();

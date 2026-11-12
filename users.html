@@ -1,0 +1,1102 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Users - EDU TECH Hotel Management System</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
+body{background:#f4f6f9;color:#222}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:240px;background:#172033;color:white;padding:20px 0;flex-shrink:0}
+.logo{padding:0 20px 25px;font-size:20px;font-weight:bold;color:#fff}
+.logo span{display:block;font-size:12px;color:#aeb7c8;margin-top:5px;font-weight:normal}
+.nav{display:flex;flex-direction:column}
+.nav a{color:#d9dfeb;text-decoration:none;padding:12px 20px;display:block;font-size:14px;transition:.2s}
+.nav a:hover,.nav a.active{background:#263451;color:#fff}
+.main{flex:1;min-width:0}
+.topbar{background:white;padding:18px 25px;border-bottom:1px solid #ddd;display:flex;justify-content:space-between;align-items:center;gap:20px}
+.topbar h1{font-size:23px}
+.user-info{text-align:right;font-size:13px;color:#555}
+.user-info strong{display:block;color:#222;font-size:14px}
+.content{padding:25px}
+.access-denied{background:white;border-radius:10px;padding:50px 25px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);display:none}
+.access-denied h2{color:#c62828;margin-bottom:10px}
+.access-denied p{color:#666}
+.hotel-bar{background:white;padding:15px 18px;border-radius:10px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,.05);display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.hotel-bar strong{display:block;margin-bottom:4px}
+.hotel-bar small{color:#666}
+.hotel-select{min-width:260px;padding:10px;border:1px solid #ccc;border-radius:6px;background:white}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:20px}
+.card{background:white;border-radius:10px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.card-title{color:#666;font-size:13px;margin-bottom:8px}
+.card-value{font-size:25px;font-weight:bold}
+.table-container{background:white;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.05);overflow-x:auto}
+.table-header{padding:18px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.table-header h2{font-size:18px}
+table{width:100%;border-collapse:collapse;min-width:1050px}
+th,td{padding:13px 15px;text-align:left;border-bottom:1px solid #eee;font-size:14px}
+th{background:#f8f9fb;color:#555;font-weight:bold}
+tr:hover td{background:#fafbfc}
+.badge{display:inline-block;padding:5px 9px;border-radius:20px;font-size:12px;font-weight:bold}
+.badge-owner{background:#e8f0ff;color:#2454a6}
+.badge-manager{background:#fff4dc;color:#9a6500}
+.badge-receptionist{background:#e6f7ed;color:#18794e}
+.badge-system{background:#eee;color:#333}
+.status-pill{display:inline-block;padding:5px 10px;border-radius:20px;font-size:12px;font-weight:bold}
+.status-active{background:#e6f7ed;color:#18794e}
+.status-inactive{background:#fdecec;color:#a32020}
+.never{color:#888}
+button{border:none;cursor:pointer;border-radius:6px}
+button:disabled{opacity:.6;cursor:not-allowed}
+.btn{padding:8px 12px;font-size:13px}
+.btn-add{background:#16804b;color:white;padding:10px 15px;font-size:14px;font-weight:bold}
+.btn-add:hover{background:#12683d}
+.btn-edit{background:#2563eb;color:white}
+.btn-edit:hover{background:#1d4ed8}
+.btn-deactivate{background:#c62828;color:white}
+.btn-deactivate:hover{background:#a51f1f}
+.btn-activate{background:#16804b;color:white}
+.btn-activate:hover{background:#12683d}
+.btn-close{background:#eee;color:#333}
+.btn-save{background:#16804b;color:white}
+.btn-create{background:#2563eb;color:white;padding:10px 16px;font-size:14px;font-weight:bold}
+.btn-create:hover{background:#1d4ed8}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
+.modal-box{width:100%;max-width:500px;max-height:90vh;overflow-y:auto;background:white;border-radius:10px;padding:25px}
+.modal-box h2{margin-bottom:8px}
+.modal-subtitle{color:#666;font-size:13px;margin-bottom:20px}
+.form-group{margin-bottom:15px}
+.form-group label{display:block;margin-bottom:6px;font-size:13px;font-weight:bold}
+.form-group input,.form-group select{width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;background:white}
+.form-group input[readonly]{background:#f5f5f5}
+.help-text{display:block;margin-top:5px;color:#777;font-size:12px}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+.message{margin-bottom:15px;padding:12px;border-radius:6px;display:none}
+.message.error{background:#fdecec;color:#a32020}
+.message.success{background:#e8f7ee;color:#176b40}
+.loading{text-align:center;padding:35px;color:#777}
+.empty{text-align:center;padding:35px;color:#777}
+@media(max-width:900px){
+.sidebar{width:200px}
+.cards{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:650px){
+.layout{display:block}
+.sidebar{width:100%}
+.nav{display:grid;grid-template-columns:repeat(2,1fr)}
+.content{padding:15px}
+.cards{grid-template-columns:1fr 1fr}
+.topbar{align-items:flex-start}
+}
+</style>
+</head>
+
+<body>
+<div class="layout">
+
+<aside class="sidebar">
+    <div class="logo">
+        EDU TECH
+        <span>Hotel Management System</span>
+    </div>
+
+    <nav class="nav">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="rooms.html">Rooms</a>
+        <a href="guests.html">Guests</a>
+        <a href="reservations.html">Reservations</a>
+        <a href="checkin.html">Check-in</a>
+        <a href="checkout.html">Check-out</a>
+        <a href="restaurant.html">Restaurant</a>
+        <a href="inventory.html">Inventory</a>
+        <a href="payments.html">Payments</a>
+        <a href="expenses.html">Expenses</a>
+        <a href="employees.html">Employees</a>
+        <a href="housekeeping.html">Housekeeping</a>
+        <a href="maintenance.html">Maintenance</a>
+        <a href="reports.html">Reports</a>
+        <a href="hotels.html">Hotels</a>
+        <a href="users.html" class="active">Users</a>
+        <a href="settings.html">Settings</a>
+        <a href="#" onclick="logout();return false;">Logout</a>
+    </nav>
+</aside>
+
+<main class="main">
+
+<header class="topbar">
+    <div>
+        <h1>User Management</h1>
+    </div>
+    <div class="user-info">
+        <strong id="currentUserName">Loading...</strong>
+        <span id="currentUserRole">Loading...</span>
+    </div>
+</header>
+
+<section class="content">
+
+    <div id="accessDenied" class="access-denied">
+        <h2>Access Restricted</h2>
+        <p>Only active System Owners and Hotel Owners can manage users.</p>
+    </div>
+
+    <div id="usersContent" style="display:none;">
+
+        <div class="hotel-bar">
+            <div>
+                <strong id="hotelTitle">Loading hotel...</strong>
+                <small id="hotelSubtitle">User accounts for this hotel</small>
+            </div>
+
+            <div id="hotelSelectorContainer" style="display:none;">
+                <select id="hotelSelector" class="hotel-select" onchange="changeHotel()"></select>
+            </div>
+        </div>
+
+        <div class="cards">
+            <div class="card">
+                <div class="card-title">Total Users</div>
+                <div class="card-value" id="totalUsers">0</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Hotel Owners</div>
+                <div class="card-value" id="hotelOwners">0</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Managers</div>
+                <div class="card-value" id="managers">0</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Receptionists</div>
+                <div class="card-value" id="receptionists">0</div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-header">
+                <h2>System Users</h2>
+                <button class="btn-add" onclick="openCreateModal()">+ Add User</button>
+            </div>
+
+            <div id="message" class="message"></div>
+
+            <div id="tableArea">
+                <div class="loading">Loading users...</div>
+            </div>
+        </div>
+
+    </div>
+</section>
+</main>
+</div>
+
+<!-- CREATE USER MODAL -->
+<div id="createModal" class="modal">
+<div class="modal-box">
+
+    <h2>Create New User</h2>
+    <div class="modal-subtitle">Create a secure login account for a hotel staff member.</div>
+    <div id="createModalMessage" class="message"></div>
+
+    <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="createFullName" placeholder="Enter full name" autocomplete="name">
+    </div>
+
+    <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="createEmail" placeholder="Enter email address" autocomplete="email">
+    </div>
+
+    <div class="form-group">
+        <label>Temporary Password</label>
+        <input type="password" id="createPassword" placeholder="Minimum 8 characters" autocomplete="new-password">
+        <span class="help-text">Give this password to the new user securely.</span>
+    </div>
+
+    <div class="form-group">
+        <label>Role</label>
+        <select id="createRole" onchange="updateCreateHotelOptions()">
+            <option value="receptionist">Receptionist</option>
+            <option value="manager">Manager</option>
+            <option value="hotel_owner">Hotel Owner</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Hotel</label>
+        <select id="createHotel"></select>
+    </div>
+
+    <div class="modal-actions">
+        <button class="btn btn-close" onclick="closeCreateModal()">Cancel</button>
+        <button id="createUserButton" class="btn btn-create" onclick="createUser()">Create User</button>
+    </div>
+
+</div>
+</div>
+
+<!-- EDIT USER MODAL -->
+<div id="editModal" class="modal">
+<div class="modal-box">
+
+    <h2>Edit User</h2>
+    <div id="modalMessage" class="message"></div>
+
+    <div class="form-group">
+        <label>Email</label>
+        <input type="text" id="editEmail" readonly>
+    </div>
+
+    <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="editFullName" placeholder="Full name">
+    </div>
+
+    <div class="form-group">
+        <label>Role</label>
+        <select id="editRole">
+            <option value="hotel_owner">Hotel Owner</option>
+            <option value="manager">Manager</option>
+            <option value="receptionist">Receptionist</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Hotel</label>
+        <select id="editHotel"></select>
+    </div>
+
+    <div class="modal-actions">
+        <button class="btn btn-close" onclick="closeEditModal()">Cancel</button>
+        <button id="saveUserButton" class="btn btn-save" onclick="saveUser()">Save Changes</button>
+    </div>
+
+</div>
+</div>
+
+<script>
+"use strict";
+
+let currentUser = null;
+let currentProfile = null;
+let users = [];
+let hotels = [];
+let editingUserId = null;
+let statusChangeInProgress = false;
+
+/* GET CURRENT USER */
+async function getCurrentUser() {
+    const { data: { user }, error } =
+        await window.supabaseClient.auth.getUser();
+
+    if (error) {
+        console.error("Authentication error:", error);
+        return null;
+    }
+
+    return user;
+}
+
+/* LOAD CURRENT PROFILE */
+async function loadCurrentProfile() {
+    currentUser = await getCurrentUser();
+
+    if (!currentUser) {
+        window.location.href = "login.html";
+        return false;
+    }
+
+    const { data, error } = await window.supabaseClient
+        .from("profiles")
+        .select("id,full_name,role,hotel_id,is_active")
+        .eq("id", currentUser.id)
+        .single();
+
+    if (error || !data) {
+        console.error("Profile loading error:", error);
+        showAccessDenied();
+        return false;
+    }
+
+    if (data.is_active !== true) {
+        alert("Your account is inactive. Please contact the System Owner.");
+        await window.supabaseClient.auth.signOut();
+        sessionStorage.clear();
+        window.location.href = "login.html";
+        return false;
+    }
+
+    currentProfile = data;
+
+    document.getElementById("currentUserName").textContent =
+        data.full_name || currentUser.email;
+
+    document.getElementById("currentUserRole").textContent =
+        formatRole(data.role);
+
+    return true;
+}
+
+/* ACCESS CONTROL */
+function hasUserManagementAccess() {
+    return !!currentProfile &&
+        currentProfile.is_active === true &&
+        (
+            currentProfile.role === "system_owner" ||
+            currentProfile.role === "hotel_owner"
+        );
+}
+
+function showAccessDenied() {
+    document.getElementById("accessDenied").style.display = "block";
+    document.getElementById("usersContent").style.display = "none";
+}
+
+function showUsersContent() {
+    document.getElementById("accessDenied").style.display = "none";
+    document.getElementById("usersContent").style.display = "block";
+}
+
+/* ROLE FORMAT */
+function formatRole(role) {
+    const roles = {
+        system_owner: "System Owner",
+        hotel_owner: "Hotel Owner",
+        manager: "Manager",
+        receptionist: "Receptionist"
+    };
+
+    return roles[role] || role || "Unknown";
+}
+
+/* HOTEL ID */
+function getActiveHotelId() {
+    if (currentProfile.role === "system_owner") {
+        return (
+            sessionStorage.getItem("activeHotelId") ||
+            sessionStorage.getItem("hotelId") ||
+            ""
+        );
+    }
+
+    return currentProfile.hotel_id || "";
+}
+
+/* LOAD HOTELS */
+async function loadHotels() {
+    let query = window.supabaseClient
+        .from("hotels")
+        .select("id,hotel_name,location,status")
+        .eq("status", "active")
+        .order("hotel_name");
+
+    if (currentProfile.role !== "system_owner") {
+        query = query.eq("id", currentProfile.hotel_id);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+        console.error("Hotel loading error:", error);
+        showMessage("Unable to load hotels: " + error.message, "error");
+        return;
+    }
+
+    hotels = data || [];
+
+    const selector = document.getElementById("hotelSelector");
+    selector.innerHTML = "";
+
+    hotels.forEach(hotel => {
+        const option = document.createElement("option");
+        option.value = hotel.id;
+        option.textContent =
+            `${hotel.hotel_name} — ${hotel.location || ""}`;
+        selector.appendChild(option);
+    });
+
+    const activeHotelId = getActiveHotelId();
+
+    if (currentProfile.role === "system_owner") {
+        document.getElementById("hotelSelectorContainer").style.display = "block";
+
+        if (activeHotelId && hotels.some(h => String(h.id) === String(activeHotelId))) {
+            selector.value = String(activeHotelId);
+        }
+
+        if (!selector.value && hotels.length > 0) {
+            selector.value = String(hotels[0].id);
+            sessionStorage.setItem("activeHotelId", hotels[0].id);
+        }
+    }
+
+    updateHotelTitle();
+}
+
+/* UPDATE HOTEL TITLE */
+function updateHotelTitle() {
+    const hotelId = getActiveHotelId();
+
+    const hotel = hotels.find(
+        h => String(h.id) === String(hotelId)
+    );
+
+    const title = document.getElementById("hotelTitle");
+    const subtitle = document.getElementById("hotelSubtitle");
+
+    if (hotel) {
+        title.textContent = hotel.hotel_name;
+        subtitle.textContent =
+            `${hotel.location || ""} • User accounts`;
+    } else if (currentProfile.role === "system_owner") {
+        title.textContent = "All Hotels";
+        subtitle.textContent = "System-wide user management";
+    } else {
+        title.textContent = "Hotel not available";
+        subtitle.textContent = "Contact the System Owner";
+    }
+}
+
+/* CHANGE HOTEL */
+async function changeHotel() {
+    const hotelId = document.getElementById("hotelSelector").value;
+
+    if (!hotelId) return;
+
+    sessionStorage.setItem("activeHotelId", hotelId);
+
+    const hotel = hotels.find(h => String(h.id) === String(hotelId));
+
+    if (hotel) {
+        sessionStorage.setItem("activeHotelName", hotel.hotel_name);
+    }
+
+    updateHotelTitle();
+    await loadUsers();
+}
+
+/* LOAD USERS WITH ACCOUNT STATUS */
+async function loadUsers() {
+    const tableArea = document.getElementById("tableArea");
+    tableArea.innerHTML = '<div class="loading">Loading users...</div>';
+
+    const { data, error } = await window.supabaseClient
+        .rpc("get_manageable_users_with_status");
+
+    if (error) {
+        console.error("User loading error:", error);
+
+        tableArea.innerHTML =
+            '<div class="empty">Unable to load users.</div>';
+
+        showMessage(
+            error.message || "Unable to load users.",
+            "error"
+        );
+        return;
+    }
+
+    users = data || [];
+
+    const activeHotelId = getActiveHotelId();
+
+    if (currentProfile.role === "system_owner" && activeHotelId) {
+        users = users.filter(
+            user => String(user.hotel_id) === String(activeHotelId)
+        );
+    }
+
+    renderUsers();
+}
+
+/* RENDER USERS */
+function renderUsers() {
+    updateCounters();
+
+    const tableArea = document.getElementById("tableArea");
+
+    if (users.length === 0) {
+        tableArea.innerHTML =
+            '<div class="empty">No users found for this hotel.</div>';
+        return;
+    }
+
+    let html = `
+        <table>
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Hotel</th>
+                    <th>Account Status</th>
+                    <th>Last Sign In</th>
+                    <th>Created</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    users.forEach(user => {
+        let badgeClass = "badge-system";
+
+        if (user.role === "hotel_owner") badgeClass = "badge-owner";
+        if (user.role === "manager") badgeClass = "badge-manager";
+        if (user.role === "receptionist") badgeClass = "badge-receptionist";
+
+        const lastSignIn = user.last_sign_in_at
+            ? formatDateTime(user.last_sign_in_at)
+            : '<span class="never">Never</span>';
+
+        const created = user.created_at
+            ? formatDate(user.created_at)
+            : "-";
+
+        const isActive = user.is_active === true;
+
+        const statusHtml = isActive
+            ? '<span class="status-pill status-active">Active</span>'
+            : '<span class="status-pill status-inactive">Inactive</span>';
+
+        let actionHtml = '<span class="never">Protected</span>';
+
+        if (user.role !== "system_owner" && user.id !== currentUser.id) {
+            const statusButton = isActive
+                ? `<button class="btn btn-deactivate"
+                    onclick="changeUserStatus('${user.id}',false)">
+                    Deactivate
+                   </button>`
+                : `<button class="btn btn-activate"
+                    onclick="changeUserStatus('${user.id}',true)">
+                    Activate
+                   </button>`;
+
+            actionHtml = `
+                <button class="btn btn-edit"
+                    onclick="openEditModal('${user.id}')">
+                    Edit
+                </button>
+                ${statusButton}
+            `;
+        }
+
+        html += `
+            <tr>
+                <td><strong>${escapeHtml(user.full_name || "-")}</strong></td>
+                <td>${escapeHtml(user.email || "-")}</td>
+                <td>
+                    <span class="badge ${badgeClass}">
+                        ${escapeHtml(formatRole(user.role))}
+                    </span>
+                </td>
+                <td>${escapeHtml(user.hotel_name || "No Hotel")}</td>
+                <td>${statusHtml}</td>
+                <td>${lastSignIn}</td>
+                <td>${created}</td>
+                <td>${actionHtml}</td>
+            </tr>
+        `;
+    });
+
+    html += "</tbody></table>";
+    tableArea.innerHTML = html;
+}
+
+/* CHANGE ACCOUNT STATUS */
+async function changeUserStatus(userId, newStatus) {
+    if (statusChangeInProgress) return;
+
+    const user = users.find(u => String(u.id) === String(userId));
+
+    if (!user) {
+        showMessage("User was not found.", "error");
+        return;
+    }
+
+    if (user.role === "system_owner") {
+        showMessage("System Owner accounts are protected.", "error");
+        return;
+    }
+
+    if (String(user.id) === String(currentUser.id)) {
+        showMessage("You cannot change your own account status.", "error");
+        return;
+    }
+
+    const action = newStatus ? "activate" : "deactivate";
+
+    const confirmed = confirm(
+        `Are you sure you want to ${action} ${user.full_name || user.email}?`
+    );
+
+    if (!confirmed) return;
+
+    statusChangeInProgress = true;
+
+    const buttons = document.querySelectorAll(
+        ".btn-activate, .btn-deactivate"
+    );
+
+    buttons.forEach(button => button.disabled = true);
+
+    showMessage(
+        `${newStatus ? "Activating" : "Deactivating"} user account...`,
+        "success"
+    );
+
+    try {
+        const { data, error } = await window.supabaseClient
+            .rpc("set_managed_user_status", {
+                p_user_id: userId,
+                p_is_active: newStatus
+            });
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data || data.success !== true) {
+            throw new Error("The account status could not be changed.");
+        }
+
+        showMessage(
+            `${user.full_name || user.email} has been ${newStatus ? "activated" : "deactivated"} successfully.`,
+            "success"
+        );
+
+        await loadUsers();
+
+    } catch (error) {
+        console.error("Account status update error:", error);
+
+        showMessage(
+            error.message || "Unable to change account status.",
+            "error"
+        );
+
+    } finally {
+        statusChangeInProgress = false;
+    }
+}
+
+/* COUNTERS */
+function updateCounters() {
+    document.getElementById("totalUsers").textContent = users.length;
+
+    document.getElementById("hotelOwners").textContent =
+        users.filter(u => u.role === "hotel_owner").length;
+
+    document.getElementById("managers").textContent =
+        users.filter(u => u.role === "manager").length;
+
+    document.getElementById("receptionists").textContent =
+        users.filter(u => u.role === "receptionist").length;
+}
+
+/* OPEN CREATE USER MODAL */
+function openCreateModal() {
+    document.getElementById("createModalMessage").style.display = "none";
+    document.getElementById("createFullName").value = "";
+    document.getElementById("createEmail").value = "";
+    document.getElementById("createPassword").value = "";
+
+    document.getElementById("createRole").value =
+        currentProfile.role === "hotel_owner"
+            ? "manager"
+            : "receptionist";
+
+    updateCreateHotelOptions();
+
+    document.getElementById("createModal").style.display = "flex";
+}
+
+/* UPDATE CREATE HOTEL OPTIONS */
+function updateCreateHotelOptions() {
+    const hotelSelect = document.getElementById("createHotel");
+    hotelSelect.innerHTML = "";
+
+    if (currentProfile.role === "hotel_owner") {
+        const hotel = hotels.find(
+            h => String(h.id) === String(currentProfile.hotel_id)
+        );
+
+        if (hotel) {
+            const option = document.createElement("option");
+            option.value = hotel.id;
+            option.textContent =
+                `${hotel.hotel_name} — ${hotel.location || ""}`;
+            hotelSelect.appendChild(option);
+        }
+
+        hotelSelect.disabled = true;
+        return;
+    }
+
+    hotelSelect.disabled = false;
+
+    hotels.forEach(hotel => {
+        const option = document.createElement("option");
+        option.value = hotel.id;
+        option.textContent =
+            `${hotel.hotel_name} — ${hotel.location || ""}`;
+        hotelSelect.appendChild(option);
+    });
+
+    const activeHotelId = getActiveHotelId();
+
+    if (activeHotelId) {
+        hotelSelect.value = String(activeHotelId);
+    }
+}
+
+/* CREATE USER */
+async function createUser() {
+    const button = document.getElementById("createUserButton");
+
+    const fullName = document.getElementById("createFullName").value.trim();
+    const email = document.getElementById("createEmail").value.trim().toLowerCase();
+    const password = document.getElementById("createPassword").value;
+    const role = document.getElementById("createRole").value;
+    const hotelId = document.getElementById("createHotel").value;
+
+    if (!fullName) {
+        showCreateMessage("Full name is required.", "error");
+        return;
+    }
+
+    if (!email || !email.includes("@")) {
+        showCreateMessage("Please enter a valid email address.", "error");
+        return;
+    }
+
+    if (password.length < 8) {
+        showCreateMessage("Password must contain at least 8 characters.", "error");
+        return;
+    }
+
+    if (!role) {
+        showCreateMessage("Please select a role.", "error");
+        return;
+    }
+
+    if (!hotelId) {
+        showCreateMessage("Please select a hotel.", "error");
+        return;
+    }
+
+    if (
+        currentProfile.role === "hotel_owner" &&
+        role === "hotel_owner"
+    ) {
+        showCreateMessage(
+            "Hotel Owners cannot create another Hotel Owner.",
+            "error"
+        );
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Creating...";
+
+    showCreateMessage("Creating user account...", "success");
+
+    try {
+        const { data, error } = await window.supabaseClient
+            .functions
+            .invoke("create-managed-user", {
+                body: {
+                    full_name: fullName,
+                    email: email,
+                    password: password,
+                    role: role,
+                    hotel_id: Number(hotelId)
+                }
+            });
+
+        if (error) {
+            let errorMessage = error.message || "Unable to create user.";
+
+            if (error.context && typeof error.context.json === "function") {
+                try {
+                    const responseBody = await error.context.json();
+                    if (responseBody && responseBody.error) {
+                        errorMessage = responseBody.error;
+                    }
+                } catch (parseError) {
+                    console.warn("Could not read Edge Function error response.", parseError);
+                }
+            }
+
+            throw new Error(errorMessage);
+        }
+
+        if (!data || !data.success) {
+            throw new Error(data?.error || "User could not be created.");
+        }
+
+        showCreateMessage("User created successfully.", "success");
+
+        window.setTimeout(async () => {
+            closeCreateModal();
+            await loadUsers();
+        }, 900);
+
+    } catch (error) {
+        console.error("Create user error:", error);
+
+        showCreateMessage(
+            error.message || "Unable to create user.",
+            "error"
+        );
+
+    } finally {
+        button.disabled = false;
+        button.textContent = "Create User";
+    }
+}
+
+/* CLOSE CREATE MODAL */
+function closeCreateModal() {
+    document.getElementById("createModal").style.display = "none";
+    document.getElementById("createModalMessage").style.display = "none";
+    document.getElementById("createUserButton").disabled = false;
+    document.getElementById("createUserButton").textContent = "Create User";
+}
+
+/* CREATE MODAL MESSAGE */
+function showCreateMessage(message, type) {
+    const box = document.getElementById("createModalMessage");
+    box.textContent = message;
+    box.className = "message " + type;
+    box.style.display = "block";
+}
+
+/* OPEN EDIT MODAL */
+function openEditModal(userId) {
+    const user = users.find(
+        u => String(u.id) === String(userId)
+    );
+
+    if (!user) return;
+
+    if (user.role === "system_owner") {
+        alert("The System Owner account is protected.");
+        return;
+    }
+
+    if (String(user.id) === String(currentUser.id)) {
+        alert("You cannot edit your own role or hotel assignment.");
+        return;
+    }
+
+    editingUserId = user.id;
+
+    document.getElementById("editEmail").value = user.email || "";
+    document.getElementById("editFullName").value = user.full_name || "";
+    document.getElementById("editRole").value = user.role || "receptionist";
+    document.getElementById("modalMessage").style.display = "none";
+
+    const hotelSelect = document.getElementById("editHotel");
+    hotelSelect.innerHTML = "";
+
+    hotels.forEach(hotel => {
+        const option = document.createElement("option");
+        option.value = hotel.id;
+        option.textContent =
+            `${hotel.hotel_name} — ${hotel.location || ""}`;
+        hotelSelect.appendChild(option);
+    });
+
+    hotelSelect.value = String(user.hotel_id || "");
+
+    if (currentProfile.role === "hotel_owner") {
+        hotelSelect.value = String(currentProfile.hotel_id);
+        hotelSelect.disabled = true;
+    } else {
+        hotelSelect.disabled = false;
+    }
+
+    document.getElementById("editModal").style.display = "flex";
+}
+
+/* CLOSE EDIT MODAL */
+function closeEditModal() {
+    document.getElementById("editModal").style.display = "none";
+    editingUserId = null;
+    document.getElementById("modalMessage").style.display = "none";
+}
+
+/* SAVE USER */
+async function saveUser() {
+    if (!editingUserId) return;
+
+    const button = document.getElementById("saveUserButton");
+    const fullName = document.getElementById("editFullName").value.trim();
+    const role = document.getElementById("editRole").value;
+    const hotelId = document.getElementById("editHotel").value;
+
+    if (!fullName) {
+        showModalMessage("Full name is required.", "error");
+        return;
+    }
+
+    if (!role) {
+        showModalMessage("Please select a role.", "error");
+        return;
+    }
+
+    if (!hotelId) {
+        showModalMessage("Please select a hotel.", "error");
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Saving...";
+
+    try {
+        const { error } = await window.supabaseClient
+            .rpc("update_managed_user", {
+                p_user_id: editingUserId,
+                p_full_name: fullName,
+                p_role: role,
+                p_hotel_id: Number(hotelId)
+            });
+
+        if (error) throw error;
+
+        showModalMessage("User updated successfully.", "success");
+
+        window.setTimeout(async () => {
+            closeEditModal();
+            await loadUsers();
+        }, 700);
+
+    } catch (error) {
+        console.error("Update user error:", error);
+
+        showModalMessage(
+            error.message || "Unable to update user.",
+            "error"
+        );
+
+    } finally {
+        button.disabled = false;
+        button.textContent = "Save Changes";
+    }
+}
+
+/* FORMAT DATE */
+function formatDate(value) {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) return "-";
+
+    return date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+    });
+}
+
+function formatDateTime(value) {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) return "-";
+
+    return date.toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+}
+
+/* GENERAL MESSAGE */
+function showMessage(message, type) {
+    const box = document.getElementById("message");
+    box.textContent = message;
+    box.className = "message " + type;
+    box.style.display = "block";
+}
+
+function showModalMessage(message, type) {
+    const box = document.getElementById("modalMessage");
+    box.textContent = message;
+    box.className = "message " + type;
+    box.style.display = "block";
+}
+
+/* ESCAPE HTML */
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+/* LOGOUT */
+async function logout() {
+    await window.supabaseClient.auth.signOut();
+    sessionStorage.clear();
+    window.location.href = "login.html";
+}
+
+/* INITIALIZE */
+async function initialize() {
+    if (!window.supabaseClient) {
+        alert("Supabase connection was not loaded. Check supabase.js.");
+        return;
+    }
+
+    const profileLoaded = await loadCurrentProfile();
+
+    if (!profileLoaded) return;
+
+    if (!hasUserManagementAccess()) {
+        showAccessDenied();
+        return;
+    }
+
+    showUsersContent();
+
+    await loadHotels();
+    await loadUsers();
+}
+
+/* START */
+document.addEventListener("DOMContentLoaded", initialize);
+
+/* REFRESH WHEN RETURNING TO PAGE */
+window.addEventListener("pageshow", async function(event) {
+    if (
+        event.persisted &&
+        currentProfile &&
+        hasUserManagementAccess()
+    ) {
+        await loadCurrentProfile();
+
+        if (hasUserManagementAccess()) {
+            await loadHotels();
+            await loadUsers();
+        }
+    }
+});
+</script>
+
+</body>
+</html>

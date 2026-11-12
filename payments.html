@@ -1,19 +1,20 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Payments - EDU TECH Hotel Management System</title>
 
     <link rel="stylesheet" href="./style.css">
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="./supabase.js"></script>
-    <script src="./script.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
     <style>
-        .page-container {
+        /* =========================================================
+           PAYMENTS PAGE
+        ========================================================= */
+
+        .payments-page {
             padding: 20px;
         }
 
@@ -22,409 +23,456 @@
             justify-content: space-between;
             align-items: center;
             gap: 15px;
-            flex-wrap: wrap;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
         .page-header h1 {
             margin: 0;
         }
 
+        .page-header p {
+            margin: 5px 0 0;
+            color: #666;
+        }
+
         .header-actions {
             display: flex;
-            align-items: center;
             gap: 10px;
             flex-wrap: wrap;
         }
 
-        .hotel-selector {
-            display: none;
-        }
-
-        .hotel-selector select {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
-
-        .btn {
-            border: none;
-            border-radius: 6px;
-            padding: 9px 14px;
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-        .btn-primary {
-            background: #2563eb;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #64748b;
-            color: white;
-        }
-
-        .btn-success {
-            background: #16a34a;
-            color: white;
-        }
-
-        .btn-warning {
-            background: #d97706;
-            color: white;
-        }
-
-        .btn-danger {
-            background: #dc2626;
-            color: white;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-        }
-
         .summary-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 15px;
             margin-bottom: 20px;
         }
 
         .summary-card {
-            background: white;
-            padding: 18px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .summary-card h3 {
-            color: #64748b;
-            font-size: 14px;
-            margin: 0 0 10px;
-        }
-
-        .summary-card .value {
-            font-size: 23px;
-            font-weight: bold;
-        }
-
-        .table-card {
-            background: white;
-            border-radius: 8px;
+            background: #fff;
+            border-radius: 10px;
             padding: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
+        .summary-card h3 {
+            margin: 0 0 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .summary-card .value {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .table-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
         .table-toolbar {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
             flex-wrap: wrap;
-            margin-bottom: 15px;
         }
 
         .search-box {
             flex: 1;
-            min-width: 220px;
+            min-width: 250px;
         }
 
         .search-box input {
             width: 100%;
-            padding: 10px;
+            box-sizing: border-box;
+            padding: 11px 13px;
             border: 1px solid #ccc;
             border-radius: 6px;
-            box-sizing: border-box;
+            font-size: 14px;
         }
 
-        .table-responsive {
+        .table-wrapper {
+            width: 100%;
             overflow-x: auto;
         }
 
-        table {
+        .payments-table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 1050px;
         }
 
-        th,
-        td {
+        .payments-table th,
+        .payments-table td {
             padding: 12px 10px;
             border-bottom: 1px solid #eee;
             text-align: left;
             white-space: nowrap;
         }
 
-        th {
-            background: #f8fafc;
+        .payments-table th {
+            background: #f7f7f7;
+            font-weight: 600;
         }
 
-        .recorded-badge {
-            background: #dcfce7;
-            color: #166534;
+        .payments-table tbody tr:hover {
+            background: #fafafa;
+        }
+
+        .status-badge {
+            display: inline-block;
             padding: 5px 9px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: bold;
+            font-weight: 600;
         }
 
-        .actions {
+        .status-paid {
+            background: #dff5e5;
+            color: #16733a;
+        }
+
+        .status-part {
+            background: #fff1cc;
+            color: #8a6200;
+        }
+
+        .status-pending {
+            background: #eee;
+            color: #555;
+        }
+
+        .status-nocharge {
+            background: #e6e6e6;
+            color: #555;
+        }
+
+        .action-buttons {
             display: flex;
             gap: 6px;
+            flex-wrap: wrap;
         }
 
-        .actions button {
-            padding: 6px 9px;
+        .action-buttons button {
+            border: none;
+            padding: 7px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
         }
+
+        .btn-primary {
+            background: #0d6efd;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-success {
+            background: #198754;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #111;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-primary:hover,
+        .btn-secondary:hover,
+        .action-buttons button:hover {
+            opacity: 0.9;
+        }
+
+        .loading-row,
+        .empty-row,
+        .error-row {
+            text-align: center !important;
+            padding: 30px !important;
+        }
+
+        .error-row {
+            color: #b42318;
+            background: #fff3f2;
+        }
+
+        /* =========================================================
+           MODAL
+        ========================================================= */
 
         .modal {
             display: none;
             position: fixed;
+            z-index: 9999;
             inset: 0;
-            z-index: 1000;
             background: rgba(0,0,0,0.55);
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .modal.show {
+            display: flex;
             align-items: center;
             justify-content: center;
-            padding: 15px;
         }
 
         .modal-content {
-            background: white;
             width: 100%;
             max-width: 650px;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 25px;
+            background: #fff;
             border-radius: 10px;
-            box-sizing: border-box;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            padding: 16px 20px;
+            border-bottom: 1px solid #eee;
         }
 
         .modal-header h2 {
             margin: 0;
         }
 
-        .close-modal {
+        .modal-close {
             border: none;
             background: transparent;
-            font-size: 27px;
+            font-size: 28px;
             cursor: pointer;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
         }
 
         .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-        }
-
-        .form-group.full-width {
-            grid-column: 1 / -1;
+            margin-bottom: 15px;
         }
 
         .form-group label {
+            display: block;
+            margin-bottom: 6px;
             font-weight: 600;
-            font-size: 14px;
         }
 
         .form-group input,
         .form-group select {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
             width: 100%;
             box-sizing: border-box;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-help {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
         }
 
         .balance-box {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 7px;
-            padding: 15px;
-        }
-
-        .balance-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            margin: 7px 0;
-        }
-
-        .balance-row.total {
-            font-weight: bold;
-            font-size: 18px;
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
-            margin-top: 12px;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .message {
-            display: none;
-            padding: 12px 15px;
-            margin-bottom: 15px;
+            padding: 12px;
+            background: #f4f7fb;
             border-radius: 6px;
+            margin-bottom: 15px;
         }
 
-        .message.success {
-            display: block;
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .message.error {
-            display: block;
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .message.info {
-            display: block;
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .empty-state,
-        .loading {
-            text-align: center;
-            padding: 30px;
-            color: #64748b;
-        }
+        /* =========================================================
+           RECEIPT
+        ========================================================= */
 
         .receipt-content {
-            background: white;
+            max-width: 700px;
+        }
+
+        .receipt {
             padding: 20px;
-            border: 1px solid #ddd;
+            background: white;
         }
 
         .receipt-header {
             text-align: center;
-            border-bottom: 2px solid #222;
-            padding-bottom: 15px;
             margin-bottom: 20px;
         }
 
         .receipt-header h2 {
-            margin: 0 0 5px;
+            margin: 0;
         }
 
-        .receipt-line {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            padding: 9px 0;
-            border-bottom: 1px solid #eee;
+        .receipt-header p {
+            margin: 4px 0;
         }
 
-        .receipt-total {
-            font-weight: bold;
-            font-size: 20px;
+        .receipt-table {
+            width: 100%;
+            border-collapse: collapse;
             margin-top: 15px;
         }
 
-        .receipt-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
+        .receipt-table td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
         }
 
-        @media (max-width: 900px) {
+        .receipt-table td:last-child {
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .receipt-total {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 800px) {
+
             .summary-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .summary-grid,
-            .form-grid {
                 grid-template-columns: 1fr;
             }
 
-            .form-group.full-width {
-                grid-column: auto;
+            .payments-page {
+                padding: 10px;
             }
+
+        }
+
+        /* =========================================================
+           PRINT
+        ========================================================= */
+
+        @media print {
+
+            body * {
+                visibility: hidden !important;
+            }
+
+            #receiptModal,
+            #receiptModal * {
+                visibility: visible !important;
+            }
+
+            #receiptModal {
+                position: absolute !important;
+                inset: 0 !important;
+                display: block !important;
+                background: white !important;
+                padding: 0 !important;
+            }
+
+            #receiptModal .modal-content {
+                max-width: none !important;
+                box-shadow: none !important;
+            }
+
+            #receiptModal .modal-header,
+            #receiptModal .modal-footer {
+                display: none !important;
+            }
+
         }
     </style>
 </head>
 
 <body>
 
-<div class="app-container">
+    <!-- =========================================================
+         CENTRAL SIDEBAR
+    ========================================================= -->
 
-    <aside class="sidebar">
-
-        <div class="sidebar-header">
-            <h2>EDU TECH</h2>
-            <p>Hotel Management</p>
-        </div>
-
-        <nav class="sidebar-nav">
-
-            <a href="./index.html" data-module="dashboard">Dashboard</a>
-            <a href="./rooms.html" data-module="rooms">Rooms</a>
-            <a href="./guests.html" data-module="guests">Guests</a>
-            <a href="./reservations.html" data-module="reservations">Reservations</a>
-            <a href="./checkin.html" data-module="checkin">Check-in</a>
-            <a href="./checkout.html" data-module="checkout">Check-out</a>
-            <a href="./restaurant.html" data-module="restaurant">Restaurant</a>
-            <a href="./inventory.html" data-module="inventory">Inventory</a>
-            <a href="./payments.html" data-module="payments">Payments</a>
-            <a href="./expenses.html" data-module="expenses">Expenses</a>
-            <a href="./employees.html" data-module="employees">Employees</a>
-            <a href="./housekeeping.html" data-module="housekeeping">Housekeeping</a>
-            <a href="./maintenance.html" data-module="maintenance">Maintenance</a>
-            <a href="./reports.html" data-module="reports">Reports</a>
-            <a href="./settings.html" data-module="settings">Settings</a>
-            <a href="./hotels.html" data-module="hotels">Hotels</a>
-
-            <a href="#" data-action="logout">Logout</a>
-
-        </nav>
-
+    <aside
+        id="appSidebar"
+        class="sidebar">
     </aside>
 
 
+    <!-- =========================================================
+         MAIN CONTENT
+    ========================================================= -->
+
     <main class="main-content">
 
-        <div class="page-container">
+        <div class="payments-page">
 
-            <div id="message" class="message"></div>
+            <!-- =================================================
+                 HEADER
+            ================================================= -->
 
             <div class="page-header">
 
                 <div>
-                    <h1>Payments</h1>
-                    <p>Record and manage guest payments</p>
+
+                    <h1>
+                        Payments
+                    </h1>
+
+                    <p>
+                        Record guest payments, track balances
+                        and automatically post transactions
+                        to the financial ledger.
+                    </p>
+
                 </div>
+
 
                 <div class="header-actions">
 
-                    <div id="hotelSelectorContainer" class="hotel-selector">
-                        <select id="hotelSelector">
-                            <option value="">Select Hotel</option>
-                        </select>
-                    </div>
+                    <button
+                        type="button"
+                        id="refreshPayments"
+                        class="btn-secondary">
 
-                    <button class="btn btn-primary" id="addPaymentBtn">
+                        ↻ Refresh
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        id="openPaymentModal"
+                        class="btn-primary">
+
                         + Record Payment
+
                     </button>
 
                 </div>
@@ -432,75 +480,162 @@
             </div>
 
 
+            <!-- =================================================
+                 SUMMARY CARDS
+            ================================================= -->
+
             <div class="summary-grid">
 
                 <div class="summary-card">
-                    <h3>Total Collected</h3>
-                    <div class="value" id="totalCollected">KSh 0</div>
+
+                    <h3>
+                        Total Payments
+                    </h3>
+
+                    <div
+                        class="value"
+                        id="totalPayments">
+
+                        KSh 0.00
+
+                    </div>
+
                 </div>
 
-                <div class="summary-card">
-                    <h3>Payment Records</h3>
-                    <div class="value" id="paymentCount">0</div>
-                </div>
 
                 <div class="summary-card">
-                    <h3>Outstanding Balance</h3>
-                    <div class="value" id="outstandingBalance">KSh 0</div>
+
+                    <h3>
+                        Number of Payments
+                    </h3>
+
+                    <div
+                        class="value"
+                        id="paymentCount">
+
+                        0
+
+                    </div>
+
                 </div>
 
+
                 <div class="summary-card">
-                    <h3>Reservations with Balance</h3>
-                    <div class="value" id="reservationsWithBalance">0</div>
+
+                    <h3>
+                        Total Outstanding
+                    </h3>
+
+                    <div
+                        class="value"
+                        id="totalOutstanding">
+
+                        KSh 0.00
+
+                    </div>
+
                 </div>
 
             </div>
 
+
+            <!-- =================================================
+                 PAYMENT TABLE
+            ================================================= -->
 
             <div class="table-card">
 
                 <div class="table-toolbar">
 
                     <div class="search-box">
+
                         <input
-                            type="text"
-                            id="searchInput"
-                            placeholder="Search guest, phone, room, payment method or ID..."
-                        >
+                            type="search"
+                            id="paymentSearch"
+                            placeholder="Search payment number, guest, room, method, date, amount..."
+                            autocomplete="off">
+
                     </div>
 
-                    <button class="btn btn-secondary" id="refreshBtn">
-                        Refresh
-                    </button>
+
+                    <div>
+
+                        <span
+                            id="searchResultInfo">
+                        </span>
+
+                    </div>
 
                 </div>
 
 
-                <div class="table-responsive">
+                <div class="table-wrapper">
 
-                    <table>
+                    <table class="payments-table">
 
                         <thead>
+
                             <tr>
-                                <th>Payment ID</th>
-                                <th>Reservation</th>
-                                <th>Guest</th>
-                                <th>Phone</th>
-                                <th>Room</th>
-                                <th>Payment Date</th>
-                                <th>Method</th>
-                                <th>Amount</th>
-                                <th>Record Status</th>
-                                <th>Actions</th>
+
+                                <th>
+                                    Payment No
+                                </th>
+
+                                <th>
+                                    Guest
+                                </th>
+
+                                <th>
+                                    Room
+                                </th>
+
+                                <th>
+                                    Date
+                                </th>
+
+                                <th>
+                                    Method
+                                </th>
+
+                                <th>
+                                    Reservation Total
+                                </th>
+
+                                <th>
+                                    Payment
+                                </th>
+
+                                <th>
+                                    Balance
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Actions
+                                </th>
+
                             </tr>
+
                         </thead>
 
+
                         <tbody id="paymentsTableBody">
+
                             <tr>
-                                <td colspan="10" class="loading">
+
+                                <td
+                                    colspan="10"
+                                    class="loading-row">
+
                                     Loading payments...
+
                                 </td>
+
                             </tr>
+
                         </tbody>
 
                     </table>
@@ -513,2048 +648,292 @@
 
     </main>
 
-</div>
+
+    <!-- =========================================================
+         RECORD PAYMENT MODAL
+    ========================================================= -->
+
+    <div
+        id="paymentModal"
+        class="modal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>
+                    Record Guest Payment
+                </h2>
 
 
-<!-- PAYMENT FORM MODAL -->
+                <button
+                    type="button"
+                    id="closePaymentModal"
+                    class="modal-close">
 
-<div class="modal" id="paymentModal">
+                    ×
 
-    <div class="modal-content">
+                </button>
 
-        <div class="modal-header">
-
-            <h2 id="paymentModalTitle">Record Payment</h2>
-
-            <button class="close-modal" id="closePaymentModal">
-                &times;
-            </button>
-
-        </div>
+            </div>
 
 
-        <form id="paymentForm">
+            <form id="paymentForm">
 
-            <input type="hidden" id="paymentId">
+                <div class="modal-body">
 
-            <div class="form-grid">
+                    <div class="form-group">
 
-                <div class="form-group full-width">
+                        <label for="paymentReservation">
 
-                    <label for="reservationSelect">
-                        Select Reservation
-                    </label>
+                            Reservation
 
-                    <select id="reservationSelect" required>
-                        <option value="">Select Reservation</option>
-                    </select>
-
-                </div>
+                        </label>
 
 
-                <div class="form-group">
+                        <select
+                            id="paymentReservation"
+                            required>
 
-                    <label>Payment Date</label>
+                            <option value="">
 
-                    <input
-                        type="date"
-                        id="paymentDate"
-                        required
-                    >
+                                Select reservation
 
-                </div>
+                            </option>
 
+                        </select>
 
-                <div class="form-group">
-
-                    <label>Payment Method</label>
-
-                    <select id="paymentMethod" required>
-
-                        <option value="">Select Payment Method</option>
-                        <option value="M-Pesa">M-Pesa</option>
-                        <option value="Cash">Cash</option>
-                        <option value="Card">Card</option>
-                        <option value="Bank Transfer">Bank Transfer</option>
-                        <option value="Other">Other</option>
-
-                    </select>
-
-                </div>
+                    </div>
 
 
-                <div class="form-group">
+                    <div
+                        id="paymentBalance"
+                        class="balance-box">
 
-                    <label>Payment Amount (KSh)</label>
+                        Remaining balance:
 
-                    <input
-                        type="number"
-                        id="paymentAmount"
-                        min="0.01"
-                        step="0.01"
-                        required
-                    >
+                        <strong>
+                            KSh 0.00
+                        </strong>
 
-                </div>
+                    </div>
 
 
-                <div class="form-group full-width">
+                    <div class="form-group">
 
-                    <label>Reservation Balance Information</label>
+                        <label for="paymentAmount">
 
-                    <div class="balance-box">
+                            Payment Amount
 
-                        <div class="balance-row">
-                            <span>Reservation Total:</span>
-                            <strong id="reservationTotal">KSh 0</strong>
+                        </label>
+
+
+                        <input
+                            type="number"
+                            id="paymentAmount"
+                            min="0.01"
+                            step="0.01"
+                            placeholder="Enter amount"
+                            required>
+
+
+                        <div class="form-help">
+
+                            Payment amount includes VAT
+                            at 16%.
+
                         </div>
 
-                        <div class="balance-row">
-                            <span>Paid Before This Payment:</span>
-                            <strong id="paidBefore">KSh 0</strong>
-                        </div>
+                    </div>
 
-                        <div class="balance-row total">
-                            <span>Balance Available:</span>
-                            <strong id="balanceAvailable">KSh 0</strong>
-                        </div>
+
+                    <div class="form-group">
+
+                        <label for="paymentMethod">
+
+                            Payment Method
+
+                        </label>
+
+
+                        <select
+                            id="paymentMethod"
+                            required>
+
+                            <option value="">
+
+                                Select payment method
+
+                            </option>
+
+                            <option value="cash">
+
+                                Cash
+
+                            </option>
+
+                            <option value="mpesa">
+
+                                M-Pesa
+
+                            </option>
+
+                            <option value="bank">
+
+                                Bank
+
+                            </option>
+
+                            <option value="card">
+
+                                Card
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="paymentDate">
+
+                            Payment Date
+
+                        </label>
+
+
+                        <input
+                            type="date"
+                            id="paymentDate"
+                            required>
 
                     </div>
 
                 </div>
 
-            </div>
 
-
-            <div class="form-actions">
-
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    id="cancelPaymentBtn"
-                >
-                    Cancel
-                </button>
-
-                <button
-                    type="submit"
-                    class="btn btn-primary"
-                    id="savePaymentBtn"
-                >
-                    Save Payment
-                </button>
-
-            </div>
-
-        </form>
-
-    </div>
-
-</div>
-
-
-<!-- RECEIPT MODAL -->
-
-<div class="modal" id="receiptModal">
-
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <h2>Payment Receipt</h2>
-
-            <button class="close-modal" id="closeReceiptModal">
-                &times;
-            </button>
-
-        </div>
-
-
-        <div id="receiptContent" class="receipt-content">
-
-            <div class="receipt-header">
-                <h2 id="receiptHotelName">Hotel</h2>
-                <p>PAYMENT RECEIPT</p>
-            </div>
-
-            <div class="receipt-line">
-                <span>Payment ID</span>
-                <strong id="receiptPaymentId"></strong>
-            </div>
-
-            <div class="receipt-line">
-                <span>Reservation ID</span>
-                <strong id="receiptReservationId"></strong>
-            </div>
-
-            <div class="receipt-line">
-                <span>Guest Name</span>
-                <strong id="receiptGuest"></strong>
-            </div>
-
-            <div class="receipt-line">
-                <span>Phone</span>
-                <strong id="receiptPhone"></strong>
-            </div>
-
-            <div class="receipt-line">
-                <span>Room</span>
-                <strong id="receiptRoom"></strong>
-            </div>
-
-            <div class="receipt-line">
-                <span>Payment Date</span>
-                <strong id="receiptDate"></strong>
-            </div>
-
-            <div class="receipt-line">
-                <span>Payment Method</span>
-                <strong id="receiptMethod"></strong>
-            </div>
-
-            <div class="receipt-total">
-                Amount Paid:
-                <span id="receiptAmount"></span>
-            </div>
-
-            <p style="text-align:center; margin-top:30px;">
-                Thank you for your payment.
-            </p>
-
-        </div>
-
-
-        <div class="receipt-actions">
-
-            <button class="btn btn-secondary" id="printReceiptBtn">
-                Print Receipt
-            </button>
-
-            <button class="btn btn-primary" id="downloadReceiptBtn">
-                Download PDF
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<script>
-
-"use strict";
-
-
-/* =========================================================
-   APPLICATION DATA
-========================================================= */
-
-let paymentsData = [];
-let reservationsData = [];
-let guestsData = [];
-let roomsData = [];
-let hotelsData = [];
-
-let editingPaymentId = null;
-let currentReceiptPayment = null;
-
-
-/* =========================================================
-   GENERAL HELPERS
-========================================================= */
-
-function getUserRole() {
-
-    return String(
-        sessionStorage.getItem("userRole") ||
-        localStorage.getItem("userRole") ||
-        ""
-    ).toLowerCase().trim();
-
-}
-
-
-function getSelectedHotelId() {
-
-    if (getUserRole() === "system_owner") {
-
-        return document.getElementById(
-            "hotelSelector"
-        ).value || null;
-
-    }
-
-    return (
-        sessionStorage.getItem("hotelId") ||
-        localStorage.getItem("hotelId") ||
-        null
-    );
-
-}
-
-
-function formatMoney(value) {
-
-    return "KSh " + Number(value || 0).toLocaleString(
-        "en-KE",
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }
-    );
-
-}
-
-
-function formatDate(value) {
-
-    if (!value) {
-        return "-";
-    }
-
-    const date = new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
-        return String(value);
-    }
-
-    return date.toLocaleDateString("en-KE", {
-        year: "numeric",
-        month: "short",
-        day: "numeric"
-    });
-
-}
-
-
-function escapeHtml(value) {
-
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
-
-
-function showMessage(text, type = "info") {
-
-    const message = document.getElementById("message");
-
-    message.textContent = text;
-
-    message.className = "message " + type;
-
-    window.clearTimeout(showMessage.timer);
-
-    showMessage.timer = window.setTimeout(() => {
-
-        message.textContent = "";
-
-        message.className = "message";
-
-    }, 6000);
-
-}
-
-
-/* =========================================================
-   HOTEL LOADING
-========================================================= */
-
-async function loadHotels() {
-
-    if (getUserRole() !== "system_owner") {
-        return;
-    }
-
-    const result = await supabaseClient
-        .from("hotels")
-        .select("id, hotel_name")
-        .order("hotel_name", {
-            ascending: true
-        });
-
-    if (result.error) {
-
-        throw new Error(
-            "Failed to load hotels: " +
-            result.error.message
-        );
-
-    }
-
-    hotelsData = result.data || [];
-
-    const selector = document.getElementById(
-        "hotelSelector"
-    );
-
-    selector.innerHTML =
-        '<option value="">Select Hotel</option>';
-
-    hotelsData.forEach(hotel => {
-
-        const option = document.createElement("option");
-
-        option.value = hotel.id;
-
-        option.textContent = hotel.hotel_name;
-
-        selector.appendChild(option);
-
-    });
-
-    document.getElementById(
-        "hotelSelectorContainer"
-    ).style.display = "block";
-
-}
-
-
-function getCurrentHotelName() {
-
-    if (getUserRole() === "system_owner") {
-
-        const hotel = hotelsData.find(
-            h => String(h.id) === String(getSelectedHotelId())
-        );
-
-        return hotel?.hotel_name || "Hotel";
-
-    }
-
-    return (
-        sessionStorage.getItem("hotelName") ||
-        localStorage.getItem("hotelName") ||
-        "Hotel"
-    );
-
-}
-
-
-/* =========================================================
-   GUESTS
-========================================================= */
-
-async function loadGuests() {
-
-    const hotelId = getSelectedHotelId();
-
-    guestsData = [];
-
-    if (!hotelId) {
-        return;
-    }
-
-    const result = await supabaseClient
-        .from("guests")
-        .select('id, "full name", phone, email, hotel_id')
-        .eq("hotel_id", hotelId);
-
-    if (result.error) {
-
-        throw new Error(
-            "Failed to load guests: " +
-            result.error.message
-        );
-
-    }
-
-    guestsData = result.data || [];
-
-}
-
-
-function getGuestById(id) {
-
-    return guestsData.find(
-        guest => String(guest.id) === String(id)
-    );
-
-}
-
-
-/* =========================================================
-   ROOMS
-========================================================= */
-
-async function loadRooms() {
-
-    const hotelId = getSelectedHotelId();
-
-    roomsData = [];
-
-    if (!hotelId) {
-        return;
-    }
-
-    const result = await supabaseClient
-        .from("rooms")
-        .select(
-            "id, room_number, room_type, status, price, hotel_id"
-        )
-        .eq("hotel_id", hotelId);
-
-    if (result.error) {
-
-        throw new Error(
-            "Failed to load rooms: " +
-            result.error.message
-        );
-
-    }
-
-    roomsData = result.data || [];
-
-}
-
-
-function getRoomById(id) {
-
-    return roomsData.find(
-        room => String(room.id) === String(id)
-    );
-
-}
-
-
-/* =========================================================
-   RESERVATIONS
-
-   IMPORTANT DATABASE COLUMN NAMES:
-
-   Table: reservations
-
-   "guest id"
-   "room id"
-
-   These are deliberately quoted because their names
-   contain spaces. Do not change them to guest_id or room_id.
-========================================================= */
-
-async function loadReservations() {
-
-    const hotelId = getSelectedHotelId();
-
-    reservationsData = [];
-
-    if (!hotelId) {
-        return;
-    }
-
-    const result = await supabaseClient
-        .from("reservations")
-        .select(
-            'id, created_at, "guest id", "room id", check_in, check_out, status, amount, hotel_id'
-        )
-        .eq("hotel_id", hotelId);
-
-    if (result.error) {
-
-        throw new Error(
-            "Failed to load reservations: " +
-            result.error.message
-        );
-
-    }
-
-    reservationsData = result.data || [];
-
-}
-
-
-function getReservationById(id) {
-
-    return reservationsData.find(
-        reservation =>
-            String(reservation.id) === String(id)
-    );
-
-}
-
-
-/* =========================================================
-   PAYMENTS
-========================================================= */
-
-async function loadPayments() {
-
-    const hotelId = getSelectedHotelId();
-
-    paymentsData = [];
-
-    if (!hotelId) {
-        return;
-    }
-
-    const result = await supabaseClient
-        .from("payments")
-        .select(
-            "id, created_at, reservation_id, amount, payment_method, payment_date, hotel_id"
-        )
-        .eq("hotel_id", hotelId)
-        .order("payment_date", {
-            ascending: false
-        });
-
-    if (result.error) {
-
-        throw new Error(
-            "Failed to load payments: " +
-            result.error.message
-        );
-
-    }
-
-    paymentsData = result.data || [];
-
-}
-
-
-/* =========================================================
-   PAYMENT CALCULATIONS
-========================================================= */
-
-function getTotalPaidForReservation(
-    reservationId,
-    excludePaymentId = null
-) {
-
-    return paymentsData.reduce((total, payment) => {
-
-        const sameReservation =
-            String(payment.reservation_id) ===
-            String(reservationId);
-
-        const isExcluded =
-            excludePaymentId !== null &&
-            String(payment.id) ===
-            String(excludePaymentId);
-
-        if (sameReservation && !isExcluded) {
-
-            return total + Number(payment.amount || 0);
-
-        }
-
-        return total;
-
-    }, 0);
-
-}
-
-
-function getReservationBalance(
-    reservation,
-    excludePaymentId = null
-) {
-
-    if (!reservation) {
-        return 0;
-    }
-
-    const totalAmount =
-        Number(reservation.amount || 0);
-
-    const paid =
-        getTotalPaidForReservation(
-            reservation.id,
-            excludePaymentId
-        );
-
-    return Math.max(0, totalAmount - paid);
-
-}
-
-
-function getGuestForReservation(reservation) {
-
-    if (!reservation) {
-        return null;
-    }
-
-    return getGuestById(
-        reservation["guest id"]
-    );
-
-}
-
-
-function getRoomForReservation(reservation) {
-
-    if (!reservation) {
-        return null;
-    }
-
-    return getRoomById(
-        reservation["room id"]
-    );
-
-}
-
-
-/* =========================================================
-   RESERVATION DROPDOWN
-========================================================= */
-
-function populateReservationDropdown(selectedId = "") {
-
-    const select = document.getElementById(
-        "reservationSelect"
-    );
-
-    select.innerHTML =
-        '<option value="">Select Reservation</option>';
-
-    const availableReservations =
-        reservationsData.filter(reservation => {
-
-            const status =
-                String(reservation.status || "")
-                    .toLowerCase();
-
-            if (status === "cancelled") {
-                return false;
-            }
-
-            const balance =
-                getReservationBalance(
-                    reservation,
-                    editingPaymentId
-                );
-
-            return (
-                balance > 0 ||
-                String(reservation.id) === String(selectedId)
-            );
-
-        });
-
-    availableReservations.forEach(reservation => {
-
-        const guest =
-            getGuestForReservation(reservation);
-
-        const room =
-            getRoomForReservation(reservation);
-
-        const option =
-            document.createElement("option");
-
-        option.value = reservation.id;
-
-        option.textContent =
-            "Reservation #" + reservation.id +
-            " | " +
-            (guest?.["full name"] || "Unknown Guest") +
-            " | Room " +
-            (room?.room_number || "-") +
-            " | Balance " +
-            formatMoney(
-                getReservationBalance(
-                    reservation,
-                    editingPaymentId
-                )
-            );
-
-        select.appendChild(option);
-
-    });
-
-    if (selectedId) {
-
-        select.value = String(selectedId);
-
-    }
-
-}
-
-
-/* =========================================================
-   UPDATE BALANCE INFORMATION IN FORM
-========================================================= */
-
-function updatePaymentDetails() {
-
-    const reservationId =
-        document.getElementById(
-            "reservationSelect"
-        ).value;
-
-    const reservation =
-        getReservationById(reservationId);
-
-    const totalElement =
-        document.getElementById(
-            "reservationTotal"
-        );
-
-    const paidElement =
-        document.getElementById(
-            "paidBefore"
-        );
-
-    const balanceElement =
-        document.getElementById(
-            "balanceAvailable"
-        );
-
-    if (!reservation) {
-
-        totalElement.textContent =
-            formatMoney(0);
-
-        paidElement.textContent =
-            formatMoney(0);
-
-        balanceElement.textContent =
-            formatMoney(0);
-
-        return;
-
-    }
-
-    const total =
-        Number(reservation.amount || 0);
-
-    const paid =
-        getTotalPaidForReservation(
-            reservation.id,
-            editingPaymentId
-        );
-
-    const remaining =
-        Math.max(0, total - paid);
-
-    totalElement.textContent =
-        formatMoney(total);
-
-    paidElement.textContent =
-        formatMoney(paid);
-
-    balanceElement.textContent =
-        formatMoney(remaining);
-
-}
-
-
-/* =========================================================
-   PAYMENT TABLE
-========================================================= */
-
-function renderPayments() {
-
-    const tbody =
-        document.getElementById(
-            "paymentsTableBody"
-        );
-
-    const search =
-        document.getElementById(
-            "searchInput"
-        ).value.toLowerCase().trim();
-
-    const filtered =
-        paymentsData.filter(payment => {
-
-            const reservation =
-                getReservationById(
-                    payment.reservation_id
-                );
-
-            const guest =
-                getGuestForReservation(
-                    reservation
-                );
-
-            const room =
-                getRoomForReservation(
-                    reservation
-                );
-
-            const guestName =
-                guest?.["full name"] || "";
-
-            const phone =
-                guest?.phone || "";
-
-            const roomNumber =
-                room?.room_number || "";
-
-            const method =
-                payment.payment_method || "";
-
-            const searchText = [
-
-                payment.id,
-                payment.reservation_id,
-                guestName,
-                phone,
-                roomNumber,
-                method
-
-            ].join(" ").toLowerCase();
-
-            return searchText.includes(search);
-
-        });
-
-    if (filtered.length === 0) {
-
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="10" class="empty-state">
-                    No payment records found.
-                </td>
-            </tr>
-        `;
-
-        return;
-
-    }
-
-    tbody.innerHTML = "";
-
-    filtered.forEach(payment => {
-
-        const reservation =
-            getReservationById(
-                payment.reservation_id
-            );
-
-        const guest =
-            getGuestForReservation(
-                reservation
-            );
-
-        const room =
-            getRoomForReservation(
-                reservation
-            );
-
-        const tr =
-            document.createElement("tr");
-
-        tr.innerHTML = `
-
-            <td>#${escapeHtml(payment.id)}</td>
-
-            <td>
-                #${escapeHtml(payment.reservation_id)}
-            </td>
-
-            <td>
-                ${escapeHtml(
-                    guest?.["full name"] || "Unknown Guest"
-                )}
-            </td>
-
-            <td>
-                ${escapeHtml(
-                    guest?.phone || "-"
-                )}
-            </td>
-
-            <td>
-                ${
-                    room
-                        ? "Room " + escapeHtml(room.room_number)
-                        : "-"
-                }
-            </td>
-
-            <td>
-                ${formatDate(payment.payment_date)}
-            </td>
-
-            <td>
-                ${escapeHtml(payment.payment_method || "-")}
-            </td>
-
-            <td>
-                <strong>
-                    ${formatMoney(payment.amount)}
-                </strong>
-            </td>
-
-            <td>
-                <span class="recorded-badge">
-                    Recorded
-                </span>
-            </td>
-
-            <td>
-
-                <div class="actions">
+                <div class="modal-footer">
 
                     <button
-                        class="btn btn-success"
-                        onclick="viewReceipt(${payment.id})"
-                    >
-                        Receipt
+                        type="button"
+                        id="cancelPaymentModal"
+                        class="btn-secondary">
+
+                        Cancel
+
                     </button>
 
-                    <button
-                        class="btn btn-warning"
-                        onclick="editPayment(${payment.id})"
-                    >
-                        Edit
-                    </button>
 
                     <button
-                        class="btn btn-danger"
-                        onclick="deletePayment(${payment.id})"
-                    >
-                        Delete
+                        type="submit"
+                        id="savePayment"
+                        class="btn-primary">
+
+                        Save Payment
+
                     </button>
 
                 </div>
 
-            </td>
+            </form>
 
-        `;
+        </div>
 
-        tbody.appendChild(tr);
+    </div>
 
-    });
 
-}
+    <!-- =========================================================
+         RECEIPT MODAL
+    ========================================================= -->
 
+    <div
+        id="receiptModal"
+        class="modal">
 
-/* =========================================================
-   SUMMARY CARDS
-========================================================= */
+        <div class="modal-content receipt-content">
 
-function updateSummary() {
+            <div class="modal-header">
 
-    const totalCollected =
-        paymentsData.reduce(
-            (sum, payment) =>
-                sum + Number(payment.amount || 0),
-            0
-        );
+                <h2>
+                    Payment Receipt
+                </h2>
 
-    let outstandingBalance = 0;
 
-    let reservationsWithBalance = 0;
+                <button
+                    type="button"
+                    id="closeReceiptModal"
+                    class="modal-close">
 
-    reservationsData.forEach(reservation => {
+                    ×
 
-        if (
-            String(reservation.status || "")
-                .toLowerCase() === "cancelled"
-        ) {
-            return;
-        }
+                </button>
 
-        const balance =
-            getReservationBalance(reservation);
+            </div>
 
-        if (balance > 0) {
 
-            outstandingBalance += balance;
+            <div
+                id="receiptBody"
+                class="modal-body">
+            </div>
 
-            reservationsWithBalance++;
 
-        }
+            <div class="modal-footer">
 
-    });
+                <button
+                    type="button"
+                    id="printReceipt"
+                    class="btn-primary">
 
-    document.getElementById(
-        "totalCollected"
-    ).textContent =
-        formatMoney(totalCollected);
+                    Print Receipt
 
-    document.getElementById(
-        "paymentCount"
-    ).textContent =
-        paymentsData.length;
+                </button>
 
-    document.getElementById(
-        "outstandingBalance"
-    ).textContent =
-        formatMoney(outstandingBalance);
 
-    document.getElementById(
-        "reservationsWithBalance"
-    ).textContent =
-        reservationsWithBalance;
+                <button
+                    type="button"
+                    id="closeReceiptButton"
+                    class="btn-secondary">
 
-}
+                    Close
 
+                </button>
 
-/* =========================================================
-   OPEN PAYMENT FORM
-========================================================= */
+            </div>
 
-function openPaymentModal() {
+        </div>
 
-    editingPaymentId = null;
+    </div>
 
-    document.getElementById(
-        "paymentModalTitle"
-    ).textContent =
-        "Record Payment";
 
-    document.getElementById(
-        "paymentForm"
-    ).reset();
+    <!-- =========================================================
+         IMPORTANT SCRIPT ORDER
+         ---------------------------------------------------------
+         1. Supabase library
+         2. Supabase connection
+         3. Access control
+         4. Sidebar
+         5. FINANCIAL ENGINE
+         6. PAYMENTS
+         
+         financial-engine.js MUST load before payments.js.
+    ========================================================= -->
 
-    document.getElementById(
-        "paymentId"
-    ).value = "";
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    document.getElementById(
-        "paymentDate"
-    ).value =
-        new Date().toISOString().slice(0, 10);
+    <script src="./supabase.js"></script>
 
-    populateReservationDropdown();
+    <script src="./access-control.js"></script>
 
-    updatePaymentDetails();
+    <script src="./sidebar.js"></script>
 
-    document.getElementById(
-        "paymentModal"
-    ).style.display = "flex";
+    <!-- FINANCIAL ENGINE MUST COME FIRST -->
+    <script src="./financial-engine.js"></script>
 
-}
-
-
-function closePaymentModal() {
-
-    document.getElementById(
-        "paymentModal"
-    ).style.display = "none";
-
-    editingPaymentId = null;
-
-}
-
-
-/* =========================================================
-   EDIT PAYMENT
-========================================================= */
-
-function editPayment(id) {
-
-    const payment =
-        paymentsData.find(
-            p => String(p.id) === String(id)
-        );
-
-    if (!payment) {
-
-        showMessage(
-            "Payment record not found.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    editingPaymentId =
-        payment.id;
-
-    document.getElementById(
-        "paymentModalTitle"
-    ).textContent =
-        "Edit Payment";
-
-    document.getElementById(
-        "paymentId"
-    ).value =
-        payment.id;
-
-    populateReservationDropdown(
-        payment.reservation_id
-    );
-
-    document.getElementById(
-        "reservationSelect"
-    ).value =
-        String(payment.reservation_id);
-
-    document.getElementById(
-        "paymentDate"
-    ).value =
-        payment.payment_date
-            ? String(payment.payment_date).slice(0, 10)
-            : "";
-
-    document.getElementById(
-        "paymentMethod"
-    ).value =
-        payment.payment_method || "";
-
-    document.getElementById(
-        "paymentAmount"
-    ).value =
-        Number(payment.amount || 0);
-
-    updatePaymentDetails();
-
-    document.getElementById(
-        "paymentModal"
-    ).style.display = "flex";
-
-}
-
-
-/* =========================================================
-   SAVE OR UPDATE PAYMENT
-========================================================= */
-
-async function savePayment(event) {
-
-    event.preventDefault();
-
-    const hotelId =
-        getSelectedHotelId();
-
-    if (!hotelId) {
-
-        showMessage(
-            "Please select a hotel first.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    const reservationId =
-        document.getElementById(
-            "reservationSelect"
-        ).value;
-
-    const paymentDate =
-        document.getElementById(
-            "paymentDate"
-        ).value;
-
-    const paymentMethod =
-        document.getElementById(
-            "paymentMethod"
-        ).value;
-
-    const amount =
-        Number(
-            document.getElementById(
-                "paymentAmount"
-            ).value
-        );
-
-    if (
-        !reservationId ||
-        !paymentDate ||
-        !paymentMethod ||
-        !Number.isFinite(amount) ||
-        amount <= 0
-    ) {
-
-        showMessage(
-            "Please enter all payment details correctly.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    const reservation =
-        getReservationById(reservationId);
-
-    if (!reservation) {
-
-        showMessage(
-            "The selected reservation could not be found.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    if (
-        String(reservation.status || "")
-            .toLowerCase() === "cancelled"
-    ) {
-
-        showMessage(
-            "Payments cannot be recorded against a cancelled reservation.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    const availableBalance =
-        getReservationBalance(
-            reservation,
-            editingPaymentId
-        );
-
-    if (amount > availableBalance + 0.001) {
-
-        showMessage(
-            "Payment exceeds the available reservation balance of " +
-            formatMoney(availableBalance),
-            "error"
-        );
-
-        return;
-
-    }
-
-    const paymentData = {
-
-        reservation_id: Number(reservationId),
-
-        amount: amount,
-
-        payment_method: paymentMethod,
-
-        payment_date: paymentDate,
-
-        hotel_id: Number(hotelId)
-
-    };
-
-    const saveButton =
-        document.getElementById(
-            "savePaymentBtn"
-        );
-
-    saveButton.disabled = true;
-
-    saveButton.textContent = "Saving...";
-
-    try {
-
-        let result;
-
-        if (editingPaymentId) {
-
-            result = await supabaseClient
-                .from("payments")
-                .update(paymentData)
-                .eq("id", editingPaymentId)
-                .eq("hotel_id", hotelId);
-
-        } else {
-
-            result = await supabaseClient
-                .from("payments")
-                .insert(paymentData);
-
-        }
-
-        if (result.error) {
-
-            throw new Error(
-                result.error.message
-            );
-
-        }
-
-        showMessage(
-            editingPaymentId
-                ? "Payment updated successfully."
-                : "Payment recorded successfully.",
-            "success"
-        );
-
-        closePaymentModal();
-
-        await loadPayments();
-
-        renderPayments();
-
-        updateSummary();
-
-    } catch (error) {
-
-        console.error(
-            "Payment save error:",
-            error
-        );
-
-        showMessage(
-            "Failed to save payment: " +
-            error.message,
-            "error"
-        );
-
-    } finally {
-
-        saveButton.disabled = false;
-
-        saveButton.textContent =
-            "Save Payment";
-
-    }
-
-}
-
-
-/* =========================================================
-   DELETE PAYMENT
-========================================================= */
-
-async function deletePayment(id) {
-
-    const payment =
-        paymentsData.find(
-            p => String(p.id) === String(id)
-        );
-
-    if (!payment) {
-
-        showMessage(
-            "Payment record not found.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    const confirmed = confirm(
-        "Are you sure you want to delete payment #" +
-        payment.id +
-        "?"
-    );
-
-    if (!confirmed) {
-        return;
-    }
-
-    try {
-
-        const hotelId =
-            getSelectedHotelId();
-
-        const result =
-            await supabaseClient
-                .from("payments")
-                .delete()
-                .eq("id", id)
-                .eq("hotel_id", hotelId);
-
-        if (result.error) {
-
-            throw new Error(
-                result.error.message
-            );
-
-        }
-
-        showMessage(
-            "Payment deleted successfully.",
-            "success"
-        );
-
-        await loadPayments();
-
-        renderPayments();
-
-        updateSummary();
-
-    } catch (error) {
-
-        console.error(
-            "Payment delete error:",
-            error
-        );
-
-        showMessage(
-            "Failed to delete payment: " +
-            error.message,
-            "error"
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   RECEIPT
-========================================================= */
-
-function viewReceipt(id) {
-
-    const payment =
-        paymentsData.find(
-            p => String(p.id) === String(id)
-        );
-
-    if (!payment) {
-
-        showMessage(
-            "Payment not found.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    const reservation =
-        getReservationById(
-            payment.reservation_id
-        );
-
-    const guest =
-        getGuestForReservation(reservation);
-
-    const room =
-        getRoomForReservation(reservation);
-
-    currentReceiptPayment = payment;
-
-    document.getElementById(
-        "receiptHotelName"
-    ).textContent =
-        getCurrentHotelName();
-
-    document.getElementById(
-        "receiptPaymentId"
-    ).textContent =
-        "#" + payment.id;
-
-    document.getElementById(
-        "receiptReservationId"
-    ).textContent =
-        "#" + payment.reservation_id;
-
-    document.getElementById(
-        "receiptGuest"
-    ).textContent =
-        guest?.["full name"] || "Unknown Guest";
-
-    document.getElementById(
-        "receiptPhone"
-    ).textContent =
-        guest?.phone || "-";
-
-    document.getElementById(
-        "receiptRoom"
-    ).textContent =
-        room
-            ? "Room " + room.room_number
-            : "-";
-
-    document.getElementById(
-        "receiptDate"
-    ).textContent =
-        formatDate(payment.payment_date);
-
-    document.getElementById(
-        "receiptMethod"
-    ).textContent =
-        payment.payment_method || "-";
-
-    document.getElementById(
-        "receiptAmount"
-    ).textContent =
-        formatMoney(payment.amount);
-
-    document.getElementById(
-        "receiptModal"
-    ).style.display = "flex";
-
-}
-
-
-function closeReceiptModal() {
-
-    document.getElementById(
-        "receiptModal"
-    ).style.display = "none";
-
-    currentReceiptPayment = null;
-
-}
-
-
-/* =========================================================
-   PRINT RECEIPT
-========================================================= */
-
-function printReceipt() {
-
-    const receipt =
-        document.getElementById(
-            "receiptContent"
-        );
-
-    const printWindow =
-        window.open(
-            "",
-            "_blank",
-            "width=800,height=700"
-        );
-
-    if (!printWindow) {
-
-        showMessage(
-            "Your browser blocked the receipt window. Allow pop-ups and try again.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    printWindow.document.open();
-
-    printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Payment Receipt</title>
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    padding: 30px;
-                    color: #222;
-                }
-
-                .receipt-content {
-                    max-width: 650px;
-                    margin: auto;
-                }
-
-                .receipt-header {
-                    text-align: center;
-                    border-bottom: 2px solid #222;
-                    padding-bottom: 15px;
-                    margin-bottom: 20px;
-                }
-
-                .receipt-line {
-                    display: flex;
-                    justify-content: space-between;
-                    padding: 10px 0;
-                    border-bottom: 1px solid #ddd;
-                }
-
-                .receipt-total {
-                    font-size: 20px;
-                    font-weight: bold;
-                    margin-top: 20px;
-                }
-            </style>
-        </head>
-        <body>
-            ${receipt.innerHTML}
-        </body>
-        </html>
-    `);
-
-    printWindow.document.close();
-
-    printWindow.focus();
-
-    printWindow.print();
-
-}
-
-
-/* =========================================================
-   DOWNLOAD RECEIPT AS PDF
-========================================================= */
-
-function downloadReceiptPDF() {
-
-    if (!currentReceiptPayment) {
-
-        showMessage(
-            "No receipt is selected.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    if (!window.jspdf || !window.jspdf.jsPDF) {
-
-        showMessage(
-            "PDF library is unavailable. Check your internet connection and refresh the page.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    const payment =
-        currentReceiptPayment;
-
-    const reservation =
-        getReservationById(
-            payment.reservation_id
-        );
-
-    const guest =
-        getGuestForReservation(reservation);
-
-    const room =
-        getRoomForReservation(reservation);
-
-    const { jsPDF } = window.jspdf;
-
-    const doc = new jsPDF();
-
-    const hotelName =
-        getCurrentHotelName();
-
-    doc.setFontSize(19);
-
-    doc.text(
-        hotelName,
-        105,
-        25,
-        { align: "center" }
-    );
-
-    doc.setFontSize(14);
-
-    doc.text(
-        "PAYMENT RECEIPT",
-        105,
-        36,
-        { align: "center" }
-    );
-
-    doc.line(
-        20,
-        43,
-        190,
-        43
-    );
-
-    doc.setFontSize(11);
-
-    const lines = [
-
-        ["Payment ID", "#" + payment.id],
-
-        ["Reservation ID", "#" + payment.reservation_id],
-
-        ["Guest Name", guest?.["full name"] || "Unknown Guest"],
-
-        ["Phone", guest?.phone || "-"],
-
-        ["Room", room ? "Room " + room.room_number : "-"],
-
-        ["Payment Date", formatDate(payment.payment_date)],
-
-        ["Payment Method", payment.payment_method || "-"]
-
-    ];
-
-    let y = 58;
-
-    lines.forEach(line => {
-
-        doc.text(
-            line[0] + ":",
-            25,
-            y
-        );
-
-        doc.text(
-            String(line[1]),
-            85,
-            y
-        );
-
-        y += 13;
-
-    });
-
-    doc.line(
-        20,
-        y,
-        190,
-        y
-    );
-
-    y += 18;
-
-    doc.setFontSize(16);
-
-    doc.setFont(undefined, "bold");
-
-    doc.text(
-        "Amount Paid: " + formatMoney(payment.amount),
-        25,
-        y
-    );
-
-    y += 25;
-
-    doc.setFontSize(11);
-
-    doc.setFont(undefined, "normal");
-
-    doc.text(
-        "Thank you for your payment.",
-        105,
-        y,
-        { align: "center" }
-    );
-
-    doc.save(
-        "Payment-Receipt-" + payment.id + ".pdf"
-    );
-
-}
-
-
-/* =========================================================
-   INITIALIZATION
-========================================================= */
-
-async function initializePaymentsPage() {
-
-    const tbody =
-        document.getElementById(
-            "paymentsTableBody"
-        );
-
-    tbody.innerHTML = `
-        <tr>
-            <td colspan="10" class="loading">
-                Loading payment records...
-            </td>
-        </tr>
-    `;
-
-    try {
-
-        if (!window.supabaseClient) {
-
-            throw new Error(
-                "Supabase client is not available. Check supabase.js."
-            );
-
-        }
-
-        const role =
-            getUserRole();
-
-        if (!role) {
-
-            window.location.href =
-                "./login.html";
-
-            return;
-
-        }
-
-        await loadHotels();
-
-        const hotelId =
-            getSelectedHotelId();
-
-        if (!hotelId) {
-
-            paymentsData = [];
-            reservationsData = [];
-            guestsData = [];
-            roomsData = [];
-
-            renderPayments();
-
-            updateSummary();
-
-            showMessage(
-                role === "system_owner"
-                    ? "Select a hotel to view its payments."
-                    : "Your account is not linked to a hotel.",
-                "info"
-            );
-
-            return;
-
-        }
-
-        await Promise.all([
-
-            loadGuests(),
-
-            loadRooms(),
-
-            loadReservations(),
-
-            loadPayments()
-
-        ]);
-
-        renderPayments();
-
-        updateSummary();
-
-    } catch (error) {
-
-        console.error(
-            "Failed to initialize Payments:",
-            error
-        );
-
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="10" class="empty-state">
-                    Payments could not be loaded.
-                </td>
-            </tr>
-        `;
-
-        showMessage(
-            "Failed to initialize Payments: " +
-            error.message,
-            "error"
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   EVENT LISTENERS
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        document.getElementById(
-            "addPaymentBtn"
-        ).addEventListener(
-            "click",
-            openPaymentModal
-        );
-
-        document.getElementById(
-            "closePaymentModal"
-        ).addEventListener(
-            "click",
-            closePaymentModal
-        );
-
-        document.getElementById(
-            "cancelPaymentBtn"
-        ).addEventListener(
-            "click",
-            closePaymentModal
-        );
-
-        document.getElementById(
-            "paymentForm"
-        ).addEventListener(
-            "submit",
-            savePayment
-        );
-
-        document.getElementById(
-            "reservationSelect"
-        ).addEventListener(
-            "change",
-            updatePaymentDetails
-        );
-
-        document.getElementById(
-            "searchInput"
-        ).addEventListener(
-            "input",
-            renderPayments
-        );
-
-        document.getElementById(
-            "refreshBtn"
-        ).addEventListener(
-            "click",
-            initializePaymentsPage
-        );
-
-        document.getElementById(
-            "closeReceiptModal"
-        ).addEventListener(
-            "click",
-            closeReceiptModal
-        );
-
-        document.getElementById(
-            "printReceiptBtn"
-        ).addEventListener(
-            "click",
-            printReceipt
-        );
-
-        document.getElementById(
-            "downloadReceiptBtn"
-        ).addEventListener(
-            "click",
-            downloadReceiptPDF
-        );
-
-        document.getElementById(
-            "hotelSelector"
-        ).addEventListener(
-            "change",
-            async () => {
-
-                closePaymentModal();
-
-                closeReceiptModal();
-
-                await initializePaymentsPage();
-
-            }
-        );
-
-        window.addEventListener(
-            "click",
-            event => {
-
-                const paymentModal =
-                    document.getElementById(
-                        "paymentModal"
-                    );
-
-                const receiptModal =
-                    document.getElementById(
-                        "receiptModal"
-                    );
-
-                if (event.target === paymentModal) {
-                    closePaymentModal();
-                }
-
-                if (event.target === receiptModal) {
-                    closeReceiptModal();
-                }
-
-            }
-        );
-
-        initializePaymentsPage();
-
-    }
-);
-
-</script>
+    <!-- PAYMENTS MUST COME AFTER FINANCIAL ENGINE -->
+    <script src="./payments.js"></script>
 
 </body>
 </html>
+```

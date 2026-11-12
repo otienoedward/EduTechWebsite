@@ -1,318 +1,1427 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Expenses - EDU TECH Hotel Management System</title>
+<meta charset="UTF-8">
 
-    <link rel="stylesheet" href="./style.css">
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <style>
-        .sidebar {
-            position: fixed !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 250px !important;
-            height: 100vh !important;
-            z-index: 999999 !important;
-            overflow-y: auto !important;
-        }
+<title>Expenses | EDU TECH Hotel Management System</title>
 
-        .sidebar a {
-            display: block !important;
-            position: relative !important;
-            z-index: 1000000 !important;
-            cursor: pointer !important;
-        }
+<style>
 
-        .main-content {
-            margin-left: 250px !important;
-        }
+/* =========================================================
+   EDU TECH HOTEL MANAGEMENT SYSTEM
+   EXPENSES PAGE
+   SAFE SIDEBAR LAYOUT
+========================================================= */
 
-        .role-hidden {
-            display: none !important;
-        }
+:root{
+    --primary:#0f3d56;
+    --primary-dark:#092b3d;
+    --accent:#1f7a5a;
 
-        #accessDenied {
-            display: none;
-            padding: 40px;
-            text-align: center;
-        }
+    --success:#198754;
+    --danger:#dc3545;
+    --warning:#f59f00;
+    --info:#0d6efd;
 
-        #accessDenied h2 {
-            margin-bottom: 10px;
-        }
+    --bg:#f4f7fa;
+    --card:#ffffff;
+    --text:#243746;
+    --muted:#6c757d;
+    --border:#dce3e8;
 
-        .sidebar-logout {
-            margin-top: 20px;
-            padding: 15px;
-        }
+    --shadow:0 8px 24px rgba(15,61,86,.08);
 
-        .logout-btn {
-            width: 100%;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 600;
-        }
-    </style>
+    --sidebar-width:260px;
+}
+
+/* =========================================================
+   GLOBAL RESET
+========================================================= */
+
+*{
+    box-sizing:border-box;
+}
+
+html,
+body{
+    margin:0;
+    padding:0;
+    width:100%;
+    min-height:100%;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    overflow-x:hidden;
+}
+
+/* =========================================================
+   MAIN PAGE LAYOUT
+========================================================= */
+
+.layout{
+    position:relative;
+    display:block;
+    width:100%;
+    min-height:100vh;
+}
+
+/* =========================================================
+   LEFT BLUE SIDEBAR
+   IMPORTANT:
+   sidebar.js fills #appSidebar
+========================================================= */
+
+#appSidebar{
+    position:fixed !important;
+
+    top:0 !important;
+    left:0 !important;
+    bottom:0 !important;
+
+    width:var(--sidebar-width) !important;
+    height:100vh !important;
+
+    margin:0 !important;
+    padding:0 !important;
+
+    background:#0f3d56 !important;
+
+    border:0 !important;
+
+    z-index:10000 !important;
+
+    overflow-x:hidden !important;
+    overflow-y:auto !important;
+
+    box-sizing:border-box !important;
+
+    display:block !important;
+}
+
+/*
+   Protect the sidebar from accidental transparent
+   backgrounds created by other page CSS.
+*/
+#appSidebar,
+#appSidebar *{
+    box-sizing:border-box;
+}
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
+
+.main-content{
+    position:relative;
+
+    display:block;
+
+    margin-left:var(--sidebar-width) !important;
+
+    width:calc(100% - var(--sidebar-width)) !important;
+
+    min-width:0;
+    min-height:100vh;
+
+    padding:24px;
+
+    background:var(--bg);
+
+    z-index:1;
+}
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.page-header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+
+    gap:20px;
+
+    padding:22px 24px;
+    margin-bottom:20px;
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+    border-radius:14px;
+
+    box-shadow:var(--shadow);
+}
+
+.page-title{
+    margin:0;
+
+    color:var(--primary);
+
+    font-size:28px;
+    font-weight:700;
+}
+
+.page-subtitle{
+    margin:7px 0 0;
+
+    color:var(--muted);
+
+    font-size:14px;
+}
+
+.hotel-info{
+    min-width:180px;
+    text-align:right;
+}
+
+.hotel-name{
+    color:var(--primary);
+    font-weight:700;
+    font-size:15px;
+}
+
+.hotel-location{
+    margin-top:5px;
+
+    color:var(--muted);
+
+    font-size:13px;
+}
+
+/* =========================================================
+   SUMMARY CARDS
+========================================================= */
+
+.summary-grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,minmax(0,1fr));
+
+    gap:16px;
+
+    margin-bottom:20px;
+}
+
+.summary-card{
+    min-width:0;
+
+    padding:18px;
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+    border-radius:14px;
+
+    box-shadow:var(--shadow);
+}
+
+.summary-label{
+    margin-bottom:8px;
+
+    color:var(--muted);
+
+    font-size:13px;
+}
+
+.summary-value{
+    color:var(--primary);
+
+    font-size:24px;
+    font-weight:700;
+
+    word-break:break-word;
+}
+
+.summary-card.total .summary-value{
+    color:var(--danger);
+}
+
+.summary-card.posted .summary-value{
+    color:var(--success);
+}
+
+.summary-card.pending .summary-value{
+    color:var(--warning);
+}
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.card{
+    margin-bottom:20px;
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+    border-radius:14px;
+
+    box-shadow:var(--shadow);
+
+    overflow:hidden;
+}
+
+.card-header{
+    display:flex;
+
+    align-items:center;
+    justify-content:space-between;
+
+    gap:15px;
+
+    padding:18px 20px;
+
+    background:#fbfcfd;
+
+    border-bottom:1px solid var(--border);
+}
+
+.card-title{
+    margin:0;
+
+    color:var(--primary);
+
+    font-size:18px;
+    font-weight:700;
+}
+
+.card-body{
+    padding:20px;
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.form-grid{
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,minmax(0,1fr));
+
+    gap:16px;
+}
+
+.form-group{
+    display:flex;
+
+    flex-direction:column;
+
+    gap:7px;
+
+    min-width:0;
+}
+
+.form-group.full{
+    grid-column:1 / -1;
+}
+
+.form-label{
+    color:var(--text);
+
+    font-size:13px;
+    font-weight:700;
+}
+
+.form-control,
+.form-select{
+    width:100%;
+    height:44px;
+
+    padding:0 12px;
+
+    color:var(--text);
+
+    background:#fff;
+
+    border:1px solid #cfd8df;
+
+    border-radius:8px;
+
+    outline:none;
+
+    font-size:14px;
+}
+
+textarea.form-control{
+    height:100px;
+
+    padding:12px;
+
+    resize:vertical;
+}
+
+.form-control:focus,
+.form-select:focus{
+    border-color:var(--info);
+
+    box-shadow:
+        0 0 0 3px rgba(13,110,253,.10);
+}
+
+.form-actions{
+    display:flex;
+
+    justify-content:flex-end;
+    align-items:center;
+
+    gap:10px;
+
+    margin-top:18px;
+
+    flex-wrap:wrap;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.btn{
+    min-height:40px;
+
+    padding:9px 15px;
+
+    border:0;
+    border-radius:8px;
+
+    cursor:pointer;
+
+    display:inline-flex;
+
+    align-items:center;
+    justify-content:center;
+
+    gap:7px;
+
+    font-size:13px;
+    font-weight:700;
+
+    text-decoration:none;
+
+    transition:.2s;
+}
+
+.btn:hover{
+    transform:translateY(-1px);
+}
+
+.btn-primary{
+    color:#fff;
+    background:var(--primary);
+}
+
+.btn-primary:hover{
+    background:var(--primary-dark);
+}
+
+.btn-success{
+    color:#fff;
+    background:var(--success);
+}
+
+.btn-danger{
+    color:#fff;
+    background:var(--danger);
+}
+
+.btn-warning{
+    color:#fff;
+    background:var(--warning);
+}
+
+.btn-info{
+    color:#fff;
+    background:var(--info);
+}
+
+.btn-secondary{
+    color:#fff;
+    background:#6c757d;
+}
+
+.btn-light{
+    color:var(--text);
+
+    background:#eef2f5;
+
+    border:1px solid var(--border);
+}
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.toolbar{
+    display:flex;
+
+    align-items:center;
+    justify-content:space-between;
+
+    gap:12px;
+
+    margin-bottom:15px;
+
+    flex-wrap:wrap;
+}
+
+.search-box{
+    flex:1;
+
+    min-width:220px;
+}
+
+.search-box input{
+    width:100%;
+    height:42px;
+
+    padding:0 12px;
+
+    border:1px solid var(--border);
+    border-radius:8px;
+
+    outline:none;
+}
+
+.search-box input:focus{
+    border-color:var(--info);
+}
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-wrapper{
+    width:100%;
+
+    overflow-x:auto;
+
+    border:1px solid var(--border);
+
+    border-radius:10px;
+}
+
+table{
+    width:100%;
+
+    border-collapse:collapse;
+
+    min-width:1050px;
+}
+
+thead{
+    color:#fff;
+
+    background:var(--primary);
+}
+
+th{
+    padding:12px;
+
+    text-align:left;
+
+    font-size:12px;
+
+    white-space:nowrap;
+}
+
+td{
+    padding:12px;
+
+    border-bottom:1px solid #edf0f2;
+
+    font-size:13px;
+
+    vertical-align:middle;
+}
+
+tbody tr:hover{
+    background:#f8fafc;
+}
+
+tbody tr:last-child td{
+    border-bottom:0;
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status{
+    display:inline-flex;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:5px 9px;
+
+    border-radius:20px;
+
+    font-size:11px;
+    font-weight:700;
+
+    white-space:nowrap;
+}
+
+.status-posted{
+    color:#14733f;
+    background:#dff5e8;
+}
+
+.status-pending{
+    color:#946200;
+    background:#fff1cc;
+}
+
+/* =========================================================
+   ACTION BUTTONS
+========================================================= */
+
+.action-buttons{
+    display:flex;
+
+    gap:6px;
+
+    flex-wrap:wrap;
+}
+
+.action-buttons .btn{
+    min-height:34px;
+
+    padding:7px 10px;
+
+    font-size:11px;
+}
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-state{
+    padding:45px 20px;
+
+    text-align:center;
+
+    color:var(--muted);
+}
+
+.empty-state-icon{
+    margin-bottom:10px;
+
+    font-size:40px;
+}
+
+.empty-state h3{
+    margin:0 0 7px;
+
+    color:var(--primary);
+}
+
+.empty-state p{
+    margin:0;
+}
+
+/* =========================================================
+   MODALS
+========================================================= */
+
+.modal{
+    position:fixed;
+
+    inset:0;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:20px;
+
+    background:rgba(0,0,0,.55);
+
+    z-index:20000;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-content{
+    width:min(760px,100%);
+
+    max-height:90vh;
+
+    overflow-y:auto;
+
+    background:#fff;
+
+    border-radius:14px;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.25);
+}
+
+.modal-header{
+    display:flex;
+
+    align-items:center;
+    justify-content:space-between;
+
+    gap:15px;
+
+    padding:18px 20px;
+
+    border-bottom:1px solid var(--border);
+}
+
+.modal-header h3{
+    margin:0;
+
+    color:var(--primary);
+}
+
+.modal-close{
+    padding:0;
+
+    color:var(--muted);
+
+    background:transparent;
+
+    border:0;
+
+    cursor:pointer;
+
+    font-size:24px;
+}
+
+.modal-body{
+    padding:20px;
+}
+
+.modal-footer{
+    display:flex;
+
+    justify-content:flex-end;
+
+    gap:10px;
+
+    padding:15px 20px;
+
+    border-top:1px solid var(--border);
+
+    flex-wrap:wrap;
+}
+
+/* =========================================================
+   VOUCHER
+========================================================= */
+
+.voucher{
+    padding:25px;
+
+    background:#fff;
+
+    border:1px solid var(--border);
+}
+
+.voucher-header{
+    padding-bottom:15px;
+
+    margin-bottom:20px;
+
+    text-align:center;
+
+    border-bottom:2px solid var(--primary);
+}
+
+.voucher-header h2{
+    margin:0;
+
+    color:var(--primary);
+}
+
+.voucher-header p{
+    margin:5px 0 0;
+
+    color:var(--muted);
+}
+
+.voucher-table{
+    width:100%;
+
+    border-collapse:collapse;
+
+    min-width:0;
+}
+
+.voucher-table td{
+    padding:10px;
+
+    border:1px solid var(--border);
+}
+
+.voucher-label{
+    width:35%;
+
+    background:#f5f7f9;
+
+    font-weight:700;
+}
+
+.voucher-total{
+    margin-top:15px;
+
+    text-align:right;
+
+    font-size:18px;
+    font-weight:700;
+}
+
+/* =========================================================
+   LEDGER
+========================================================= */
+
+.ledger-box{
+    width:100%;
+
+    overflow-x:auto;
+}
+
+.ledger-table{
+    width:100%;
+
+    border-collapse:collapse;
+
+    min-width:650px;
+}
+
+.ledger-table th{
+    color:#fff;
+
+    background:var(--primary);
+}
+
+.ledger-table td,
+.ledger-table th{
+    padding:10px;
+
+    border:1px solid var(--border);
+}
+
+/* =========================================================
+   ALERTS
+========================================================= */
+
+.alert{
+    padding:12px 15px;
+
+    margin-bottom:15px;
+
+    border-radius:8px;
+
+    font-size:13px;
+}
+
+.alert-success{
+    color:#176c3a;
+
+    background:#e4f6eb;
+
+    border:1px solid #bfe8ce;
+}
+
+.alert-danger{
+    color:#a51e2a;
+
+    background:#fde8ea;
+
+    border:1px solid #f5c2c7;
+}
+
+.alert-warning{
+    color:#855d00;
+
+    background:#fff5d9;
+
+    border:1px solid #ffe49a;
+}
+
+.alert-info{
+    color:#084f9f;
+
+    background:#e6f1ff;
+
+    border:1px solid #bfd9ff;
+}
+
+/* =========================================================
+   SAVING OVERLAY
+========================================================= */
+
+#savingOverlay{
+    position:fixed;
+
+    inset:0;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    background:rgba(255,255,255,.75);
+
+    z-index:30000;
+}
+
+#savingOverlay.show{
+    display:flex;
+}
+
+.saving-box{
+    padding:25px 30px;
+
+    text-align:center;
+
+    background:#fff;
+
+    border-radius:12px;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.18);
+}
+
+.spinner{
+    width:40px;
+    height:40px;
+
+    margin:0 auto 15px;
+
+    border:4px solid #dce5eb;
+
+    border-top-color:var(--primary);
+
+    border-radius:50%;
+
+    animation:spin .8s linear infinite;
+}
+
+@keyframes spin{
+
+    to{
+        transform:rotate(360deg);
+    }
+
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media(max-width:1100px){
+
+    .summary-grid{
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+    }
+
+    .form-grid{
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+    }
+
+}
+
+/* =========================================================
+   SMALL LAPTOP / TABLET
+========================================================= */
+
+@media(max-width:900px){
+
+    :root{
+        --sidebar-width:230px;
+    }
+
+    #appSidebar{
+        width:230px !important;
+    }
+
+    .main-content{
+        margin-left:230px !important;
+
+        width:calc(100% - 230px) !important;
+
+        padding:18px;
+    }
+
+    .page-header{
+        flex-direction:column;
+    }
+
+    .hotel-info{
+        text-align:left;
+    }
+
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:700px){
+
+    :root{
+        --sidebar-width:210px;
+    }
+
+    #appSidebar{
+        width:210px !important;
+    }
+
+    .main-content{
+        margin-left:210px !important;
+
+        width:calc(100% - 210px) !important;
+
+        padding:14px;
+    }
+
+    .summary-grid{
+        grid-template-columns:1fr;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .page-title{
+        font-size:23px;
+    }
+
+}
+
+/* =========================================================
+   SMALL PHONE
+========================================================= */
+
+@media(max-width:520px){
+
+    :root{
+        --sidebar-width:190px;
+    }
+
+    #appSidebar{
+        width:190px !important;
+    }
+
+    .main-content{
+        margin-left:190px !important;
+
+        width:calc(100% - 190px) !important;
+
+        padding:10px;
+    }
+
+    .card-body{
+        padding:14px;
+    }
+
+    .page-header{
+        padding:16px;
+    }
+
+    .summary-card{
+        padding:14px;
+    }
+
+}
+
+</style>
+
 </head>
 
 <body>
 
-<div class="app">
+<!-- =======================================================
+     PAGE LAYOUT
+======================================================= -->
 
-    <!-- ================================
-         SIDEBAR
-    ================================= -->
+<div class="layout">
 
-    <aside class="sidebar">
+    <!--
+        SHARED EDU TECH SIDEBAR
 
-        <h2>EDU TECH</h2>
-
-        <p class="system-title">
-            Hotel Management
-        </p>
-
-        <nav>
-
-            <a href="./index.html" data-module="dashboard">
-                Dashboard
-            </a>
-
-            <a href="./rooms.html" data-module="rooms">
-                Rooms
-            </a>
-
-            <a href="./guests.html" data-module="guests">
-                Guests
-            </a>
-
-            <a href="./reservations.html" data-module="reservations">
-                Reservations
-            </a>
-
-            <a href="./checkin.html" data-module="checkin">
-                Check-in
-            </a>
-
-            <a href="./checkout.html" data-module="checkout">
-                Check-out
-            </a>
-
-            <a href="./restaurant.html" data-module="restaurant">
-                Restaurant
-            </a>
-
-            <a href="./inventory.html" data-module="inventory">
-                Inventory
-            </a>
-
-            <a href="./payments.html" data-module="payments">
-                Payments
-            </a>
-
-            <a href="./expenses.html"
-               data-module="expenses"
-               class="active">
-                Expenses
-            </a>
-
-            <a href="./employees.html" data-module="employees">
-                Employees
-            </a>
-
-            <a href="./housekeeping.html" data-module="housekeeping">
-                Housekeeping
-            </a>
-
-            <a href="./maintenance.html" data-module="maintenance">
-                Maintenance
-            </a>
-
-            <a href="./reports.html" data-module="reports">
-                Reports
-            </a>
-
-            <a href="./settings.html" data-module="settings">
-                Settings
-            </a>
-
-        </nav>
-
-        <!-- GLOBAL LOGOUT -->
-
-        <div class="sidebar-logout">
-
-            <button
-                type="button"
-                class="logout-btn"
-                data-action="logout">
-
-                🚪 Logout
-
-            </button>
-
-        </div>
-
+        sidebar.js controls the menu items.
+        DO NOT put sidebar JavaScript inside this page.
+    -->
+    <aside
+        id="appSidebar"
+        class="sidebar">
     </aside>
 
 
-    <!-- ================================
+    <!-- ===================================================
          MAIN CONTENT
-    ================================= -->
+    =================================================== -->
 
     <main class="main-content">
 
-        <!-- TOP BAR -->
+        <section class="page-header">
 
-        <header class="topbar">
+            <div>
 
-            <h1>
-                Expenses
-            </h1>
+                <h1 class="page-title">
+                    Expense Management
+                </h1>
 
-            <div class="user-info">
-                Administrator
+                <p class="page-subtitle">
+                    Record, manage and post hotel expenses to the financial ledger.
+                </p>
+
             </div>
 
-        </header>
+            <div class="hotel-info">
 
-
-        <!-- PAGE CONTENT -->
-
-        <section class="page-content">
-
-            <div class="page-header">
-
-                <div>
-
-                    <h2>
-                        Expense Management
-                    </h2>
-
-                    <p>
-                        Record and manage hotel expenses.
-                    </p>
-
+                <div
+                    id="hotelName"
+                    class="hotel-name">
+                    Loading hotel...
                 </div>
 
+                <div
+                    id="hotelLocation"
+                    class="hotel-location">
+                    Loading...
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <div
+            id="alertContainer"
+            style="display:none;">
+        </div>
+
+
+        <!-- =================================================
+             SUMMARY
+        ================================================== -->
+
+        <section class="summary-grid">
+
+            <div class="summary-card total">
+
+                <div class="summary-label">
+                    Total Expenses
+                </div>
+
+                <div
+                    id="totalExpenses"
+                    class="summary-value">
+                    KSh 0.00
+                </div>
+
+            </div>
+
+
+            <div class="summary-card posted">
+
+                <div class="summary-label">
+                    Posted Expenses
+                </div>
+
+                <div
+                    id="postedExpenses"
+                    class="summary-value">
+                    KSh 0.00
+                </div>
+
+            </div>
+
+
+            <div class="summary-card pending">
+
+                <div class="summary-label">
+                    Pending Ledger
+                </div>
+
+                <div
+                    id="pendingExpenses"
+                    class="summary-value">
+                    KSh 0.00
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-label">
+                    Expense Records
+                </div>
+
+                <div
+                    id="expenseCount"
+                    class="summary-value">
+                    0
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             EXPENSE FORM
+        ================================================== -->
+
+        <section class="card">
+
+            <div class="card-header">
+
+                <h2
+                    id="expenseFormTitle"
+                    class="card-title">
+                    Record New Expense
+                </h2>
 
                 <button
+                    id="refreshExpensesBtn"
                     type="button"
-                    class="primary-btn"
-                    id="newExpenseButton">
-
-                    + New Expense
-
+                    class="btn btn-light">
+                    ↻ Refresh
                 </button>
 
             </div>
 
 
-            <!-- ================================
-                 SUMMARY
-            ================================= -->
+            <div class="card-body">
 
-            <div class="summary-grid">
+                <div class="form-grid">
 
-                <div class="summary-card">
+                    <div class="form-group full">
 
-                    <h3>
-                        Total Expenses
-                    </h3>
+                        <label
+                            class="form-label"
+                            for="expenseDescription">
+                            Description *
+                        </label>
 
-                    <strong id="totalExpenses">
-                        0
-                    </strong>
+                        <input
+                            id="expenseDescription"
+                            type="text"
+                            class="form-control"
+                            placeholder="e.g. Buying unga"
+                            autocomplete="off">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label
+                            class="form-label"
+                            for="expenseCategory">
+                            Category *
+                        </label>
+
+                        <select
+                            id="expenseCategory"
+                            class="form-select">
+
+                            <option value="">
+                                Select Category
+                            </option>
+
+                            <option value="Food">
+                                Food
+                            </option>
+
+                            <option value="Utilities">
+                                Utilities
+                            </option>
+
+                            <option value="Maintenance">
+                                Maintenance
+                            </option>
+
+                            <option value="Cleaning">
+                                Cleaning
+                            </option>
+
+                            <option value="Inventory">
+                                Inventory / Stock
+                            </option>
+
+                            <option value="Salary">
+                                Salary / Wages
+                            </option>
+
+                            <option value="Transport">
+                                Transport
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label
+                            class="form-label"
+                            for="expenseDate">
+                            Expense Date *
+                        </label>
+
+                        <input
+                            id="expenseDate"
+                            type="date"
+                            class="form-control">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label
+                            class="form-label"
+                            for="expenseAmount">
+                            Amount (KSh) *
+                        </label>
+
+                        <input
+                            id="expenseAmount"
+                            type="number"
+                            class="form-control"
+                            min="0"
+                            step="0.01"
+                            placeholder="0.00">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label
+                            class="form-label"
+                            for="expensePaymentSource">
+                            Payment Source
+                        </label>
+
+                        <select
+                            id="expensePaymentSource"
+                            class="form-select">
+
+                            <option value="Bank">
+                                Bank
+                            </option>
+
+                            <option value="Cash">
+                                Cash
+                            </option>
+
+                            <option value="M-Pesa">
+                                M-Pesa
+                            </option>
+
+                            <option value="Card">
+                                Card
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group full">
+
+                        <label
+                            class="form-label"
+                            for="expenseNotes">
+                            Notes
+                        </label>
+
+                        <textarea
+                            id="expenseNotes"
+                            class="form-control"
+                            placeholder="Additional notes...">
+                        </textarea>
+
+                    </div>
 
                 </div>
 
 
-                <div class="summary-card">
+                <div class="form-actions">
 
-                    <h3>
-                        Paid
-                    </h3>
+                    <button
+                        id="clearExpenseBtn"
+                        type="button"
+                        class="btn btn-light">
+                        Clear
+                    </button>
 
-                    <strong id="paidExpenses">
-                        0
-                    </strong>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <h3>
-                        Pending
-                    </h3>
-
-                    <strong id="pendingExpenses">
-                        0
-                    </strong>
-
-                </div>
-
-
-                <div class="summary-card">
-
-                    <h3>
-                        Total Amount
-                    </h3>
-
-                    <strong id="expenseTotal">
-                        KSh 0
-                    </strong>
+                    <button
+                        id="saveExpenseBtn"
+                        type="button"
+                        class="btn btn-primary">
+                        Save Expense
+                    </button>
 
                 </div>
 
             </div>
 
-
-            <!-- ================================
-                 EXPENSE TABLE
-            ================================= -->
-
-            <div class="table-card">
-
-                <div class="table-tools">
-
-                    <input
-                        type="text"
-                        id="expenseSearch"
-                        placeholder="Search expenses..."
-                    >
+        </section>
 
 
-                    <select id="expenseFilter">
+        <!-- =================================================
+             EXPENSE RECORDS
+        ================================================== -->
 
-                        <option value="All">
-                            All Status
-                        </option>
+        <section class="card">
 
-                        <option value="Paid">
-                            Paid
-                        </option>
+            <div class="card-header">
 
-                        <option value="Pending">
-                            Pending
-                        </option>
+                <h2 class="card-title">
+                    Expense Records
+                </h2>
 
-                        <option value="Cancelled">
-                            Cancelled
-                        </option>
+            </div>
 
-                    </select>
+
+            <div class="card-body">
+
+                <div class="toolbar">
+
+                    <div class="search-box">
+
+                        <input
+                            id="expenseSearch"
+                            type="text"
+                            placeholder="Search expenses...">
+
+                    </div>
 
                 </div>
 
 
-                <div class="table-responsive">
+                <div class="table-wrapper">
 
                     <table>
 
@@ -320,44 +1429,39 @@
 
                             <tr>
 
-                                <th>
-                                    Expense ID
-                                </th>
+                                <th>Date</th>
 
-                                <th>
-                                    Date
-                                </th>
+                                <th>Description</th>
 
-                                <th>
-                                    Category
-                                </th>
+                                <th>Category</th>
 
-                                <th>
-                                    Description
-                                </th>
+                                <th>Amount</th>
 
-                                <th>
-                                    Amount
-                                </th>
+                                <th>Payment Source</th>
 
-                                <th>
-                                    Payment Method
-                                </th>
+                                <th>Ledger Status</th>
 
-                                <th>
-                                    Status
-                                </th>
-
-                                <th>
-                                    Actions
-                                </th>
+                                <th>Actions</th>
 
                             </tr>
 
                         </thead>
 
 
-                        <tbody id="expenseTable">
+                        <tbody id="expensesTableBody">
+
+                            <tr>
+
+                                <td
+                                    colspan="7"
+                                    class="empty-state">
+
+                                    Loading expenses...
+
+                                </td>
+
+                            </tr>
+
                         </tbody>
 
                     </table>
@@ -368,1578 +1472,170 @@
 
         </section>
 
-
-        <!-- ================================
-             ACCESS DENIED
-        ================================= -->
-
-        <section id="accessDenied">
-
-            <h2>
-                Access Denied
-            </h2>
-
-            <p>
-                You do not have permission to access the Expenses module.
-            </p>
-
-        </section>
-
     </main>
 
 </div>
 
 
-<!-- ================================
-     EXPENSE MODAL
-================================= -->
+<!-- =======================================================
+     LEDGER MODAL
+======================================================= -->
 
-<div id="expenseModal" class="modal">
+<div
+    id="ledgerModal"
+    class="modal">
 
     <div class="modal-content">
 
         <div class="modal-header">
 
-            <h2 id="expenseModalTitle">
-                New Expense
-            </h2>
-
+            <h3>
+                Financial Ledger
+            </h3>
 
             <button
                 type="button"
-                class="close-btn"
-                id="closeExpenseButton">
-
-                &times;
-
+                class="modal-close"
+                onclick="closeModal('ledgerModal')">
+                ×
             </button>
 
         </div>
 
 
-        <form id="expenseForm">
-
-            <!-- DATE -->
-
-            <div class="form-group">
-
-                <label for="expenseDate">
-                    Date
-                </label>
-
-                <input
-                    type="date"
-                    id="expenseDate"
-                    required
-                >
-
-            </div>
-
-
-            <!-- CATEGORY -->
-
-            <div class="form-group">
-
-                <label for="expenseCategory">
-                    Category
-                </label>
-
-                <select
-                    id="expenseCategory"
-                    required>
-
-                    <option value="">
-                        Select Category
-                    </option>
-
-                    <option value="Utilities">
-                        Utilities
-                    </option>
-
-                    <option value="Food Supplies">
-                        Food Supplies
-                    </option>
-
-                    <option value="Maintenance">
-                        Maintenance
-                    </option>
-
-                    <option value="Salaries">
-                        Salaries
-                    </option>
-
-                    <option value="Transport">
-                        Transport
-                    </option>
-
-                    <option value="Cleaning">
-                        Cleaning
-                    </option>
-
-                    <option value="Security">
-                        Security
-                    </option>
-
-                    <option value="Marketing">
-                        Marketing
-                    </option>
-
-                    <option value="Other">
-                        Other
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <!-- DESCRIPTION -->
-
-            <div class="form-group">
-
-                <label for="expenseDescription">
-                    Description
-                </label>
-
-                <input
-                    type="text"
-                    id="expenseDescription"
-                    placeholder="Enter expense description"
-                    required
-                >
-
-            </div>
-
-
-            <!-- AMOUNT -->
-
-            <div class="form-group">
-
-                <label for="expenseAmount">
-                    Amount (KSh)
-                </label>
-
-                <input
-                    type="number"
-                    id="expenseAmount"
-                    min="0"
-                    step="0.01"
-                    placeholder="Enter amount"
-                    required
-                >
-
-            </div>
-
-
-            <!-- PAYMENT METHOD -->
-
-            <div class="form-group">
-
-                <label for="expenseMethod">
-                    Payment Method
-                </label>
-
-                <select
-                    id="expenseMethod"
-                    required>
-
-                    <option value="">
-                        Select Payment Method
-                    </option>
-
-                    <option value="Cash">
-                        Cash
-                    </option>
-
-                    <option value="M-Pesa">
-                        M-Pesa
-                    </option>
-
-                    <option value="Bank">
-                        Bank
-                    </option>
-
-                    <option value="Card">
-                        Card
-                    </option>
-
-                    <option value="Other">
-                        Other
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <!-- STATUS -->
-
-            <div class="form-group">
-
-                <label for="expenseStatus">
-                    Status
-                </label>
-
-                <select
-                    id="expenseStatus"
-                    required>
-
-                    <option value="Paid">
-                        Paid
-                    </option>
-
-                    <option value="Pending">
-                        Pending
-                    </option>
-
-                    <option value="Cancelled">
-                        Cancelled
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <!-- FORM BUTTONS -->
-
-            <div class="form-actions">
-
-                <button
-                    type="button"
-                    class="secondary-btn"
-                    id="cancelExpenseButton">
-
-                    Cancel
-
-                </button>
-
-
-                <button
-                    type="submit"
-                    class="primary-btn">
-
-                    Save Expense
-
-                </button>
-
-            </div>
-
-        </form>
+        <div
+            id="ledgerModalBody"
+            class="modal-body">
+            Loading...
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button
+                type="button"
+                class="btn btn-secondary"
+                onclick="closeModal('ledgerModal')">
+                Close
+            </button>
+
+        </div>
 
     </div>
 
 </div>
 
 
-<!-- ================================
-     SUPABASE
-================================= -->
+<!-- =======================================================
+     VOUCHER MODAL
+======================================================= -->
+
+<div
+    id="voucherModal"
+    class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h3>
+                Expense Voucher
+            </h3>
+
+            <button
+                type="button"
+                class="modal-close"
+                onclick="closeModal('voucherModal')">
+                ×
+            </button>
+
+        </div>
+
+
+        <div
+            id="voucherModalBody"
+            class="modal-body">
+            Loading...
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button
+                id="printVoucherBtn"
+                type="button"
+                class="btn btn-info">
+                🖨 Print Voucher
+            </button>
+
+            <button
+                type="button"
+                class="btn btn-secondary"
+                onclick="closeModal('voucherModal')">
+                Close
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+     SAVING OVERLAY
+======================================================= -->
+
+<div id="savingOverlay">
+
+    <div class="saving-box">
+
+        <div class="spinner"></div>
+
+        <strong>
+            Saving expense...
+        </strong>
+
+        <div
+            style="
+                margin-top:7px;
+                color:#6c757d;
+                font-size:13px;
+            ">
+
+            Posting transaction to financial ledger.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+     JAVASCRIPT
+     
+     ORDER IS IMPORTANT:
+     
+     1. Supabase library
+     2. Supabase configuration
+     3. Access control
+     4. Shared sidebar
+     5. Financial engine
+     6. Expenses module
+======================================================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="./supabase.js"></script>
 
+<script src="./access-control.js"></script>
 
-<!-- ================================
-     EXPENSE JAVASCRIPT
-================================= -->
+<script src="./sidebar.js"></script>
 
-<script>
+<script src="./financial-engine.js"></script>
 
-"use strict";
-
-
-const EXPENSE_STORAGE_KEY = "eduTechExpenses";
-
-let editingExpenseID = null;
-
-
-/* =================================
-   GET STORED EXPENSES
-================================= */
-
-function getStoredExpenses() {
-
-    const saved =
-        localStorage.getItem(
-            EXPENSE_STORAGE_KEY
-        );
-
-    if (!saved) {
-        return [];
-    }
-
-    try {
-
-        const expenses =
-            JSON.parse(saved);
-
-        return Array.isArray(expenses)
-            ? expenses
-            : [];
-
-    } catch (error) {
-
-        console.error(
-            "Unable to read expenses:",
-            error
-        );
-
-        return [];
-
-    }
-
-}
-
-
-/* =================================
-   SAVE EXPENSES
-================================= */
-
-function saveExpenses(expenses) {
-
-    localStorage.setItem(
-        EXPENSE_STORAGE_KEY,
-        JSON.stringify(expenses)
-    );
-
-}
-
-
-/* =================================
-   GET CURRENT USER ROLE
-================================= */
-
-function getCurrentUserRole() {
-
-    let role =
-        sessionStorage.getItem(
-            "userRole"
-        );
-
-
-    if (!role) {
-
-        role =
-            localStorage.getItem(
-                "userRole"
-            );
-
-    }
-
-
-    return String(
-        role || ""
-    )
-    .toLowerCase()
-    .trim();
-
-}
-
-
-/* =================================
-   EXPENSE ACCESS
-================================= */
-
-function expenseAccessAllowed() {
-
-    const role =
-        getCurrentUserRole();
-
-
-    return [
-
-        "system_owner",
-        "hotel_owner",
-        "manager"
-
-    ].includes(role);
-
-}
-
-
-/* =================================
-   PAGE ACCESS
-================================= */
-
-function checkExpenseAccess() {
-
-    const role =
-        getCurrentUserRole();
-
-
-    /*
-       If there is no role yet, allow
-       the global script to handle the
-       authentication/role process.
-    */
-
-    if (!role) {
-        return;
-    }
-
-
-    if (
-        role === "system_owner" ||
-        role === "hotel_owner" ||
-        role === "manager"
-    ) {
-
-        return;
-
-    }
-
-
-    showExpenseAccessDenied();
-
-}
-
-
-/* =================================
-   ACCESS DENIED
-================================= */
-
-function showExpenseAccessDenied() {
-
-    const accessDenied =
-        document.getElementById(
-            "accessDenied"
-        );
-
-
-    const pageContent =
-        document.querySelector(
-            ".page-content"
-        );
-
-
-    const modal =
-        document.getElementById(
-            "expenseModal"
-        );
-
-
-    if (accessDenied) {
-
-        accessDenied.style.display =
-            "block";
-
-    }
-
-
-    if (pageContent) {
-
-        pageContent.style.display =
-            "none";
-
-    }
-
-
-    if (modal) {
-
-        modal.style.display =
-            "none";
-
-    }
-
-}
-
-
-/* =================================
-   CREATE EXPENSE ID
-================================= */
-
-function createExpenseID() {
-
-    const expenses =
-        getStoredExpenses();
-
-
-    let number =
-        expenses.length + 1;
-
-
-    let id =
-        "EXP-" +
-        String(number).padStart(
-            3,
-            "0"
-        );
-
-
-    while (
-        expenses.some(
-            function(expense) {
-
-                return expense.id === id;
-
-            }
-        )
-    ) {
-
-        number++;
-
-
-        id =
-            "EXP-" +
-            String(number).padStart(
-                3,
-                "0"
-            );
-
-    }
-
-
-    return id;
-
-}
-
-
-/* =================================
-   SHOW EXPENSE FORM
-================================= */
-
-function showExpenseForm() {
-
-    if (!expenseAccessAllowed()) {
-
-        alert(
-            "You do not have permission to manage Expenses."
-        );
-
-        return;
-
-    }
-
-
-    const modal =
-        document.getElementById(
-            "expenseModal"
-        );
-
-
-    const form =
-        document.getElementById(
-            "expenseForm"
-        );
-
-
-    form.reset();
-
-    editingExpenseID = null;
-
-
-    document.getElementById(
-        "expenseModalTitle"
-    ).textContent =
-        "New Expense";
-
-
-    const today =
-        new Date();
-
-
-    const year =
-        today.getFullYear();
-
-
-    const month =
-        String(
-            today.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    const day =
-        String(
-            today.getDate()
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    document.getElementById(
-        "expenseDate"
-    ).value =
-        `${year}-${month}-${day}`;
-
-
-    modal.style.display =
-        "flex";
-
-}
-
-
-/* =================================
-   HIDE EXPENSE FORM
-================================= */
-
-function hideExpenseForm() {
-
-    const modal =
-        document.getElementById(
-            "expenseModal"
-        );
-
-
-    if (modal) {
-
-        modal.style.display =
-            "none";
-
-    }
-
-
-    editingExpenseID = null;
-
-}
-
-
-/* =================================
-   ESCAPE HTML
-================================= */
-
-function escapeExpenseHtml(value) {
-
-    return String(
-        value ?? ""
-    )
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-    .replace(
-        /</g,
-        "&lt;"
-    )
-    .replace(
-        />/g,
-        "&gt;"
-    )
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-    .replace(
-        /'/g,
-        "&#039;"
-    );
-
-}
-
-
-/* =================================
-   DISPLAY EXPENSES
-================================= */
-
-function displayExpenses() {
-
-    const expenses =
-        getStoredExpenses();
-
-
-    const table =
-        document.getElementById(
-            "expenseTable"
-        );
-
-
-    if (!table) {
-        return;
-    }
-
-
-    table.innerHTML = "";
-
-
-    if (expenses.length === 0) {
-
-        table.innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="8"
-                    style="
-                        text-align:center;
-                        padding:25px;
-                    "
-                >
-
-                    No expenses recorded.
-
-                </td>
-
-            </tr>
-
-        `;
-
-        updateExpenseSummary();
-
-        return;
-
-    }
-
-
-    expenses.forEach(
-        function(expense) {
-
-            const row =
-                document.createElement(
-                    "tr"
-                );
-
-
-            row.dataset.id =
-                expense.id || "";
-
-
-            row.dataset.status =
-                expense.status || "";
-
-
-            row.dataset.amount =
-                expense.amount || 0;
-
-
-            const amount =
-                Number(
-                    expense.amount
-                ) || 0;
-
-
-            row.innerHTML = `
-
-                <td>
-                    ${escapeExpenseHtml(
-                        expense.id
-                    )}
-                </td>
-
-                <td>
-                    ${escapeExpenseHtml(
-                        expense.date
-                    )}
-                </td>
-
-                <td>
-                    ${escapeExpenseHtml(
-                        expense.category
-                    )}
-                </td>
-
-                <td>
-                    ${escapeExpenseHtml(
-                        expense.description
-                    )}
-                </td>
-
-                <td>
-                    KSh ${amount.toLocaleString(
-                        "en-KE"
-                    )}
-                </td>
-
-                <td>
-                    ${escapeExpenseHtml(
-                        expense.method
-                    )}
-                </td>
-
-                <td>
-
-                    <span
-                        class="status ${escapeExpenseHtml(
-                            String(
-                                expense.status || ""
-                            ).toLowerCase()
-                        )}"
-                    >
-
-                        ${escapeExpenseHtml(
-                            expense.status
-                        )}
-
-                    </span>
-
-                </td>
-
-                <td>
-
-                    <button
-                        type="button"
-                        class="action-btn"
-                        onclick="editExpense(this)"
-                    >
-
-                        Edit
-
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="action-btn delete"
-                        onclick="deleteExpense(this)"
-                    >
-
-                        Delete
-
-                    </button>
-
-                </td>
-
-            `;
-
-
-            table.appendChild(row);
-
-        }
-    );
-
-
-    updateExpenseSummary();
-
-    applyExpenseFilters();
-
-}
-
-
-/* =================================
-   UPDATE SUMMARY
-================================= */
-
-function updateExpenseSummary() {
-
-    const expenses =
-        getStoredExpenses();
-
-
-    let paid = 0;
-
-    let pending = 0;
-
-    let total = 0;
-
-
-    expenses.forEach(
-        function(expense) {
-
-            if (
-                expense.status ===
-                "Paid"
-            ) {
-
-                paid++;
-
-            }
-
-
-            if (
-                expense.status ===
-                "Pending"
-            ) {
-
-                pending++;
-
-            }
-
-
-            if (
-                expense.status !==
-                "Cancelled"
-            ) {
-
-                total +=
-                    Number(
-                        expense.amount
-                    ) || 0;
-
-            }
-
-        }
-    );
-
-
-    const totalExpenses =
-        document.getElementById(
-            "totalExpenses"
-        );
-
-
-    const paidExpenses =
-        document.getElementById(
-            "paidExpenses"
-        );
-
-
-    const pendingExpenses =
-        document.getElementById(
-            "pendingExpenses"
-        );
-
-
-    const expenseTotal =
-        document.getElementById(
-            "expenseTotal"
-        );
-
-
-    if (totalExpenses) {
-
-        totalExpenses.textContent =
-            expenses.length;
-
-    }
-
-
-    if (paidExpenses) {
-
-        paidExpenses.textContent =
-            paid;
-
-    }
-
-
-    if (pendingExpenses) {
-
-        pendingExpenses.textContent =
-            pending;
-
-    }
-
-
-    if (expenseTotal) {
-
-        expenseTotal.textContent =
-            "KSh " +
-            total.toLocaleString(
-                "en-KE"
-            );
-
-    }
-
-}
-
-
-/* =================================
-   SAVE EXPENSE
-================================= */
-
-function handleExpenseSubmit(event) {
-
-    event.preventDefault();
-
-
-    if (!expenseAccessAllowed()) {
-
-        alert(
-            "You do not have permission to manage Expenses."
-        );
-
-        hideExpenseForm();
-
-        return;
-
-    }
-
-
-    const date =
-        document.getElementById(
-            "expenseDate"
-        ).value;
-
-
-    const category =
-        document.getElementById(
-            "expenseCategory"
-        ).value;
-
-
-    const description =
-        document.getElementById(
-            "expenseDescription"
-        ).value.trim();
-
-
-    const amount =
-        Number(
-            document.getElementById(
-                "expenseAmount"
-            ).value
-        ) || 0;
-
-
-    const method =
-        document.getElementById(
-            "expenseMethod"
-        ).value;
-
-
-    const status =
-        document.getElementById(
-            "expenseStatus"
-        ).value;
-
-
-    if (
-        !date ||
-        !category ||
-        !description ||
-        amount <= 0 ||
-        !method ||
-        !status
-    ) {
-
-        alert(
-            "Please complete all expense fields."
-        );
-
-        return;
-
-    }
-
-
-    let expenses =
-        getStoredExpenses();
-
-
-    /* EDIT EXISTING EXPENSE */
-
-    if (editingExpenseID) {
-
-        const index =
-            expenses.findIndex(
-                function(expense) {
-
-                    return (
-                        expense.id ===
-                        editingExpenseID
-                    );
-
-                }
-            );
-
-
-        if (index !== -1) {
-
-            expenses[index] = {
-
-                id:
-                    editingExpenseID,
-
-                date:
-                    date,
-
-                category:
-                    category,
-
-                description:
-                    description,
-
-                amount:
-                    amount,
-
-                method:
-                    method,
-
-                status:
-                    status
-
-            };
-
-        }
-
-    }
-
-
-    /* CREATE NEW EXPENSE */
-
-    else {
-
-        expenses.push({
-
-            id:
-                createExpenseID(),
-
-            date:
-                date,
-
-            category:
-                category,
-
-            description:
-                description,
-
-            amount:
-                amount,
-
-            method:
-                method,
-
-            status:
-                status
-
-        });
-
-    }
-
-
-    saveExpenses(
-        expenses
-    );
-
-
-    displayExpenses();
-
-    hideExpenseForm();
-
-}
-
-
-/* =================================
-   EDIT EXPENSE
-================================= */
-
-function editExpense(button) {
-
-    if (!expenseAccessAllowed()) {
-
-        alert(
-            "You do not have permission to edit Expenses."
-        );
-
-        return;
-
-    }
-
-
-    const row =
-        button.closest("tr");
-
-
-    if (!row) {
-        return;
-    }
-
-
-    editingExpenseID =
-        row.dataset.id;
-
-
-    const expenses =
-        getStoredExpenses();
-
-
-    const expense =
-        expenses.find(
-            function(item) {
-
-                return (
-                    item.id ===
-                    editingExpenseID
-                );
-
-            }
-        );
-
-
-    if (!expense) {
-
-        editingExpenseID = null;
-
-        return;
-
-    }
-
-
-    document.getElementById(
-        "expenseModalTitle"
-    ).textContent =
-        "Edit Expense";
-
-
-    document.getElementById(
-        "expenseDate"
-    ).value =
-        expense.date || "";
-
-
-    document.getElementById(
-        "expenseCategory"
-    ).value =
-        expense.category || "";
-
-
-    document.getElementById(
-        "expenseDescription"
-    ).value =
-        expense.description || "";
-
-
-    document.getElementById(
-        "expenseAmount"
-    ).value =
-        expense.amount || "";
-
-
-    document.getElementById(
-        "expenseMethod"
-    ).value =
-        expense.method || "";
-
-
-    document.getElementById(
-        "expenseStatus"
-    ).value =
-        expense.status || "Paid";
-
-
-    document.getElementById(
-        "expenseModal"
-    ).style.display =
-        "flex";
-
-}
-
-
-/* =================================
-   DELETE EXPENSE
-================================= */
-
-function deleteExpense(button) {
-
-    if (!expenseAccessAllowed()) {
-
-        alert(
-            "You do not have permission to delete Expenses."
-        );
-
-        return;
-
-    }
-
-
-    const row =
-        button.closest("tr");
-
-
-    if (!row) {
-        return;
-    }
-
-
-    const expenseID =
-        row.dataset.id;
-
-
-    if (
-        !confirm(
-            "Delete this expense?"
-        )
-    ) {
-
-        return;
-
-    }
-
-
-    let expenses =
-        getStoredExpenses();
-
-
-    expenses =
-        expenses.filter(
-            function(expense) {
-
-                return (
-                    expense.id !==
-                    expenseID
-                );
-
-            }
-        );
-
-
-    saveExpenses(
-        expenses
-    );
-
-
-    displayExpenses();
-
-}
-
-
-/* =================================
-   SEARCH
-================================= */
-
-function searchExpenses() {
-
-    applyExpenseFilters();
-
-}
-
-
-/* =================================
-   FILTER
-================================= */
-
-function applyExpenseFilters() {
-
-    const searchInput =
-        document.getElementById(
-            "expenseSearch"
-        );
-
-
-    const filterInput =
-        document.getElementById(
-            "expenseFilter"
-        );
-
-
-    if (
-        !searchInput ||
-        !filterInput
-    ) {
-
-        return;
-
-    }
-
-
-    const search =
-        searchInput.value
-            .toLowerCase()
-            .trim();
-
-
-    const filter =
-        filterInput.value;
-
-
-    document.querySelectorAll(
-        "#expenseTable tr"
-    )
-    .forEach(
-        function(row) {
-
-            const text =
-                row.textContent
-                    .toLowerCase();
-
-
-            const status =
-                row.dataset.status ||
-                "";
-
-
-            const matchesSearch =
-                text.includes(
-                    search
-                );
-
-
-            const matchesFilter =
-                filter === "All" ||
-                status === filter;
-
-
-            row.style.display =
-                (
-                    matchesSearch &&
-                    matchesFilter
-                )
-                ? ""
-                : "none";
-
-        }
-    );
-
-}
-
-
-/* =================================
-   CLOSE MODAL
-================================= */
-
-function closeExpenseModalOnOutsideClick(event) {
-
-    const modal =
-        document.getElementById(
-            "expenseModal"
-        );
-
-
-    if (
-        event.target === modal
-    ) {
-
-        hideExpenseForm();
-
-    }
-
-}
-
-
-/* =================================
-   INITIALIZE EXPENSE PAGE
-================================= */
-
-function initializeExpensesPage() {
-
-    const expenseForm =
-        document.getElementById(
-            "expenseForm"
-        );
-
-
-    const expenseSearch =
-        document.getElementById(
-            "expenseSearch"
-        );
-
-
-    const expenseFilter =
-        document.getElementById(
-            "expenseFilter"
-        );
-
-
-    const newExpenseButton =
-        document.getElementById(
-            "newExpenseButton"
-        );
-
-
-    const closeExpenseButton =
-        document.getElementById(
-            "closeExpenseButton"
-        );
-
-
-    const cancelExpenseButton =
-        document.getElementById(
-            "cancelExpenseButton"
-        );
-
-
-    const expenseModal =
-        document.getElementById(
-            "expenseModal"
-        );
-
-
-    if (expenseForm) {
-
-        expenseForm.addEventListener(
-            "submit",
-            handleExpenseSubmit
-        );
-
-    }
-
-
-    if (expenseSearch) {
-
-        expenseSearch.addEventListener(
-            "input",
-            searchExpenses
-        );
-
-    }
-
-
-    if (expenseFilter) {
-
-        expenseFilter.addEventListener(
-            "change",
-            applyExpenseFilters
-        );
-
-    }
-
-
-    if (newExpenseButton) {
-
-        newExpenseButton.addEventListener(
-            "click",
-            showExpenseForm
-        );
-
-    }
-
-
-    if (closeExpenseButton) {
-
-        closeExpenseButton.addEventListener(
-            "click",
-            hideExpenseForm
-        );
-
-    }
-
-
-    if (cancelExpenseButton) {
-
-        cancelExpenseButton.addEventListener(
-            "click",
-            hideExpenseForm
-        );
-
-    }
-
-
-    if (expenseModal) {
-
-        expenseModal.addEventListener(
-            "click",
-            closeExpenseModalOnOutsideClick
-        );
-
-    }
-
-
-    displayExpenses();
-
-    checkExpenseAccess();
-
-}
-
-
-/* =================================
-   START
-================================= */
-
-if (
-    document.readyState ===
-    "loading"
-) {
-
-    document.addEventListener(
-        "DOMContentLoaded",
-        initializeExpensesPage
-    );
-
-} else {
-
-    initializeExpensesPage();
-
-}
-
-</script>
-
-
-<!-- ================================
-     GLOBAL SCRIPT
-================================= -->
-
-<script src="./script.js"></script>
+<script src="./expenses.js"></script>
 
 </body>
-
 </html>

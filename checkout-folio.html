@@ -1,0 +1,3273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-out Folio - EDU TECH Hotel Management System</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="./supabase.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        .topbar {
+            background: #1f2937;
+            color: white;
+            padding: 18px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .topbar h1 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .topbar-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            border: none;
+            border-radius: 6px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .btn-print {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-pdf {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-back {
+            background: #6b7280;
+            color: white;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 25px auto;
+            padding: 0 15px;
+        }
+
+        .selector-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        }
+
+        .selector-box label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .selector-box select {
+            width: 100%;
+            max-width: 600px;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+
+        .folio {
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.10);
+            border-radius: 5px;
+        }
+
+        .folio-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+            border-bottom: 2px solid #222;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .hotel-name {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .hotel-details {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .folio-title {
+            text-align: right;
+        }
+
+        .folio-title h2 {
+            margin: 0 0 8px;
+            font-size: 24px;
+        }
+
+        .folio-number {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .folio-date {
+            margin-top: 5px;
+            color: #555;
+        }
+
+        .section-title {
+            background: #f1f5f9;
+            padding: 10px 12px;
+            font-weight: bold;
+            border-left: 4px solid #2563eb;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 30px;
+        }
+
+        .info-item {
+            padding: 5px 0;
+        }
+
+        .info-label {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 3px;
+        }
+
+        .info-value {
+            font-weight: bold;
+            overflow-wrap: anywhere;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #f3f4f6;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .totals {
+            margin-top: 20px;
+            margin-left: auto;
+            width: 400px;
+            max-width: 100%;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .vat-row {
+            color: #374151;
+        }
+
+        .grand-total {
+            font-size: 18px;
+            font-weight: bold;
+            border-top: 2px solid #222;
+            border-bottom: 2px solid #222;
+            padding: 12px 0;
+        }
+
+        .outstanding {
+            font-size: 19px;
+            font-weight: bold;
+            color: #b91c1c;
+            padding: 12px 0;
+        }
+
+        .paid {
+            color: #15803d;
+        }
+
+        .notes {
+            min-height: 70px;
+            border: 1px solid #ddd;
+            padding: 12px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .signature-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            margin-top: 70px;
+        }
+
+        .signature-box {
+            text-align: center;
+        }
+
+        .signature-line {
+            border-top: 1px solid #222;
+            padding-top: 8px;
+            margin-top: 40px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 45px;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .empty-state {
+            background: white;
+            padding: 50px 20px;
+            text-align: center;
+            border-radius: 8px;
+            color: #666;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .loading {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            color: #555;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 700px) {
+            .folio {
+                padding: 20px;
+            }
+
+            .folio-header {
+                flex-direction: column;
+            }
+
+            .folio-title {
+                text-align: left;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .signature-area {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            table {
+                font-size: 13px;
+            }
+
+            th,
+            td {
+                padding: 7px;
+            }
+        }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 12mm;
+            }
+
+            body {
+                background: white;
+            }
+
+            .topbar,
+            .selector-box,
+            #messageArea {
+                display: none !important;
+            }
+
+            .container {
+                max-width: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .folio {
+                box-shadow: none;
+                padding: 0;
+                border-radius: 0;
+            }
+
+            button {
+                display: none !important;
+            }
+
+            .section-title,
+            th {
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+
+            tr {
+                page-break-inside: avoid;
+            }
+
+            .signature-area {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="topbar">
+    <h1>EDU TECH Hotel Management System</h1>
+
+    <div class="topbar-buttons">
+        <button class="btn-print" type="button" onclick="printFolio()">
+            Print Folio
+        </button>
+
+        <button class="btn-pdf" type="button" onclick="savePDF()">
+            Save as PDF
+        </button>
+
+        <button class="btn-back" type="button" onclick="goBack()">
+            Back to Check-outs
+        </button>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="selector-box">
+        <label for="reservationSelect">
+            Select Reservation
+        </label>
+
+        <select
+            id="reservationSelect"
+            onchange="loadSelectedReservation()"
+        >
+            <option value="">
+                -- Select Reservation --
+            </option>
+        </select>
+    </div>
+
+    <div id="messageArea"></div>
+
+    <div id="emptyState" class="empty-state">
+        <h2>CHECK-OUT FOLIO</h2>
+        <p>
+            Select a reservation above to display the guest folio.
+        </p>
+    </div>
+
+    <div id="folio" class="folio" style="display:none;">
+
+        <!-- =================================================
+             HOTEL HEADER
+        ================================================== -->
+
+        <div class="folio-header">
+
+            <div>
+
+                <div class="hotel-name" id="hotelName">
+                    HOTEL
+                </div>
+
+                <div class="hotel-details">
+                    <div id="hotelLocation">—</div>
+                    <div id="hotelPhone">—</div>
+                    <div id="hotelEmail">—</div>
+                </div>
+
+            </div>
+
+            <div class="folio-title">
+
+                <h2>CHECK-OUT FOLIO</h2>
+
+                <div
+                    class="folio-number"
+                    id="folioNumber"
+                >
+                    FOLIO-000000
+                </div>
+
+                <div
+                    class="folio-date"
+                    id="folioDate"
+                >
+                    Date: —
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- =================================================
+             GUEST INFORMATION
+        ================================================== -->
+
+        <div class="section-title">
+            GUEST INFORMATION
+        </div>
+
+        <div class="info-grid">
+
+            <div class="info-item">
+                <div class="info-label">
+                    Guest Name
+                </div>
+
+                <div
+                    class="info-value"
+                    id="guestName"
+                >
+                    —
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">
+                    Phone
+                </div>
+
+                <div
+                    class="info-value"
+                    id="guestPhone"
+                >
+                    —
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">
+                    Email
+                </div>
+
+                <div
+                    class="info-value"
+                    id="guestEmail"
+                >
+                    —
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">
+                    Reservation ID
+                </div>
+
+                <div
+                    class="info-value"
+                    id="reservationId"
+                >
+                    —
+                </div>
+            </div>
+
+        </div>
+
+        <!-- =================================================
+             STAY INFORMATION
+        ================================================== -->
+
+        <div class="section-title">
+            STAY INFORMATION
+        </div>
+
+        <div class="info-grid">
+
+            <div class="info-item">
+                <div class="info-label">
+                    Room Number
+                </div>
+
+                <div
+                    class="info-value"
+                    id="roomNumber"
+                >
+                    —
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">
+                    Room Type
+                </div>
+
+                <div
+                    class="info-value"
+                    id="roomType"
+                >
+                    —
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">
+                    Check-in Date
+                </div>
+
+                <div
+                    class="info-value"
+                    id="checkInDate"
+                >
+                    —
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">
+                    Check-out Date
+                </div>
+
+                <div
+                    class="info-value"
+                    id="checkOutDate"
+                >
+                    —
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">
+                    Number of Nights
+                </div>
+
+                <div
+                    class="info-value"
+                    id="numberOfNights"
+                >
+                    —
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">
+                    Room Rate
+                </div>
+
+                <div
+                    class="info-value"
+                    id="roomRate"
+                >
+                    —
+                </div>
+            </div>
+
+        </div>
+
+        <!-- =================================================
+             ROOM CHARGES
+        ================================================== -->
+
+        <div class="section-title">
+            ROOM CHARGES
+        </div>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th class="text-right">
+                        Unit Price
+                    </th>
+                    <th class="text-right">
+                        Total
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody id="roomChargesBody"></tbody>
+
+        </table>
+
+        <!-- =================================================
+             RESTAURANT CHARGES
+        ================================================== -->
+
+        <div class="section-title">
+            RESTAURANT / ADDITIONAL CHARGES
+        </div>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                    <th class="text-right">
+                        Unit Price
+                    </th>
+                    <th class="text-right">
+                        Total
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody id="restaurantChargesBody"></tbody>
+
+        </table>
+
+        <!-- =================================================
+             VAT-INCLUSIVE BILL SUMMARY
+        ================================================== -->
+
+        <div class="totals">
+
+            <div class="total-row">
+                <span>
+                    Room Charges
+                </span>
+
+                <strong id="roomChargesTotal">
+                    KSh 0.00
+                </strong>
+            </div>
+
+            <div class="total-row">
+                <span>
+                    Restaurant Charges
+                </span>
+
+                <strong id="restaurantChargesTotal">
+                    KSh 0.00
+                </strong>
+            </div>
+
+            <div class="total-row">
+                <span>
+                    Amount Before VAT
+                </span>
+
+                <strong id="netAmount">
+                    KSh 0.00
+                </strong>
+            </div>
+
+            <div class="total-row vat-row">
+                <span>
+                    VAT @ 16%
+                </span>
+
+                <strong id="vatAmount">
+                    KSh 0.00
+                </strong>
+            </div>
+
+            <div class="total-row grand-total">
+                <span>
+                    TOTAL BILL (VAT INCLUSIVE)
+                </span>
+
+                <strong id="totalBill">
+                    KSh 0.00
+                </strong>
+            </div>
+
+            <div class="total-row paid">
+                <span>
+                    TOTAL PAID
+                </span>
+
+                <strong id="totalPaid">
+                    KSh 0.00
+                </strong>
+            </div>
+
+            <div class="total-row outstanding">
+                <span>
+                    OUTSTANDING BALANCE
+                </span>
+
+                <strong id="outstandingBalance">
+                    KSh 0.00
+                </strong>
+            </div>
+
+        </div>
+
+        <!-- =================================================
+             PAYMENT INFORMATION
+        ================================================== -->
+
+        <div class="section-title">
+            PAYMENT INFORMATION
+        </div>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>
+                        Payment Date
+                    </th>
+
+                    <th>
+                        Method
+                    </th>
+
+                    <th class="text-right">
+                        Amount
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody id="paymentsBody"></tbody>
+
+        </table>
+
+        <!-- =================================================
+             NOTES
+        ================================================== -->
+
+        <div class="section-title">
+            NOTES
+        </div>
+
+        <div
+            class="notes"
+            id="notes"
+        >
+            No additional notes.
+        </div>
+
+        <!-- =================================================
+             SIGNATURES
+        ================================================== -->
+
+        <div class="signature-area">
+
+            <div class="signature-box">
+                <div class="signature-line">
+                    Guest Signature
+                </div>
+            </div>
+
+            <div class="signature-box">
+                <div class="signature-line">
+                    Authorized Hotel Representative
+                </div>
+            </div>
+
+        </div>
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <div class="footer">
+
+            <strong>
+                Thank you for staying with us.
+            </strong>
+
+            <br>
+
+            This is a computer-generated check-out folio.
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   USER, ROLE AND HOTEL INFORMATION
+========================================================= */
+
+let currentRole = "";
+let currentUserId = "";
+let hotelId = null;
+let hotel = null;
+
+let reservations = [];
+let guests = [];
+let rooms = [];
+let payments = [];
+let restaurantOrders = [];
+
+let currentReservation = null;
+let currentGuest = null;
+let currentRoom = null;
+let currentPayments = [];
+let currentRestaurantOrders = [];
+
+/* =========================================================
+   VAT CONFIGURATION
+========================================================= */
+
+const VAT_RATE = 0.16;
+
+/*
+    IMPORTANT:
+
+    All selling prices in this system are VAT-INCLUSIVE.
+
+    Example:
+
+    Gross = KSh 1,000.00
+
+    Net:
+    1000 / 1.16 = 862.07
+
+    VAT:
+    1000 - 862.07 = 137.93
+
+    Therefore:
+
+    Net + VAT = Gross
+    862.07 + 137.93 = 1,000.00
+*/
+
+function calculateVatInclusiveBreakdown(grossAmount) {
+
+    const gross = Math.round(
+        (Number(grossAmount) || 0) * 100
+    ) / 100;
+
+    if (gross <= 0) {
+        return {
+            gross: 0,
+            net: 0,
+            vat: 0
+        };
+    }
+
+    const net = Math.round(
+        (gross / (1 + VAT_RATE)) * 100
+    ) / 100;
+
+    const vat = Math.round(
+        (gross - net) * 100
+    ) / 100;
+
+    return {
+        gross: gross,
+        net: net,
+        vat: vat
+    };
+}
+
+/* =========================================================
+   ROLE HELPERS
+========================================================= */
+
+function normalizeRole(role) {
+
+    if (!role) return "";
+
+    const normalized = String(role)
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "_");
+
+    if (normalized === "systemowner") {
+        return "system_owner";
+    }
+
+    if (normalized === "hotelowner") {
+        return "hotel_owner";
+    }
+
+    return normalized;
+}
+
+function getActiveHotelId() {
+
+    return sessionStorage.getItem("activeHotelId") ||
+           sessionStorage.getItem("active_hotel_id") ||
+           sessionStorage.getItem("selectedHotelId") ||
+           sessionStorage.getItem("selectedHotelID") ||
+           null;
+}
+
+/* =========================================================
+   ACCESS CONTROL
+========================================================= */
+
+async function setupFolioAccess() {
+
+    const db = window.supabaseClient;
+
+    if (!db) {
+        throw new Error(
+            "Supabase client is not available. Check supabase.js."
+        );
+    }
+
+    const {
+        data: sessionData,
+        error: sessionError
+    } = await db.auth.getSession();
+
+    if (sessionError) {
+        throw sessionError;
+    }
+
+    const user = sessionData?.session?.user;
+
+    if (!user) {
+
+        window.location.href = "./login.html";
+
+        return false;
+    }
+
+    const {
+        data: profile,
+        error: profileError
+    } = await db
+        .from("profiles")
+        .select("id, full_name, role, hotel_id")
+        .eq("id", user.id)
+        .maybeSingle();
+
+    if (profileError) {
+        throw profileError;
+    }
+
+    if (!profile) {
+
+        await db.auth.signOut();
+
+        sessionStorage.clear();
+
+        window.location.href = "./login.html";
+
+        return false;
+    }
+
+    currentRole = normalizeRole(profile.role);
+    currentUserId = profile.id;
+
+    const allowedRoles = [
+        "system_owner",
+        "hotel_owner",
+        "manager",
+        "receptionist"
+    ];
+
+    if (!allowedRoles.includes(currentRole)) {
+
+        throw new Error(
+            "Your account does not have permission to view check-out folios."
+        );
+    }
+
+    if (currentRole === "system_owner") {
+
+        hotelId = getActiveHotelId();
+
+        if (!hotelId) {
+
+            throw new Error(
+                "No hotel is selected. Return to the Dashboard and select a hotel first."
+            );
+        }
+
+    } else {
+
+        if (!profile.hotel_id) {
+
+            throw new Error(
+                "Your account is not assigned to a hotel."
+            );
+        }
+
+        hotelId = String(profile.hotel_id);
+    }
+
+    const {
+        data: hotelData,
+        error: hotelError
+    } = await db
+        .from("hotels")
+        .select(
+            "id, hotel_name, location, phone, email"
+        )
+        .eq("id", Number(hotelId))
+        .maybeSingle();
+
+    if (hotelError) {
+        throw hotelError;
+    }
+
+    if (!hotelData) {
+
+        throw new Error(
+            "The selected hotel could not be found."
+        );
+    }
+
+    hotel = hotelData;
+
+    hotelId = String(hotelData.id);
+
+    return true;
+}
+
+/* =========================================================
+   BASIC HELPERS
+========================================================= */
+
+function money(value) {
+
+    const amount = Number(value) || 0;
+
+    return "KSh " + amount.toLocaleString(
+        "en-KE",
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }
+    );
+}
+
+function numberValue(value) {
+
+    const number = Number(value);
+
+    return Number.isFinite(number)
+        ? number
+        : 0;
+}
+
+function escapeHtml(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+        return "";
+    }
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function dateOnly(value) {
+
+    return value
+        ? String(value).substring(0, 10)
+        : "";
+}
+
+function formatDate(value) {
+
+    if (!value) return "—";
+
+    const text = String(value);
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(text)) {
+
+        const parts = text.split("-");
+
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+    const date = new Date(value);
+
+    if (isNaN(date.getTime())) {
+        return text;
+    }
+
+    return date.toLocaleDateString("en-GB");
+}
+
+function calculateNights(
+    checkIn,
+    checkOut
+) {
+
+    const startText = dateOnly(checkIn);
+    const endText = dateOnly(checkOut);
+
+    if (!startText || !endText) {
+        return 0;
+    }
+
+    const startParts =
+        startText.split("-").map(Number);
+
+    const endParts =
+        endText.split("-").map(Number);
+
+    const start = Date.UTC(
+        startParts[0],
+        startParts[1] - 1,
+        startParts[2]
+    );
+
+    const end = Date.UTC(
+        endParts[0],
+        endParts[1] - 1,
+        endParts[2]
+    );
+
+    return Math.max(
+        0,
+        Math.round(
+            (end - start) / 86400000
+        )
+    );
+}
+
+function showError(message) {
+
+    document.getElementById(
+        "messageArea"
+    ).innerHTML = `
+        <div class="error">
+            ${escapeHtml(message)}
+        </div>
+    `;
+}
+
+function clearMessage() {
+
+    document.getElementById(
+        "messageArea"
+    ).innerHTML = "";
+}
+
+/* =========================================================
+   BILLING CALCULATIONS
+========================================================= */
+
+function getAccommodationCharge(
+    reservation,
+    room
+) {
+
+    const reservationAmount =
+        numberValue(reservation?.amount);
+
+    if (reservationAmount > 0) {
+        return reservationAmount;
+    }
+
+    const nights = calculateNights(
+        reservation?.check_in,
+        reservation?.check_out
+    );
+
+    return numberValue(room?.price) * nights;
+}
+
+function getDisplayedRoomRate(
+    reservation,
+    room
+) {
+
+    const roomRate =
+        numberValue(room?.price);
+
+    if (roomRate > 0) {
+        return roomRate;
+    }
+
+    const roomAmount =
+        getAccommodationCharge(
+            reservation,
+            room
+        );
+
+    const nights =
+        calculateNights(
+            reservation?.check_in,
+            reservation?.check_out
+        );
+
+    return nights > 0
+        ? roomAmount / nights
+        : 0;
+}
+
+function getOrderTotal(order) {
+
+    const storedTotal =
+        numberValue(order?.total);
+
+    if (storedTotal > 0) {
+        return storedTotal;
+    }
+
+    const quantity =
+        numberValue(order?.quantity) || 1;
+
+    const unitPrice =
+        numberValue(order?.unit_price);
+
+    return quantity * unitPrice;
+}
+
+function getRestaurantTotal(orders) {
+
+    return orders.reduce(
+        (sum, order) =>
+            sum + getOrderTotal(order),
+        0
+    );
+}
+
+function getPaymentsTotal(
+    paymentList
+) {
+
+    return paymentList.reduce(
+        (sum, payment) =>
+            sum + numberValue(payment.amount),
+        0
+    );
+}
+
+/* =========================================================
+   LOAD HOTEL DATA
+========================================================= */
+
+async function loadData() {
+
+    clearMessage();
+
+    try {
+
+        const db =
+            window.supabaseClient;
+
+        const selectedHotelId =
+            Number(hotelId);
+
+        const [
+            reservationsResult,
+            guestsResult,
+            roomsResult,
+            paymentsResult,
+            restaurantResult
+        ] = await Promise.all([
+
+            db
+                .from("reservations")
+                .select(`
+                    id,
+                    created_at,
+                    "guest   id",
+                    "room id",
+                    check_in,
+                    check_out,
+                    status,
+                    amount,
+                    hotel_id
+                `)
+                .eq(
+                    "hotel_id",
+                    selectedHotelId
+                )
+                .in(
+                    "status",
+                    [
+                        "checked_in",
+                        "checked_out"
+                    ]
+                )
+                .order(
+                    "id",
+                    {
+                        ascending: false
+                    }
+                ),
+
+            db
+                .from("guests")
+                .select(`
+                    id,
+                    created_at,
+                    "full name",
+                    phone,
+                    email,
+                    hotel_id
+                `)
+                .eq(
+                    "hotel_id",
+                    selectedHotelId
+                ),
+
+            db
+                .from("rooms")
+                .select(`
+                    id,
+                    room_number,
+                    room_type,
+                    status,
+                    price,
+                    guest_id,
+                    hotel_id,
+                    created_at
+                `)
+                .eq(
+                    "hotel_id",
+                    selectedHotelId
+                ),
+
+            db
+                .from("payments")
+                .select(`
+                    id,
+                    created_at,
+                    reservation_id,
+                    amount,
+                    payment_method,
+                    payment_date,
+                    hotel_id
+                `)
+                .eq(
+                    "hotel_id",
+                    selectedHotelId
+                )
+                .order(
+                    "payment_date",
+                    {
+                        ascending: true
+                    }
+                ),
+
+            db
+                .from("restaurant_orders")
+                .select(`
+                    id,
+                    created_at,
+                    item_name,
+                    quantity,
+                    unit_price,
+                    total,
+                    status,
+                    order_date,
+                    notes,
+                    hotel_id,
+                    reservation_id,
+                    guest_id,
+                    room_id
+                `)
+                .eq(
+                    "hotel_id",
+                    selectedHotelId
+                )
+                .order(
+                    "id",
+                    {
+                        ascending: true
+                    }
+                )
+        ]);
+
+        if (reservationsResult.error) {
+            throw reservationsResult.error;
+        }
+
+        if (guestsResult.error) {
+            throw guestsResult.error;
+        }
+
+        if (roomsResult.error) {
+            throw roomsResult.error;
+        }
+
+        if (paymentsResult.error) {
+            throw paymentsResult.error;
+        }
+
+        if (restaurantResult.error) {
+            throw restaurantResult.error;
+        }
+
+        reservations =
+            reservationsResult.data || [];
+
+        guests =
+            guestsResult.data || [];
+
+        rooms =
+            roomsResult.data || [];
+
+        payments =
+            paymentsResult.data || [];
+
+        restaurantOrders =
+            restaurantResult.data || [];
+
+        populateReservationSelector();
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        const requestedReservationId =
+            params.get("reservation_id") ||
+            params.get("id");
+
+        if (requestedReservationId) {
+
+            const exists =
+                reservations.some(
+                    reservation =>
+                        String(reservation.id) ===
+                        String(requestedReservationId)
+                );
+
+            if (exists) {
+
+                document.getElementById(
+                    "reservationSelect"
+                ).value =
+                    String(
+                        requestedReservationId
+                    );
+
+                await loadSelectedReservation();
+
+            } else {
+
+                showError(
+                    "The requested reservation was not found for this hotel."
+                );
+            }
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Folio loading error:",
+            error
+        );
+
+        showError(
+            "Unable to load folio data: " +
+            (
+                error.message ||
+                "Unknown error"
+            )
+        );
+    }
+}
+
+/* =========================================================
+   RESERVATION SELECTOR
+========================================================= */
+
+function populateReservationSelector() {
+
+    const select =
+        document.getElementById(
+            "reservationSelect"
+        );
+
+    select.innerHTML =
+        `<option value="">
+            -- Select Reservation --
+        </option>`;
+
+    reservations.forEach(
+        reservation => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                reservation.id;
+
+            option.textContent =
+                `#${reservation.id} - ` +
+                `${reservation.status} - ` +
+                `${formatDate(
+                    reservation.check_in
+                )} to ` +
+                `${formatDate(
+                    reservation.check_out
+                )}`;
+
+            select.appendChild(
+                option
+            );
+        }
+    );
+
+    if (reservations.length === 0) {
+
+        select.innerHTML =
+            `<option value="">
+                No checked-in or checked-out reservations found
+            </option>`;
+    }
+}
+
+/* =========================================================
+   RESTAURANT CHARGES
+========================================================= */
+
+function getRestaurantCharges(
+    reservation
+) {
+
+    const reservationId =
+        Number(reservation.id);
+
+    const validOrders =
+        restaurantOrders.filter(
+            order => {
+
+                const status =
+                    String(
+                        order.status || ""
+                    )
+                    .trim()
+                    .toLowerCase();
+
+                return (
+                    status !== "cancelled" &&
+                    status !== "canceled"
+                );
+            }
+        );
+
+    const directOrders =
+        validOrders.filter(
+            order =>
+                order.reservation_id !== null &&
+                order.reservation_id !== undefined &&
+                String(
+                    order.reservation_id
+                ).trim() !== "" &&
+                Number(
+                    order.reservation_id
+                ) === reservationId
+        );
+
+    const fallbackOrders =
+        validOrders.filter(
+            order => {
+
+                const noReservationId =
+                    order.reservation_id === null ||
+                    order.reservation_id === undefined ||
+                    String(
+                        order.reservation_id
+                    ).trim() === "";
+
+                if (!noReservationId) {
+                    return false;
+                }
+
+                return (
+                    Number(order.guest_id) ===
+                        Number(
+                            reservation["guest   id"]
+                        ) &&
+                    Number(order.room_id) ===
+                        Number(
+                            reservation["room id"]
+                        )
+                );
+            }
+        );
+
+    return directOrders.length > 0
+        ? directOrders
+        : fallbackOrders;
+}
+
+/* =========================================================
+   LOAD SELECTED RESERVATION
+========================================================= */
+
+async function loadSelectedReservation() {
+
+    clearMessage();
+
+    const selectedId =
+        document.getElementById(
+            "reservationSelect"
+        ).value;
+
+    if (!selectedId) {
+
+        document.getElementById(
+            "folio"
+        ).style.display = "none";
+
+        document.getElementById(
+            "emptyState"
+        ).style.display = "block";
+
+        currentReservation = null;
+        currentGuest = null;
+        currentRoom = null;
+        currentPayments = [];
+        currentRestaurantOrders = [];
+
+        return;
+    }
+
+    const reservation =
+        reservations.find(
+            item =>
+                String(item.id) ===
+                String(selectedId)
+        );
+
+    if (!reservation) {
+
+        showError(
+            "Reservation could not be found."
+        );
+
+        return;
+    }
+
+    if (
+        Number(reservation.hotel_id) !==
+        Number(hotelId)
+    ) {
+
+        showError(
+            "This reservation does not belong to the selected hotel."
+        );
+
+        return;
+    }
+
+    currentReservation =
+        reservation;
+
+    currentGuest =
+        guests.find(
+            guest =>
+                String(guest.id) ===
+                String(
+                    reservation["guest   id"]
+                )
+        ) || null;
+
+    currentRoom =
+        rooms.find(
+            room =>
+                String(room.id) ===
+                String(
+                    reservation["room id"]
+                )
+        ) || null;
+
+    currentPayments =
+        payments.filter(
+            payment =>
+                String(
+                    payment.reservation_id
+                ) ===
+                String(
+                    reservation.id
+                )
+        );
+
+    currentRestaurantOrders =
+        getRestaurantCharges(
+            reservation
+        );
+
+    displayFolio();
+}
+
+/* =========================================================
+   DISPLAY FOLIO
+========================================================= */
+
+function displayFolio() {
+
+    const reservation =
+        currentReservation;
+
+    const guest =
+        currentGuest;
+
+    const room =
+        currentRoom;
+
+    document.getElementById(
+        "emptyState"
+    ).style.display = "none";
+
+    document.getElementById(
+        "folio"
+    ).style.display = "block";
+
+    /* HOTEL */
+
+    document.getElementById(
+        "hotelName"
+    ).textContent =
+        hotel?.hotel_name ||
+        "HOTEL";
+
+    document.getElementById(
+        "hotelLocation"
+    ).textContent =
+        hotel?.location ||
+        "—";
+
+    document.getElementById(
+        "hotelPhone"
+    ).textContent =
+        hotel?.phone ||
+        "—";
+
+    document.getElementById(
+        "hotelEmail"
+    ).textContent =
+        hotel?.email ||
+        "—";
+
+    /* FOLIO NUMBER */
+
+    const year =
+        getFolioYear(
+            reservation
+        );
+
+    const folioNumber =
+        `FOLIO-${year}-${String(
+            reservation.id
+        ).padStart(6, "0")}`;
+
+    document.getElementById(
+        "folioNumber"
+    ).textContent =
+        folioNumber;
+
+    document.getElementById(
+        "folioDate"
+    ).textContent =
+        "Date: " +
+        formatDate(
+            reservation.check_out
+        );
+
+    /* GUEST */
+
+    document.getElementById(
+        "guestName"
+    ).textContent =
+        guest?.["full name"] ||
+        "—";
+
+    document.getElementById(
+        "guestPhone"
+    ).textContent =
+        guest?.phone ||
+        "—";
+
+    document.getElementById(
+        "guestEmail"
+    ).textContent =
+        guest?.email ||
+        "—";
+
+    document.getElementById(
+        "reservationId"
+    ).textContent =
+        "#" + reservation.id;
+
+    /* ROOM */
+
+    document.getElementById(
+        "roomNumber"
+    ).textContent =
+        room?.room_number ||
+        "—";
+
+    document.getElementById(
+        "roomType"
+    ).textContent =
+        room?.room_type ||
+        "—";
+
+    document.getElementById(
+        "checkInDate"
+    ).textContent =
+        formatDate(
+            reservation.check_in
+        );
+
+    document.getElementById(
+        "checkOutDate"
+    ).textContent =
+        formatDate(
+            reservation.check_out
+        );
+
+    const nights =
+        calculateNights(
+            reservation.check_in,
+            reservation.check_out
+        );
+
+    document.getElementById(
+        "numberOfNights"
+    ).textContent =
+        nights;
+
+    const roomRate =
+        getDisplayedRoomRate(
+            reservation,
+            room
+        );
+
+    document.getElementById(
+        "roomRate"
+    ).textContent =
+        money(roomRate);
+
+    /* ROOM TABLE */
+
+    const roomAmount =
+        getAccommodationCharge(
+            reservation,
+            room
+        );
+
+    document.getElementById(
+        "roomChargesBody"
+    ).innerHTML = `
+        <tr>
+            <td>
+                Room ${escapeHtml(
+                    room?.room_number || ""
+                )}
+                -
+                ${escapeHtml(
+                    room?.room_type || "Room"
+                )}
+            </td>
+
+            <td>
+                ${nights}
+            </td>
+
+            <td class="text-right">
+                ${money(roomRate)}
+            </td>
+
+            <td class="text-right">
+                ${money(roomAmount)}
+            </td>
+        </tr>
+    `;
+
+    /* RESTAURANT TABLE */
+
+    const restaurantBody =
+        document.getElementById(
+            "restaurantChargesBody"
+        );
+
+    if (
+        currentRestaurantOrders.length === 0
+    ) {
+
+        restaurantBody.innerHTML = `
+            <tr>
+                <td
+                    colspan="4"
+                    style="text-align:center;color:#777"
+                >
+                    No restaurant or additional charges recorded
+                </td>
+            </tr>
+        `;
+
+    } else {
+
+        restaurantBody.innerHTML =
+            currentRestaurantOrders
+                .map(order => {
+
+                    const quantity =
+                        numberValue(
+                            order.quantity
+                        ) || 1;
+
+                    const unitPrice =
+                        numberValue(
+                            order.unit_price
+                        );
+
+                    const total =
+                        getOrderTotal(order);
+
+                    return `
+                        <tr>
+
+                            <td>
+                                ${escapeHtml(
+                                    order.item_name ||
+                                    "Item"
+                                )}
+                            </td>
+
+                            <td>
+                                ${quantity}
+                            </td>
+
+                            <td class="text-right">
+                                ${money(unitPrice)}
+                            </td>
+
+                            <td class="text-right">
+                                ${money(total)}
+                            </td>
+
+                        </tr>
+                    `;
+                })
+                .join("");
+    }
+
+    /* =====================================================
+       VAT-INCLUSIVE BILL CALCULATION
+
+       Room + Restaurant = Gross / VAT-inclusive total
+
+       Net = Gross / 1.16
+
+       VAT = Gross - Net
+    ===================================================== */
+
+    const restaurantTotal =
+        getRestaurantTotal(
+            currentRestaurantOrders
+        );
+
+    const totalBill =
+        roomAmount +
+        restaurantTotal;
+
+    const vatBreakdown =
+        calculateVatInclusiveBreakdown(
+            totalBill
+        );
+
+    const totalPaid =
+        getPaymentsTotal(
+            currentPayments
+        );
+
+    const outstanding =
+        Math.max(
+            0,
+            totalBill -
+            totalPaid
+        );
+
+    /* TOTALS */
+
+    document.getElementById(
+        "roomChargesTotal"
+    ).textContent =
+        money(roomAmount);
+
+    document.getElementById(
+        "restaurantChargesTotal"
+    ).textContent =
+        money(restaurantTotal);
+
+    document.getElementById(
+        "netAmount"
+    ).textContent =
+        money(vatBreakdown.net);
+
+    document.getElementById(
+        "vatAmount"
+    ).textContent =
+        money(vatBreakdown.vat);
+
+    document.getElementById(
+        "totalBill"
+    ).textContent =
+        money(vatBreakdown.gross);
+
+    document.getElementById(
+        "totalPaid"
+    ).textContent =
+        money(totalPaid);
+
+    document.getElementById(
+        "outstandingBalance"
+    ).textContent =
+        money(outstanding);
+
+    /* PAYMENTS */
+
+    const paymentsBody =
+        document.getElementById(
+            "paymentsBody"
+        );
+
+    if (
+        currentPayments.length === 0
+    ) {
+
+        paymentsBody.innerHTML = `
+            <tr>
+                <td
+                    colspan="3"
+                    style="text-align:center;color:#777"
+                >
+                    No payments recorded
+                </td>
+            </tr>
+        `;
+
+    } else {
+
+        paymentsBody.innerHTML =
+            currentPayments
+                .map(payment => `
+                    <tr>
+
+                        <td>
+                            ${formatDate(
+                                payment.payment_date
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHtml(
+                                payment.payment_method ||
+                                "—"
+                            )}
+                        </td>
+
+                        <td class="text-right">
+                            ${money(
+                                payment.amount
+                            )}
+                        </td>
+
+                    </tr>
+                `)
+                .join("");
+    }
+
+    /* NOTES */
+
+    const notes =
+        currentRestaurantOrders
+            .map(order => order.notes)
+            .filter(
+                note =>
+                    note &&
+                    String(note).trim()
+            )
+            .join(" | ");
+
+    document.getElementById(
+        "notes"
+    ).textContent =
+        notes ||
+        "No additional notes.";
+}
+
+/* =========================================================
+   FOLIO NUMBER YEAR
+========================================================= */
+
+function getFolioYear(
+    reservation
+) {
+
+    const source =
+        reservation.check_out ||
+        reservation.check_in ||
+        reservation.created_at;
+
+    if (!source) {
+        return new Date().getFullYear();
+    }
+
+    const year =
+        Number(
+            String(source).substring(0, 4)
+        );
+
+    if (
+        year >= 2000 &&
+        year <= 2100
+    ) {
+        return year;
+    }
+
+    return new Date().getFullYear();
+}
+
+/* =========================================================
+   PRINT
+========================================================= */
+
+function printFolio() {
+
+    if (!currentReservation) {
+
+        alert(
+            "Please select a reservation first."
+        );
+
+        return;
+    }
+
+    window.print();
+}
+
+/* =========================================================
+   PDF HELPERS
+========================================================= */
+
+function addPdfSectionTitle(
+    doc,
+    title,
+    y
+) {
+
+    doc.setFontSize(12);
+
+    doc.setFont(
+        undefined,
+        "bold"
+    );
+
+    doc.text(
+        title,
+        14,
+        y
+    );
+
+    return y + 5;
+}
+
+function addPdfInfo(
+    doc,
+    label,
+    value,
+    x,
+    y
+) {
+
+    doc.setFontSize(9);
+
+    doc.setFont(
+        undefined,
+        "bold"
+    );
+
+    doc.text(
+        label,
+        x,
+        y
+    );
+
+    doc.setFont(
+        undefined,
+        "normal"
+    );
+
+    const safeValue =
+        String(value || "—");
+
+    const lines =
+        doc.splitTextToSize(
+            safeValue,
+            75
+        );
+
+    doc.text(
+        lines,
+        x + 25,
+        y
+    );
+
+    return Math.max(
+        6,
+        lines.length * 4.5
+    );
+}
+
+function addPdfTable(
+    doc,
+    options
+) {
+
+    doc.autoTable({
+
+        theme: "grid",
+
+        margin: {
+            left: 14,
+            right: 14
+        },
+
+        styles: {
+            fontSize: 8,
+            cellPadding: 2.5,
+            overflow: "linebreak"
+        },
+
+        headStyles: {
+            fontStyle: "bold",
+            fillColor: [
+                241,
+                245,
+                249
+            ],
+            textColor: [
+                30,
+                41,
+                59
+            ]
+        },
+
+        ...options
+    });
+
+    return (
+        doc.lastAutoTable.finalY +
+        8
+    );
+}
+
+/* =========================================================
+   SAVE PDF
+========================================================= */
+
+async function savePDF() {
+
+    if (!currentReservation) {
+
+        alert(
+            "Please select a reservation first."
+        );
+
+        return;
+    }
+
+    if (
+        !window.jspdf ||
+        !window.jspdf.jsPDF
+    ) {
+
+        alert(
+            "The PDF library could not load. Check your internet connection and refresh the page."
+        );
+
+        return;
+    }
+
+    try {
+
+        const {
+            jsPDF
+        } = window.jspdf;
+
+        const doc =
+            new jsPDF(
+                "p",
+                "mm",
+                "a4"
+            );
+
+        const reservation =
+            currentReservation;
+
+        const guest =
+            currentGuest;
+
+        const room =
+            currentRoom;
+
+        const nights =
+            calculateNights(
+                reservation.check_in,
+                reservation.check_out
+            );
+
+        const roomAmount =
+            getAccommodationCharge(
+                reservation,
+                room
+            );
+
+        const roomRate =
+            getDisplayedRoomRate(
+                reservation,
+                room
+            );
+
+        const restaurantTotal =
+            getRestaurantTotal(
+                currentRestaurantOrders
+            );
+
+        const totalBill =
+            roomAmount +
+            restaurantTotal;
+
+        /*
+            VAT-INCLUSIVE CALCULATION
+
+            Example:
+            Gross = 1000
+            Net = 862.07
+            VAT = 137.93
+        */
+
+        const vatBreakdown =
+            calculateVatInclusiveBreakdown(
+                totalBill
+            );
+
+        const totalPaid =
+            getPaymentsTotal(
+                currentPayments
+            );
+
+        const outstanding =
+            Math.max(
+                0,
+                vatBreakdown.gross -
+                totalPaid
+            );
+
+        const folioNumber =
+            document.getElementById(
+                "folioNumber"
+            ).textContent;
+
+        let y = 18;
+
+        /* =================================================
+           HOTEL HEADER
+        ================================================== */
+
+        doc.setFontSize(18);
+
+        doc.setFont(
+            undefined,
+            "bold"
+        );
+
+        const hotelTitle =
+            hotel?.hotel_name ||
+            "HOTEL";
+
+        doc.text(
+            hotelTitle,
+            14,
+            y
+        );
+
+        doc.setFontSize(9);
+
+        doc.setFont(
+            undefined,
+            "normal"
+        );
+
+        y += 6;
+
+        doc.text(
+            String(
+                hotel?.location || " "
+            ),
+            14,
+            y
+        );
+
+        y += 5;
+
+        doc.text(
+            String(
+                hotel?.phone || " "
+            ),
+            14,
+            y
+        );
+
+        y += 5;
+
+        doc.text(
+            String(
+                hotel?.email || " "
+            ),
+            14,
+            y
+        );
+
+        doc.setFontSize(15);
+
+        doc.setFont(
+            undefined,
+            "bold"
+        );
+
+        doc.text(
+            "CHECK-OUT FOLIO",
+            196,
+            22,
+            {
+                align: "right"
+            }
+        );
+
+        doc.setFontSize(9);
+
+        doc.setFont(
+            undefined,
+            "normal"
+        );
+
+        doc.text(
+            folioNumber,
+            196,
+            29,
+            {
+                align: "right"
+            }
+        );
+
+        doc.text(
+            "Date: " +
+            formatDate(
+                reservation.check_out
+            ),
+            196,
+            35,
+            {
+                align: "right"
+            }
+        );
+
+        y = 48;
+
+        doc.line(
+            14,
+            y,
+            196,
+            y
+        );
+
+        y += 9;
+
+        /* =================================================
+           GUEST INFORMATION
+        ================================================== */
+
+        y =
+            addPdfSectionTitle(
+                doc,
+                "GUEST INFORMATION",
+                y
+            );
+
+        const guestName =
+            guest?.["full name"] ||
+            "—";
+
+        const guestPhone =
+            guest?.phone ||
+            "—";
+
+        const guestEmail =
+            guest?.email ||
+            "—";
+
+        const guestNameHeight =
+            addPdfInfo(
+                doc,
+                "Guest Name:",
+                guestName,
+                14,
+                y
+            );
+
+        const guestPhoneHeight =
+            addPdfInfo(
+                doc,
+                "Phone:",
+                guestPhone,
+                108,
+                y
+            );
+
+        y += Math.max(
+            guestNameHeight,
+            guestPhoneHeight
+        );
+
+        const guestEmailHeight =
+            addPdfInfo(
+                doc,
+                "Email:",
+                guestEmail,
+                14,
+                y
+            );
+
+        const reservationHeight =
+            addPdfInfo(
+                doc,
+                "Reservation:",
+                "#" + reservation.id,
+                108,
+                y
+            );
+
+        y += Math.max(
+            guestEmailHeight,
+            reservationHeight
+        ) + 5;
+
+        /* =================================================
+           STAY INFORMATION
+        ================================================== */
+
+        y =
+            addPdfSectionTitle(
+                doc,
+                "STAY INFORMATION",
+                y
+            );
+
+        const stayRows = [
+
+            [
+                "Room Number",
+                room?.room_number ||
+                "—"
+            ],
+
+            [
+                "Room Type",
+                room?.room_type ||
+                "—"
+            ],
+
+            [
+                "Check-in Date",
+                formatDate(
+                    reservation.check_in
+                )
+            ],
+
+            [
+                "Check-out Date",
+                formatDate(
+                    reservation.check_out
+                )
+            ],
+
+            [
+                "Number of Nights",
+                String(nights)
+            ],
+
+            [
+                "Room Rate",
+                money(roomRate)
+            ]
+        ];
+
+        y =
+            addPdfTable(
+                doc,
+                {
+                    startY: y,
+
+                    head: [
+                        [
+                            "Description",
+                            "Details"
+                        ]
+                    ],
+
+                    body: stayRows,
+
+                    columnStyles: {
+                        0: {
+                            cellWidth: 55
+                        },
+
+                        1: {
+                            cellWidth: 120
+                        }
+                    }
+                }
+            );
+
+        /* =================================================
+           ROOM CHARGES
+        ================================================== */
+
+        y =
+            addPdfSectionTitle(
+                doc,
+                "ROOM CHARGES",
+                y
+            );
+
+        y =
+            addPdfTable(
+                doc,
+                {
+                    startY: y,
+
+                    head: [
+                        [
+                            "Description",
+                            "Quantity",
+                            "Unit Price",
+                            "Total"
+                        ]
+                    ],
+
+                    body: [
+                        [
+                            `Room ${
+                                room?.room_number ||
+                                ""
+                            } - ${
+                                room?.room_type ||
+                                "Room"
+                            }`,
+
+                            String(nights),
+
+                            money(roomRate),
+
+                            money(roomAmount)
+                        ]
+                    ]
+                }
+            );
+
+        /* =================================================
+           RESTAURANT CHARGES
+        ================================================== */
+
+        y =
+            addPdfSectionTitle(
+                doc,
+                "RESTAURANT / ADDITIONAL CHARGES",
+                y
+            );
+
+        const restaurantBody =
+            currentRestaurantOrders.length === 0
+
+                ? [
+                    [
+                        "No restaurant or additional charges",
+                        "",
+                        "",
+                        ""
+                    ]
+                ]
+
+                : currentRestaurantOrders.map(
+                    order => [
+
+                        order.item_name ||
+                        "Item",
+
+                        String(
+                            numberValue(
+                                order.quantity
+                            ) || 1
+                        ),
+
+                        money(
+                            numberValue(
+                                order.unit_price
+                            )
+                        ),
+
+                        money(
+                            getOrderTotal(
+                                order
+                            )
+                        )
+                    ]
+                );
+
+        y =
+            addPdfTable(
+                doc,
+                {
+                    startY: y,
+
+                    head: [
+                        [
+                            "Item",
+                            "Quantity",
+                            "Unit Price",
+                            "Total"
+                        ]
+                    ],
+
+                    body:
+                        restaurantBody
+                }
+            );
+
+        /* =================================================
+           BILL SUMMARY
+        ================================================== */
+
+        y =
+            addPdfSectionTitle(
+                doc,
+                "BILL SUMMARY",
+                y
+            );
+
+        /*
+            VERY IMPORTANT:
+
+            The total bill is VAT-INCLUSIVE.
+
+            Therefore:
+
+            Amount Before VAT
+            +
+            VAT
+            =
+            Total Bill
+        */
+
+        y =
+            addPdfTable(
+                doc,
+                {
+                    startY: y,
+
+                    body: [
+
+                        [
+                            "Room Charges",
+                            money(roomAmount)
+                        ],
+
+                        [
+                            "Restaurant Charges",
+                            money(restaurantTotal)
+                        ],
+
+                        [
+                            "Amount Before VAT",
+                            money(
+                                vatBreakdown.net
+                            )
+                        ],
+
+                        [
+                            "VAT @ 16%",
+                            money(
+                                vatBreakdown.vat
+                            )
+                        ],
+
+                        [
+                            "TOTAL BILL (VAT INCLUSIVE)",
+                            money(
+                                vatBreakdown.gross
+                            )
+                        ],
+
+                        [
+                            "TOTAL PAID",
+                            money(totalPaid)
+                        ],
+
+                        [
+                            "OUTSTANDING BALANCE",
+                            money(outstanding)
+                        ]
+                    ],
+
+                    columnStyles: {
+
+                        0: {
+                            cellWidth: 120,
+                            fontStyle: "bold"
+                        },
+
+                        1: {
+                            halign: "right"
+                        }
+                    },
+
+                    didParseCell:
+                        function(data) {
+
+                            /*
+                                Highlight:
+
+                                Net
+                                VAT
+                                Grand Total
+                                Outstanding
+                            */
+
+                            if (
+                                data.row.index === 2 ||
+                                data.row.index === 3 ||
+                                data.row.index === 4 ||
+                                data.row.index === 6
+                            ) {
+
+                                data.cell.styles.fontStyle =
+                                    "bold";
+                            }
+
+                            if (
+                                data.row.index === 4
+                            ) {
+
+                                data.cell.styles.fontSize =
+                                    9;
+                            }
+                        }
+                }
+            );
+
+        /* =================================================
+           PAYMENT INFORMATION
+        ================================================== */
+
+        y =
+            addPdfSectionTitle(
+                doc,
+                "PAYMENT INFORMATION",
+                y
+            );
+
+        const paymentBody =
+            currentPayments.length === 0
+
+                ? [
+                    [
+                        "No payments recorded",
+                        "",
+                        ""
+                    ]
+                ]
+
+                : currentPayments.map(
+                    payment => [
+
+                        formatDate(
+                            payment.payment_date
+                        ),
+
+                        payment.payment_method ||
+                        "—",
+
+                        money(
+                            payment.amount
+                        )
+                    ]
+                );
+
+        y =
+            addPdfTable(
+                doc,
+                {
+                    startY: y,
+
+                    head: [
+                        [
+                            "Payment Date",
+                            "Method",
+                            "Amount"
+                        ]
+                    ],
+
+                    body:
+                        paymentBody
+                }
+            );
+
+        /* =================================================
+           NOTES
+        ================================================== */
+
+        y =
+            addPdfSectionTitle(
+                doc,
+                "NOTES",
+                y
+            );
+
+        const notes =
+            currentRestaurantOrders
+                .map(
+                    order => order.notes
+                )
+                .filter(
+                    note =>
+                        note &&
+                        String(note).trim()
+                )
+                .join(" | ") ||
+            "No additional notes.";
+
+        const noteLines =
+            doc.splitTextToSize(
+                notes,
+                180
+            );
+
+        if (
+            y +
+            noteLines.length * 5 +
+            35 >
+            275
+        ) {
+
+            doc.addPage();
+
+            y = 20;
+        }
+
+        doc.setFontSize(9);
+
+        doc.setFont(
+            undefined,
+            "normal"
+        );
+
+        doc.text(
+            noteLines,
+            14,
+            y
+        );
+
+        y +=
+            noteLines.length * 5 +
+            25;
+
+        /* =================================================
+           SIGNATURES
+        ================================================== */
+
+        if (y > 265) {
+
+            doc.addPage();
+
+            y = 35;
+        }
+
+        doc.line(
+            20,
+            y,
+            85,
+            y
+        );
+
+        doc.line(
+            125,
+            y,
+            190,
+            y
+        );
+
+        doc.setFontSize(8);
+
+        doc.text(
+            "Guest Signature",
+            52,
+            y + 5,
+            {
+                align: "center"
+            }
+        );
+
+        doc.text(
+            "Authorized Hotel Representative",
+            157,
+            y + 5,
+            {
+                align: "center"
+            }
+        );
+
+        y += 20;
+
+        /* =================================================
+           FOOTER
+        ================================================== */
+
+        doc.setFontSize(9);
+
+        doc.text(
+            "Thank you for staying with us.",
+            105,
+            y,
+            {
+                align: "center"
+            }
+        );
+
+        y += 5;
+
+        doc.text(
+            "This is a computer-generated check-out folio.",
+            105,
+            y,
+            {
+                align: "center"
+            }
+        );
+
+        /* =================================================
+           PAGE NUMBERS
+        ================================================== */
+
+        const pageCount =
+            doc.internal.getNumberOfPages();
+
+        for (
+            let page = 1;
+            page <= pageCount;
+            page++
+        ) {
+
+            doc.setPage(page);
+
+            doc.setFontSize(8);
+
+            doc.setFont(
+                undefined,
+                "normal"
+            );
+
+            doc.text(
+                `Page ${page} of ${pageCount}`,
+                196,
+                290,
+                {
+                    align: "right"
+                }
+            );
+        }
+
+        const filename =
+            folioNumber.replace(
+                /\s+/g,
+                "_"
+            ) + ".pdf";
+
+        doc.save(filename);
+
+    } catch (error) {
+
+        console.error(
+            "PDF error:",
+            error
+        );
+
+        alert(
+            "Unable to create the PDF. Please refresh the page and try again."
+        );
+    }
+}
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function goBack() {
+
+    window.location.href =
+        "./checkout.html";
+}
+
+/* =========================================================
+   START PAGE
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function() {
+
+        try {
+
+            document.getElementById(
+                "emptyState"
+            ).innerHTML = `
+                <div class="loading">
+                    Checking your account and loading hotel information...
+                </div>
+            `;
+
+            const ready =
+                await setupFolioAccess();
+
+            if (!ready) {
+                return;
+            }
+
+            document.getElementById(
+                "emptyState"
+            ).innerHTML = `
+                <h2>
+                    CHECK-OUT FOLIO
+                </h2>
+
+                <p>
+                    Select a reservation above to display the guest folio.
+                </p>
+            `;
+
+            await loadData();
+
+        } catch (error) {
+
+            console.error(
+                "Folio setup error:",
+                error
+            );
+
+            showError(
+                "Unable to open the folio: " +
+                (
+                    error.message ||
+                    "Unknown error"
+                )
+            );
+
+            document.getElementById(
+                "emptyState"
+            ).innerHTML = `
+                <h2>
+                    FOLIO NOT AVAILABLE
+                </h2>
+
+                <p>
+                    Please check your account and hotel selection.
+                </p>
+            `;
+        }
+    }
+);
+
+/* =========================================================
+   CHECK HOTEL SELECTION WHEN RETURNING
+========================================================= */
+
+window.addEventListener(
+    "pageshow",
+    function() {
+
+        if (
+            currentRole !==
+            "system_owner" ||
+            !hotelId
+        ) {
+            return;
+        }
+
+        const selectedHotelId =
+            getActiveHotelId();
+
+        if (
+            selectedHotelId &&
+            String(selectedHotelId) !==
+            String(hotelId)
+        ) {
+
+            window.location.reload();
+        }
+    }
+);
+</script>
+
+</body>
+</html>

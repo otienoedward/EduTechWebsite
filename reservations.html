@@ -1,19 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reservations - EDU TECH Hotel Management System</title>
 
-    <link rel="stylesheet" href="./style.css">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Reservations - EDU TECH Hotel Management System
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="./style.css"
+    >
+
+    <!-- =====================================================
+         SUPABASE
+    ====================================================== -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase.js"></script>
-    <script src="./script.js"></script>
+    <script src="./access-control.js"></script>
 
     <style>
-        .page-container {
-            padding: 20px;
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .page-content {
+            padding: 25px;
         }
 
         .page-header {
@@ -21,29 +43,18 @@
             justify-content: space-between;
             align-items: center;
             gap: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             flex-wrap: wrap;
         }
 
         .page-header h1 {
             margin: 0;
+            font-size: 28px;
         }
 
-        .header-actions {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .hotel-selector {
-            display: none;
-        }
-
-        .hotel-selector select {
-            padding: 9px 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+        .page-header p {
+            margin: 6px 0 0;
+            color: #666;
         }
 
         .btn {
@@ -51,93 +62,69 @@
             border-radius: 6px;
             padding: 10px 16px;
             cursor: pointer;
-            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
         }
 
         .btn-primary {
-            background: #2563eb;
+            background: #0d6efd;
             color: white;
         }
 
         .btn-secondary {
-            background: #6b7280;
-            color: white;
-        }
-
-        .btn-danger {
-            background: #dc2626;
+            background: #6c757d;
             color: white;
         }
 
         .btn-success {
-            background: #16a34a;
+            background: #198754;
             color: white;
         }
 
         .btn-warning {
-            background: #d97706;
-            color: white;
+            background: #ffc107;
+            color: #000;
         }
 
-        .btn:hover {
-            opacity: 0.9;
+        .btn-danger {
+            background: #dc3545;
+            color: white;
         }
 
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .summary-card {
             background: white;
-            border-radius: 8px;
-            padding: 18px;
+            border-radius: 10px;
+            padding: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .summary-card h3 {
-            margin: 0 0 8px;
-            font-size: 14px;
+            margin: 0 0 10px;
+            font-size: 15px;
             color: #666;
         }
 
-        .summary-card .value {
-            font-size: 24px;
+        .summary-card .number {
+            font-size: 28px;
             font-weight: bold;
         }
 
         .table-card {
             background: white;
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .table-toolbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .search-box {
-            flex: 1;
-            min-width: 250px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-
-        .table-responsive {
             overflow-x: auto;
         }
 
@@ -148,133 +135,105 @@
 
         th,
         td {
-            padding: 12px 10px;
+            padding: 12px;
             border-bottom: 1px solid #eee;
             text-align: left;
-            white-space: nowrap;
         }
 
         th {
-            background: #f8fafc;
-            font-weight: 600;
+            background: #f8f9fa;
         }
 
-        .status-badge {
+        .status {
             display: inline-block;
-            padding: 5px 9px;
+            padding: 5px 10px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: 600;
-            text-transform: capitalize;
+            font-weight: bold;
         }
 
         .status-pending {
-            background: #fef3c7;
-            color: #92400e;
+            background: #fff3cd;
+            color: #664d03;
         }
 
         .status-confirmed {
-            background: #dcfce7;
-            color: #166534;
+            background: #d1e7dd;
+            color: #0f5132;
         }
 
         .status-cancelled {
-            background: #fee2e2;
-            color: #991b1b;
+            background: #f8d7da;
+            color: #842029;
         }
 
         .status-checked_in {
-            background: #dbeafe;
-            color: #1e40af;
+            background: #cfe2ff;
+            color: #084298;
         }
 
         .status-checked_out {
-            background: #e5e7eb;
-            color: #374151;
+            background: #e2e3e5;
+            color: #41464b;
         }
 
-        .actions {
+        .action-buttons {
             display: flex;
-            gap: 6px;
+            gap: 7px;
+            flex-wrap: wrap;
         }
 
-        .actions button {
-            padding: 6px 9px;
-            font-size: 12px;
-        }
-
-        .modal {
+        .modal-overlay {
             display: none;
             position: fixed;
-            z-index: 1000;
             inset: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.55);
+            z-index: 9999;
             align-items: center;
             justify-content: center;
             padding: 20px;
         }
 
-        .modal-content {
+        .modal {
             background: white;
             width: 100%;
             max-width: 650px;
-            max-height: 90vh;
-            overflow-y: auto;
             border-radius: 10px;
             padding: 25px;
-            box-sizing: border-box;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-header h2 {
-            margin: 0;
-        }
-
-        .close-modal {
-            border: none;
-            background: transparent;
-            font-size: 26px;
-            cursor: pointer;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+        .modal h2 {
+            margin-top: 0;
         }
 
         .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .form-group.full-width {
-            grid-column: 1 / -1;
+            margin-bottom: 15px;
         }
 
         .form-group label {
+            display: block;
+            margin-bottom: 6px;
             font-weight: 600;
-            font-size: 14px;
         }
 
         .form-group input,
         .form-group select {
-            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px;
             border: 1px solid #ccc;
             border-radius: 6px;
-            font-size: 14px;
-            box-sizing: border-box;
-            width: 100%;
         }
 
-        .form-actions {
+        .form-group input[readonly] {
+            background: #f1f3f5;
+            color: #495057;
+            cursor: not-allowed;
+        }
+
+        .modal-actions {
             display: flex;
             justify-content: flex-end;
             gap: 10px;
@@ -282,1776 +241,4304 @@
         }
 
         .message {
-            padding: 12px 15px;
+            display: none;
+            padding: 12px;
             border-radius: 6px;
             margin-bottom: 15px;
-            display: none;
         }
 
         .message.success {
-            display: block;
-            background: #dcfce7;
-            color: #166534;
+            background: #d1e7dd;
+            color: #0f5132;
         }
 
         .message.error {
-            display: block;
-            background: #fee2e2;
-            color: #991b1b;
+            background: #f8d7da;
+            color: #842029;
         }
 
         .message.info {
-            display: block;
-            background: #dbeafe;
-            color: #1e40af;
+            background: #cff4fc;
+            color: #055160;
         }
 
-        .amount-display {
-            background: #f8fafc;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #e5e7eb;
+        .hotel-context {
+            background: #eef5ff;
+            padding: 12px 15px;
+            border-radius: 7px;
+            margin-bottom: 20px;
+            color: #174a8b;
+            font-weight: 600;
         }
 
-        .amount-display strong {
-            font-size: 18px;
+        .amount-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 7px;
+            margin-top: 10px;
+            font-weight: bold;
+            line-height: 1.8;
         }
 
-        .loading {
-            text-align: center;
-            padding: 30px;
+        .rate-note {
+            margin-top: 5px;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .guest-identity-note {
+            margin-top: -7px;
+            margin-bottom: 15px;
+            font-size: 12px;
             color: #666;
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 40px;
-            color: #777;
+        .room-note {
+            background: #fff8e1;
+            color: #664d03;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .availability-note {
+            background: #e8f5e9;
+            color: #1b5e20;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 13px;
         }
 
         @media (max-width: 900px) {
+
             .summary-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
+
         }
 
-        @media (max-width: 650px) {
+        @media (max-width: 600px) {
+
             .summary-grid {
                 grid-template-columns: 1fr;
             }
 
-            .form-grid {
-                grid-template-columns: 1fr;
+            .page-content {
+                padding: 15px;
             }
 
-            .form-group.full-width {
-                grid-column: auto;
-            }
         }
+
     </style>
+
 </head>
+
 
 <body>
 
-<div class="app-container">
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
 
-    <aside class="sidebar">
+    <aside
+        id="appSidebar"
+        class="sidebar"
+    ></aside>
 
-        <div class="sidebar-header">
-            <h2>EDU TECH</h2>
-            <p>Hotel Management</p>
+
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+
+    <main class="page-content">
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>
+                    Reservations
+                </h1>
+
+                <p>
+                    Manage guest room reservations.
+                </p>
+
+            </div>
+
+            <button
+                id="addReservationBtn"
+                class="btn btn-primary"
+                type="button"
+                disabled
+            >
+                + Add Reservation
+            </button>
+
         </div>
 
-        <nav class="sidebar-nav">
 
-            <a href="./index.html" data-module="dashboard">Dashboard</a>
-            <a href="./rooms.html" data-module="rooms">Rooms</a>
-            <a href="./guests.html" data-module="guests">Guests</a>
-            <a href="./reservations.html" data-module="reservations">Reservations</a>
-            <a href="./checkin.html" data-module="checkin">Check-in</a>
-            <a href="./checkout.html" data-module="checkout">Check-out</a>
-            <a href="./restaurant.html" data-module="restaurant">Restaurant</a>
-            <a href="./inventory.html" data-module="inventory">Inventory</a>
-            <a href="./payments.html" data-module="payments">Payments</a>
-            <a href="./expenses.html" data-module="expenses">Expenses</a>
-            <a href="./employees.html" data-module="employees">Employees</a>
-            <a href="./housekeeping.html" data-module="housekeeping">Housekeeping</a>
-            <a href="./maintenance.html" data-module="maintenance">Maintenance</a>
-            <a href="./reports.html" data-module="reports">Reports</a>
-            <a href="./settings.html" data-module="settings">Settings</a>
-            <a href="./hotels.html" data-module="hotels">Hotels</a>
+        <div
+            id="hotelContext"
+            class="hotel-context"
+        >
+            Loading hotel...
+        </div>
 
-            <a href="#" data-action="logout">Logout</a>
 
-        </nav>
+        <div
+            id="message"
+            class="message"
+        ></div>
 
-    </aside>
 
-    <main class="main-content">
+        <!-- =================================================
+             SUMMARY
+        ================================================== -->
 
-        <div class="page-container">
+        <div class="summary-grid">
 
-            <div id="message" class="message"></div>
+            <div class="summary-card">
 
-            <div class="page-header">
+                <h3>
+                    Total Reservations
+                </h3>
 
-                <div>
-                    <h1>Reservations</h1>
-                    <p>Manage hotel reservations</p>
-                </div>
-
-                <div class="header-actions">
-
-                    <div id="hotelSelectorContainer" class="hotel-selector">
-                        <select id="hotelSelector">
-                            <option value="">Select Hotel</option>
-                        </select>
-                    </div>
-
-                    <button class="btn btn-primary" id="addReservationBtn">
-                        + Add Reservation
-                    </button>
-
+                <div
+                    id="totalReservations"
+                    class="number"
+                >
+                    0
                 </div>
 
             </div>
 
-            <div class="summary-grid">
 
-                <div class="summary-card">
-                    <h3>Total Reservations</h3>
-                    <div class="value" id="totalReservations">0</div>
-                </div>
+            <div class="summary-card">
 
-                <div class="summary-card">
-                    <h3>Confirmed</h3>
-                    <div class="value" id="confirmedReservations">0</div>
-                </div>
+                <h3>
+                    Pending
+                </h3>
 
-                <div class="summary-card">
-                    <h3>Pending</h3>
-                    <div class="value" id="pendingReservations">0</div>
-                </div>
-
-                <div class="summary-card">
-                    <h3>Total Value</h3>
-                    <div class="value" id="totalValue">KSh 0</div>
+                <div
+                    id="pendingReservations"
+                    class="number"
+                >
+                    0
                 </div>
 
             </div>
 
-            <div class="table-card">
 
-                <div class="table-toolbar">
+            <div class="summary-card">
 
-                    <div class="search-box">
-                        <input
-                            type="text"
-                            id="searchInput"
-                            placeholder="Search guest, phone, room or status..."
-                        >
-                    </div>
+                <h3>
+                    Confirmed
+                </h3>
 
-                    <button class="btn btn-secondary" id="refreshBtn">
-                        Refresh
-                    </button>
-
-                </div>
-
-                <div class="table-responsive">
-
-                    <table>
-
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Guest</th>
-                                <th>Phone</th>
-                                <th>Room</th>
-                                <th>Check-in</th>
-                                <th>Check-out</th>
-                                <th>Nights</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-
-                        <tbody id="reservationsTableBody">
-                            <tr>
-                                <td colspan="10" class="loading">
-                                    Loading reservations...
-                                </td>
-                            </tr>
-                        </tbody>
-
-                    </table>
-
+                <div
+                    id="confirmedReservations"
+                    class="number"
+                >
+                    0
                 </div>
 
             </div>
+
+
+            <div class="summary-card">
+
+                <h3>
+                    Checked In
+                </h3>
+
+                <div
+                    id="checkedInReservations"
+                    class="number"
+                >
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             RESERVATION TABLE
+        ================================================== -->
+
+        <div class="table-card">
+
+            <div style="margin-bottom:15px;">
+
+                <button
+                    id="refreshBtn"
+                    class="btn btn-secondary"
+                    type="button"
+                    disabled
+                >
+                    Refresh
+                </button>
+
+            </div>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            ID
+                        </th>
+
+                        <th>
+                            Guest
+                        </th>
+
+                        <th>
+                            National ID / Passport
+                        </th>
+
+                        <th>
+                            Room
+                        </th>
+
+                        <th>
+                            Check In
+                        </th>
+
+                        <th>
+                            Check Out
+                        </th>
+
+                        <th>
+                            Amount
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody
+                    id="reservationsTableBody"
+                >
+
+                    <tr>
+
+                        <td colspan="9">
+                            Loading reservations...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
 
         </div>
 
     </main>
 
-</div>
+
+    <!-- =====================================================
+         RESERVATION MODAL
+    ====================================================== -->
+
+    <div
+        id="reservationModal"
+        class="modal-overlay"
+    >
+
+        <div class="modal">
+
+            <h2 id="modalTitle">
+                Add Reservation
+            </h2>
 
 
-<!-- RESERVATION MODAL -->
+            <form
+                id="reservationForm"
+            >
 
-<div class="modal" id="reservationModal">
 
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <h2 id="modalTitle">Add Reservation</h2>
-
-            <button class="close-modal" id="closeModal">
-                &times;
-            </button>
-
-        </div>
-
-        <form id="reservationForm">
-
-            <input type="hidden" id="reservationId">
-
-            <div class="form-grid">
-
-                <div class="form-group full-width">
-                    <label for="guestId">Guest</label>
-
-                    <select id="guestId" required>
-                        <option value="">Select Guest</option>
-                    </select>
-                </div>
+                <!-- =========================================
+                     GUEST
+                ========================================== -->
 
                 <div class="form-group">
-                    <label for="roomId">Room</label>
 
-                    <select id="roomId" required>
-                        <option value="">Select Room</option>
+                    <label for="guestId">
+                        Guest
+                    </label>
+
+                    <select
+                        id="guestId"
+                        required
+                    >
+
+                        <option value="">
+                            Select Guest
+                        </option>
+
                     </select>
+
                 </div>
 
-                <div class="form-group">
-                    <label for="status">Status</label>
 
-                    <select id="status" required>
-                        <option value="pending">Pending</option>
-                        <option value="confirmed">Confirmed</option>
-                        <option value="cancelled">Cancelled</option>
-                        <option value="checked_in">Checked In</option>
-                        <option value="checked_out">Checked Out</option>
-                    </select>
+                <!-- =========================================
+                     NATIONAL ID / PASSPORT
+                ========================================== -->
+
+                <div class="form-group">
+
+                    <label for="guestIdPassport">
+                        National ID / Passport Number
+                    </label>
+
+                    <input
+                        type="text"
+                        id="guestIdPassport"
+                        readonly
+                        placeholder="Select a guest"
+                    >
+
                 </div>
 
+
+                <div class="guest-identity-note">
+
+                    This information comes automatically
+                    from the selected guest record.
+
+                </div>
+
+
+                <!-- =========================================
+                     ROOM
+                ========================================== -->
+
                 <div class="form-group">
-                    <label for="checkIn">Check-in</label>
+
+                    <label for="roomId">
+                        Room / Room Type
+                    </label>
+
+                    <select
+                        id="roomId"
+                        required
+                    >
+
+                        <option value="">
+                            Select Room
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="room-note">
+
+                    Fanana Hotel rooms do not have to use
+                    numbered rooms. A room can be identified
+                    by its room type or optional custom
+                    identifier.
+
+                </div>
+
+
+                <!-- =========================================
+                     CHECK IN
+                ========================================== -->
+
+                <div class="form-group">
+
+                    <label for="checkIn">
+                        Check-in Date
+                    </label>
 
                     <input
                         type="date"
                         id="checkIn"
                         required
                     >
+
                 </div>
 
+
+                <!-- =========================================
+                     CHECK OUT
+                ========================================== -->
+
                 <div class="form-group">
-                    <label for="checkOut">Check-out</label>
+
+                    <label for="checkOut">
+                        Check-out Date
+                    </label>
 
                     <input
                         type="date"
                         id="checkOut"
                         required
                     >
+
                 </div>
 
-                <div class="form-group full-width">
 
-                    <label>Reservation Amount</label>
+                <!-- =========================================
+                     NIGHTLY RATE
+                ========================================== -->
 
-                    <div class="amount-display">
-                        <strong id="amountDisplay">KSh 0</strong>
-                        <div id="amountDetails">
-                            Select room and dates
-                        </div>
+                <div class="form-group">
+
+                    <label for="nightlyRate">
+                        Agreed Nightly Rate (KSh)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="nightlyRate"
+                        min="0"
+                        step="0.01"
+                        placeholder="Enter agreed nightly rate"
+                        required
+                    >
+
+                    <div class="rate-note">
+
+                        Default Fanana rates:
+                        Single = KSh 1,000/night;
+                        Double = KSh 1,600/night.
+                        You can change the rate for a guest.
+
                     </div>
 
                 </div>
 
-            </div>
 
-            <div class="form-actions">
+                <!-- =========================================
+                     STATUS
+                ========================================== -->
 
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    id="cancelModalBtn"
-                >
-                    Cancel
-                </button>
+                <div class="form-group">
 
-                <button
-                    type="submit"
-                    class="btn btn-primary"
-                    id="saveBtn"
-                >
-                    Save Reservation
-                </button>
+                    <label for="status">
+                        Status
+                    </label>
 
-            </div>
+                    <select
+                        id="status"
+                        required
+                    >
 
-        </form>
+                        <option value="pending">
+                            Pending
+                        </option>
 
-    </div>
+                        <option value="confirmed">
+                            Confirmed
+                        </option>
 
-</div>
+                        <option value="cancelled">
+                            Cancelled
+                        </option>
 
+                        <option value="checked_in">
+                            Checked In
+                        </option>
 
-<script>
+                        <option value="checked_out">
+                            Checked Out
+                        </option>
 
-let reservationsData = [];
-let guestsData = [];
-let roomsData = [];
-let hotelsData = [];
+                    </select>
 
-let editingReservationId = null;
+                </div>
 
 
-/* =========================================================
-   GLOBAL HELPERS
-========================================================= */
+                <!-- =========================================
+                     TOTAL AMOUNT
+                ========================================== -->
 
-function getUserRole() {
+                <div class="form-group">
 
-    return String(
-        sessionStorage.getItem("userRole") ||
-        localStorage.getItem("userRole") ||
-        ""
-    ).toLowerCase().trim();
+                    <label for="amount">
+                        Total Reservation Amount (KSh)
+                    </label>
 
-}
+                    <input
+                        type="number"
+                        id="amount"
+                        min="0"
+                        step="0.01"
+                        required
+                    >
 
+                </div>
 
-function getSelectedHotelId() {
 
-    const role = getUserRole();
+                <div class="amount-box">
 
-    if (role === "system_owner") {
+                    Nights:
+                    <span id="calculatedNights">
+                        0
+                    </span>
 
-        return document.getElementById("hotelSelector").value || null;
+                    <br>
 
-    }
+                    Nightly Rate:
+                    KSh
+                    <span id="displayNightlyRate">
+                        0.00
+                    </span>
 
-    return sessionStorage.getItem("hotelId") || null;
+                    <br>
 
-}
+                    Total:
+                    KSh
+                    <span id="calculatedAmount">
+                        0.00
+                    </span>
 
+                </div>
 
-function showMessage(text, type = "info") {
 
-    const message = document.getElementById("message");
+                <div class="availability-note">
 
-    message.textContent = text;
+                    The system will check the selected room
+                    against existing reservations before saving.
 
-    message.className = "message " + type;
+                </div>
 
-    setTimeout(() => {
 
-        message.className = "message";
+                <!-- =========================================
+                     BUTTONS
+                ========================================== -->
 
-        message.textContent = "";
-
-    }, 5000);
-
-}
-
-
-function formatMoney(amount) {
-
-    return "KSh " + Number(amount || 0).toLocaleString(
-        "en-KE",
-        {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 2
-        }
-    );
-
-}
-
-
-function formatDate(dateValue) {
-
-    if (!dateValue) return "-";
-
-    const date = new Date(dateValue);
-
-    if (Number.isNaN(date.getTime())) {
-        return dateValue;
-    }
-
-    return date.toLocaleDateString("en-KE", {
-        year: "numeric",
-        month: "short",
-        day: "numeric"
-    });
-
-}
-
-
-function calculateNights(checkIn, checkOut) {
-
-    if (!checkIn || !checkOut) {
-        return 0;
-    }
-
-    const start = new Date(checkIn + "T00:00:00");
-    const end = new Date(checkOut + "T00:00:00");
-
-    const difference = end - start;
-
-    const nights = Math.ceil(
-        difference / (1000 * 60 * 60 * 24)
-    );
-
-    return nights > 0 ? nights : 0;
-
-}
-
-
-/* =========================================================
-   HOTEL
-========================================================= */
-
-async function loadHotels() {
-
-    const role = getUserRole();
-
-    if (role !== "system_owner") {
-        return;
-    }
-
-    const result = await supabaseClient
-        .from("hotels")
-        .select("id, hotel_name, status")
-        .order("hotel_name", {
-            ascending: true
-        });
-
-    if (result.error) {
-
-        throw new Error(
-            "Failed to load hotels: " +
-            result.error.message
-        );
-
-    }
-
-    hotelsData = result.data || [];
-
-    const selector =
-        document.getElementById("hotelSelector");
-
-    selector.innerHTML =
-        '<option value="">Select Hotel</option>';
-
-    hotelsData.forEach(hotel => {
-
-        const option = document.createElement("option");
-
-        option.value = hotel.id;
-
-        option.textContent = hotel.hotel_name;
-
-        selector.appendChild(option);
-
-    });
-
-    document.getElementById(
-        "hotelSelectorContainer"
-    ).style.display = "block";
-
-}
-
-
-/* =========================================================
-   GUESTS
-========================================================= */
-
-async function loadGuests() {
-
-    const hotelId = getSelectedHotelId();
-
-    if (!hotelId) {
-
-        guestsData = [];
-
-        populateGuestDropdown();
-
-        return;
-
-    }
-
-    const result = await supabaseClient
-        .from("guests")
-        .select('id, "full name", phone, email, hotel_id')
-        .eq("hotel_id", hotelId)
-        .order('"full name"', {
-            ascending: true
-        });
-
-    if (result.error) {
-
-        throw new Error(
-            "Failed to load guests: " +
-            result.error.message
-        );
-
-    }
-
-    guestsData = result.data || [];
-
-    populateGuestDropdown();
-
-}
-
-
-function populateGuestDropdown() {
-
-    const select =
-        document.getElementById("guestId");
-
-    select.innerHTML =
-        '<option value="">Select Guest</option>';
-
-    guestsData.forEach(guest => {
-
-        const option =
-            document.createElement("option");
-
-        option.value = guest.id;
-
-        option.textContent =
-            guest["full name"] +
-            (guest.phone ? " - " + guest.phone : "");
-
-        select.appendChild(option);
-
-    });
-
-}
-
-
-/* =========================================================
-   ROOMS
-========================================================= */
-
-async function loadRooms() {
-
-    const hotelId = getSelectedHotelId();
-
-    if (!hotelId) {
-
-        roomsData = [];
-
-        populateRoomDropdown();
-
-        return;
-
-    }
-
-    const result = await supabaseClient
-        .from("rooms")
-        .select(
-            "id, room_number, room_type, status, price, hotel_id"
-        )
-        .eq("hotel_id", hotelId)
-        .order("room_number", {
-            ascending: true
-        });
-
-    if (result.error) {
-
-        throw new Error(
-            "Failed to load rooms: " +
-            result.error.message
-        );
-
-    }
-
-    roomsData = result.data || [];
-
-    populateRoomDropdown();
-
-}
-
-
-function populateRoomDropdown() {
-
-    const select =
-        document.getElementById("roomId");
-
-    select.innerHTML =
-        '<option value="">Select Room</option>';
-
-    roomsData.forEach(room => {
-
-        const option =
-            document.createElement("option");
-
-        option.value = room.id;
-
-        option.textContent =
-            "Room " +
-            room.room_number +
-            " - " +
-            (room.room_type || "Room") +
-            " - " +
-            formatMoney(room.price) +
-            "/night";
-
-        select.appendChild(option);
-
-    });
-
-}
-
-
-/* =========================================================
-   RESERVATIONS
-========================================================= */
-
-async function loadReservations() {
-
-    const hotelId = getSelectedHotelId();
-
-    if (!hotelId) {
-
-        reservationsData = [];
-
-        renderReservations();
-
-        updateSummary();
-
-        return;
-
-    }
-
-    /*
-       IMPORTANT:
-
-       Actual database columns are:
-
-       "guest id"
-       "room id"
-
-       NOT:
-
-       guest_id
-       room_id
-    */
-
-    const result = await supabaseClient
-        .from("reservations")
-        .select(
-            'id, created_at, "guest id", "room id", check_in, check_out, status, amount, hotel_id'
-        )
-        .eq("hotel_id", hotelId)
-        .order("check_in", {
-            ascending: false
-        });
-
-    if (result.error) {
-
-        throw new Error(
-            "Failed to load reservations: " +
-            result.error.message
-        );
-
-    }
-
-    reservationsData = result.data || [];
-
-    renderReservations();
-
-    updateSummary();
-
-}
-
-
-/* =========================================================
-   RESERVATION DISPLAY
-========================================================= */
-
-function getGuestById(id) {
-
-    return guestsData.find(
-        guest => String(guest.id) === String(id)
-    );
-
-}
-
-
-function getRoomById(id) {
-
-    return roomsData.find(
-        room => String(room.id) === String(id)
-    );
-
-}
-
-
-function getStatusClass(status) {
-
-    return "status-" +
-        String(status || "pending")
-            .toLowerCase()
-            .replace(/\s+/g, "_");
-
-}
-
-
-function renderReservations() {
-
-    const tbody =
-        document.getElementById(
-            "reservationsTableBody"
-        );
-
-    const search =
-        document.getElementById(
-            "searchInput"
-        ).value.toLowerCase().trim();
-
-    let filtered =
-        reservationsData.filter(reservation => {
-
-            const guest =
-                getGuestById(
-                    reservation["guest id"]
-                );
-
-            const room =
-                getRoomById(
-                    reservation["room id"]
-                );
-
-            const guestName =
-                guest?.["full name"] || "";
-
-            const phone =
-                guest?.phone || "";
-
-            const roomNumber =
-                room?.room_number || "";
-
-            const status =
-                reservation.status || "";
-
-            return (
-                String(reservation.id)
-                    .toLowerCase()
-                    .includes(search) ||
-
-                guestName
-                    .toLowerCase()
-                    .includes(search) ||
-
-                phone
-                    .toLowerCase()
-                    .includes(search) ||
-
-                String(roomNumber)
-                    .toLowerCase()
-                    .includes(search) ||
-
-                status
-                    .toLowerCase()
-                    .includes(search)
-            );
-
-        });
-
-    if (!filtered.length) {
-
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="10" class="empty-state">
-                    No reservations found.
-                </td>
-            </tr>
-        `;
-
-        return;
-
-    }
-
-    tbody.innerHTML = "";
-
-    filtered.forEach(reservation => {
-
-        const guest =
-            getGuestById(
-                reservation["guest id"]
-            );
-
-        const room =
-            getRoomById(
-                reservation["room id"]
-            );
-
-        const nights =
-            calculateNights(
-                reservation.check_in,
-                reservation.check_out
-            );
-
-        const tr =
-            document.createElement("tr");
-
-        tr.innerHTML = `
-
-            <td>#${reservation.id}</td>
-
-            <td>
-                ${escapeHtml(
-                    guest?.["full name"] || "Unknown Guest"
-                )}
-            </td>
-
-            <td>
-                ${escapeHtml(
-                    guest?.phone || "-"
-                )}
-            </td>
-
-            <td>
-                ${
-                    room
-                        ? "Room " +
-                          escapeHtml(
-                              room.room_number
-                          )
-                        : "-"
-                }
-            </td>
-
-            <td>
-                ${formatDate(
-                    reservation.check_in
-                )}
-            </td>
-
-            <td>
-                ${formatDate(
-                    reservation.check_out
-                )}
-            </td>
-
-            <td>
-                ${nights}
-            </td>
-
-            <td>
-                ${formatMoney(
-                    reservation.amount
-                )}
-            </td>
-
-            <td>
-
-                <span class="status-badge ${getStatusClass(
-                    reservation.status
-                )}">
-                    ${escapeHtml(
-                        String(
-                            reservation.status || ""
-                        ).replace("_", " ")
-                    )}
-                </span>
-
-            </td>
-
-            <td>
-
-                <div class="actions">
+                <div class="modal-actions">
 
                     <button
-                        class="btn btn-warning"
-                        onclick="editReservation(${reservation.id})"
+                        type="button"
+                        id="cancelReservationBtn"
+                        class="btn btn-secondary"
                     >
-                        Edit
+                        Cancel
                     </button>
 
+
                     <button
-                        class="btn btn-danger"
-                        onclick="deleteReservation(${reservation.id})"
+                        type="submit"
+                        id="saveReservationBtn"
+                        class="btn btn-success"
                     >
-                        Delete
+                        Save Reservation
                     </button>
 
                 </div>
 
-            </td>
-        `;
+            </form>
 
-        tbody.appendChild(tr);
+        </div>
 
-    });
+    </div>
 
-}
 
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
 
-function escapeHtml(value) {
+    <script src="./sidebar.js"></script>
 
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
 
-}
+    <!-- =====================================================
+         RESERVATIONS JAVASCRIPT
+    ====================================================== -->
 
+    <script>
 
-/* =========================================================
-   SUMMARY
-========================================================= */
+        "use strict";
 
-function updateSummary() {
 
-    const total =
-        reservationsData.length;
+        // =====================================================
+        // VARIABLES
+        // =====================================================
 
-    const confirmed =
-        reservationsData.filter(
-            r => r.status === "confirmed"
-        ).length;
+        let db = null;
 
-    const pending =
-        reservationsData.filter(
-            r => r.status === "pending"
-        ).length;
+        let currentUser = null;
 
-    const totalValue =
-        reservationsData.reduce(
-            (sum, r) =>
-                sum + Number(r.amount || 0),
-            0
-        );
+        let currentProfile = null;
 
-    document.getElementById(
-        "totalReservations"
-    ).textContent = total;
+        let currentRole = null;
 
-    document.getElementById(
-        "confirmedReservations"
-    ).textContent = confirmed;
+        let currentHotelId = null;
 
-    document.getElementById(
-        "pendingReservations"
-    ).textContent = pending;
+        let currentHotelName = "";
 
-    document.getElementById(
-        "totalValue"
-    ).textContent = formatMoney(totalValue);
+        let editingReservationId = null;
 
-}
+        let guests = [];
 
+        let rooms = [];
 
-/* =========================================================
-   AMOUNT CALCULATION
-========================================================= */
+        let reservations = [];
 
-function updateAmountDisplay() {
+        let reservationsReady = false;
 
-    const roomId =
-        document.getElementById(
-            "roomId"
-        ).value;
+        let guestColumnName = "guest   id";
 
-    const checkIn =
-        document.getElementById(
-            "checkIn"
-        ).value;
+        let roomColumnName = "room id";
 
-    const checkOut =
-        document.getElementById(
-            "checkOut"
-        ).value;
 
-    const amountDisplay =
-        document.getElementById(
-            "amountDisplay"
-        );
+        const allowedRoles = [
+            "system_owner",
+            "hotel_owner",
+            "manager",
+            "receptionist"
+        ];
 
-    const amountDetails =
-        document.getElementById(
-            "amountDetails"
-        );
 
-    if (!roomId || !checkIn || !checkOut) {
+        // =====================================================
+        // FANANA DEFAULT RATES
+        // =====================================================
 
-        amountDisplay.textContent =
-            "KSh 0";
+        const defaultRoomRates = {
 
-        amountDetails.textContent =
-            "Select room and dates";
+            single: 1000,
 
-        return 0;
-
-    }
-
-    const room =
-        getRoomById(roomId);
-
-    const nights =
-        calculateNights(
-            checkIn,
-            checkOut
-        );
-
-    if (!room || nights <= 0) {
-
-        amountDisplay.textContent =
-            "KSh 0";
-
-        amountDetails.textContent =
-            "Check-out must be after check-in";
-
-        return 0;
-
-    }
-
-    const amount =
-        Number(room.price || 0) *
-        nights;
-
-    amountDisplay.textContent =
-        formatMoney(amount);
-
-    amountDetails.textContent =
-        `${formatMoney(room.price)} × ${nights} night${
-            nights === 1 ? "" : "s"
-        }`;
-
-    return amount;
-
-}
-
-
-/* =========================================================
-   CONFLICT CHECK
-========================================================= */
-
-async function checkReservationConflict(
-    roomId,
-    checkIn,
-    checkOut,
-    excludeId = null
-) {
-
-    const hotelId =
-        getSelectedHotelId();
-
-    if (!hotelId) {
-        return false;
-    }
-
-    let query =
-        supabaseClient
-            .from("reservations")
-            .select(
-                'id, "guest id", "room id", check_in, check_out, status, hotel_id'
-            )
-            .eq("hotel_id", hotelId)
-            .eq('"room id"', roomId)
-            .neq("status", "cancelled");
-
-    if (excludeId) {
-
-        query =
-            query.neq(
-                "id",
-                excludeId
-            );
-
-    }
-
-    const result =
-        await query;
-
-    if (result.error) {
-
-        throw new Error(
-            "Failed to check room availability: " +
-            result.error.message
-        );
-
-    }
-
-    const reservations =
-        result.data || [];
-
-    const requestedStart =
-        new Date(checkIn + "T00:00:00");
-
-    const requestedEnd =
-        new Date(checkOut + "T00:00:00");
-
-    return reservations.some(reservation => {
-
-        const existingStart =
-            new Date(
-                reservation.check_in +
-                "T00:00:00"
-            );
-
-        const existingEnd =
-            new Date(
-                reservation.check_out +
-                "T00:00:00"
-            );
-
-        return (
-            requestedStart < existingEnd &&
-            requestedEnd > existingStart
-        );
-
-    });
-
-}
-
-
-/* =========================================================
-   OPEN MODAL
-========================================================= */
-
-function openAddModal() {
-
-    editingReservationId = null;
-
-    document.getElementById(
-        "modalTitle"
-    ).textContent =
-        "Add Reservation";
-
-    document.getElementById(
-        "reservationForm"
-    ).reset();
-
-    document.getElementById(
-        "reservationId"
-    ).value = "";
-
-    document.getElementById(
-        "status"
-    ).value = "pending";
-
-    document.getElementById(
-        "reservationModal"
-    ).style.display = "flex";
-
-    updateAmountDisplay();
-
-}
-
-
-function editReservation(id) {
-
-    const reservation =
-        reservationsData.find(
-            r => String(r.id) === String(id)
-        );
-
-    if (!reservation) {
-
-        showMessage(
-            "Reservation not found.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    editingReservationId =
-        reservation.id;
-
-    document.getElementById(
-        "modalTitle"
-    ).textContent =
-        "Edit Reservation";
-
-    document.getElementById(
-        "reservationId"
-    ).value =
-        reservation.id;
-
-    document.getElementById(
-        "guestId"
-    ).value =
-        reservation["guest id"];
-
-    document.getElementById(
-        "roomId"
-    ).value =
-        reservation["room id"];
-
-    document.getElementById(
-        "checkIn"
-    ).value =
-        reservation.check_in || "";
-
-    document.getElementById(
-        "checkOut"
-    ).value =
-        reservation.check_out || "";
-
-    document.getElementById(
-        "status"
-    ).value =
-        reservation.status || "pending";
-
-    document.getElementById(
-        "reservationModal"
-    ).style.display = "flex";
-
-    updateAmountDisplay();
-
-}
-
-
-function closeModal() {
-
-    document.getElementById(
-        "reservationModal"
-    ).style.display = "none";
-
-    editingReservationId = null;
-
-}
-
-
-/* =========================================================
-   SAVE
-========================================================= */
-
-async function saveReservation(event) {
-
-    event.preventDefault();
-
-    const hotelId =
-        getSelectedHotelId();
-
-    if (!hotelId) {
-
-        showMessage(
-            "Please select a hotel first.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    const guestId =
-        document.getElementById(
-            "guestId"
-        ).value;
-
-    const roomId =
-        document.getElementById(
-            "roomId"
-        ).value;
-
-    const checkIn =
-        document.getElementById(
-            "checkIn"
-        ).value;
-
-    const checkOut =
-        document.getElementById(
-            "checkOut"
-        ).value;
-
-    const status =
-        document.getElementById(
-            "status"
-        ).value;
-
-    if (
-        !guestId ||
-        !roomId ||
-        !checkIn ||
-        !checkOut ||
-        !status
-    ) {
-
-        showMessage(
-            "Please fill in all required fields.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    const nights =
-        calculateNights(
-            checkIn,
-            checkOut
-        );
-
-    if (nights <= 0) {
-
-        showMessage(
-            "Check-out date must be after check-in date.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    const room =
-        getRoomById(roomId);
-
-    if (!room) {
-
-        showMessage(
-            "Selected room could not be found.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    const amount =
-        Number(room.price || 0) *
-        nights;
-
-    try {
-
-        const conflict =
-            await checkReservationConflict(
-                roomId,
-                checkIn,
-                checkOut,
-                editingReservationId
-            );
-
-        if (conflict) {
-
-            showMessage(
-                "This room is already reserved for some or all of the selected dates.",
-                "error"
-            );
-
-            return;
-
-        }
-
-        const reservationData = {
-
-            "guest id": Number(guestId),
-
-            "room id": Number(roomId),
-
-            check_in: checkIn,
-
-            check_out: checkOut,
-
-            status: status,
-
-            amount: amount,
-
-            hotel_id: Number(hotelId)
+            double: 1600
 
         };
 
 
-        if (editingReservationId) {
+        // =====================================================
+        // ELEMENT HELPER
+        // =====================================================
 
-            const result =
-                await supabaseClient
-                    .from("reservations")
-                    .update(reservationData)
-                    .eq(
-                        "id",
-                        editingReservationId
+        function getElement(id) {
+
+            return document.getElementById(id);
+
+        }
+
+
+        // =====================================================
+        // TIMEOUT
+        // =====================================================
+
+        async function withTimeout(
+            promise,
+            milliseconds,
+            operationName
+        ) {
+
+            let timer;
+
+            const timeoutPromise =
+                new Promise(
+                    (_, reject) => {
+
+                        timer =
+                            setTimeout(
+                                () => {
+
+                                    reject(
+                                        new Error(
+                                            operationName +
+                                            " timed out. Please refresh the page and try again."
+                                        )
+                                    );
+
+                                },
+                                milliseconds
+                            );
+
+                    }
+                );
+
+
+            try {
+
+                return await Promise.race([
+                    promise,
+                    timeoutPromise
+                ]);
+
+            }
+
+            finally {
+
+                clearTimeout(timer);
+
+            }
+
+        }
+
+
+        // =====================================================
+        // MESSAGE
+        // =====================================================
+
+        function showMessage(
+            message,
+            type = "success"
+        ) {
+
+            const box =
+                getElement(
+                    "message"
+                );
+
+
+            if (!box) {
+
+                return;
+
+            }
+
+
+            box.textContent =
+                String(
+                    message || ""
+                );
+
+
+            box.className =
+                "message " +
+                type;
+
+
+            box.style.display =
+                "block";
+
+
+            setTimeout(
+                () => {
+
+                    box.style.display =
+                        "none";
+
+                },
+                6000
+            );
+
+        }
+
+
+        // =====================================================
+        // PERMISSIONS
+        // =====================================================
+
+        function canManageReservations() {
+
+            return allowedRoles.includes(
+                String(
+                    currentRole || ""
+                )
+                    .trim()
+                    .toLowerCase()
+            );
+
+        }
+
+
+        // =====================================================
+        // NUMBER
+        // =====================================================
+
+        function toNumber(value) {
+
+            const number =
+                Number(value);
+
+
+            return Number.isFinite(number)
+                ? number
+                : 0;
+
+        }
+
+
+        // =====================================================
+        // HTML ESCAPE
+        // =====================================================
+
+        function escapeHtml(value) {
+
+            return String(
+                value ?? ""
+            )
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+
+        // =====================================================
+        // FIND COLUMN
+        // =====================================================
+
+        function findColumn(
+            row,
+            possibleNames
+        ) {
+
+            if (!row) {
+
+                return possibleNames[0];
+
+            }
+
+
+            const keys =
+                Object.keys(row);
+
+
+            for (
+                const name
+                of possibleNames
+            ) {
+
+                if (
+                    keys.includes(name)
+                ) {
+
+                    return name;
+
+                }
+
+            }
+
+
+            const normalizedKeys =
+                keys.map(
+                    key => ({
+
+                        original: key,
+
+                        normalized:
+                            key
+                                .replace(
+                                    /\s+/g,
+                                    ""
+                                )
+                                .replace(
+                                    /_/g,
+                                    ""
+                                )
+                                .toLowerCase()
+
+                    })
+                );
+
+
+            for (
+                const name
+                of possibleNames
+            ) {
+
+                const normalizedName =
+                    name
+                        .replace(
+                            /\s+/g,
+                            ""
+                        )
+                        .replace(
+                            /_/g,
+                            ""
+                        )
+                        .toLowerCase();
+
+
+                const found =
+                    normalizedKeys.find(
+                        item =>
+                            item.normalized ===
+                            normalizedName
+                    );
+
+
+                if (found) {
+
+                    return found.original;
+
+                }
+
+            }
+
+
+            return possibleNames[0];
+
+        }
+
+
+        // =====================================================
+        // GET RESERVATION GUEST ID
+        // =====================================================
+
+        function getReservationGuestId(
+            reservation
+        ) {
+
+            return reservation[
+                guestColumnName
+            ];
+
+        }
+
+
+        // =====================================================
+        // GET RESERVATION ROOM ID
+        // =====================================================
+
+        function getReservationRoomId(
+            reservation
+        ) {
+
+            return reservation[
+                roomColumnName
+            ];
+
+        }
+
+
+        // =====================================================
+        // GET GUEST
+        // =====================================================
+
+        function getGuestById(
+            guestId
+        ) {
+
+            return guests.find(
+                guest =>
+                    String(
+                        guest.id
+                    ) ===
+                    String(
+                        guestId
                     )
-                    .eq(
-                        "hotel_id",
-                        hotelId
-                    );
+            ) || null;
 
-            if (result.error) {
+        }
 
-                throw new Error(
-                    "Failed to update reservation: " +
-                    result.error.message
+
+        // =====================================================
+        // GET ROOM
+        // =====================================================
+
+        function getRoomById(
+            roomId
+        ) {
+
+            return rooms.find(
+                room =>
+                    String(
+                        room.id
+                    ) ===
+                    String(
+                        roomId
+                    )
+            ) || null;
+
+        }
+
+
+        // =====================================================
+        // DISPLAY GUEST ID/PASSPORT
+        // =====================================================
+
+        function updateGuestIdentityField() {
+
+            const guestSelect =
+                getElement(
+                    "guestId"
+                );
+
+
+            const identityField =
+                getElement(
+                    "guestIdPassport"
+                );
+
+
+            if (
+                !guestSelect ||
+                !identityField
+            ) {
+
+                return;
+
+            }
+
+
+            const selectedGuest =
+                getGuestById(
+                    guestSelect.value
+                );
+
+
+            if (!selectedGuest) {
+
+                identityField.value =
+                    "";
+
+                identityField.placeholder =
+                    "Select a guest";
+
+                return;
+
+            }
+
+
+            identityField.value =
+                selectedGuest.id_passport_number ||
+                "Not provided";
+
+        }
+
+
+        // =====================================================
+        // GET DEFAULT RATE
+        // =====================================================
+
+        function getDefaultRateForRoom(
+            room
+        ) {
+
+            if (!room) {
+
+                return 0;
+
+            }
+
+
+            const roomPrice =
+                Number(
+                    room.price
+                );
+
+
+            if (
+                Number.isFinite(
+                    roomPrice
+                ) &&
+                roomPrice > 0
+            ) {
+
+                return roomPrice;
+
+            }
+
+
+            const roomType =
+                String(
+                    room.room_type || ""
+                )
+                    .trim()
+                    .toLowerCase();
+
+
+            if (
+                roomType.includes(
+                    "single"
+                )
+            ) {
+
+                return defaultRoomRates.single;
+
+            }
+
+
+            if (
+                roomType.includes(
+                    "double"
+                )
+            ) {
+
+                return defaultRoomRates.double;
+
+            }
+
+
+            return 0;
+
+        }
+
+
+        // =====================================================
+        // ROOM DISPLAY NAME
+        // =====================================================
+
+        function getRoomDisplayName(
+            room
+        ) {
+
+            if (!room) {
+
+                return "Unknown Room";
+
+            }
+
+
+            const identifier =
+                String(
+                    room.room_number || ""
+                ).trim();
+
+
+            const roomType =
+                String(
+                    room.room_type || ""
+                ).trim();
+
+
+            if (
+                identifier &&
+                roomType
+            ) {
+
+                return (
+                    identifier +
+                    " - " +
+                    roomType
                 );
 
             }
 
-            showMessage(
-                "Reservation updated successfully.",
-                "success"
-            );
 
-        } else {
+            if (identifier) {
 
-            const result =
-                await supabaseClient
-                    .from("reservations")
-                    .insert(
-                        reservationData
-                    );
+                return identifier;
 
-            if (result.error) {
+            }
 
-                throw new Error(
-                    "Failed to create reservation: " +
-                    result.error.message
+
+            if (roomType) {
+
+                return (
+                    roomType +
+                    " Room"
                 );
 
             }
 
-            showMessage(
-                "Reservation created successfully.",
-                "success"
-            );
+
+            return "Room";
 
         }
 
-        closeModal();
 
-        await loadReservations();
+        // =====================================================
+        // INITIALIZE
+        // =====================================================
 
-    } catch (error) {
+        async function initializeReservationPage() {
 
-        console.error(error);
-
-        showMessage(
-            error.message ||
-            "Failed to save reservation.",
-            "error"
-        );
-
-    }
-
-}
+            reservationsReady =
+                false;
 
 
-/* =========================================================
-   DELETE
-========================================================= */
-
-async function deleteReservation(id) {
-
-    const reservation =
-        reservationsData.find(
-            r => String(r.id) === String(id)
-        );
-
-    if (!reservation) {
-
-        showMessage(
-            "Reservation not found.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    const guest =
-        getGuestById(
-            reservation["guest id"]
-        );
-
-    const guestName =
-        guest?.["full name"] ||
-        "this guest";
-
-    const confirmed =
-        confirm(
-            `Delete the reservation for ${guestName}?`
-        );
-
-    if (!confirmed) {
-        return;
-    }
-
-    try {
-
-        const hotelId =
-            getSelectedHotelId();
-
-        const result =
-            await supabaseClient
-                .from("reservations")
-                .delete()
-                .eq("id", id)
-                .eq("hotel_id", hotelId);
-
-        if (result.error) {
-
-            throw new Error(
-                "Failed to delete reservation: " +
-                result.error.message
-            );
-
-        }
-
-        showMessage(
-            "Reservation deleted successfully.",
-            "success"
-        );
-
-        await loadReservations();
-
-    } catch (error) {
-
-        console.error(error);
-
-        showMessage(
-            error.message ||
-            "Failed to delete reservation.",
-            "error"
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   INITIALIZATION
-========================================================= */
-
-async function initializePage() {
-
-    try {
-
-        if (!window.supabaseClient) {
-
-            throw new Error(
-                "Supabase client is not available. Check supabase.js."
-            );
-
-        }
-
-        const role =
-            getUserRole();
-
-        if (!role) {
-
-            window.location.href =
-                "./login.html";
-
-            return;
-
-        }
-
-        await loadHotels();
-
-        const hotelId =
-            getSelectedHotelId();
-
-        if (!hotelId) {
-
-            if (role === "system_owner") {
-
-                showMessage(
-                    "Please select a hotel to load reservations.",
-                    "info"
+            const refreshButton =
+                getElement(
+                    "refreshBtn"
                 );
 
-            } else {
+
+            const addButton =
+                getElement(
+                    "addReservationBtn"
+                );
+
+
+            if (refreshButton) {
+
+                refreshButton.disabled =
+                    true;
+
+            }
+
+
+            if (addButton) {
+
+                addButton.disabled =
+                    true;
+
+            }
+
+
+            try {
+
+                // -------------------------------------------------
+                // CENTRAL SUPABASE CONNECTION
+                // -------------------------------------------------
+
+                if (
+                    typeof window.waitForEDUTechSupabase ===
+                    "function"
+                ) {
+
+                    db =
+                        await window.waitForEDUTechSupabase();
+
+                }
+
+                else if (
+                    typeof window.getEDUTechSupabase ===
+                    "function"
+                ) {
+
+                    db =
+                        window.getEDUTechSupabase();
+
+                }
+
+                else {
+
+                    db =
+                        window.supabaseClient;
+
+                }
+
+
+                if (!db) {
+
+                    throw new Error(
+                        "Supabase is not initialized. Check supabase.js."
+                    );
+
+                }
+
+
+                setTableMessage(
+                    "Loading user account..."
+                );
+
+
+                const {
+                    data: authData,
+                    error: authError
+                } =
+                    await withTimeout(
+                        db.auth.getUser(),
+                        10000,
+                        "Loading authenticated user"
+                    );
+
+
+                if (authError) {
+
+                    throw new Error(
+                        "Authentication error: " +
+                        authError.message
+                    );
+
+                }
+
+
+                if (!authData?.user) {
+
+                    window.location.href =
+                        "login.html";
+
+                    return;
+
+                }
+
+
+                currentUser =
+                    authData.user;
+
+
+                // -------------------------------------------------
+                // PROFILE
+                // -------------------------------------------------
+
+                setTableMessage(
+                    "Loading user profile..."
+                );
+
+
+                const {
+                    data: profile,
+                    error: profileError
+                } =
+                    await withTimeout(
+                        db
+                            .from("profiles")
+                            .select(
+                                "id, full_name, role, hotel_id, is_active"
+                            )
+                            .eq(
+                                "id",
+                                currentUser.id
+                            )
+                            .maybeSingle(),
+                        10000,
+                        "Loading user profile"
+                    );
+
+
+                if (profileError) {
+
+                    throw new Error(
+                        "Could not load user profile: " +
+                        profileError.message
+                    );
+
+                }
+
+
+                if (!profile) {
+
+                    throw new Error(
+                        "User profile was not found."
+                    );
+
+                }
+
+
+                if (
+                    profile.is_active === false
+                ) {
+
+                    throw new Error(
+                        "Your user account is inactive."
+                    );
+
+                }
+
+
+                currentProfile =
+                    profile;
+
+
+                currentRole =
+                    String(
+                        profile.role || ""
+                    )
+                        .trim()
+                        .toLowerCase();
+
+
+                if (
+                    !allowedRoles.includes(
+                        currentRole
+                    )
+                ) {
+
+                    throw new Error(
+                        "Your account does not have permission to access Reservations."
+                    );
+
+                }
+
+
+                sessionStorage.setItem(
+                    "userRole",
+                    currentRole
+                );
+
+
+                sessionStorage.setItem(
+                    "userName",
+                    profile.full_name ||
+                    "User"
+                );
+
+
+                sessionStorage.setItem(
+                    "userId",
+                    currentUser.id
+                );
+
+
+                // -------------------------------------------------
+                // HOTEL
+                // -------------------------------------------------
+
+                setTableMessage(
+                    "Loading hotel information..."
+                );
+
+
+                if (
+                    currentRole ===
+                    "system_owner"
+                ) {
+
+                    currentHotelId =
+                        sessionStorage.getItem(
+                            "activeHotelId"
+                        ) ||
+                        sessionStorage.getItem(
+                            "hotelId"
+                        );
+
+
+                    if (!currentHotelId) {
+
+                        throw new Error(
+                            "Please select a hotel before managing reservations. Open Hotels and select the hotel first."
+                        );
+
+                    }
+
+
+                    const {
+                        data: selectedHotel,
+                        error: selectedHotelError
+                    } =
+                        await withTimeout(
+                            db
+                                .from("hotels")
+                                .select(
+                                    "id, hotel_name, location, status"
+                                )
+                                .eq(
+                                    "id",
+                                    Number(
+                                        currentHotelId
+                                    )
+                                )
+                                .maybeSingle(),
+                            10000,
+                            "Loading selected hotel"
+                        );
+
+
+                    if (selectedHotelError) {
+
+                        throw new Error(
+                            "Could not load selected hotel: " +
+                            selectedHotelError.message
+                        );
+
+                    }
+
+
+                    if (!selectedHotel) {
+
+                        throw new Error(
+                            "The selected hotel could not be found."
+                        );
+
+                    }
+
+
+                    currentHotelName =
+                        selectedHotel.hotel_name ||
+                        "Hotel #" +
+                        selectedHotel.id;
+
+
+                    currentHotelId =
+                        Number(
+                            selectedHotel.id
+                        );
+
+
+                    sessionStorage.setItem(
+                        "activeHotelId",
+                        String(
+                            currentHotelId
+                        )
+                    );
+
+
+                    sessionStorage.setItem(
+                        "hotelId",
+                        String(
+                            currentHotelId
+                        )
+                    );
+
+
+                    sessionStorage.setItem(
+                        "activeHotelName",
+                        currentHotelName
+                    );
+
+
+                    sessionStorage.setItem(
+                        "hotelName",
+                        currentHotelName
+                    );
+
+                }
+
+                else {
+
+                    if (!profile.hotel_id) {
+
+                        throw new Error(
+                            "This user has no hotel assigned."
+                        );
+
+                    }
+
+
+                    currentHotelId =
+                        Number(
+                            profile.hotel_id
+                        );
+
+
+                    const {
+                        data: hotel,
+                        error: hotelError
+                    } =
+                        await withTimeout(
+                            db
+                                .from("hotels")
+                                .select(
+                                    "id, hotel_name, location, status"
+                                )
+                                .eq(
+                                    "id",
+                                    currentHotelId
+                                )
+                                .maybeSingle(),
+                            10000,
+                            "Loading hotel information"
+                        );
+
+
+                    if (hotelError) {
+
+                        throw new Error(
+                            "Could not load hotel information: " +
+                            hotelError.message
+                        );
+
+                    }
+
+
+                    if (!hotel) {
+
+                        throw new Error(
+                            "The assigned hotel could not be found."
+                        );
+
+                    }
+
+
+                    currentHotelName =
+                        hotel.hotel_name ||
+                        "Hotel #" +
+                        hotel.id;
+
+
+                    sessionStorage.setItem(
+                        "hotelId",
+                        String(
+                            currentHotelId
+                        )
+                    );
+
+
+                    sessionStorage.setItem(
+                        "hotelName",
+                        currentHotelName
+                    );
+
+                }
+
+
+                if (
+                    !Number.isFinite(
+                        currentHotelId
+                    ) ||
+                    currentHotelId <= 0
+                ) {
+
+                    throw new Error(
+                        "The selected hotel ID is invalid."
+                    );
+
+                }
+
+
+                // -------------------------------------------------
+                // HOTEL CONTEXT
+                // -------------------------------------------------
+
+                const hotelContext =
+                    getElement(
+                        "hotelContext"
+                    );
+
+
+                if (hotelContext) {
+
+                    hotelContext.textContent =
+                        "Current Hotel: " +
+                        currentHotelName;
+
+                }
+
+
+                // -------------------------------------------------
+                // LOAD DATA
+                // -------------------------------------------------
+
+                setTableMessage(
+                    "Loading guests..."
+                );
+
+
+                await loadGuests();
+
+
+                setTableMessage(
+                    "Loading rooms..."
+                );
+
+
+                await loadRooms();
+
+
+                setTableMessage(
+                    "Loading reservations..."
+                );
+
+
+                await loadReservations();
+
+
+                reservationsReady =
+                    true;
+
+
+                if (refreshButton) {
+
+                    refreshButton.disabled =
+                        false;
+
+                }
+
+
+                if (
+                    addButton &&
+                    canManageReservations()
+                ) {
+
+                    addButton.disabled =
+                        false;
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Reservations initialization error:",
+                    error
+                );
+
+
+                reservationsReady =
+                    false;
+
+
+                const message =
+                    error?.message ||
+                    "Unable to load Reservations.";
+
+
+                setTableError(
+                    message
+                );
+
 
                 showMessage(
-                    "Your account is not linked to a hotel.",
+                    message,
                     "error"
                 );
 
             }
 
-            return;
+        }
+
+
+        // =====================================================
+        // TABLE MESSAGE
+        // =====================================================
+
+        function setTableMessage(
+            message
+        ) {
+
+            const tbody =
+                getElement(
+                    "reservationsTableBody"
+                );
+
+
+            if (!tbody) {
+
+                return;
+
+            }
+
+
+            tbody.innerHTML = `
+                <tr>
+                    <td
+                        colspan="9"
+                        style="
+                            text-align:center;
+                            padding:25px;
+                        "
+                    >
+                        ${escapeHtml(message)}
+                    </td>
+                </tr>
+            `;
 
         }
 
-        await loadGuests();
 
-        await loadRooms();
+        // =====================================================
+        // TABLE ERROR
+        // =====================================================
 
-        await loadReservations();
+        function setTableError(
+            message
+        ) {
 
-    } catch (error) {
-
-        console.error(
-            "Failed to initialize Reservations:",
-            error
-        );
-
-        showMessage(
-            "Failed to initialize Reservations: " +
-            error.message,
-            "error"
-        );
-
-    }
-
-}
+            const tbody =
+                getElement(
+                    "reservationsTableBody"
+                );
 
 
-/* =========================================================
-   EVENTS
-========================================================= */
+            if (!tbody) {
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+                return;
 
-        document
-            .getElementById(
-                "addReservationBtn"
-            )
-            .addEventListener(
-                "click",
-                openAddModal
+            }
+
+
+            tbody.innerHTML = `
+                <tr>
+                    <td
+                        colspan="9"
+                        style="
+                            color:#842029;
+                            background:#f8d7da;
+                            padding:18px;
+                            text-align:center;
+                            font-weight:600;
+                        "
+                    >
+                        ${escapeHtml(message)}
+                    </td>
+                </tr>
+            `;
+
+        }
+
+
+        // =====================================================
+        // LOAD GUESTS
+        // =====================================================
+
+        async function loadGuests() {
+
+            if (!currentHotelId) {
+
+                throw new Error(
+                    "No hotel selected while loading guests."
+                );
+
+            }
+
+
+            const {
+                data,
+                error
+            } =
+                await withTimeout(
+                    db
+                        .from("guests")
+                        .select(
+                            'id, "full name", phone, id_passport_number'
+                        )
+                        .eq(
+                            "hotel_id",
+                            Number(
+                                currentHotelId
+                            )
+                        )
+                        .order(
+                            "full name",
+                            {
+                                ascending: true
+                            }
+                        ),
+                    10000,
+                    "Loading guests"
+                );
+
+
+            if (error) {
+
+                throw new Error(
+                    "Could not load guests: " +
+                    error.message
+                );
+
+            }
+
+
+            guests =
+                data || [];
+
+
+            populateGuestSelect();
+
+        }
+
+
+        // =====================================================
+        // LOAD ROOMS
+        // =====================================================
+
+        async function loadRooms() {
+
+            if (!currentHotelId) {
+
+                throw new Error(
+                    "No hotel selected while loading rooms."
+                );
+
+            }
+
+
+            const {
+                data,
+                error
+            } =
+                await withTimeout(
+                    db
+                        .from("rooms")
+                        .select(
+                            "id, room_number, room_type, price, status"
+                        )
+                        .eq(
+                            "hotel_id",
+                            Number(
+                                currentHotelId
+                            )
+                        )
+                        .order(
+                            "room_type",
+                            {
+                                ascending: true
+                            }
+                        ),
+                    10000,
+                    "Loading rooms"
+                );
+
+
+            if (error) {
+
+                throw new Error(
+                    "Could not load rooms: " +
+                    error.message
+                );
+
+            }
+
+
+            rooms =
+                data || [];
+
+
+            populateRoomSelect();
+
+        }
+
+
+        // =====================================================
+        // LOAD RESERVATIONS
+        // =====================================================
+
+        async function loadReservations() {
+
+            if (!currentHotelId) {
+
+                throw new Error(
+                    "No hotel selected."
+                );
+
+            }
+
+
+            const {
+                data,
+                error
+            } =
+                await withTimeout(
+                    db
+                        .from("reservations")
+                        .select("*")
+                        .eq(
+                            "hotel_id",
+                            Number(
+                                currentHotelId
+                            )
+                        )
+                        .order(
+                            "id",
+                            {
+                                ascending: false
+                            }
+                        ),
+                    10000,
+                    "Loading reservations"
+                );
+
+
+            if (error) {
+
+                throw new Error(
+                    "Could not load reservations: " +
+                    error.message
+                );
+
+            }
+
+
+            reservations =
+                data || [];
+
+
+            if (reservations.length > 0) {
+
+                guestColumnName =
+                    findColumn(
+                        reservations[0],
+                        [
+                            "guest   id",
+                            "guest id",
+                            "guest_id",
+                            "guestId"
+                        ]
+                    );
+
+
+                roomColumnName =
+                    findColumn(
+                        reservations[0],
+                        [
+                            "room id",
+                            "room_id",
+                            "roomId"
+                        ]
+                    );
+
+            }
+
+
+            updateReservationSummary(
+                reservations
             );
 
-        document
-            .getElementById(
-                "closeModal"
-            )
-            .addEventListener(
-                "click",
-                closeModal
-            );
 
-        document
-            .getElementById(
-                "cancelModalBtn"
-            )
-            .addEventListener(
-                "click",
-                closeModal
-            );
+            if (!reservations.length) {
 
-        document
-            .getElementById(
-                "reservationForm"
-            )
-            .addEventListener(
-                "submit",
-                saveReservation
-            );
+                setTableMessage(
+                    "No reservations found."
+                );
 
-        document
-            .getElementById(
-                "searchInput"
-            )
-            .addEventListener(
-                "input",
-                renderReservations
-            );
+                return;
 
-        document
-            .getElementById(
-                "refreshBtn"
-            )
-            .addEventListener(
-                "click",
-                initializePage
-            );
+            }
 
-        document
-            .getElementById(
-                "hotelSelector"
-            )
-            .addEventListener(
-                "change",
-                async () => {
 
-                    try {
+            const tbody =
+                getElement(
+                    "reservationsTableBody"
+                );
 
-                        await loadGuests();
 
-                        await loadRooms();
+            if (!tbody) {
 
-                        await loadReservations();
+                throw new Error(
+                    "Reservations table was not found."
+                );
 
-                    } catch (error) {
+            }
 
-                        console.error(error);
 
-                        showMessage(
-                            error.message,
-                            "error"
+            tbody.innerHTML =
+                reservations.map(
+                    reservation => {
+
+                        const reservationGuestId =
+                            getReservationGuestId(
+                                reservation
+                            );
+
+
+                        const reservationRoomId =
+                            getReservationRoomId(
+                                reservation
+                            );
+
+
+                        const guest =
+                            guests.find(
+                                item =>
+                                    String(
+                                        item.id
+                                    ) ===
+                                    String(
+                                        reservationGuestId
+                                    )
+                            );
+
+
+                        const room =
+                            rooms.find(
+                                item =>
+                                    String(
+                                        item.id
+                                    ) ===
+                                    String(
+                                        reservationRoomId
+                                    )
+                            );
+
+
+                        const guestName =
+                            guest
+                                ? (
+                                    guest["full name"] ||
+                                    "Unnamed Guest"
+                                )
+                                : "Unknown Guest";
+
+
+                        const guestIdPassport =
+                            guest
+                                ? (
+                                    guest.id_passport_number ||
+                                    "Not provided"
+                                )
+                                : "Not available";
+
+
+                        const roomName =
+                            room
+                                ? getRoomDisplayName(
+                                    room
+                                )
+                                : "Unknown Room";
+
+
+                        const status =
+                            reservation.status ||
+                            "pending";
+
+
+                        const statusClass =
+                            String(
+                                status
+                            )
+                                .toLowerCase()
+                                .replace(
+                                    /\s+/g,
+                                    "_"
+                                );
+
+
+                        const id =
+                            Number(
+                                reservation.id
+                            );
+
+
+                        return `
+                            <tr>
+
+                                <td>
+                                    ${escapeHtml(
+                                        reservation.id
+                                    )}
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(
+                                        guestName
+                                    )}
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(
+                                        guestIdPassport
+                                    )}
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(
+                                        roomName
+                                    )}
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(
+                                        reservation.check_in ||
+                                        ""
+                                    )}
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(
+                                        reservation.check_out ||
+                                        ""
+                                    )}
+                                </td>
+
+                                <td>
+                                    KSh
+                                    ${toNumber(
+                                        reservation.amount
+                                    ).toLocaleString(
+                                        "en-KE",
+                                        {
+                                            minimumFractionDigits:
+                                                2
+                                        }
+                                    )}
+                                </td>
+
+                                <td>
+
+                                    <span
+                                        class="status status-${escapeHtml(
+                                            statusClass
+                                        )}"
+                                    >
+                                        ${escapeHtml(
+                                            status
+                                        )}
+                                    </span>
+
+                                </td>
+
+                                <td>
+
+                                    <div class="action-buttons">
+
+                                        ${
+                                            canManageReservations()
+                                                ? `
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-warning"
+                                                        onclick="editReservation(${id})"
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                `
+                                                : ""
+                                        }
+
+                                        ${
+                                            currentRole ===
+                                            "system_owner"
+                                                ? `
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-danger"
+                                                        onclick="deleteReservation(${id})"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                `
+                                                : ""
+                                        }
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        `;
+
+                    }
+                ).join("");
+
+        }
+
+
+        // =====================================================
+        // GUEST SELECT
+        // =====================================================
+
+        function populateGuestSelect(
+            selectedId = null
+        ) {
+
+            const select =
+                getElement(
+                    "guestId"
+                );
+
+
+            if (!select) {
+
+                return;
+
+            }
+
+
+            select.innerHTML = `
+                <option value="">
+                    Select Guest
+                </option>
+            `;
+
+
+            guests.forEach(
+                guest => {
+
+                    const option =
+                        document.createElement(
+                            "option"
                         );
+
+
+                    option.value =
+                        guest.id;
+
+
+                    option.textContent =
+                        (
+                            guest["full name"] ||
+                            "Unnamed Guest"
+                        ) +
+                        (
+                            guest.phone
+                                ? " - " +
+                                  guest.phone
+                                : ""
+                        );
+
+
+                    if (
+                        selectedId !== null &&
+                        String(
+                            selectedId
+                        ) ===
+                        String(
+                            guest.id
+                        )
+                    ) {
+
+                        option.selected =
+                            true;
 
                     }
 
+
+                    select.appendChild(
+                        option
+                    );
+
                 }
             );
 
-        document
-            .getElementById(
-                "roomId"
-            )
-            .addEventListener(
-                "change",
-                updateAmountDisplay
+
+            updateGuestIdentityField();
+
+        }
+
+
+        // =====================================================
+        // ROOM SELECT
+        // =====================================================
+
+        function populateRoomSelect(
+            selectedId = null
+        ) {
+
+            const select =
+                getElement(
+                    "roomId"
+                );
+
+
+            if (!select) {
+
+                return;
+
+            }
+
+
+            select.innerHTML = `
+                <option value="">
+                    Select Room
+                </option>
+            `;
+
+
+            rooms.forEach(
+                room => {
+
+                    const status =
+                        String(
+                            room.status ||
+                            "Available"
+                        )
+                            .trim()
+                            .toLowerCase();
+
+
+                    // -----------------------------------------
+                    // Do not offer maintenance rooms.
+                    // -----------------------------------------
+
+                    if (
+                        status ===
+                        "maintenance"
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    // -----------------------------------------
+                    // Occupied rooms are only allowed when
+                    // editing the reservation that already uses
+                    // that room.
+                    // -----------------------------------------
+
+                    if (
+                        status ===
+                        "occupied" &&
+                        String(
+                            selectedId
+                        ) !==
+                        String(
+                            room.id
+                        )
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        room.id;
+
+
+                    const displayName =
+                        getRoomDisplayName(
+                            room
+                        );
+
+
+                    const defaultRate =
+                        getDefaultRateForRoom(
+                            room
+                        );
+
+
+                    let rateText;
+
+
+                    if (
+                        defaultRate > 0
+                    ) {
+
+                        rateText =
+                            "KSh " +
+                            defaultRate.toLocaleString(
+                                "en-KE"
+                            ) +
+                            "/night";
+
+                    }
+
+                    else {
+
+                        rateText =
+                            "Rate negotiable";
+
+                    }
+
+
+                    option.textContent =
+                        displayName +
+                        " - " +
+                        rateText;
+
+
+                    if (
+                        selectedId !== null &&
+                        String(
+                            selectedId
+                        ) ===
+                        String(
+                            room.id
+                        )
+                    ) {
+
+                        option.selected =
+                            true;
+
+                    }
+
+
+                    select.appendChild(
+                        option
+                    );
+
+                }
             );
 
-        document
-            .getElementById(
-                "checkIn"
-            )
-            .addEventListener(
-                "change",
-                updateAmountDisplay
+        }
+
+
+        // =====================================================
+        // SUMMARY
+        // =====================================================
+
+        function updateReservationSummary(
+            reservationList
+        ) {
+
+            const total =
+                getElement(
+                    "totalReservations"
+                );
+
+
+            const pending =
+                getElement(
+                    "pendingReservations"
+                );
+
+
+            const confirmed =
+                getElement(
+                    "confirmedReservations"
+                );
+
+
+            const checkedIn =
+                getElement(
+                    "checkedInReservations"
+                );
+
+
+            if (total) {
+
+                total.textContent =
+                    reservationList.length;
+
+            }
+
+
+            if (pending) {
+
+                pending.textContent =
+                    reservationList.filter(
+                        item =>
+                            String(
+                                item.status || ""
+                            )
+                                .toLowerCase() ===
+                            "pending"
+                    ).length;
+
+            }
+
+
+            if (confirmed) {
+
+                confirmed.textContent =
+                    reservationList.filter(
+                        item =>
+                            String(
+                                item.status || ""
+                            )
+                                .toLowerCase() ===
+                            "confirmed"
+                    ).length;
+
+            }
+
+
+            if (checkedIn) {
+
+                checkedIn.textContent =
+                    reservationList.filter(
+                        item =>
+                            String(
+                                item.status || ""
+                            )
+                                .toLowerCase() ===
+                            "checked_in"
+                    ).length;
+
+            }
+
+        }
+
+
+        // =====================================================
+        // CALCULATE NIGHTS
+        // =====================================================
+
+        function calculateNights() {
+
+            const checkIn =
+                getElement(
+                    "checkIn"
+                )?.value;
+
+
+            const checkOut =
+                getElement(
+                    "checkOut"
+                )?.value;
+
+
+            if (
+                !checkIn ||
+                !checkOut
+            ) {
+
+                return 0;
+
+            }
+
+
+            const start =
+                new Date(
+                    checkIn +
+                    "T00:00:00"
+                );
+
+
+            const end =
+                new Date(
+                    checkOut +
+                    "T00:00:00"
+                );
+
+
+            const difference =
+                end - start;
+
+
+            const nights =
+                Math.ceil(
+                    difference /
+                    (
+                        1000 *
+                        60 *
+                        60 *
+                        24
+                    )
+                );
+
+
+            return nights > 0
+                ? nights
+                : 0;
+
+        }
+
+
+        // =====================================================
+        // UPDATE TOTAL
+        // =====================================================
+
+        function updateReservationAmount(
+            overwriteAmount = true
+        ) {
+
+            const roomSelect =
+                getElement(
+                    "roomId"
+                );
+
+
+            const nightlyRateInput =
+                getElement(
+                    "nightlyRate"
+                );
+
+
+            const amountInput =
+                getElement(
+                    "amount"
+                );
+
+
+            const nightsDisplay =
+                getElement(
+                    "calculatedNights"
+                );
+
+
+            const rateDisplay =
+                getElement(
+                    "displayNightlyRate"
+                );
+
+
+            const totalDisplay =
+                getElement(
+                    "calculatedAmount"
+                );
+
+
+            if (
+                !roomSelect ||
+                !nightlyRateInput ||
+                !amountInput
+            ) {
+
+                return;
+
+            }
+
+
+            const room =
+                getRoomById(
+                    roomSelect.value
+                );
+
+
+            let rate =
+                Number(
+                    nightlyRateInput.value
+                );
+
+
+            if (
+                !Number.isFinite(rate) ||
+                rate < 0
+            ) {
+
+                rate = 0;
+
+            }
+
+
+            const nights =
+                calculateNights();
+
+
+            const total =
+                nights *
+                rate;
+
+
+            if (nightsDisplay) {
+
+                nightsDisplay.textContent =
+                    nights;
+
+            }
+
+
+            if (rateDisplay) {
+
+                rateDisplay.textContent =
+                    rate.toLocaleString(
+                        "en-KE",
+                        {
+                            minimumFractionDigits:
+                                2
+                        }
+                    );
+
+            }
+
+
+            if (totalDisplay) {
+
+                totalDisplay.textContent =
+                    total.toLocaleString(
+                        "en-KE",
+                        {
+                            minimumFractionDigits:
+                                2
+                        }
+                    );
+
+            }
+
+
+            if (overwriteAmount) {
+
+                amountInput.value =
+                    total.toFixed(2);
+
+            }
+
+        }
+
+
+        // =====================================================
+        // ROOM CHANGED
+        // =====================================================
+
+        function handleRoomChange() {
+
+            const roomSelect =
+                getElement(
+                    "roomId"
+                );
+
+
+            const nightlyRateInput =
+                getElement(
+                    "nightlyRate"
+                );
+
+
+            if (
+                !roomSelect ||
+                !nightlyRateInput
+            ) {
+
+                return;
+
+            }
+
+
+            const room =
+                getRoomById(
+                    roomSelect.value
+                );
+
+
+            if (!room) {
+
+                nightlyRateInput.value =
+                    "";
+
+                updateReservationAmount();
+
+                return;
+
+            }
+
+
+            const defaultRate =
+                getDefaultRateForRoom(
+                    room
+                );
+
+
+            nightlyRateInput.value =
+                defaultRate > 0
+                    ? defaultRate
+                    : "";
+
+
+            updateReservationAmount();
+
+        }
+
+
+        // =====================================================
+        // OPEN ADD
+        // =====================================================
+
+        async function openAddReservation() {
+
+            if (!reservationsReady) {
+
+                showMessage(
+                    "Reservations are still loading. Please wait.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (!canManageReservations()) {
+
+                showMessage(
+                    "You do not have permission to create reservations.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                await loadGuests();
+
+                await loadRooms();
+
+            }
+
+            catch (error) {
+
+                showMessage(
+                    error.message,
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            editingReservationId =
+                null;
+
+
+            getElement(
+                "modalTitle"
+            ).textContent =
+                "Add Reservation";
+
+
+            getElement(
+                "reservationForm"
+            ).reset();
+
+
+            getElement(
+                "status"
+            ).value =
+                "pending";
+
+
+            getElement(
+                "guestIdPassport"
+            ).value =
+                "";
+
+
+            getElement(
+                "guestIdPassport"
+            ).placeholder =
+                "Select a guest";
+
+
+            getElement(
+                "nightlyRate"
+            ).value =
+                "";
+
+
+            getElement(
+                "amount"
+            ).value =
+                "";
+
+
+            getElement(
+                "calculatedNights"
+            ).textContent =
+                "0";
+
+
+            getElement(
+                "displayNightlyRate"
+            ).textContent =
+                "0.00";
+
+
+            getElement(
+                "calculatedAmount"
+            ).textContent =
+                "0.00";
+
+
+            getElement(
+                "reservationModal"
+            ).style.display =
+                "flex";
+
+        }
+
+
+        // =====================================================
+        // CHECK ROOM AVAILABILITY
+        // =====================================================
+
+        function reservationDatesOverlap(
+            startA,
+            endA,
+            startB,
+            endB
+        ) {
+
+            return (
+                startA < endB &&
+                endA > startB
             );
 
-        document
-            .getElementById(
-                "checkOut"
-            )
-            .addEventListener(
-                "change",
-                updateAmountDisplay
-            );
+        }
 
 
-        window.addEventListener(
-            "click",
-            event => {
+        async function checkRoomAvailability(
+            roomId,
+            checkIn,
+            checkOut,
+            excludeReservationId = null
+        ) {
+
+            const selectedRoom =
+                getRoomById(
+                    roomId
+                );
+
+
+            if (!selectedRoom) {
+
+                throw new Error(
+                    "The selected room could not be found."
+                );
+
+            }
+
+
+            const roomStatus =
+                String(
+                    selectedRoom.status ||
+                    "available"
+                )
+                    .trim()
+                    .toLowerCase();
+
+
+            if (
+                roomStatus ===
+                "maintenance"
+            ) {
+
+                throw new Error(
+                    "This room is currently under maintenance."
+                );
+
+            }
+
+
+            if (
+                roomStatus ===
+                "occupied" &&
+                !excludeReservationId
+            ) {
+
+                throw new Error(
+                    "This room is currently occupied."
+                );
+
+            }
+
+
+            const relevantReservations =
+                reservations.filter(
+                    reservation => {
+
+                        if (
+                            String(
+                                getReservationRoomId(
+                                    reservation
+                                )
+                            ) !==
+                            String(
+                                roomId
+                            )
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        if (
+                            excludeReservationId &&
+                            String(
+                                reservation.id
+                            ) ===
+                            String(
+                                excludeReservationId
+                            )
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        const status =
+                            String(
+                                reservation.status ||
+                                ""
+                            )
+                                .trim()
+                                .toLowerCase();
+
+
+                        if (
+                            status ===
+                            "cancelled"
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        if (
+                            status ===
+                            "checked_out"
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        if (
+                            !reservation.check_in ||
+                            !reservation.check_out
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        return true;
+
+                    }
+                );
+
+
+            const requestedStart =
+                new Date(
+                    checkIn +
+                    "T00:00:00"
+                );
+
+
+            const requestedEnd =
+                new Date(
+                    checkOut +
+                    "T00:00:00"
+                );
+
+
+            const conflict =
+                relevantReservations.find(
+                    reservation => {
+
+                        const existingStart =
+                            new Date(
+                                reservation.check_in +
+                                "T00:00:00"
+                            );
+
+
+                        const existingEnd =
+                            new Date(
+                                reservation.check_out +
+                                "T00:00:00"
+                            );
+
+
+                        return reservationDatesOverlap(
+                            requestedStart,
+                            requestedEnd,
+                            existingStart,
+                            existingEnd
+                        );
+
+                    }
+                );
+
+
+            if (conflict) {
+
+                throw new Error(
+                    "This room is already reserved for some or all of the selected dates."
+                );
+
+            }
+
+
+            return true;
+
+        }
+
+
+        // =====================================================
+        // EDIT RESERVATION
+        // =====================================================
+
+        async function editReservation(
+            id
+        ) {
+
+            if (!canManageReservations()) {
+
+                showMessage(
+                    "You do not have permission to edit reservations.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                const {
+                    data: reservation,
+                    error
+                } =
+                    await withTimeout(
+                        db
+                            .from("reservations")
+                            .select("*")
+                            .eq(
+                                "id",
+                                id
+                            )
+                            .eq(
+                                "hotel_id",
+                                Number(
+                                    currentHotelId
+                                )
+                            )
+                            .maybeSingle(),
+                        10000,
+                        "Loading reservation"
+                    );
+
+
+                if (error) {
+
+                    throw new Error(
+                        error.message
+                    );
+
+                }
+
+
+                if (!reservation) {
+
+                    throw new Error(
+                        "Reservation was not found."
+                    );
+
+                }
+
+
+                guestColumnName =
+                    findColumn(
+                        reservation,
+                        [
+                            "guest   id",
+                            "guest id",
+                            "guest_id",
+                            "guestId"
+                        ]
+                    );
+
+
+                roomColumnName =
+                    findColumn(
+                        reservation,
+                        [
+                            "room id",
+                            "room_id",
+                            "roomId"
+                        ]
+                    );
+
+
+                editingReservationId =
+                    reservation.id;
+
+
+                populateGuestSelect(
+                    reservation[
+                        guestColumnName
+                    ]
+                );
+
+
+                populateRoomSelect(
+                    reservation[
+                        roomColumnName
+                    ]
+                );
+
+
+                updateGuestIdentityField();
+
+
+                getElement(
+                    "modalTitle"
+                ).textContent =
+                    "Edit Reservation";
+
+
+                getElement(
+                    "checkIn"
+                ).value =
+                    reservation.check_in ||
+                    "";
+
+
+                getElement(
+                    "checkOut"
+                ).value =
+                    reservation.check_out ||
+                    "";
+
+
+                getElement(
+                    "status"
+                ).value =
+                    reservation.status ||
+                    "pending";
+
+
+                const room =
+                    getRoomById(
+                        reservation[
+                            roomColumnName
+                        ]
+                    );
+
+
+                const totalAmount =
+                    toNumber(
+                        reservation.amount
+                    );
+
+
+                const nights =
+                    calculateNights();
+
+
+                let nightlyRate =
+                    0;
+
+
+                if (
+                    nights > 0
+                ) {
+
+                    nightlyRate =
+                        totalAmount /
+                        nights;
+
+                }
+
+
+                if (
+                    !nightlyRate &&
+                    room
+                ) {
+
+                    nightlyRate =
+                        getDefaultRateForRoom(
+                            room
+                        );
+
+                }
+
+
+                getElement(
+                    "nightlyRate"
+                ).value =
+                    nightlyRate > 0
+                        ? nightlyRate.toFixed(2)
+                        : "";
+
+
+                getElement(
+                    "amount"
+                ).value =
+                    reservation.amount ??
+                    "";
+
+
+                updateReservationAmount(
+                    false
+                );
+
+
+                getElement(
+                    "reservationModal"
+                ).style.display =
+                    "flex";
+
+            }
+
+            catch (error) {
+
+                showMessage(
+                    "Could not open reservation: " +
+                    error.message,
+                    "error"
+                );
+
+            }
+
+        }
+
+
+        // =====================================================
+        // SAVE RESERVATION
+        // =====================================================
+
+        async function saveReservation(
+            event
+        ) {
+
+            event.preventDefault();
+
+
+            if (!canManageReservations()) {
+
+                showMessage(
+                    "You do not have permission to save reservations.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (!currentHotelId) {
+
+                showMessage(
+                    "No hotel is selected.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            const guestId =
+                getElement(
+                    "guestId"
+                ).value;
+
+
+            const roomId =
+                getElement(
+                    "roomId"
+                ).value;
+
+
+            const checkIn =
+                getElement(
+                    "checkIn"
+                ).value;
+
+
+            const checkOut =
+                getElement(
+                    "checkOut"
+                ).value;
+
+
+            const status =
+                getElement(
+                    "status"
+                ).value;
+
+
+            const nightlyRate =
+                Number(
+                    getElement(
+                        "nightlyRate"
+                    ).value
+                );
+
+
+            let amount =
+                Number(
+                    getElement(
+                        "amount"
+                    ).value
+                );
+
+
+            if (
+                !guestId ||
+                !roomId ||
+                !checkIn ||
+                !checkOut
+            ) {
+
+                showMessage(
+                    "Please complete the guest, room and dates.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            const checkInDate =
+                new Date(
+                    checkIn +
+                    "T00:00:00"
+                );
+
+
+            const checkOutDate =
+                new Date(
+                    checkOut +
+                    "T00:00:00"
+                );
+
+
+            if (
+                checkOutDate <=
+                checkInDate
+            ) {
+
+                showMessage(
+                    "Check-out date must be after check-in date.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !Number.isFinite(
+                    nightlyRate
+                ) ||
+                nightlyRate < 0
+            ) {
+
+                showMessage(
+                    "Please enter a valid agreed nightly rate.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            const nights =
+                calculateNights();
+
+
+            if (
+                nights <= 0
+            ) {
+
+                showMessage(
+                    "The reservation must be at least one night.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            amount =
+                nights *
+                nightlyRate;
+
+
+            if (
+                !Number.isFinite(
+                    amount
+                ) ||
+                amount < 0
+            ) {
+
+                showMessage(
+                    "The calculated reservation amount is invalid.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            const button =
+                getElement(
+                    "saveReservationBtn"
+                );
+
+
+            if (button) {
+
+                button.disabled =
+                    true;
+
+                button.textContent =
+                    "Checking...";
+
+            }
+
+
+            try {
+
+                // ---------------------------------------------
+                // Refresh reservations before checking conflict
+                // ---------------------------------------------
+
+                await loadReservations();
+
+
+                // ---------------------------------------------
+                // Check room availability
+                // ---------------------------------------------
+
+                await checkRoomAvailability(
+                    roomId,
+                    checkIn,
+                    checkOut,
+                    editingReservationId
+                );
+
+
+                if (button) {
+
+                    button.textContent =
+                        "Saving...";
+
+                }
+
+
+                // ---------------------------------------------
+                // Determine database columns
+                // ---------------------------------------------
+
+                if (
+                    reservations.length > 0
+                ) {
+
+                    guestColumnName =
+                        findColumn(
+                            reservations[0],
+                            [
+                                "guest   id",
+                                "guest id",
+                                "guest_id",
+                                "guestId"
+                            ]
+                        );
+
+
+                    roomColumnName =
+                        findColumn(
+                            reservations[0],
+                            [
+                                "room id",
+                                "room_id",
+                                "roomId"
+                            ]
+                        );
+
+                }
+
+
+                const reservationRecord =
+                    {};
+
+
+                reservationRecord[
+                    guestColumnName
+                ] =
+                    Number(
+                        guestId
+                    );
+
+
+                reservationRecord[
+                    roomColumnName
+                ] =
+                    Number(
+                        roomId
+                    );
+
+
+                reservationRecord.check_in =
+                    checkIn;
+
+
+                reservationRecord.check_out =
+                    checkOut;
+
+
+                reservationRecord.status =
+                    status;
+
+
+                reservationRecord.amount =
+                    Number(
+                        amount.toFixed(
+                            2
+                        )
+                    );
+
+
+                let result;
+
+
+                if (
+                    editingReservationId
+                ) {
+
+                    result =
+                        await withTimeout(
+                            db
+                                .from("reservations")
+                                .update(
+                                    reservationRecord
+                                )
+                                .eq(
+                                    "id",
+                                    editingReservationId
+                                )
+                                .eq(
+                                    "hotel_id",
+                                    Number(
+                                        currentHotelId
+                                    )
+                                ),
+                            10000,
+                            "Updating reservation"
+                        );
+
+                }
+
+                else {
+
+                    result =
+                        await withTimeout(
+                            db
+                                .from("reservations")
+                                .insert({
+
+                                    ...reservationRecord,
+
+                                    hotel_id:
+                                        Number(
+                                            currentHotelId
+                                        )
+
+                                }),
+                            10000,
+                            "Saving reservation"
+                        );
+
+                }
+
+
+                if (result.error) {
+
+                    throw new Error(
+                        result.error.message
+                    );
+
+                }
+
+
+                showMessage(
+                    editingReservationId
+                        ? "Reservation updated successfully."
+                        : "Reservation created successfully.",
+                    "success"
+                );
+
+
+                closeReservationModal();
+
+
+                await loadReservations();
+
+            }
+
+            catch (error) {
+
+                showMessage(
+                    "Could not save reservation: " +
+                    error.message,
+                    "error"
+                );
+
+            }
+
+            finally {
+
+                if (button) {
+
+                    button.disabled =
+                        false;
+
+                    button.textContent =
+                        "Save Reservation";
+
+                }
+
+            }
+
+        }
+
+
+        // =====================================================
+        // DELETE
+        // =====================================================
+
+        async function deleteReservation(
+            id
+        ) {
+
+            if (
+                currentRole !==
+                "system_owner"
+            ) {
+
+                showMessage(
+                    "Only the System Owner can delete reservations.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !confirm(
+                    "Are you sure you want to delete this reservation?"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            try {
+
+                const {
+                    error
+                } =
+                    await withTimeout(
+                        db
+                            .from("reservations")
+                            .delete()
+                            .eq(
+                                "id",
+                                id
+                            )
+                            .eq(
+                                "hotel_id",
+                                Number(
+                                    currentHotelId
+                                )
+                            ),
+                        10000,
+                        "Deleting reservation"
+                    );
+
+
+                if (error) {
+
+                    throw new Error(
+                        error.message
+                    );
+
+                }
+
+
+                showMessage(
+                    "Reservation deleted successfully.",
+                    "success"
+                );
+
+
+                await loadReservations();
+
+            }
+
+            catch (error) {
+
+                showMessage(
+                    "Could not delete reservation: " +
+                    error.message,
+                    "error"
+                );
+
+            }
+
+        }
+
+
+        // =====================================================
+        // CLOSE MODAL
+        // =====================================================
+
+        function closeReservationModal() {
+
+            const modal =
+                getElement(
+                    "reservationModal"
+                );
+
+
+            if (modal) {
+
+                modal.style.display =
+                    "none";
+
+            }
+
+
+            editingReservationId =
+                null;
+
+        }
+
+
+        // =====================================================
+        // DOM READY
+        // =====================================================
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            () => {
+
+                const addButton =
+                    getElement(
+                        "addReservationBtn"
+                    );
+
+
+                const refreshButton =
+                    getElement(
+                        "refreshBtn"
+                    );
+
+
+                const cancelButton =
+                    getElement(
+                        "cancelReservationBtn"
+                    );
+
+
+                const form =
+                    getElement(
+                        "reservationForm"
+                    );
+
+
+                const guestSelect =
+                    getElement(
+                        "guestId"
+                    );
+
+
+                const roomSelect =
+                    getElement(
+                        "roomId"
+                    );
+
+
+                const checkIn =
+                    getElement(
+                        "checkIn"
+                    );
+
+
+                const checkOut =
+                    getElement(
+                        "checkOut"
+                    );
+
+
+                const nightlyRate =
+                    getElement(
+                        "nightlyRate"
+                    );
+
+
+                const amount =
+                    getElement(
+                        "amount"
+                    );
+
 
                 const modal =
-                    document.getElementById(
+                    getElement(
                         "reservationModal"
                     );
 
-                if (event.target === modal) {
-                    closeModal();
+
+                // -------------------------------------------------
+                // ADD
+                // -------------------------------------------------
+
+                if (addButton) {
+
+                    addButton.addEventListener(
+                        "click",
+                        openAddReservation
+                    );
+
                 }
+
+
+                // -------------------------------------------------
+                // REFRESH
+                // -------------------------------------------------
+
+                if (refreshButton) {
+
+                    refreshButton.addEventListener(
+                        "click",
+                        async () => {
+
+                            if (!reservationsReady) {
+
+                                showMessage(
+                                    "Reservations are still loading.",
+                                    "error"
+                                );
+
+                                return;
+
+                            }
+
+
+                            refreshButton.disabled =
+                                true;
+
+
+                            refreshButton.textContent =
+                                "Refreshing...";
+
+
+                            try {
+
+                                await loadGuests();
+
+                                await loadRooms();
+
+                                await loadReservations();
+
+                            }
+
+                            catch (error) {
+
+                                setTableError(
+                                    error.message
+                                );
+
+
+                                showMessage(
+                                    error.message,
+                                    "error"
+                                );
+
+                            }
+
+                            finally {
+
+                                refreshButton.disabled =
+                                    false;
+
+                                refreshButton.textContent =
+                                    "Refresh";
+
+                            }
+
+                        }
+                    );
+
+                }
+
+
+                // -------------------------------------------------
+                // GUEST
+                // -------------------------------------------------
+
+                if (guestSelect) {
+
+                    guestSelect.addEventListener(
+                        "change",
+                        updateGuestIdentityField
+                    );
+
+                }
+
+
+                // -------------------------------------------------
+                // ROOM
+                // -------------------------------------------------
+
+                if (roomSelect) {
+
+                    roomSelect.addEventListener(
+                        "change",
+                        handleRoomChange
+                    );
+
+                }
+
+
+                // -------------------------------------------------
+                // DATES
+                // -------------------------------------------------
+
+                if (checkIn) {
+
+                    checkIn.addEventListener(
+                        "change",
+                        () => {
+
+                            updateReservationAmount();
+
+                        }
+                    );
+
+                }
+
+
+                if (checkOut) {
+
+                    checkOut.addEventListener(
+                        "change",
+                        () => {
+
+                            updateReservationAmount();
+
+                        }
+                    );
+
+                }
+
+
+                // -------------------------------------------------
+                // NIGHTLY RATE
+                // -------------------------------------------------
+
+                if (nightlyRate) {
+
+                    nightlyRate.addEventListener(
+                        "input",
+                        () => {
+
+                            updateReservationAmount();
+
+                        }
+                    );
+
+                }
+
+
+                // -------------------------------------------------
+                // AMOUNT
+                // -------------------------------------------------
+
+                if (amount) {
+
+                    amount.addEventListener(
+                        "input",
+                        () => {
+
+                            const value =
+                                Number(
+                                    amount.value
+                                );
+
+
+                            if (
+                                Number.isFinite(
+                                    value
+                                )
+                            ) {
+
+                                const nights =
+                                    calculateNights();
+
+
+                                if (
+                                    nights > 0
+                                ) {
+
+                                    const calculatedRate =
+                                        value /
+                                        nights;
+
+
+                                    getElement(
+                                        "displayNightlyRate"
+                                    ).textContent =
+                                        calculatedRate.toLocaleString(
+                                            "en-KE",
+                                            {
+                                                minimumFractionDigits:
+                                                    2
+                                            }
+                                        );
+
+                                }
+
+                            }
+
+                        }
+                    );
+
+                }
+
+
+                // -------------------------------------------------
+                // CANCEL
+                // -------------------------------------------------
+
+                if (cancelButton) {
+
+                    cancelButton.addEventListener(
+                        "click",
+                        closeReservationModal
+                    );
+
+                }
+
+
+                // -------------------------------------------------
+                // FORM
+                // -------------------------------------------------
+
+                if (form) {
+
+                    form.addEventListener(
+                        "submit",
+                        saveReservation
+                    );
+
+                }
+
+
+                // -------------------------------------------------
+                // CLOSE MODAL BY BACKDROP
+                // -------------------------------------------------
+
+                if (modal) {
+
+                    modal.addEventListener(
+                        "click",
+                        event => {
+
+                            if (
+                                event.target ===
+                                modal
+                            ) {
+
+                                closeReservationModal();
+
+                            }
+
+                        }
+                    );
+
+                }
+
+
+                // -------------------------------------------------
+                // INITIALIZE
+                // -------------------------------------------------
+
+                initializeReservationPage();
 
             }
         );
 
 
-        initializePage();
+        // =====================================================
+        // GLOBAL ACTIONS
+        // =====================================================
 
-    }
-);
+        window.editReservation =
+            editReservation;
 
-</script>
+
+        window.deleteReservation =
+            deleteReservation;
+
+
+    </script>
 
 </body>
+
 </html>

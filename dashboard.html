@@ -1,0 +1,3892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Hotels - EDU TECH Hotel Management System</title>
+
+    <link rel="stylesheet" href="./style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase.js"></script>
+    <script src="./script.js"></script>
+
+    <style>
+        /* =====================================================
+           HOTELS PAGE
+        ===================================================== */
+
+        .hotels-page {
+            padding: 24px;
+        }
+
+        .hotels-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .hotels-header h2 {
+            margin: 0;
+        }
+
+        .hotels-header p {
+            margin: 5px 0 0;
+            color: #777;
+        }
+
+        .hotel-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .hotel-actions button {
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #1f6feb;
+            color: white;
+            font-weight: 600;
+        }
+
+        .hotel-actions button:hover {
+            opacity: 0.9;
+        }
+
+        .hotel-search {
+            width: 100%;
+            max-width: 450px;
+            padding: 11px 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        /* =====================================================
+           ACTIVE HOTEL
+        ===================================================== */
+
+        .active-hotel-banner {
+            display: block;
+            background: #e8f0fe;
+            border: 1px solid #b8cff5;
+            color: #174a8b;
+            padding: 13px 15px;
+            border-radius: 7px;
+            margin-bottom: 18px;
+        }
+
+        .active-hotel-banner strong {
+            color: #123d73;
+        }
+
+        .no-active-hotel {
+            background: #fff3cd;
+            border-color: #ffe69c;
+            color: #856404;
+        }
+
+        /* =====================================================
+           TABLE
+        ===================================================== */
+
+        .hotels-table-wrapper {
+            background: #fff;
+            border-radius: 8px;
+            overflow-x: auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .hotels-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1450px;
+        }
+
+        .hotels-table th,
+        .hotels-table td {
+            padding: 13px 15px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .hotels-table th {
+            background: #f7f7f7;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .hotels-table tr.selected-hotel {
+            background: #f0f7ff;
+        }
+
+        /* =====================================================
+           BADGES
+        ===================================================== */
+
+        .status-badge,
+        .warning-badge,
+        .subscription-badge,
+        .restriction-active {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .status-active {
+            background: #e8f7ed;
+            color: #187a3d;
+        }
+
+        .status-deactivated,
+        .status-suspended {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .subscription-active {
+            background: #e8f7ed;
+            color: #187a3d;
+        }
+
+        .subscription-expired {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .subscription-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .warning-none {
+            color: #777;
+        }
+
+        .warning-active {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .restriction-active {
+            background: #f8d7da;
+            color: #842029;
+            margin: 2px;
+        }
+
+        .restriction-none {
+            color: #777;
+        }
+
+        .selected-badge {
+            display: inline-block;
+            margin-left: 7px;
+            padding: 4px 8px;
+            border-radius: 15px;
+            background: #1f6feb;
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* =====================================================
+           ACTION BUTTONS
+        ===================================================== */
+
+        .hotel-buttons {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .hotel-buttons button {
+            border: none;
+            padding: 7px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .select-btn {
+            background: #1f6feb;
+            color: white;
+        }
+
+        .selected-btn {
+            background: #6c757d;
+            color: white;
+            cursor: default !important;
+        }
+
+        .view-btn {
+            background: #e8f0fe;
+            color: #1a5bb8;
+        }
+
+        .edit-btn {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .subscription-btn {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .issue-btn {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .activate-btn {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .deactivate-btn {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        /* =====================================================
+           MODALS
+        ===================================================== */
+
+        .hotel-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .hotel-modal-content {
+            background: #fff;
+            width: 100%;
+            max-width: 650px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 10px;
+            padding: 25px;
+            box-sizing: border-box;
+        }
+
+        .hotel-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .hotel-modal-header h3 {
+            margin: 0;
+        }
+
+        .close-hotel-modal {
+            font-size: 26px;
+            cursor: pointer;
+            color: #777;
+        }
+
+        .hotel-form-group {
+            margin-bottom: 15px;
+        }
+
+        .hotel-form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .hotel-form-group input,
+        .hotel-form-group select,
+        .hotel-form-group textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .hotel-form-group textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .hotel-form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .hotel-form-actions button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .cancel-hotel-btn {
+            background: #eee;
+        }
+
+        .save-hotel-btn {
+            background: #1f6feb;
+            color: white;
+        }
+
+        /* =====================================================
+           MESSAGES
+        ===================================================== */
+
+        .hotel-message {
+            display: none;
+            padding: 11px 14px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .hotel-message.success {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .hotel-message.error {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .hotel-message.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .empty-hotels {
+            text-align: center;
+            padding: 35px;
+            color: #777;
+        }
+
+        .hotel-details {
+            line-height: 1.8;
+        }
+
+        .hotel-details strong {
+            display: inline-block;
+            min-width: 170px;
+        }
+
+        .section-title {
+            margin-top: 22px;
+            margin-bottom: 12px;
+            padding-bottom: 7px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .expiry-note {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #777;
+        }
+
+        .security-note {
+            background: #f8f9fa;
+            border: 1px solid #e5e7eb;
+            padding: 12px 14px;
+            border-radius: 7px;
+            margin-bottom: 18px;
+            font-size: 13px;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     SIDEBAR
+===================================================== -->
+
+<div class="sidebar">
+
+    <div class="sidebar-header">
+        <h2>EDU TECH</h2>
+        <p>HOTEL SYSTEM</p>
+    </div>
+
+    <ul class="sidebar-menu">
+
+        <li><a href="./index.html">🏠 Dashboard</a></li>
+        <li><a href="./rooms.html">🛏️ Rooms</a></li>
+        <li><a href="./guests.html">👤 Guests</a></li>
+        <li><a href="./reservations.html">📅 Reservations</a></li>
+        <li><a href="./checkin.html">✅ Check-in</a></li>
+        <li><a href="./checkout.html">🚪 Check-out</a></li>
+        <li><a href="./restaurant.html">🍽️ Restaurant</a></li>
+        <li><a href="./inventory.html">📦 Inventory</a></li>
+        <li><a href="./bank_accounts.html">🏦 Bank Accounts</a></li>
+        <li><a href="./financial_transactions.html">💰 Financial Transactions</a></li>
+        <li><a href="./payments.html">💳 Payments</a></li>
+        <li><a href="./expenses.html">💸 Expenses</a></li>
+        <li><a href="./employees.html">👨‍💼 Employees</a></li>
+        <li><a href="./housekeeping.html">🧹 Housekeeping</a></li>
+        <li><a href="./maintenance.html">🔧 Maintenance</a></li>
+        <li><a href="./reports.html">📊 Reports</a></li>
+
+        <li>
+            <a href="./hotels.html" class="active">
+                🏨 Hotels
+            </a>
+        </li>
+
+        <li>
+            <a href="./users.html">
+                👥 Users
+            </a>
+        </li>
+
+        <li>
+            <a href="./settings.html">
+                ⚙️ Settings
+            </a>
+        </li>
+
+    </ul>
+
+</div>
+
+
+<!-- =====================================================
+     MAIN CONTENT
+===================================================== -->
+
+<div class="main-content">
+
+    <div class="topbar">
+
+        <div>
+            <h1>Hotels</h1>
+
+            <p>
+                Manage hotels registered in EDU TECH Hotel Management System
+            </p>
+        </div>
+
+    </div>
+
+
+    <div class="hotels-page">
+
+        <div
+            id="hotelMessage"
+            class="hotel-message">
+        </div>
+
+
+        <div
+            id="activeHotelBanner"
+            class="active-hotel-banner no-active-hotel">
+
+            Active Management Hotel:
+
+            <strong id="activeHotelNameDisplay">
+                No hotel selected
+            </strong>
+
+            &nbsp; | &nbsp;
+
+            Hotel ID:
+
+            <strong id="activeHotelIdDisplay">
+                —
+            </strong>
+
+        </div>
+
+
+        <div class="security-note">
+
+            <strong>System Owner:</strong>
+            Selecting a hotel changes only the current management
+            context. It does not change your login account,
+            System Owner role, or Supabase authentication session.
+
+        </div>
+
+
+        <div class="hotels-header">
+
+            <div>
+
+                <h2>
+                    Hotel Management
+                </h2>
+
+                <p>
+                    Manage hotels, subscriptions,
+                    warnings, restrictions and system access.
+                </p>
+
+            </div>
+
+
+            <div class="hotel-actions">
+
+                <button
+                    type="button"
+                    onclick="openAddHotelModal()">
+
+                    + Add Hotel
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <input
+            type="text"
+            id="hotelSearch"
+            class="hotel-search"
+            placeholder="Search hotel by name, location, phone or email..."
+        >
+
+
+        <div class="hotels-table-wrapper">
+
+            <table class="hotels-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+                        <th>Hotel Name</th>
+                        <th>Location</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Subscription</th>
+                        <th>Expiry</th>
+                        <th>Warning</th>
+                        <th>Restriction</th>
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="hotelsTableBody">
+
+                    <tr>
+
+                        <td
+                            colspan="11"
+                            class="empty-hotels">
+
+                            Loading hotels...
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     ADD / EDIT HOTEL MODAL
+===================================================== -->
+
+<div
+    id="hotelModal"
+    class="hotel-modal">
+
+    <div class="hotel-modal-content">
+
+        <div class="hotel-modal-header">
+
+            <h3 id="hotelModalTitle">
+                Add Hotel
+            </h3>
+
+            <span
+                class="close-hotel-modal"
+                onclick="closeHotelModal()">
+
+                &times;
+
+            </span>
+
+        </div>
+
+
+        <form id="hotelForm">
+
+            <input
+                type="hidden"
+                id="hotelId"
+            >
+
+
+            <h4 class="section-title">
+                Hotel Information
+            </h4>
+
+
+            <div class="hotel-form-group">
+
+                <label for="hotelName">
+                    Hotel Name
+                </label>
+
+                <input
+                    type="text"
+                    id="hotelName"
+                    required
+                >
+
+            </div>
+
+
+            <div class="hotel-form-group">
+
+                <label for="hotelLocation">
+                    Location
+                </label>
+
+                <input
+                    type="text"
+                    id="hotelLocation"
+                >
+
+            </div>
+
+
+            <div class="hotel-form-group">
+
+                <label for="hotelPhone">
+                    Phone
+                </label>
+
+                <input
+                    type="text"
+                    id="hotelPhone"
+                >
+
+            </div>
+
+
+            <div class="hotel-form-group">
+
+                <label for="hotelEmail">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="hotelEmail"
+                >
+
+            </div>
+
+
+            <h4 class="section-title">
+                Subscription
+            </h4>
+
+
+            <div class="hotel-form-group">
+
+                <label for="subscriptionStart">
+                    Subscription Start
+                </label>
+
+                <input
+                    type="date"
+                    id="subscriptionStart"
+                >
+
+            </div>
+
+
+            <div class="hotel-form-group">
+
+                <label for="subscriptionEnd">
+                    Subscription End
+                </label>
+
+                <input
+                    type="date"
+                    id="subscriptionEnd"
+                >
+
+                <div class="expiry-note">
+
+                    This date is used by the access-control
+                    system to determine subscription expiry.
+
+                </div>
+
+            </div>
+
+
+            <div class="hotel-form-group">
+
+                <label for="subscriptionStatus">
+                    Subscription Status
+                </label>
+
+                <select id="subscriptionStatus">
+
+                    <option value="active">
+                        Active
+                    </option>
+
+                    <option value="warning">
+                        Expiring Soon
+                    </option>
+
+                    <option value="expired">
+                        Expired
+                    </option>
+
+                    <option value="cancelled">
+                        Cancelled
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="hotel-form-actions">
+
+                <button
+                    type="button"
+                    class="cancel-hotel-btn"
+                    onclick="closeHotelModal()">
+
+                    Cancel
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="save-hotel-btn">
+
+                    Save Hotel
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     VIEW HOTEL
+===================================================== -->
+
+<div
+    id="viewHotelModal"
+    class="hotel-modal">
+
+    <div class="hotel-modal-content">
+
+        <div class="hotel-modal-header">
+
+            <h3>
+                Hotel Details
+            </h3>
+
+            <span
+                class="close-hotel-modal"
+                onclick="closeViewHotelModal()">
+
+                &times;
+
+            </span>
+
+        </div>
+
+
+        <div
+            id="hotelDetails"
+            class="hotel-details">
+        </div>
+
+
+        <div class="hotel-form-actions">
+
+            <button
+                type="button"
+                class="cancel-hotel-btn"
+                onclick="closeViewHotelModal()">
+
+                Close
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     ISSUE / RESTRICTION
+===================================================== -->
+
+<div
+    id="issueModal"
+    class="hotel-modal">
+
+    <div class="hotel-modal-content">
+
+        <div class="hotel-modal-header">
+
+            <h3>
+                Manage Hotel Warning / Issue
+            </h3>
+
+            <span
+                class="close-hotel-modal"
+                onclick="closeIssueModal()">
+
+                &times;
+
+            </span>
+
+        </div>
+
+
+        <input
+            type="hidden"
+            id="issueHotelId"
+        >
+
+
+        <div class="hotel-form-group">
+
+            <label for="warningType">
+                Warning / Issue Type
+            </label>
+
+            <select id="warningType">
+
+                <option value="">
+                    No Warning
+                </option>
+
+                <option value="payment">
+                    Payment Issue
+                </option>
+
+                <option value="account">
+                    Account Issue
+                </option>
+
+                <option value="technical">
+                    Technical Issue
+                </option>
+
+                <option value="subscription">
+                    Subscription Issue
+                </option>
+
+                <option value="other">
+                    Other
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="hotel-form-group">
+
+            <label for="warningMessage">
+                Warning Message
+            </label>
+
+            <textarea
+                id="warningMessage"
+                placeholder="Enter the issue or warning..."
+            ></textarea>
+
+        </div>
+
+
+        <div class="hotel-form-group">
+
+            <label for="moduleRestriction">
+                Module Restriction
+            </label>
+
+            <select id="moduleRestriction">
+
+                <option value="">
+                    No Module Restriction
+                </option>
+
+                <option value="payments">
+                    Payments
+                </option>
+
+                <option value="reservations">
+                    Reservations
+                </option>
+
+                <option value="checkin">
+                    Check-in
+                </option>
+
+                <option value="checkout">
+                    Check-out
+                </option>
+
+                <option value="restaurant">
+                    Restaurant
+                </option>
+
+                <option value="inventory">
+                    Inventory
+                </option>
+
+                <option value="employees">
+                    Employees
+                </option>
+
+                <option value="housekeeping">
+                    Housekeeping
+                </option>
+
+                <option value="maintenance">
+                    Maintenance
+                </option>
+
+                <option value="reports">
+                    Reports
+                </option>
+
+                <option value="rooms">
+                    Rooms
+                </option>
+
+                <option value="guests">
+                    Guests
+                </option>
+
+                <option value="expenses">
+                    Expenses
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="hotel-form-actions">
+
+            <button
+                type="button"
+                class="cancel-hotel-btn"
+                onclick="closeIssueModal()">
+
+                Cancel
+
+            </button>
+
+
+            <button
+                type="button"
+                class="save-hotel-btn"
+                onclick="saveHotelIssue()">
+
+                Save Issue
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     SUBSCRIPTION RENEWAL
+===================================================== -->
+
+<div
+    id="subscriptionModal"
+    class="hotel-modal">
+
+    <div class="hotel-modal-content">
+
+        <div class="hotel-modal-header">
+
+            <h3>
+                Renew Subscription
+            </h3>
+
+            <span
+                class="close-hotel-modal"
+                onclick="closeSubscriptionModal()">
+
+                &times;
+
+            </span>
+
+        </div>
+
+
+        <input
+            type="hidden"
+            id="subscriptionHotelId"
+        >
+
+
+        <div class="hotel-form-group">
+
+            <label for="renewStart">
+                New Subscription Start
+            </label>
+
+            <input
+                type="date"
+                id="renewStart"
+            >
+
+        </div>
+
+
+        <div class="hotel-form-group">
+
+            <label for="renewEnd">
+                New Subscription End
+            </label>
+
+            <input
+                type="date"
+                id="renewEnd"
+            >
+
+        </div>
+
+
+        <div class="hotel-form-actions">
+
+            <button
+                type="button"
+                class="cancel-hotel-btn"
+                onclick="closeSubscriptionModal()">
+
+                Cancel
+
+            </button>
+
+
+            <button
+                type="button"
+                class="save-hotel-btn"
+                onclick="renewSubscription()">
+
+                Renew Subscription
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   GLOBAL DATA
+===================================================== */
+
+let hotelsData = [];
+let editingHotelId = null;
+
+
+/* =====================================================
+   SUPABASE CLIENT
+===================================================== */
+
+const hotelDB = window.supabaseClient;
+
+
+/* =====================================================
+   PAGE START
+===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
+
+        const authenticated =
+            await checkSystemOwner();
+
+        if (!authenticated) {
+            return;
+        }
+
+        const hotelForm =
+            document.getElementById("hotelForm");
+
+        if (hotelForm) {
+
+            hotelForm.addEventListener(
+                "submit",
+                saveHotel
+            );
+
+        }
+
+        const searchInput =
+            document.getElementById("hotelSearch");
+
+        if (searchInput) {
+
+            searchInput.addEventListener(
+                "input",
+                filterHotels
+            );
+
+        }
+
+        await loadHotels();
+
+        updateActiveHotelBanner();
+
+    }
+);
+
+
+/* =====================================================
+   SYSTEM OWNER CHECK
+===================================================== */
+
+async function checkSystemOwner() {
+
+    try {
+
+        if (!hotelDB) {
+
+            showHotelMessage(
+                "Supabase is not available. Check supabase.js.",
+                "error"
+            );
+
+            return false;
+
+        }
+
+
+        const {
+            data: {
+                session
+            },
+            error: sessionError
+        } =
+            await hotelDB.auth.getSession();
+
+
+        if (
+            sessionError ||
+            !session
+        ) {
+
+            window.location.replace(
+                "./login.html"
+            );
+
+            return false;
+
+        }
+
+
+        const userId =
+            session.user.id;
+
+
+        const {
+            data: profile,
+            error
+        } =
+            await hotelDB
+                .from("profiles")
+                .select(
+                    "id, full_name, role, hotel_id, is_active"
+                )
+                .eq(
+                    "id",
+                    userId
+                )
+                .single();
+
+
+        if (
+            error ||
+            !profile
+        ) {
+
+            console.error(
+                "Profile error:",
+                error
+            );
+
+            showHotelMessage(
+                "Unable to load your user profile.",
+                "error"
+            );
+
+            return false;
+
+        }
+
+
+        sessionStorage.setItem(
+            "loggedInUserId",
+            String(userId)
+        );
+
+        sessionStorage.setItem(
+            "loggedInUserName",
+            profile.full_name || ""
+        );
+
+        sessionStorage.setItem(
+            "loggedInUserRole",
+            profile.role || ""
+        );
+
+
+        if (
+            profile.role !==
+            "system_owner"
+        ) {
+
+            alert(
+                "Only the System Owner can access the Hotels management page."
+            );
+
+            window.location.replace(
+                "./index.html"
+            );
+
+            return false;
+
+        }
+
+
+        if (
+            profile.is_active === false
+        ) {
+
+            alert(
+                "Your System Owner account is inactive."
+            );
+
+            await hotelDB.auth.signOut();
+
+            window.location.replace(
+                "./login.html"
+            );
+
+            return false;
+
+        }
+
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "System owner verification error:",
+            error
+        );
+
+        showHotelMessage(
+            "Unable to verify your account.",
+            "error"
+        );
+
+        return false;
+
+    }
+
+}
+
+
+/* =====================================================
+   ACTIVE HOTEL
+   CENTRALIZED MANAGEMENT CONTEXT
+===================================================== */
+
+function getActiveHotelId() {
+
+    if (
+        window.EDUTECH &&
+        typeof window.EDUTECH.getActiveHotelId ===
+        "function"
+    ) {
+
+        return String(
+            window.EDUTECH.getActiveHotelId() || ""
+        );
+
+    }
+
+
+    return (
+        sessionStorage.getItem(
+            "eduTechActiveHotelId"
+        ) ||
+        sessionStorage.getItem(
+            "activeHotelId"
+        ) ||
+        sessionStorage.getItem(
+            "active_hotel_id"
+        ) ||
+        sessionStorage.getItem(
+            "selectedHotelId"
+        ) ||
+        sessionStorage.getItem(
+            "hotelId"
+        ) ||
+        sessionStorage.getItem(
+            "hotel_id"
+        ) ||
+        ""
+    );
+
+}
+
+
+function getActiveHotelName() {
+
+    if (
+        window.EDUTECH &&
+        typeof window.EDUTECH.getActiveHotelName ===
+        "function"
+    ) {
+
+        return String(
+            window.EDUTECH.getActiveHotelName() || ""
+        );
+
+    }
+
+
+    return (
+        sessionStorage.getItem(
+            "eduTechActiveHotelName"
+        ) ||
+        sessionStorage.getItem(
+            "activeHotelName"
+        ) ||
+        sessionStorage.getItem(
+            "active_hotel_name"
+        ) ||
+        sessionStorage.getItem(
+            "selectedHotelName"
+        ) ||
+        sessionStorage.getItem(
+            "hotelName"
+        ) ||
+        ""
+    );
+
+}
+
+
+/* =====================================================
+   SELECT HOTEL
+   DOES NOT CHANGE LOGIN
+===================================================== */
+
+function selectHotel(id) {
+
+    const hotel =
+        hotelsData.find(
+            item =>
+                String(item.id) ===
+                String(id)
+        );
+
+
+    if (!hotel) {
+
+        showHotelMessage(
+            "Hotel could not be found.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const status =
+        String(
+            hotel.status ||
+            "active"
+        ).toLowerCase();
+
+
+    if (
+        status !==
+        "active"
+    ) {
+
+        showHotelMessage(
+            "This hotel is not active and cannot be selected.",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * IMPORTANT:
+     *
+     * This changes ONLY the management context.
+     *
+     * It does NOT:
+     * - change auth.uid()
+     * - change profiles.hotel_id
+     * - change the user's role
+     * - sign out
+     * - sign in
+     */
+
+    if (
+        window.EDUTECH &&
+        typeof window.EDUTECH.setActiveHotel ===
+        "function"
+    ) {
+
+        window.EDUTECH.setActiveHotel(
+            hotel.id,
+            hotel.hotel_name || ""
+        );
+
+    } else {
+
+        /*
+         * Compatibility fallback.
+         */
+
+        const idValue =
+            String(hotel.id);
+
+        const nameValue =
+            hotel.hotel_name || "";
+
+
+        sessionStorage.setItem(
+            "eduTechActiveHotelId",
+            idValue
+        );
+
+        sessionStorage.setItem(
+            "activeHotelId",
+            idValue
+        );
+
+        sessionStorage.setItem(
+            "selectedHotelId",
+            idValue
+        );
+
+        sessionStorage.setItem(
+            "hotelId",
+            idValue
+        );
+
+        sessionStorage.setItem(
+            "hotel_id",
+            idValue
+        );
+
+
+        sessionStorage.setItem(
+            "eduTechActiveHotelName",
+            nameValue
+        );
+
+        sessionStorage.setItem(
+            "activeHotelName",
+            nameValue
+        );
+
+        sessionStorage.setItem(
+            "selectedHotelName",
+            nameValue
+        );
+
+        sessionStorage.setItem(
+            "hotelName",
+            nameValue
+        );
+
+
+        window.dispatchEvent(
+            new CustomEvent(
+                "eduTechHotelChanged",
+                {
+                    detail: {
+                        hotelId:
+                            idValue,
+                        hotelName:
+                            nameValue
+                    }
+                }
+            )
+        );
+
+    }
+
+
+    showHotelMessage(
+        `"${hotel.hotel_name}" is now the active management hotel. Your System Owner login has NOT changed.`,
+        "success"
+    );
+
+
+    updateActiveHotelBanner();
+
+    displayHotels(
+        hotelsData
+    );
+
+}
+
+
+/* =====================================================
+   ACTIVE HOTEL BANNER
+===================================================== */
+
+function updateActiveHotelBanner() {
+
+    const banner =
+        document.getElementById(
+            "activeHotelBanner"
+        );
+
+    const nameDisplay =
+        document.getElementById(
+            "activeHotelNameDisplay"
+        );
+
+    const idDisplay =
+        document.getElementById(
+            "activeHotelIdDisplay"
+        );
+
+
+    if (
+        !banner ||
+        !nameDisplay ||
+        !idDisplay
+    ) {
+        return;
+    }
+
+
+    const activeId =
+        getActiveHotelId();
+
+    const activeName =
+        getActiveHotelName();
+
+
+    if (!activeId) {
+
+        banner.classList.add(
+            "no-active-hotel"
+        );
+
+        nameDisplay.textContent =
+            "No hotel selected";
+
+        idDisplay.textContent =
+            "—";
+
+        return;
+
+    }
+
+
+    banner.classList.remove(
+        "no-active-hotel"
+    );
+
+
+    nameDisplay.textContent =
+        activeName ||
+        "Selected Hotel";
+
+
+    idDisplay.textContent =
+        activeId;
+
+}
+
+
+/* =====================================================
+   LOAD HOTELS
+===================================================== */
+
+async function loadHotels() {
+
+    const tbody =
+        document.getElementById(
+            "hotelsTableBody"
+        );
+
+
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="11" class="empty-hotels">
+                Loading hotels...
+            </td>
+        </tr>
+    `;
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await hotelDB
+                .from("hotels")
+                .select("*")
+                .order(
+                    "id",
+                    {
+                        ascending: true
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Hotels query error:",
+                error
+            );
+
+            showHotelMessage(
+                error.message,
+                "error"
+            );
+
+
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="11" class="empty-hotels">
+                        Unable to load hotels.
+                    </td>
+                </tr>
+            `;
+
+            return;
+
+        }
+
+
+        hotelsData =
+            data || [];
+
+
+        applySubscriptionDisplayRules();
+
+        displayHotels(
+            hotelsData
+        );
+
+        updateActiveHotelBanner();
+
+
+    } catch (error) {
+
+        console.error(
+            "Load hotels error:",
+            error
+        );
+
+        showHotelMessage(
+            "Unable to load hotels.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   SUBSCRIPTION DISPLAY
+===================================================== */
+
+function applySubscriptionDisplayRules() {
+
+    const today =
+        new Date()
+            .toISOString()
+            .split("T")[0];
+
+
+    hotelsData.forEach(
+        hotel => {
+
+            if (
+                hotel.subscription_end &&
+                hotel.subscription_end < today
+            ) {
+
+                hotel.subscription_status =
+                    "expired";
+
+                return;
+
+            }
+
+
+            if (
+                hotel.subscription_end
+            ) {
+
+                const endDate =
+                    new Date(
+                        hotel.subscription_end +
+                        "T00:00:00"
+                    );
+
+                const todayDate =
+                    new Date(
+                        today +
+                        "T00:00:00"
+                    );
+
+
+                const difference =
+                    Math.ceil(
+                        (
+                            endDate -
+                            todayDate
+                        ) /
+                        (
+                            1000 *
+                            60 *
+                            60 *
+                            24
+                        )
+                    );
+
+
+                if (
+                    difference >= 0 &&
+                    difference <= 30 &&
+                    String(
+                        hotel.subscription_status ||
+                        ""
+                    ).toLowerCase() !==
+                    "cancelled"
+                ) {
+
+                    hotel.subscription_status =
+                        "warning";
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   DISPLAY HOTELS
+===================================================== */
+
+function displayHotels(
+    hotels
+) {
+
+    const tbody =
+        document.getElementById(
+            "hotelsTableBody"
+        );
+
+
+    if (!tbody) return;
+
+
+    const activeId =
+        String(
+            getActiveHotelId() ||
+            ""
+        );
+
+
+    if (
+        !hotels ||
+        hotels.length === 0
+    ) {
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="11" class="empty-hotels">
+                    No hotels have been registered yet.
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+
+    tbody.innerHTML =
+        hotels.map(
+            (
+                hotel,
+                index
+            ) => {
+
+                const hotelId =
+                    String(
+                        hotel.id
+                    );
+
+
+                const isSelected =
+                    hotelId ===
+                    activeId;
+
+
+                const status =
+                    String(
+                        hotel.status ||
+                        "active"
+                    ).toLowerCase();
+
+
+                const subscription =
+                    String(
+                        hotel.subscription_status ||
+                        "active"
+                    ).toLowerCase();
+
+
+                const expiry =
+                    hotel.subscription_end ||
+                    "-";
+
+
+                let statusClass =
+                    "status-active";
+
+                let statusText =
+                    "🟢 Active";
+
+
+                if (
+                    status ===
+                    "deactivated"
+                ) {
+
+                    statusClass =
+                        "status-deactivated";
+
+                    statusText =
+                        "🔴 Deactivated";
+
+                } else if (
+                    status ===
+                    "suspended"
+                ) {
+
+                    statusClass =
+                        "status-suspended";
+
+                    statusText =
+                        "🔴 Suspended";
+
+                }
+
+
+                let subscriptionClass =
+                    "subscription-active";
+
+                let subscriptionText =
+                    "Active";
+
+
+                if (
+                    subscription ===
+                    "expired"
+                ) {
+
+                    subscriptionClass =
+                        "subscription-expired";
+
+                    subscriptionText =
+                        "Expired";
+
+                } else if (
+                    subscription ===
+                    "warning"
+                ) {
+
+                    subscriptionClass =
+                        "subscription-warning";
+
+                    subscriptionText =
+                        "Expiring Soon";
+
+                } else if (
+                    subscription ===
+                    "cancelled"
+                ) {
+
+                    subscriptionClass =
+                        "subscription-expired";
+
+                    subscriptionText =
+                        "Cancelled";
+
+                }
+
+
+                let warningHtml =
+                    '<span class="warning-none">—</span>';
+
+
+                if (
+                    hotel.warning_active ||
+                    hotel.warning_type ||
+                    hotel.warning_message
+                ) {
+
+                    warningHtml = `
+                        <span class="warning-badge warning-active">
+                            ⚠️
+                            ${escapeHotelHtml(
+                                hotel.warning_type ||
+                                "Warning"
+                            )}
+                        </span>
+                    `;
+
+                }
+
+
+                const restrictions =
+                    normalizeModuleRestrictions(
+                        hotel.module_restrictions
+                    );
+
+
+                let restrictionHtml =
+                    '<span class="restriction-none">None</span>';
+
+
+                if (
+                    restrictions.length > 0
+                ) {
+
+                    restrictionHtml =
+                        restrictions
+                            .map(
+                                moduleName => `
+                                    <span class="restriction-active">
+                                        ⚠️
+                                        ${escapeHotelHtml(
+                                            getModuleDisplayName(
+                                                moduleName
+                                            )
+                                        )}
+                                    </span>
+                                `
+                            )
+                            .join(" ");
+
+                }
+
+
+                let selectButton = "";
+
+
+                if (
+                    isSelected
+                ) {
+
+                    selectButton = `
+                        <button
+                            type="button"
+                            class="selected-btn"
+                            disabled>
+
+                            ✓ Selected
+
+                        </button>
+                    `;
+
+                } else if (
+                    status ===
+                    "active"
+                ) {
+
+                    selectButton = `
+                        <button
+                            type="button"
+                            class="select-btn"
+                            onclick="selectHotel(${hotel.id})">
+
+                            Select
+
+                        </button>
+                    `;
+
+                } else {
+
+                    selectButton = `
+                        <button
+                            type="button"
+                            class="selected-btn"
+                            disabled>
+
+                            Inactive
+
+                        </button>
+                    `;
+
+                }
+
+
+                const toggleButton =
+                    status ===
+                    "active"
+
+                        ? `
+                            <button
+                                type="button"
+                                class="deactivate-btn"
+                                onclick="changeHotelStatus(
+                                    ${hotel.id},
+                                    'deactivated'
+                                )">
+
+                                Deactivate
+
+                            </button>
+                        `
+
+                        : `
+
+                            <button
+                                type="button"
+                                class="activate-btn"
+                                onclick="changeHotelStatus(
+                                    ${hotel.id},
+                                    'active'
+                                )">
+
+                                Activate
+
+                            </button>
+
+                        `;
+
+
+                return `
+
+                    <tr class="${
+                        isSelected
+                            ? "selected-hotel"
+                            : ""
+                    }">
+
+                        <td>
+                            ${index + 1}
+                        </td>
+
+                        <td>
+
+                            <strong>
+                                ${escapeHotelHtml(
+                                    hotel.hotel_name ||
+                                    "Unnamed Hotel"
+                                )}
+                            </strong>
+
+                            ${
+                                isSelected
+                                    ? `
+                                        <span class="selected-badge">
+                                            ACTIVE HOTEL
+                                        </span>
+                                    `
+                                    : ""
+                            }
+
+                        </td>
+
+                        <td>
+                            ${escapeHotelHtml(
+                                hotel.location ||
+                                "-"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHotelHtml(
+                                hotel.phone ||
+                                "-"
+                            )}
+                        </td>
+
+                        <td>
+                            ${escapeHotelHtml(
+                                hotel.email ||
+                                "-"
+                            )}
+                        </td>
+
+                        <td>
+
+                            <span
+                                class="status-badge ${statusClass}">
+
+                                ${statusText}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <span
+                                class="subscription-badge ${subscriptionClass}">
+
+                                ${escapeHotelHtml(
+                                    subscriptionText
+                                )}
+
+                            </span>
+
+                        </td>
+
+                        <td>
+                            ${escapeHotelHtml(
+                                expiry
+                            )}
+                        </td>
+
+                        <td>
+                            ${warningHtml}
+                        </td>
+
+                        <td>
+                            ${restrictionHtml}
+                        </td>
+
+                        <td>
+
+                            <div class="hotel-buttons">
+
+                                ${selectButton}
+
+                                <button
+                                    type="button"
+                                    class="view-btn"
+                                    onclick="viewHotel(
+                                        ${hotel.id}
+                                    )">
+
+                                    View
+
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="edit-btn"
+                                    onclick="editHotel(
+                                        ${hotel.id}
+                                    )">
+
+                                    Edit
+
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="subscription-btn"
+                                    onclick="openSubscriptionModal(
+                                        ${hotel.id}
+                                    )">
+
+                                    Renew
+
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="issue-btn"
+                                    onclick="openIssueModal(
+                                        ${hotel.id}
+                                    )">
+
+                                    ⚠️ Issue
+
+                                </button>
+
+                                ${toggleButton}
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        ).join("");
+
+}
+
+
+/* =====================================================
+   MODULE RESTRICTIONS
+===================================================== */
+
+function normalizeModuleRestrictions(
+    value
+) {
+
+    if (!value) {
+        return [];
+    }
+
+
+    if (Array.isArray(value)) {
+
+        return value
+            .map(
+                item =>
+                    String(item)
+            )
+            .filter(Boolean);
+
+    }
+
+
+    if (
+        typeof value ===
+        "string"
+    ) {
+
+        try {
+
+            const parsed =
+                JSON.parse(
+                    value
+                );
+
+
+            if (
+                Array.isArray(
+                    parsed
+                )
+            ) {
+
+                return parsed
+                    .map(
+                        item =>
+                            String(item)
+                    )
+                    .filter(Boolean);
+
+            }
+
+
+            if (
+                parsed &&
+                typeof parsed ===
+                "object"
+            ) {
+
+                return Object.keys(
+                    parsed
+                ).filter(
+                    key =>
+                        Boolean(
+                            parsed[key]
+                        )
+                );
+
+            }
+
+        } catch (error) {
+
+            return value
+                .split(",")
+                .map(
+                    item =>
+                        item.trim()
+                )
+                .filter(Boolean);
+
+        }
+
+    }
+
+
+    if (
+        typeof value ===
+        "object" &&
+        value !== null
+    ) {
+
+        return Object.keys(
+            value
+        ).filter(
+            key =>
+                Boolean(
+                    value[key]
+                )
+        );
+
+    }
+
+
+    return [];
+
+}
+
+
+/* =====================================================
+   MODULE NAMES
+===================================================== */
+
+function getModuleDisplayName(
+    moduleName
+) {
+
+    const names = {
+
+        payments:
+            "Payments",
+
+        reservations:
+            "Reservations",
+
+        checkin:
+            "Check-in",
+
+        checkout:
+            "Check-out",
+
+        restaurant:
+            "Restaurant",
+
+        inventory:
+            "Inventory",
+
+        employees:
+            "Employees",
+
+        housekeeping:
+            "Housekeeping",
+
+        maintenance:
+            "Maintenance",
+
+        reports:
+            "Reports",
+
+        rooms:
+            "Rooms",
+
+        guests:
+            "Guests",
+
+        expenses:
+            "Expenses"
+
+    };
+
+
+    return (
+        names[moduleName] ||
+        moduleName
+    );
+
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+function filterHotels() {
+
+    const searchInput =
+        document.getElementById(
+            "hotelSearch"
+        );
+
+
+    if (!searchInput) return;
+
+
+    const search =
+        searchInput.value
+            .toLowerCase()
+            .trim();
+
+
+    const filtered =
+        hotelsData.filter(
+            hotel => {
+
+                return (
+
+                    String(
+                        hotel.hotel_name ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(search)
+
+                    ||
+
+                    String(
+                        hotel.location ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(search)
+
+                    ||
+
+                    String(
+                        hotel.phone ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(search)
+
+                    ||
+
+                    String(
+                        hotel.email ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(search)
+
+                );
+
+            }
+        );
+
+
+    displayHotels(
+        filtered
+    );
+
+}
+
+
+/* =====================================================
+   ADD HOTEL
+===================================================== */
+
+function openAddHotelModal() {
+
+    editingHotelId =
+        null;
+
+
+    document.getElementById(
+        "hotelModalTitle"
+    ).textContent =
+        "Add Hotel";
+
+
+    document.getElementById(
+        "hotelForm"
+    ).reset();
+
+
+    document.getElementById(
+        "hotelId"
+    ).value =
+        "";
+
+
+    document.getElementById(
+        "subscriptionStatus"
+    ).value =
+        "active";
+
+
+    document.getElementById(
+        "hotelModal"
+    ).style.display =
+        "flex";
+
+}
+
+
+function closeHotelModal() {
+
+    document.getElementById(
+        "hotelModal"
+    ).style.display =
+        "none";
+
+}
+
+
+/* =====================================================
+   EDIT HOTEL
+===================================================== */
+
+function editHotel(
+    id
+) {
+
+    const hotel =
+        hotelsData.find(
+            item =>
+                String(
+                    item.id
+                ) ===
+                String(id)
+        );
+
+
+    if (!hotel) {
+
+        showHotelMessage(
+            "Hotel could not be found.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    editingHotelId =
+        hotel.id;
+
+
+    document.getElementById(
+        "hotelModalTitle"
+    ).textContent =
+        "Edit Hotel";
+
+
+    document.getElementById(
+        "hotelId"
+    ).value =
+        hotel.id || "";
+
+
+    document.getElementById(
+        "hotelName"
+    ).value =
+        hotel.hotel_name || "";
+
+
+    document.getElementById(
+        "hotelLocation"
+    ).value =
+        hotel.location || "";
+
+
+    document.getElementById(
+        "hotelPhone"
+    ).value =
+        hotel.phone || "";
+
+
+    document.getElementById(
+        "hotelEmail"
+    ).value =
+        hotel.email || "";
+
+
+    document.getElementById(
+        "subscriptionStart"
+    ).value =
+        hotel.subscription_start || "";
+
+
+    document.getElementById(
+        "subscriptionEnd"
+    ).value =
+        hotel.subscription_end || "";
+
+
+    document.getElementById(
+        "subscriptionStatus"
+    ).value =
+        hotel.subscription_status ||
+        "active";
+
+
+    document.getElementById(
+        "hotelModal"
+    ).style.display =
+        "flex";
+
+}
+
+
+/* =====================================================
+   SAVE HOTEL
+===================================================== */
+
+async function saveHotel(
+    event
+) {
+
+    event.preventDefault();
+
+
+    const hotelName =
+        document.getElementById(
+            "hotelName"
+        )
+        .value
+        .trim();
+
+
+    if (!hotelName) {
+
+        showHotelMessage(
+            "Please enter the hotel name.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const start =
+        document.getElementById(
+            "subscriptionStart"
+        ).value ||
+        null;
+
+
+    const end =
+        document.getElementById(
+            "subscriptionEnd"
+        ).value ||
+        null;
+
+
+    if (
+        start &&
+        end &&
+        end < start
+    ) {
+
+        showHotelMessage(
+            "Subscription end date cannot be before the start date.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const record = {
+
+        hotel_name:
+            hotelName,
+
+        location:
+            document.getElementById(
+                "hotelLocation"
+            )
+            .value
+            .trim(),
+
+        phone:
+            document.getElementById(
+                "hotelPhone"
+            )
+            .value
+            .trim(),
+
+        email:
+            document.getElementById(
+                "hotelEmail"
+            )
+            .value
+            .trim(),
+
+        subscription_start:
+            start,
+
+        subscription_end:
+            end,
+
+        subscription_status:
+            document.getElementById(
+                "subscriptionStatus"
+            ).value
+
+    };
+
+
+    try {
+
+        let result;
+
+
+        if (
+            editingHotelId
+        ) {
+
+            result =
+                await hotelDB
+                    .from("hotels")
+                    .update(record)
+                    .eq(
+                        "id",
+                        editingHotelId
+                    );
+
+        } else {
+
+            result =
+                await hotelDB
+                    .from("hotels")
+                    .insert([
+                        record
+                    ]);
+
+        }
+
+
+        if (
+            result.error
+        ) {
+
+            console.error(
+                "Save hotel error:",
+                result.error
+            );
+
+            showHotelMessage(
+                result.error.message,
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        const wasEditing =
+            Boolean(
+                editingHotelId
+            );
+
+
+        const savedId =
+            editingHotelId;
+
+
+        closeHotelModal();
+
+
+        showHotelMessage(
+            wasEditing
+                ? "Hotel information updated successfully."
+                : "Hotel added successfully.",
+            "success"
+        );
+
+
+        editingHotelId =
+            null;
+
+
+        await loadHotels();
+
+
+        /*
+         * If the edited hotel was the active hotel,
+         * update the central hotel name without
+         * changing the selected hotel ID.
+         */
+
+        if (
+            wasEditing &&
+            String(
+                getActiveHotelId()
+            ) ===
+            String(savedId)
+        ) {
+
+            const updatedHotel =
+                hotelsData.find(
+                    item =>
+                        String(
+                            item.id
+                        ) ===
+                        String(savedId)
+                );
+
+
+            if (updatedHotel) {
+
+                if (
+                    window.EDUTECH &&
+                    typeof window.EDUTECH.setActiveHotel ===
+                    "function"
+                ) {
+
+                    window.EDUTECH.setActiveHotel(
+                        updatedHotel.id,
+                        updatedHotel.hotel_name || ""
+                    );
+
+                } else {
+
+                    sessionStorage.setItem(
+                        "activeHotelName",
+                        updatedHotel.hotel_name || ""
+                    );
+
+                    sessionStorage.setItem(
+                        "selectedHotelName",
+                        updatedHotel.hotel_name || ""
+                    );
+
+                }
+
+
+                updateActiveHotelBanner();
+
+            }
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Save hotel exception:",
+            error
+        );
+
+        showHotelMessage(
+            "Unable to save hotel.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   VIEW HOTEL
+===================================================== */
+
+function viewHotel(
+    id
+) {
+
+    const hotel =
+        hotelsData.find(
+            item =>
+                String(
+                    item.id
+                ) ===
+                String(id)
+        );
+
+
+    if (!hotel) {
+
+        showHotelMessage(
+            "Hotel could not be found.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const status =
+        hotel.status ||
+        "active";
+
+
+    const subscription =
+        hotel.subscription_status ||
+        "active";
+
+
+    const restrictions =
+        normalizeModuleRestrictions(
+            hotel.module_restrictions
+        );
+
+
+    const restrictionText =
+        restrictions.length
+            ? restrictions
+                .map(
+                    getModuleDisplayName
+                )
+                .join(", ")
+            : "None";
+
+
+    document.getElementById(
+        "hotelDetails"
+    ).innerHTML = `
+
+        <p>
+            <strong>Hotel ID:</strong>
+            ${escapeHotelHtml(
+                String(
+                    hotel.id ||
+                    "-"
+                )
+            )}
+        </p>
+
+        <p>
+            <strong>Hotel Name:</strong>
+            ${escapeHotelHtml(
+                hotel.hotel_name ||
+                "-"
+            )}
+        </p>
+
+        <p>
+            <strong>Location:</strong>
+            ${escapeHotelHtml(
+                hotel.location ||
+                "-"
+            )}
+        </p>
+
+        <p>
+            <strong>Phone:</strong>
+            ${escapeHotelHtml(
+                hotel.phone ||
+                "-"
+            )}
+        </p>
+
+        <p>
+            <strong>Email:</strong>
+            ${escapeHotelHtml(
+                hotel.email ||
+                "-"
+            )}
+        </p>
+
+        <p>
+            <strong>Hotel Status:</strong>
+            ${escapeHotelHtml(
+                status
+            )}
+        </p>
+
+        <p>
+            <strong>Subscription Status:</strong>
+            ${escapeHotelHtml(
+                subscription
+            )}
+        </p>
+
+        <p>
+            <strong>Subscription Start:</strong>
+            ${escapeHotelHtml(
+                hotel.subscription_start ||
+                "-"
+            )}
+        </p>
+
+        <p>
+            <strong>Subscription End:</strong>
+            ${escapeHotelHtml(
+                hotel.subscription_end ||
+                "-"
+            )}
+        </p>
+
+        <p>
+            <strong>Warning Type:</strong>
+            ${escapeHotelHtml(
+                hotel.warning_type ||
+                "None"
+            )}
+        </p>
+
+        <p>
+            <strong>Warning Message:</strong>
+            ${escapeHotelHtml(
+                hotel.warning_message ||
+                "None"
+            )}
+        </p>
+
+        <p>
+            <strong>Module Restriction:</strong>
+            ${escapeHotelHtml(
+                restrictionText
+            )}
+        </p>
+
+    `;
+
+
+    document.getElementById(
+        "viewHotelModal"
+    ).style.display =
+        "flex";
+
+}
+
+
+function closeViewHotelModal() {
+
+    document.getElementById(
+        "viewHotelModal"
+    ).style.display =
+        "none";
+
+}
+
+
+/* =====================================================
+   ISSUE MODAL
+===================================================== */
+
+function openIssueModal(
+    id
+) {
+
+    const hotel =
+        hotelsData.find(
+            item =>
+                String(
+                    item.id
+                ) ===
+                String(id)
+        );
+
+
+    if (!hotel) {
+
+        showHotelMessage(
+            "Hotel could not be found.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "issueHotelId"
+    ).value =
+        hotel.id;
+
+
+    document.getElementById(
+        "warningType"
+    ).value =
+        hotel.warning_type ||
+        "";
+
+
+    document.getElementById(
+        "warningMessage"
+    ).value =
+        hotel.warning_message ||
+        "";
+
+
+    const restrictions =
+        normalizeModuleRestrictions(
+            hotel.module_restrictions
+        );
+
+
+    document.getElementById(
+        "moduleRestriction"
+    ).value =
+        restrictions.length
+            ? restrictions[0]
+            : "";
+
+
+    document.getElementById(
+        "issueModal"
+    ).style.display =
+        "flex";
+
+}
+
+
+function closeIssueModal() {
+
+    document.getElementById(
+        "issueModal"
+    ).style.display =
+        "none";
+
+}
+
+
+/* =====================================================
+   SAVE ISSUE
+===================================================== */
+
+async function saveHotelIssue() {
+
+    const id =
+        document.getElementById(
+            "issueHotelId"
+        ).value;
+
+
+    const warningType =
+        document.getElementById(
+            "warningType"
+        ).value;
+
+
+    const warningMessage =
+        document.getElementById(
+            "warningMessage"
+        )
+        .value
+        .trim();
+
+
+    const moduleRestriction =
+        document.getElementById(
+            "moduleRestriction"
+        ).value;
+
+
+    const moduleRestrictions =
+        moduleRestriction
+            ? {
+                [moduleRestriction]:
+                    true
+            }
+            : {};
+
+
+    try {
+
+        const {
+            error
+        } =
+            await hotelDB
+                .from("hotels")
+                .update({
+
+                    warning_type:
+                        warningType ||
+                        null,
+
+                    warning_message:
+                        warningMessage ||
+                        null,
+
+                    warning_active:
+                        Boolean(
+                            warningType ||
+                            warningMessage
+                        ),
+
+                    module_restrictions:
+                        moduleRestrictions
+
+                })
+                .eq(
+                    "id",
+                    id
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Issue update error:",
+                error
+            );
+
+            showHotelMessage(
+                error.message,
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        closeIssueModal();
+
+
+        showHotelMessage(
+            moduleRestriction
+                ? `Hotel issue saved. ${getModuleDisplayName(
+                    moduleRestriction
+                )} has been marked for restriction.`
+                : "Hotel warning/restriction updated.",
+            "success"
+        );
+
+
+        await loadHotels();
+
+
+    } catch (error) {
+
+        console.error(
+            "Issue update exception:",
+            error
+        );
+
+        showHotelMessage(
+            "Unable to update hotel issue.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   SUBSCRIPTION
+===================================================== */
+
+function openSubscriptionModal(
+    id
+) {
+
+    const hotel =
+        hotelsData.find(
+            item =>
+                String(
+                    item.id
+                ) ===
+                String(id)
+        );
+
+
+    if (!hotel) return;
+
+
+    document.getElementById(
+        "subscriptionHotelId"
+    ).value =
+        hotel.id;
+
+
+    document.getElementById(
+        "renewStart"
+    ).value =
+        hotel.subscription_start ||
+        new Date()
+            .toISOString()
+            .split("T")[0];
+
+
+    document.getElementById(
+        "renewEnd"
+    ).value =
+        hotel.subscription_end ||
+        "";
+
+
+    document.getElementById(
+        "subscriptionModal"
+    ).style.display =
+        "flex";
+
+}
+
+
+function closeSubscriptionModal() {
+
+    document.getElementById(
+        "subscriptionModal"
+    ).style.display =
+        "none";
+
+}
+
+
+async function renewSubscription() {
+
+    const id =
+        document.getElementById(
+            "subscriptionHotelId"
+        ).value;
+
+
+    const start =
+        document.getElementById(
+            "renewStart"
+        ).value;
+
+
+    const end =
+        document.getElementById(
+            "renewEnd"
+        ).value;
+
+
+    if (
+        !start ||
+        !end
+    ) {
+
+        showHotelMessage(
+            "Please enter both subscription dates.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        end < start
+    ) {
+
+        showHotelMessage(
+            "Subscription end date cannot be before the start date.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const {
+            error
+        } =
+            await hotelDB
+                .from("hotels")
+                .update({
+
+                    subscription_start:
+                        start,
+
+                    subscription_end:
+                        end,
+
+                    subscription_status:
+                        "active",
+
+                    status:
+                        "active"
+
+                })
+                .eq(
+                    "id",
+                    id
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Subscription error:",
+                error
+            );
+
+            showHotelMessage(
+                error.message,
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        closeSubscriptionModal();
+
+
+        showHotelMessage(
+            "Subscription renewed and hotel activated.",
+            "success"
+        );
+
+
+        await loadHotels();
+
+
+    } catch (error) {
+
+        console.error(
+            "Subscription exception:",
+            error
+        );
+
+        showHotelMessage(
+            "Unable to renew subscription.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   HOTEL STATUS
+===================================================== */
+
+async function changeHotelStatus(
+    id,
+    newStatus
+) {
+
+    const hotel =
+        hotelsData.find(
+            item =>
+                String(
+                    item.id
+                ) ===
+                String(id)
+        );
+
+
+    if (!hotel) return;
+
+
+    const name =
+        hotel.hotel_name ||
+        "this hotel";
+
+
+    const activeId =
+        String(
+            getActiveHotelId() ||
+            ""
+        );
+
+
+    if (
+        newStatus ===
+        "deactivated" &&
+        activeId ===
+        String(id)
+    ) {
+
+        showHotelMessage(
+            "You cannot deactivate the currently selected hotel. Select another active hotel first.",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        newStatus ===
+        "deactivated"
+    ) {
+
+        const confirmed =
+            confirm(
+                `Deactivate "${name}"? Hotel users will be blocked from accessing the system while the System Owner can still manage the hotel.`
+            );
+
+
+        if (!confirmed) return;
+
+    } else {
+
+        const confirmed =
+            confirm(
+                `Activate "${name}"?`
+            );
+
+
+        if (!confirmed) return;
+
+    }
+
+
+    try {
+
+        const {
+            error
+        } =
+            await hotelDB
+                .from("hotels")
+                .update({
+                    status:
+                        newStatus
+                })
+                .eq(
+                    "id",
+                    id
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Status update error:",
+                error
+            );
+
+            showHotelMessage(
+                error.message,
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        showHotelMessage(
+            newStatus ===
+                "active"
+                ? "Hotel activated."
+                : "Hotel deactivated.",
+            "success"
+        );
+
+
+        await loadHotels();
+
+
+    } catch (error) {
+
+        console.error(
+            "Status update exception:",
+            error
+        );
+
+        showHotelMessage(
+            "Unable to change hotel status.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   MESSAGES
+===================================================== */
+
+function showHotelMessage(
+    message,
+    type
+) {
+
+    const box =
+        document.getElementById(
+            "hotelMessage"
+        );
+
+
+    if (!box) return;
+
+
+    box.textContent =
+        message;
+
+
+    box.className =
+        "hotel-message " +
+        type;
+
+
+    box.style.display =
+        "block";
+
+
+    clearTimeout(
+        window.hotelMessageTimer
+    );
+
+
+    window.hotelMessageTimer =
+        setTimeout(
+            () => {
+
+                box.style.display =
+                    "none";
+
+            },
+            5000
+        );
+
+}
+
+
+/* =====================================================
+   HTML ESCAPE
+===================================================== */
+
+function escapeHotelHtml(
+    value
+) {
+
+    return String(
+        value
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/* =====================================================
+   MODAL OUTSIDE CLICK
+===================================================== */
+
+window.addEventListener(
+    "click",
+    function(event) {
+
+        const hotelModal =
+            document.getElementById(
+                "hotelModal"
+            );
+
+        const viewModal =
+            document.getElementById(
+                "viewHotelModal"
+            );
+
+        const issueModal =
+            document.getElementById(
+                "issueModal"
+            );
+
+        const subscriptionModal =
+            document.getElementById(
+                "subscriptionModal"
+            );
+
+
+        if (
+            event.target ===
+            hotelModal
+        ) {
+
+            closeHotelModal();
+
+        }
+
+
+        if (
+            event.target ===
+            viewModal
+        ) {
+
+            closeViewHotelModal();
+
+        }
+
+
+        if (
+            event.target ===
+            issueModal
+        ) {
+
+            closeIssueModal();
+
+        }
+
+
+        if (
+            event.target ===
+            subscriptionModal
+        ) {
+
+            closeSubscriptionModal();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   ACTIVE HOTEL CHANGE FROM OTHER PAGES
+===================================================== */
+
+window.addEventListener(
+    "eduTechHotelChanged",
+    function() {
+
+        updateActiveHotelBanner();
+
+
+        if (
+            hotelsData.length
+        ) {
+
+            displayHotels(
+                hotelsData
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   RETURN TO PAGE
+===================================================== */
+
+window.addEventListener(
+    "pageshow",
+    function() {
+
+        updateActiveHotelBanner();
+
+
+        if (
+            hotelsData.length
+        ) {
+
+            displayHotels(
+                hotelsData
+            );
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   STORAGE UPDATE
+===================================================== */
+
+window.addEventListener(
+    "storage",
+    function() {
+
+        updateActiveHotelBanner();
+
+
+        if (
+            hotelsData.length
+        ) {
+
+            displayHotels(
+                hotelsData
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>

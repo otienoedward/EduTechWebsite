@@ -6,1316 +6,1878 @@
 
     <title>Employees - EDU TECH Hotel Management System</title>
 
-    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="style.css">
 
     <style>
-        .role-hidden {
-            display: none !important;
+        /* =========================================================
+           EDU TECH HOTEL MANAGEMENT SYSTEM
+           EMPLOYEES + PAYROLL MODULE
+           ========================================================= */
+
+        .employee-page {
+            padding: 20px;
         }
 
-        #accessDenied {
-            display: none;
-            padding: 40px;
-            text-align: center;
+        .employee-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
         }
 
-        #accessDenied h2 {
-            margin-bottom: 10px;
+        .employee-header h1 {
+            margin: 0;
         }
 
-        .sidebar-logout {
-            margin-top: 20px;
-            padding: 0 15px 20px;
+        .employee-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
-        .logout-btn {
-            width: 100%;
-            padding: 10px 15px;
+        .employee-actions button,
+        .payroll-actions button {
             border: none;
+            padding: 10px 15px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-weight: 600;
         }
+
+        .primary-btn {
+            background: #198754;
+            color: white;
+        }
+
+        .secondary-btn {
+            background: #0d6efd;
+            color: white;
+        }
+
+        .warning-btn {
+            background: #f0ad4e;
+            color: white;
+        }
+
+        .danger-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .dark-btn {
+            background: #343a40;
+            color: white;
+        }
+
+        .primary-btn:hover,
+        .secondary-btn:hover,
+        .warning-btn:hover,
+        .danger-btn:hover,
+        .dark-btn:hover {
+            opacity: 0.9;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .info-card > div {
+            margin-bottom: 6px;
+        }
+
+        .info-card > div:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-card strong {
+            color: #333;
+        }
+
+        .employee-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 18px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .summary-card h3 {
+            margin: 0 0 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .summary-card .summary-value {
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        .toolbar {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .toolbar input,
+        .toolbar select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            min-width: 180px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th,
+        table td {
+            padding: 11px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        table th {
+            background: #f5f5f5;
+            font-weight: 700;
+        }
+
+        .status-active {
+            color: #198754;
+            font-weight: 700;
+        }
+
+        .status-inactive {
+            color: #dc3545;
+            font-weight: 700;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .action-buttons button {
+            border: none;
+            padding: 6px 9px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            font-size: 12px;
+        }
+
+        /* =========================================================
+           PAYROLL
+           ========================================================= */
+
+        .payroll-section {
+            margin-top: 30px;
+        }
+
+        .payroll-section h2 {
+            margin-bottom: 12px;
+        }
+
+        .payroll-toolbar {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .payroll-toolbar label {
+            font-weight: 600;
+        }
+
+        .payroll-toolbar input {
+            padding: 9px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .payroll-table-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .paid-status {
+            color: #198754;
+            font-weight: 700;
+        }
+
+        .pending-status {
+            color: #dc3545;
+            font-weight: 700;
+        }
+
+        /* =========================================================
+           MODALS
+           ========================================================= */
+
+        .employee-modal,
+        .payroll-modal,
+        .payslip-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 9999;
+            overflow-y: auto;
+            padding: 30px 15px;
+            box-sizing: border-box;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 700px;
+            margin: auto;
+            border-radius: 10px;
+            padding: 22px;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .payroll-modal .modal-content {
+            max-width: 850px;
+        }
+
+        .payslip-modal .modal-content {
+            max-width: 850px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 12px;
+            margin-bottom: 18px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+        }
+
+        .close-modal {
+            border: none;
+            background: transparent;
+            font-size: 26px;
+            cursor: pointer;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .form-group input[readonly] {
+            background: #f3f3f3;
+        }
+
+        .modal-footer {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .deduction-box {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .deduction-box h3 {
+            margin-top: 0;
+        }
+
+        .payroll-calculation {
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .calculation-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .calculation-row:last-child {
+            border-bottom: none;
+        }
+
+        .net-salary-row {
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        /* =========================================================
+           PAYSLIP
+           ========================================================= */
+
+        .payslip {
+            background: white;
+            padding: 30px;
+            border: 1px solid #ddd;
+        }
+
+        .payslip-header {
+            text-align: center;
+            border-bottom: 2px solid #222;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .payslip-header h1 {
+            margin: 0 0 5px;
+        }
+
+        .payslip-header h2 {
+            margin: 5px 0;
+        }
+
+        .payslip-header p {
+            margin: 3px 0;
+        }
+
+        .payslip-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px 30px;
+            margin-bottom: 20px;
+        }
+
+        .payslip-info div {
+            padding: 5px 0;
+        }
+
+        .payslip-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .payslip-table th,
+        .payslip-table td {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        .payslip-table th {
+            background: #f3f3f3;
+        }
+
+        .payslip-total {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .payslip-footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .message.success {
+            display: block;
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .message.error {
+            display: block;
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+        @media (max-width: 900px) {
+
+            .employee-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 650px) {
+
+            .employee-summary,
+            .form-grid,
+            .payslip-info {
+                grid-template-columns: 1fr;
+            }
+
+            .employee-page {
+                padding: 10px;
+            }
+
+            .payslip {
+                padding: 15px;
+            }
+
+        }
+
+        /* =========================================================
+           PRINT
+           ========================================================= */
+
+        @media print {
+
+            body * {
+                visibility: hidden !important;
+            }
+
+            #payslipPrintArea,
+            #payslipPrintArea * {
+                visibility: visible !important;
+            }
+
+            #payslipPrintArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+
+        }
+
     </style>
 </head>
 
 <body>
 
-<aside class="sidebar">
+    <!-- =========================================================
+         SIDEBAR
+         ========================================================= -->
 
-    <div class="logo">
+    <aside class="sidebar">
+
         <h2>EDU TECH</h2>
-        <p>HOTEL SYSTEM</p>
-    </div>
 
-    <nav class="sidebar-nav">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="rooms.html">Rooms</a>
+        <a href="guests.html">Guests</a>
+        <a href="reservations.html">Reservations</a>
+        <a href="checkin.html">Check-in</a>
+        <a href="checkout.html">Check-out</a>
+        <a href="restaurant.html">Restaurant</a>
+        <a href="inventory.html">Inventory</a>
+        <a href="payments.html">Payments</a>
+        <a href="expenses.html">Expenses</a>
+        <a href="employees.html" class="active">Employees</a>
+        <a href="housekeeping.html">Housekeeping</a>
+        <a href="maintenance.html">Maintenance</a>
+        <a href="reports.html">Reports</a>
+        <a href="settings.html">Settings</a>
 
-        <a href="./index.html" data-module="dashboard">
-            🏠 Dashboard
-        </a>
-
-        <a href="./rooms.html" data-module="rooms">
-            🛏️ Rooms
-        </a>
-
-        <a href="./guests.html" data-module="guests">
-            👤 Guests
-        </a>
-
-        <a href="./reservations.html" data-module="reservations">
-            📅 Reservations
-        </a>
-
-        <a href="./checkin.html" data-module="checkin">
-            🛎️ Check-in
-        </a>
-
-        <a href="./checkout.html" data-module="checkout">
-            🚪 Check-out
-        </a>
-
-        <a href="./restaurant.html" data-module="restaurant">
-            🍽️ Restaurant
-        </a>
-
-        <a href="./inventory.html" data-module="inventory">
-            📦 Inventory
-        </a>
-
-        <a href="./payments.html" data-module="payments">
-            💰 Payments
-        </a>
-
-        <a href="./expenses.html" data-module="expenses">
-            💸 Expenses
-        </a>
-
-        <a href="./employees.html"
-           data-module="employees"
-           class="active">
-            👨‍💼 Employees
-        </a>
-
-        <a href="./housekeeping.html" data-module="housekeeping">
-            🧹 Housekeeping
-        </a>
-
-        <a href="./maintenance.html" data-module="maintenance">
-            🔧 Maintenance
-        </a>
-
-        <a href="./reports.html" data-module="reports">
-            📊 Reports
-        </a>
-
-        <a href="./settings.html" data-module="settings">
-            ⚙️ Settings
-        </a>
-
-    </nav>
-
-    <div class="sidebar-logout">
-        <button
-            type="button"
-            class="logout-btn"
-            data-action="logout">
-            🚪 Logout
-        </button>
-    </div>
-
-</aside>
+    </aside>
 
 
-<main class="main-content">
+    <!-- =========================================================
+         MAIN CONTENT
+         ========================================================= -->
 
-    <header class="topbar">
+    <main class="main-content employee-page">
 
-        <div>
-            <h1>Employees</h1>
-            <p>Manage hotel employees and staff information</p>
-        </div>
-
-        <div class="user">
-
-            <div class="user-icon">A</div>
+        <div class="employee-header">
 
             <div>
-                <strong>Administrator</strong>
-                <small>System Admin</small>
+                <h1>Employees &amp; Payroll</h1>
+                <p>Employee management and monthly payslips</p>
+            </div>
+
+            <div class="employee-actions">
+
+                <button
+                    id="newEmployeeButton"
+                    class="primary-btn"
+                    type="button">
+                    + Add Employee
+                </button>
+
+                <button
+                    id="printEmployeesButton"
+                    class="secondary-btn"
+                    type="button">
+                    Print Employees
+                </button>
+
+                <button
+                    id="downloadEmployeePDFButton"
+                    class="dark-btn"
+                    type="button">
+                    Save Employee PDF
+                </button>
+
             </div>
 
         </div>
 
-    </header>
 
+        <!-- =====================================================
+             HOTEL / USER INFORMATION
+             IMPORTANT IDs MATCH employees.js
+             ===================================================== -->
 
-    <section class="page-content">
-
-        <div class="page-header">
+        <div class="info-card">
 
             <div>
-
-                <h2>Employee Management</h2>
-
-                <p>
-                    Register and manage hotel employees.
-                </p>
-
+                <strong>User:</strong>
+                <span
+                    id="currentUserName"
+                    data-current-user>
+                    Loading...
+                </span>
             </div>
 
-            <button
-                type="button"
-                class="primary-btn"
-                id="newEmployeeButton">
-
-                + Add Employee
-
-            </button>
-
-        </div>
-
-
-        <div class="summary-grid">
-
-            <div class="summary-card">
-
-                <h3>Total Employees</h3>
-
-                <strong id="totalEmployees">0</strong>
-
+            <div>
+                <strong>Role:</strong>
+                <span
+                    id="currentUserRole"
+                    data-current-role>
+                    Loading...
+                </span>
             </div>
 
-
-            <div class="summary-card">
-
-                <h3>Active</h3>
-
-                <strong id="activeEmployees">0</strong>
-
-            </div>
-
-
-            <div class="summary-card">
-
-                <h3>Inactive</h3>
-
-                <strong id="inactiveEmployees">0</strong>
-
-            </div>
-
-
-            <div class="summary-card">
-
-                <h3>Total Payroll</h3>
-
-                <strong id="totalPayroll">KSh 0</strong>
-
+            <div>
+                <strong>Hotel:</strong>
+                <span
+                    id="currentHotelName"
+                    class="current-hotel-name"
+                    data-current-hotel>
+                    Loading...
+                </span>
             </div>
 
         </div>
 
 
-        <div class="table-card">
+        <!-- =====================================================
+             MESSAGE
+             ===================================================== -->
 
-            <div class="table-tools">
+        <div
+            id="employeeMessage"
+            class="message">
+        </div>
+
+
+        <!-- =====================================================
+             ACCESS DENIED
+             ===================================================== -->
+
+        <div
+            id="accessDenied"
+            class="info-card"
+            style="display:none;">
+
+            <h2>Access Denied</h2>
+
+            <p>
+                You do not have permission to access the Employees module.
+            </p>
+
+        </div>
+
+
+        <!-- =====================================================
+             EMPLOYEE MODULE
+             ===================================================== -->
+
+        <section id="employeeModuleContent">
+
+            <!-- =================================================
+                 SUMMARY
+                 ================================================= -->
+
+            <div class="employee-summary">
+
+                <div class="summary-card">
+
+                    <h3>Total Employees</h3>
+
+                    <div
+                        class="summary-value"
+                        id="totalEmployees">
+                        0
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>Active Employees</h3>
+
+                    <div
+                        class="summary-value"
+                        id="activeEmployees">
+                        0
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>Inactive Employees</h3>
+
+                    <div
+                        class="summary-value"
+                        id="inactiveEmployees">
+                        0
+                    </div>
+
+                </div>
+
+
+                <div class="summary-card">
+
+                    <h3>Monthly Gross Payroll</h3>
+
+                    <div
+                        class="summary-value"
+                        id="monthlyGrossPayroll">
+
+                        KSh
+                        <span id="totalPayroll">
+                            0.00
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 EMPLOYEE SEARCH
+                 ================================================= -->
+
+            <div class="toolbar">
 
                 <input
                     type="text"
                     id="employeeSearch"
-                    placeholder="Search employees..."
-                >
+                    placeholder="Search employee...">
 
                 <select id="employeeFilter">
 
-                    <option value="All">All Status</option>
+                    <option value="all">
+                        All Employees
+                    </option>
 
-                    <option value="Active">Active</option>
+                    <option value="active">
+                        Active
+                    </option>
 
-                    <option value="Inactive">Inactive</option>
+                    <option value="inactive">
+                        Inactive
+                    </option>
 
                 </select>
 
             </div>
 
 
-            <div class="table-responsive">
+            <!-- =================================================
+                 EMPLOYEE TABLE
+                 ================================================= -->
 
-                <table>
+            <div class="table-container">
+
+                <table id="employeeTable">
 
                     <thead>
 
                         <tr>
+
+                            <th>#</th>
                             <th>Employee ID</th>
                             <th>Name</th>
+                            <th>National ID</th>
                             <th>Phone</th>
                             <th>Email</th>
-                            <th>Department</th>
                             <th>Position</th>
-                            <th>Salary</th>
+                            <th>Department</th>
+                            <th>Gross Salary</th>
                             <th>Status</th>
                             <th>Actions</th>
+
                         </tr>
 
                     </thead>
 
-                    <tbody id="employeeTable"></tbody>
+                    <tbody id="employeeTableBody">
+
+                        <tr>
+
+                            <td colspan="11">
+                                Loading employees...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
 
                 </table>
 
             </div>
 
-        </div>
 
-    </section>
+            <!-- =================================================
+                 PAYROLL SECTION
+                 ================================================= -->
 
+            <section class="payroll-section">
 
-    <section id="accessDenied">
+                <h2>
+                    Monthly Payroll &amp; Payslips
+                </h2>
 
-        <h2>Access Denied</h2>
+                <div class="payroll-toolbar">
 
-        <p>
-            You do not have permission to access the Employees module.
-        </p>
+                    <label for="payrollMonth">
+                        Payroll Month:
+                    </label>
 
-    </section>
+                    <input
+                        type="month"
+                        id="payrollMonth">
 
-</main>
+                    <button
+                        id="loadPayrollButton"
+                        class="secondary-btn"
+                        type="button">
+                        Load Payroll
+                    </button>
 
+                    <button
+                        id="newPayrollButton"
+                        class="primary-btn"
+                        type="button">
+                        + Process Payroll
+                    </button>
 
-<!-- EMPLOYEE MODAL -->
-
-<div id="employeeModal" class="modal">
-
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <h2 id="employeeModalTitle">
-                Add Employee
-            </h2>
-
-            <button
-                type="button"
-                class="close-btn"
-                id="closeEmployeeButton">
-
-                ×
-
-            </button>
-
-        </div>
+                </div>
 
 
-        <form id="employeeForm">
+                <div class="payroll-table-container">
 
-            <div class="form-group">
+                    <table id="payrollTable">
 
-                <label for="employeeName">
-                    Full Name
-                </label>
+                        <thead>
 
-                <input
-                    type="text"
-                    id="employeeName"
-                    placeholder="Enter employee full name"
-                    required
-                >
+                            <tr>
 
-            </div>
+                                <th>#</th>
+                                <th>Employee ID</th>
+                                <th>Employee Name</th>
+                                <th>Gross Salary</th>
+                                <th>Total Deductions</th>
+                                <th>Net Salary</th>
+                                <th>Status</th>
+                                <th>Actions</th>
 
+                            </tr>
 
-            <div class="form-group">
+                        </thead>
 
-                <label for="employeePhone">
-                    Phone Number
-                </label>
+                        <tbody id="payrollTableBody">
 
-                <input
-                    type="tel"
-                    id="employeePhone"
-                    placeholder="Enter phone number"
-                    required
-                >
+                            <tr>
 
-            </div>
+                                <td colspan="8">
+                                    Select a payroll month.
+                                </td>
 
+                            </tr>
 
-            <div class="form-group">
+                        </tbody>
 
-                <label for="employeeEmail">
-                    Email Address
-                </label>
+                    </table>
 
-                <input
-                    type="email"
-                    id="employeeEmail"
-                    placeholder="Enter email address"
-                >
+                </div>
 
-            </div>
+            </section>
+
+        </section>
+
+    </main>
 
 
-            <div class="form-group">
+    <!-- =========================================================
+         EMPLOYEE MODAL
+         ========================================================= -->
 
-                <label for="employeeDepartment">
-                    Department
-                </label>
+    <div
+        id="employeeModal"
+        class="employee-modal">
 
-                <select id="employeeDepartment" required>
+        <div class="modal-content">
 
-                    <option value="">
-                        Select Department
-                    </option>
+            <div class="modal-header">
 
-                    <option value="Management">Management</option>
-                    <option value="Front Office">Front Office</option>
-                    <option value="Housekeeping">Housekeeping</option>
-                    <option value="Restaurant">Restaurant</option>
-                    <option value="Kitchen">Kitchen</option>
-                    <option value="Security">Security</option>
-                    <option value="Accounts">Accounts</option>
-                    <option value="Maintenance">Maintenance</option>
-                    <option value="Human Resources">Human Resources</option>
-                    <option value="IT">IT</option>
-
-                </select>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="employeePosition">
-                    Position
-                </label>
-
-                <input
-                    type="text"
-                    id="employeePosition"
-                    placeholder="e.g. Receptionist"
-                    required
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="employeeSalary">
-                    Monthly Salary (KSh)
-                </label>
-
-                <input
-                    type="number"
-                    id="employeeSalary"
-                    min="0"
-                    step="0.01"
-                    placeholder="Enter monthly salary"
-                    required
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="employeeStatus">
-                    Employment Status
-                </label>
-
-                <select id="employeeStatus" required>
-
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-
-                </select>
-
-            </div>
-
-
-            <div class="form-actions">
+                <h2 id="employeeModalTitle">
+                    Add Employee
+                </h2>
 
                 <button
                     type="button"
-                    class="secondary-btn"
-                    id="cancelEmployeeButton">
-
-                    Cancel
-
-                </button>
-
-                <button
-                    type="submit"
-                    class="primary-btn">
-
-                    Save Employee
-
+                    id="closeEmployeeButton"
+                    class="close-modal">
+                    &times;
                 </button>
 
             </div>
 
-        </form>
+
+            <form id="employeeForm">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label>
+                            Employee ID
+                        </label>
+
+                        <input
+                            type="text"
+                            id="employeeNumber"
+                            readonly
+                            placeholder="Generated automatically">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Full Name *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="employeeName"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            National ID
+                        </label>
+
+                        <input
+                            type="text"
+                            id="employeeNationalId">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Phone
+                        </label>
+
+                        <input
+                            type="text"
+                            id="employeePhone">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            id="employeeEmail">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Position *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="employeePosition"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Department
+                        </label>
+
+                        <input
+                            type="text"
+                            id="employeeDepartment">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Employment Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="employeeEmploymentDate">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Payment Method
+                        </label>
+
+                        <select id="employeePaymentMethod">
+
+                            <option value="">
+                                Select
+                            </option>
+
+                            <option value="Bank">
+                                Bank
+                            </option>
+
+                            <option value="M-Pesa">
+                                M-Pesa
+                            </option>
+
+                            <option value="Cash">
+                                Cash
+                            </option>
+
+                            <option value="Cheque">
+                                Cheque
+                            </option>
+
+                            <option value="Other">
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Gross Salary (KSh) *
+                        </label>
+
+                        <input
+                            type="number"
+                            id="employeeSalary"
+                            min="0"
+                            step="0.01"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Status
+                        </label>
+
+                        <select id="employeeStatus">
+
+                            <option value="active">
+                                Active
+                            </option>
+
+                            <option value="inactive">
+                                Inactive
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        id="cancelEmployeeButton"
+                        class="danger-btn">
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        id="saveEmployeeButton"
+                        class="primary-btn">
+                        Save Employee
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
 
     </div>
 
-</div>
 
+    <!-- =========================================================
+         PAYROLL MODAL
+         ========================================================= -->
 
-<!-- SHARED SYSTEM FILES -->
+    <div
+        id="payrollModal"
+        class="payroll-modal">
 
-<script src="./supabase.js"></script>
-<script src="./script.js"></script>
+        <div class="modal-content">
 
+            <div class="modal-header">
 
-<!-- EMPLOYEE PAGE SCRIPT -->
-
-<script>
-
-"use strict";
-
-
-let editingEmployeeRow = null;
-
-
-/* =========================================
-   EMPLOYEE ACCESS
-========================================= */
-
-function getEmployeeUserRole() {
-
-    const role =
-        sessionStorage.getItem("userRole") ||
-        localStorage.getItem("userRole") ||
-        "";
-
-    return String(role)
-        .toLowerCase()
-        .trim();
-
-}
-
-
-function employeeAccessAllowed() {
-
-    return [
-        "system_owner",
-        "hotel_owner",
-        "manager"
-    ].includes(
-        getEmployeeUserRole()
-    );
-
-}
-
-
-/* =========================================
-   SHOW ACCESS DENIED
-========================================= */
-
-function showEmployeeAccessDenied() {
-
-    const pageContent =
-        document.querySelector(".page-content");
-
-    const modal =
-        document.getElementById("employeeModal");
-
-    const denied =
-        document.getElementById("accessDenied");
-
-
-    if (pageContent) {
-
-        pageContent.style.display = "none";
-
-    }
-
-
-    if (modal) {
-
-        modal.style.display = "none";
-
-    }
-
-
-    if (denied) {
-
-        denied.style.display = "block";
-
-    }
-
-}
-
-
-/* =========================================
-   PROTECT EMPLOYEE PAGE
-========================================= */
-
-function protectEmployeePage() {
-
-    const role = getEmployeeUserRole();
-
-
-    /*
-       If there is no role yet, do not
-       interfere with the global system.
-    */
-
-    if (!role) {
-
-        return true;
-
-    }
-
-
-    if (!employeeAccessAllowed()) {
-
-        showEmployeeAccessDenied();
-
-        return false;
-
-    }
-
-
-    return true;
-
-}
-
-
-/* =========================================
-   OPEN FORM
-========================================= */
-
-function showEmployeeForm() {
-
-    if (!employeeAccessAllowed()) {
-
-        alert(
-            "You do not have permission to manage Employees."
-        );
-
-        return;
-
-    }
-
-
-    const modal =
-        document.getElementById("employeeModal");
-
-    const form =
-        document.getElementById("employeeForm");
-
-
-    document.getElementById(
-        "employeeModalTitle"
-    ).textContent =
-        "Add Employee";
-
-
-    form.reset();
-
-    editingEmployeeRow = null;
-
-    modal.style.display = "flex";
-
-}
-
-
-/* =========================================
-   CLOSE FORM
-========================================= */
-
-function hideEmployeeForm() {
-
-    const modal =
-        document.getElementById("employeeModal");
-
-
-    if (modal) {
-
-        modal.style.display = "none";
-
-    }
-
-
-    editingEmployeeRow = null;
-
-}
-
-
-/* =========================================
-   CREATE EMPLOYEE ID
-========================================= */
-
-function createEmployeeID() {
-
-    const rows =
-        document.querySelectorAll(
-            "#employeeTable tr"
-        );
-
-
-    return "EMP-" +
-        String(
-            rows.length + 1
-        ).padStart(3, "0");
-
-}
-
-
-/* =========================================
-   UPDATE SUMMARY
-========================================= */
-
-function updateEmployeeSummary() {
-
-    const rows =
-        document.querySelectorAll(
-            "#employeeTable tr"
-        );
-
-
-    let active = 0;
-    let inactive = 0;
-    let payroll = 0;
-
-
-    rows.forEach(function(row) {
-
-        const status =
-            row.dataset.status;
-
-
-        const salary =
-            parseFloat(
-                row.dataset.salary
-            ) || 0;
-
-
-        if (status === "Active") {
-
-            active++;
-
-            payroll += salary;
-
-        }
-
-
-        if (status === "Inactive") {
-
-            inactive++;
-
-        }
-
-    });
-
-
-    document.getElementById(
-        "totalEmployees"
-    ).textContent =
-        rows.length;
-
-
-    document.getElementById(
-        "activeEmployees"
-    ).textContent =
-        active;
-
-
-    document.getElementById(
-        "inactiveEmployees"
-    ).textContent =
-        inactive;
-
-
-    document.getElementById(
-        "totalPayroll"
-    ).textContent =
-        "KSh " +
-        payroll.toLocaleString();
-
-}
-
-
-/* =========================================
-   SAVE EMPLOYEE
-========================================= */
-
-function saveEmployee(event) {
-
-    event.preventDefault();
-
-
-    if (!employeeAccessAllowed()) {
-
-        alert(
-            "You do not have permission to manage Employees."
-        );
-
-        hideEmployeeForm();
-
-        return;
-
-    }
-
-
-    const name =
-        document.getElementById(
-            "employeeName"
-        ).value.trim();
-
-
-    const phone =
-        document.getElementById(
-            "employeePhone"
-        ).value.trim();
-
-
-    const email =
-        document.getElementById(
-            "employeeEmail"
-        ).value.trim();
-
-
-    const department =
-        document.getElementById(
-            "employeeDepartment"
-        ).value;
-
-
-    const position =
-        document.getElementById(
-            "employeePosition"
-        ).value.trim();
-
-
-    const salary =
-        parseFloat(
-            document.getElementById(
-                "employeeSalary"
-            ).value
-        ) || 0;
-
-
-    const status =
-        document.getElementById(
-            "employeeStatus"
-        ).value;
-
-
-    /* EDIT EXISTING EMPLOYEE */
-
-    if (editingEmployeeRow) {
-
-        editingEmployeeRow.cells[1].textContent =
-            name;
-
-        editingEmployeeRow.cells[2].textContent =
-            phone;
-
-        editingEmployeeRow.cells[3].textContent =
-            email;
-
-        editingEmployeeRow.cells[4].textContent =
-            department;
-
-        editingEmployeeRow.cells[5].textContent =
-            position;
-
-        editingEmployeeRow.cells[6].textContent =
-            "KSh " +
-            salary.toLocaleString();
-
-
-        editingEmployeeRow.cells[7].innerHTML =
-            '<span class="status ' +
-            status.toLowerCase() +
-            '">' +
-            status +
-            '</span>';
-
-
-        editingEmployeeRow.dataset.status =
-            status;
-
-
-        editingEmployeeRow.dataset.salary =
-            salary;
-
-    }
-
-
-    /* NEW EMPLOYEE */
-
-    else {
-
-        const table =
-            document.getElementById(
-                "employeeTable"
-            );
-
-
-        const row =
-            document.createElement("tr");
-
-
-        const employeeID =
-            createEmployeeID();
-
-
-        row.dataset.status =
-            status;
-
-
-        row.dataset.salary =
-            salary;
-
-
-        row.innerHTML = `
-
-            <td>${escapeEmployeeHtml(employeeID)}</td>
-
-            <td>${escapeEmployeeHtml(name)}</td>
-
-            <td>${escapeEmployeeHtml(phone)}</td>
-
-            <td>${escapeEmployeeHtml(email)}</td>
-
-            <td>${escapeEmployeeHtml(department)}</td>
-
-            <td>${escapeEmployeeHtml(position)}</td>
-
-            <td>
-                KSh ${salary.toLocaleString()}
-            </td>
-
-            <td>
-
-                <span class="status ${status.toLowerCase()}">
-                    ${escapeEmployeeHtml(status)}
-                </span>
-
-            </td>
-
-            <td>
+                <h2 id="payrollModalTitle">
+                    Monthly Payroll
+                </h2>
 
                 <button
                     type="button"
-                    class="action-btn"
-                    onclick="editEmployee(this)">
+                    id="closePayrollButton"
+                    class="close-modal">
+                    &times;
+                </button>
 
-                    Edit
+            </div>
 
+
+            <form id="payrollForm">
+
+                <input
+                    type="hidden"
+                    id="payrollRecordId">
+
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label>
+                            Employee *
+                        </label>
+
+                        <select
+                            id="payrollEmployee"
+                            required>
+
+                            <option value="">
+                                Select Employee
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Payroll Month *
+                        </label>
+
+                        <input
+                            type="month"
+                            id="payrollFormMonth"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Employee ID
+                        </label>
+
+                        <input
+                            type="text"
+                            id="payrollEmployeeNumber"
+                            readonly>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Gross Salary (KSh)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="payrollGrossSalary"
+                            readonly>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     MONTHLY DEDUCTIONS
+                     ================================================= -->
+
+                <div class="deduction-box">
+
+                    <h3>
+                        Monthly Deductions
+                    </h3>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label>
+                                SHA (KSh)
+                            </label>
+
+                            <input
+                                type="number"
+                                id="payrollSha"
+                                min="0"
+                                step="0.01"
+                                value="0">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                NSSF (KSh)
+                            </label>
+
+                            <input
+                                type="number"
+                                id="payrollNssf"
+                                min="0"
+                                step="0.01"
+                                value="0">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                PAYE (KSh)
+                            </label>
+
+                            <input
+                                type="number"
+                                id="payrollPaye"
+                                min="0"
+                                step="0.01"
+                                value="0">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Salary Advance (KSh)
+                            </label>
+
+                            <input
+                                type="number"
+                                id="payrollSalaryAdvance"
+                                min="0"
+                                step="0.01"
+                                value="0">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Fines (KSh)
+                            </label>
+
+                            <input
+                                type="number"
+                                id="payrollFines"
+                                min="0"
+                                step="0.01"
+                                value="0">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Other Deduction 1 Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="otherDeduction1Name"
+                                placeholder="e.g. Loan">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Other Deduction 1 (KSh)
+                            </label>
+
+                            <input
+                                type="number"
+                                id="otherDeduction1"
+                                min="0"
+                                step="0.01"
+                                value="0">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Other Deduction 2 Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="otherDeduction2Name"
+                                placeholder="Optional">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Other Deduction 2 (KSh)
+                            </label>
+
+                            <input
+                                type="number"
+                                id="otherDeduction2"
+                                min="0"
+                                step="0.01"
+                                value="0">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Other Deduction 3 Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="otherDeduction3Name"
+                                placeholder="Optional">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Other Deduction 3 (KSh)
+                            </label>
+
+                            <input
+                                type="number"
+                                id="otherDeduction3"
+                                min="0"
+                                step="0.01"
+                                value="0">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     PAYROLL CALCULATION
+                     ================================================= -->
+
+                <div class="payroll-calculation">
+
+                    <div class="calculation-row">
+
+                        <span>
+                            Gross Salary
+                        </span>
+
+                        <strong>
+                            KSh
+                            <span id="calculatedGross">
+                                0.00
+                            </span>
+                        </strong>
+
+                    </div>
+
+
+                    <div class="calculation-row">
+
+                        <span>
+                            Total Deductions
+                        </span>
+
+                        <strong>
+                            KSh
+                            <span id="calculatedDeductions">
+                                0.00
+                            </span>
+                        </strong>
+
+                    </div>
+
+
+                    <div class="calculation-row net-salary-row">
+
+                        <span>
+                            Basic / Net Salary
+                        </span>
+
+                        <strong>
+                            KSh
+                            <span id="calculatedNet">
+                                0.00
+                            </span>
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="form-grid"
+                    style="margin-top:15px;">
+
+                    <div class="form-group">
+
+                        <label>
+                            Payment Status
+                        </label>
+
+                        <select id="payrollPaymentStatus">
+
+                            <option value="Pending">
+                                Pending
+                            </option>
+
+                            <option value="Paid">
+                                Paid
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Payment Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="payrollPaymentDate">
+
+                    </div>
+
+
+                    <div class="form-group full-width">
+
+                        <label>
+                            Notes
+                        </label>
+
+                        <textarea
+                            id="payrollNotes"
+                            rows="3"
+                            placeholder="Optional payroll notes"></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button
+                        type="button"
+                        id="cancelPayrollButton"
+                        class="danger-btn">
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        id="savePayrollButton"
+                        class="primary-btn">
+                        Save Payroll
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         PAYSLIP MODAL
+         ========================================================= -->
+
+    <div
+        id="payslipModal"
+        class="payslip-modal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>
+                    Employee Payslip
+                </h2>
+
+                <button
+                    type="button"
+                    id="closePayslipButton"
+                    class="close-modal">
+                    &times;
+                </button>
+
+            </div>
+
+
+            <div id="payslipPrintArea">
+
+                <div class="payslip">
+
+                    <div class="payslip-header">
+
+                        <h1 id="payslipHotelName">
+                            EDU TECH HOTEL
+                        </h1>
+
+                        <h2>
+                            EMPLOYEE PAYSLIP
+                        </h2>
+
+                        <p id="payslipHotelLocation"></p>
+
+                        <p id="payslipHotelPhone"></p>
+
+                        <p>
+                            Pay Period:
+                            <strong id="payslipMonth"></strong>
+                        </p>
+
+                    </div>
+
+
+                    <div class="payslip-info">
+
+                        <div>
+                            <strong>Employee ID:</strong>
+                            <span id="payslipEmployeeNumber"></span>
+                        </div>
+
+                        <div>
+                            <strong>Employee Name:</strong>
+                            <span id="payslipEmployeeName"></span>
+                        </div>
+
+                        <div>
+                            <strong>National ID:</strong>
+                            <span id="payslipNationalId"></span>
+                        </div>
+
+                        <div>
+                            <strong>Position:</strong>
+                            <span id="payslipPosition"></span>
+                        </div>
+
+                        <div>
+                            <strong>Department:</strong>
+                            <span id="payslipDepartment"></span>
+                        </div>
+
+                        <div>
+                            <strong>Payment Method:</strong>
+                            <span id="payslipPaymentMethod"></span>
+                        </div>
+
+                    </div>
+
+
+                    <table class="payslip-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Description
+                                </th>
+
+                                <th>
+                                    Amount (KSh)
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            <tr>
+
+                                <td>
+                                    Gross Salary
+                                </td>
+
+                                <td id="payslipGross"></td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    SHA
+                                </td>
+
+                                <td id="payslipSha"></td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    NSSF
+                                </td>
+
+                                <td id="payslipNssf"></td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    PAYE
+                                </td>
+
+                                <td id="payslipPaye"></td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    Salary Advance
+                                </td>
+
+                                <td id="payslipAdvance"></td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    Fines
+                                </td>
+
+                                <td id="payslipFines"></td>
+
+                            </tr>
+
+
+                            <tr
+                                id="payslipOther1Row"
+                                style="display:none;">
+
+                                <td id="payslipOther1Label"></td>
+
+                                <td id="payslipOther1"></td>
+
+                            </tr>
+
+
+                            <tr
+                                id="payslipOther2Row"
+                                style="display:none;">
+
+                                <td id="payslipOther2Label"></td>
+
+                                <td id="payslipOther2"></td>
+
+                            </tr>
+
+
+                            <tr
+                                id="payslipOther3Row"
+                                style="display:none;">
+
+                                <td id="payslipOther3Label"></td>
+
+                                <td id="payslipOther3"></td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <th>
+                                    Total Deductions
+                                </th>
+
+                                <th id="payslipTotalDeductions"></th>
+
+                            </tr>
+
+
+                            <tr class="payslip-total">
+
+                                <th>
+                                    Basic / Net Salary
+                                </th>
+
+                                <th id="payslipNet"></th>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    Payment Status
+                                </td>
+
+                                <td id="payslipStatus"></td>
+
+                            </tr>
+
+
+                            <tr>
+
+                                <td>
+                                    Payment Date
+                                </td>
+
+                                <td id="payslipPaymentDate"></td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+
+                    <div style="margin-top:20px;">
+
+                        <strong>
+                            Notes:
+                        </strong>
+
+                        <span id="payslipNotes"></span>
+
+                    </div>
+
+
+                    <div class="payslip-footer">
+
+                        <p>
+                            This is a computer-generated payslip.
+                        </p>
+
+                        <p>
+                            EDU TECH Hotel Management System
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    id="printPayslipButton"
+                    class="secondary-btn">
+                    Print Payslip
                 </button>
 
                 <button
                     type="button"
-                    class="action-btn delete"
-                    onclick="deleteEmployee(this)">
-
-                    Delete
-
+                    id="downloadPayslipPDFButton"
+                    class="dark-btn">
+                    Save Payslip PDF
                 </button>
 
-            </td>
+                <button
+                    type="button"
+                    id="closePayslipButton2"
+                    class="danger-btn">
+                    Close
+                </button>
 
-        `;
+            </div>
 
+        </div>
 
-        table.appendChild(row);
+    </div>
 
-    }
 
+    <!-- =========================================================
+         SCRIPTS
+         ========================================================= -->
 
-    updateEmployeeSummary();
+    <!-- 1. Supabase library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    hideEmployeeForm();
+    <!-- 2. Supabase configuration -->
+    <script src="./supabase.js"></script>
 
+    <!-- 3. jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    alert(
-        "Employee saved successfully."
-    );
+    <!-- 4. jsPDF AutoTable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
 
-}
+    <!-- 5. Employees module -->
+    <script src="./employees.js?v=20261109-12"></script>
 
+    <!-- 6. Access control -->
+    <script src="./access-control.js"></script>
 
-/* =========================================
-   ESCAPE HTML
-========================================= */
-
-function escapeEmployeeHtml(value) {
-
-    return String(value || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
-
-
-/* =========================================
-   EDIT EMPLOYEE
-========================================= */
-
-function editEmployee(button) {
-
-    if (!employeeAccessAllowed()) {
-
-        alert(
-            "You do not have permission to edit Employees."
-        );
-
-        return;
-
-    }
-
-
-    const row =
-        button.closest("tr");
-
-
-    if (!row) {
-
-        return;
-
-    }
-
-
-    editingEmployeeRow = row;
-
-
-    document.getElementById(
-        "employeeModalTitle"
-    ).textContent =
-        "Edit Employee";
-
-
-    document.getElementById(
-        "employeeName"
-    ).value =
-        row.cells[1].textContent;
-
-
-    document.getElementById(
-        "employeePhone"
-    ).value =
-        row.cells[2].textContent;
-
-
-    document.getElementById(
-        "employeeEmail"
-    ).value =
-        row.cells[3].textContent;
-
-
-    document.getElementById(
-        "employeeDepartment"
-    ).value =
-        row.cells[4].textContent;
-
-
-    document.getElementById(
-        "employeePosition"
-    ).value =
-        row.cells[5].textContent;
-
-
-    document.getElementById(
-        "employeeSalary"
-    ).value =
-        row.dataset.salary;
-
-
-    document.getElementById(
-        "employeeStatus"
-    ).value =
-        row.dataset.status;
-
-
-    document.getElementById(
-        "employeeModal"
-    ).style.display =
-        "flex";
-
-}
-
-
-/* =========================================
-   DELETE EMPLOYEE
-========================================= */
-
-function deleteEmployee(button) {
-
-    if (!employeeAccessAllowed()) {
-
-        alert(
-            "You do not have permission to delete Employees."
-        );
-
-        return;
-
-    }
-
-
-    if (!confirm(
-        "Delete this employee?"
-    )) {
-
-        return;
-
-    }
-
-
-    const row =
-        button.closest("tr");
-
-
-    if (row) {
-
-        row.remove();
-
-    }
-
-
-    updateEmployeeSummary();
-
-}
-
-
-/* =========================================
-   SEARCH EMPLOYEES
-========================================= */
-
-function searchEmployees() {
-
-    const search =
-        document.getElementById(
-            "employeeSearch"
-        ).value
-        .toLowerCase()
-        .trim();
-
-
-    document
-    .querySelectorAll(
-        "#employeeTable tr"
-    )
-    .forEach(function(row) {
-
-        row.style.display =
-            row.textContent
-                .toLowerCase()
-                .includes(search)
-                ? ""
-                : "none";
-
-    });
-
-}
-
-
-/* =========================================
-   FILTER EMPLOYEES
-========================================= */
-
-function filterEmployees() {
-
-    const filter =
-        document.getElementById(
-            "employeeFilter"
-        ).value;
-
-
-    document
-    .querySelectorAll(
-        "#employeeTable tr"
-    )
-    .forEach(function(row) {
-
-        if (filter === "All") {
-
-            row.style.display = "";
-
-        } else {
-
-            row.style.display =
-                row.dataset.status === filter
-                ? ""
-                : "none";
-
-        }
-
-    });
-
-}
-
-
-/* =========================================
-   INITIALIZE EMPLOYEE PAGE
-========================================= */
-
-function initializeEmployeesPage() {
-
-    /*
-       Do not initialize the employee
-       management interface for unauthorized
-       users.
-    */
-
-    if (!protectEmployeePage()) {
-
-        return;
-
-    }
-
-
-    const form =
-        document.getElementById(
-            "employeeForm"
-        );
-
-
-    const search =
-        document.getElementById(
-            "employeeSearch"
-        );
-
-
-    const filter =
-        document.getElementById(
-            "employeeFilter"
-        );
-
-
-    const newButton =
-        document.getElementById(
-            "newEmployeeButton"
-        );
-
-
-    const closeButton =
-        document.getElementById(
-            "closeEmployeeButton"
-        );
-
-
-    const cancelButton =
-        document.getElementById(
-            "cancelEmployeeButton"
-        );
-
-
-    if (form) {
-
-        form.addEventListener(
-            "submit",
-            saveEmployee
-        );
-
-    }
-
-
-    if (search) {
-
-        search.addEventListener(
-            "input",
-            searchEmployees
-        );
-
-    }
-
-
-    if (filter) {
-
-        filter.addEventListener(
-            "change",
-            filterEmployees
-        );
-
-    }
-
-
-    if (newButton) {
-
-        newButton.addEventListener(
-            "click",
-            showEmployeeForm
-        );
-
-    }
-
-
-    if (closeButton) {
-
-        closeButton.addEventListener(
-            "click",
-            hideEmployeeForm
-        );
-
-    }
-
-
-    if (cancelButton) {
-
-        cancelButton.addEventListener(
-            "click",
-            hideEmployeeForm
-        );
-
-    }
-
-
-    window.addEventListener(
-        "click",
-        function(event) {
-
-            const modal =
-                document.getElementById(
-                    "employeeModal"
-                );
-
-
-            if (
-                modal &&
-                event.target === modal
-            ) {
-
-                hideEmployeeForm();
-
-            }
-
-        }
-    );
-
-
-    updateEmployeeSummary();
-
-}
-
-
-/* =========================================
-   START
-========================================= */
-
-if (
-    document.readyState ===
-    "loading"
-) {
-
-    document.addEventListener(
-        "DOMContentLoaded",
-        initializeEmployeesPage
-    );
-
-} else {
-
-    initializeEmployeesPage();
-
-}
-
-</script>
+    <!-- 7. Sidebar -->
+    <script src="./sidebar.js"></script>
 
 </body>
 </html>
