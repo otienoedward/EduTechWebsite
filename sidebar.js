@@ -163,14 +163,18 @@
             key: "bank_accounts",
             label: "Bank Accounts",
             icon: "🏦",
-            page: "bank-accounts.html"
+
+            /* ACTUAL FILE NAME IN THE REPOSITORY */
+            page: "bank_accounts.html"
         },
 
         {
             key: "financial_transactions",
             label: "Financial Transactions",
             icon: "📒",
-            page: "financial-transactions.html"
+
+            /* ACTUAL FILE NAME IN THE REPOSITORY */
+            page: "financial_transactions.html"
         }
     ];
 

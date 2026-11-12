@@ -134,12 +134,17 @@
         "settings.html": "settings",
 
         "cashier.html": "cashier",
-        "bank-accounts.html": "bank_accounts",
-        "financial-transactions.html": "financial_transactions"
+
+        /* ACTUAL FILE NAME IN THE REPOSITORY */
+        "bank_accounts.html": "bank_accounts",
+
+        /* ACTUAL FILE NAME IN THE REPOSITORY */
+        "financial_transactions.html": "financial_transactions"
     };
 
 
-    const PROFILE_CACHE_KEY = "EDUTECH_ACCESS_PROFILE";
+    const PROFILE_CACHE_KEY =
+        "EDUTECH_ACCESS_PROFILE";
 
 
     /* =====================================================
@@ -148,17 +153,25 @@
 
     function getSupabase() {
 
-        if (window.supabase &&
-            typeof window.supabase.from === "function") {
+        if (
+            window.supabase &&
+            typeof window.supabase.from ===
+            "function"
+        ) {
 
             return window.supabase;
         }
 
-        if (window.supabaseClient &&
-            typeof window.supabaseClient.from === "function") {
+
+        if (
+            window.supabaseClient &&
+            typeof window.supabaseClient.from ===
+            "function"
+        ) {
 
             return window.supabaseClient;
         }
+
 
         return null;
     }
@@ -176,9 +189,11 @@
                 .pop()
                 .toLowerCase();
 
+
         if (!page) {
             page = "index.html";
         }
+
 
         return page;
     }
@@ -190,7 +205,9 @@
 
     function getCurrentModule() {
 
-        const page = getCurrentPage();
+        const page =
+            getCurrentPage();
+
 
         return PAGE_MODULES[page] || null;
     }
@@ -207,6 +224,7 @@
             if (!profile) {
                 return;
             }
+
 
             sessionStorage.setItem(
                 PROFILE_CACHE_KEY,
@@ -232,9 +250,11 @@
                     PROFILE_CACHE_KEY
                 );
 
+
             if (!data) {
                 return null;
             }
+
 
             return JSON.parse(data);
 
@@ -256,7 +276,9 @@
 
     async function loadProfile() {
 
-        const supabase = getSupabase();
+        const supabase =
+            getSupabase();
+
 
         if (!supabase) {
 
@@ -273,7 +295,8 @@
             const {
                 data: sessionData,
                 error: sessionError
-            } = await supabase.auth.getSession();
+            } =
+                await supabase.auth.getSession();
 
 
             if (sessionError) {
@@ -292,8 +315,10 @@
                 sessionData.session;
 
 
-            if (!session ||
-                !session.user) {
+            if (
+                !session ||
+                !session.user
+            ) {
 
                 return null;
             }
@@ -306,13 +331,17 @@
             const {
                 data: profile,
                 error
-            } = await supabase
-                .from("profiles")
-                .select(
-                    "id, full_name, role, hotel_id, is_active"
-                )
-                .eq("id", userId)
-                .maybeSingle();
+            } =
+                await supabase
+                    .from("profiles")
+                    .select(
+                        "id, full_name, role, hotel_id, is_active"
+                    )
+                    .eq(
+                        "id",
+                        userId
+                    )
+                    .maybeSingle();
 
 
             if (error) {
@@ -365,6 +394,7 @@
 
         const overlay =
             document.createElement("div");
+
 
         overlay.id =
             "edutechAccessDenied";
@@ -419,7 +449,9 @@
                 "click",
                 function () {
 
-                    if (window.history.length > 1) {
+                    if (
+                        window.history.length > 1
+                    ) {
 
                         window.history.back();
 
@@ -440,6 +472,7 @@
             document.getElementById(
                 "edutechAccessDenied"
             );
+
 
         if (existing) {
             existing.remove();
@@ -473,6 +506,7 @@
                 "edutech-access-control-css"
             )
         ) {
+
             return;
         }
 
@@ -558,11 +592,16 @@
        CHECK PERMISSION
        ===================================================== */
 
-    function hasPermission(profile, moduleName) {
+    function hasPermission(
+        profile,
+        moduleName
+    ) {
 
-        if (!profile ||
+        if (
+            !profile ||
             !profile.role ||
-            !profile.is_active) {
+            !profile.is_active
+        ) {
 
             return false;
         }
@@ -583,7 +622,9 @@
         }
 
 
-        return allowed.includes(moduleName);
+        return allowed.includes(
+            moduleName
+        );
     }
 
 
@@ -604,6 +645,7 @@
          * If this is not a registered protected page,
          * do nothing.
          */
+
         if (!moduleName) {
             return true;
         }
@@ -620,21 +662,29 @@
             getCachedProfile();
 
 
-        if (profile &&
+        if (
+            profile &&
             profile.is_active &&
-            hasPermission(profile, moduleName)) {
+            hasPermission(
+                profile,
+                moduleName
+            )
+        ) {
 
             /*
              * Page is allowed immediately.
              * Continue refreshing profile in background.
              */
+
             loadProfile()
                 .catch(function (error) {
+
                     console.warn(
                         "Background profile refresh:",
                         error
                     );
                 });
+
 
             return true;
         }
@@ -689,7 +739,9 @@
          * Inactive account.
          */
 
-        if (profile.is_active !== true) {
+        if (
+            profile.is_active !== true
+        ) {
 
             showAccessDenied(
                 "Inactive Account"
@@ -747,16 +799,20 @@
        WAIT HELPER
        ===================================================== */
 
-    function wait(milliseconds) {
+    function wait(
+        milliseconds
+    ) {
 
-        return new Promise(function (resolve) {
+        return new Promise(
+            function (resolve) {
 
-            setTimeout(
-                resolve,
-                milliseconds
-            );
+                setTimeout(
+                    resolve,
+                    milliseconds
+                );
 
-        });
+            }
+        );
     }
 
 
@@ -770,17 +826,23 @@
 
         pageModules: PAGE_MODULES,
 
-        getCurrentPage: getCurrentPage,
+        getCurrentPage:
+            getCurrentPage,
 
-        getCurrentModule: getCurrentModule,
+        getCurrentModule:
+            getCurrentModule,
 
-        getCachedProfile: getCachedProfile,
+        getCachedProfile:
+            getCachedProfile,
 
-        loadProfile: loadProfile,
+        loadProfile:
+            loadProfile,
 
-        hasPermission: hasPermission,
+        hasPermission:
+            hasPermission,
 
-        protectCurrentPage: protectCurrentPage
+        protectCurrentPage:
+            protectCurrentPage
     };
 
 
