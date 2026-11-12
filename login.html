@@ -1,20 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Sign In | EDU TECH Hotel Management System</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Sign In | EDU TECH Hotel Management System
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="./style.css"
+    >
 
     <!-- =========================================================
-         NORMAL WEBSITE STYLES
-    ========================================================== -->
-
-    <link rel="stylesheet" href="./style.css">
-
-
-    <!-- =========================================================
-         EDU TECH HOTEL MANAGEMENT SYSTEM PWA
+         PWA
     ========================================================== -->
 
     <link
@@ -52,7 +58,6 @@
         href="./icons/icon-192.png"
     >
 
-
     <style>
 
         * {
@@ -67,7 +72,12 @@
         }
 
         body {
-            font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                Helvetica,
+                sans-serif;
 
             background:
                 radial-gradient(
@@ -90,7 +100,9 @@
             min-height: 100vh;
 
             display: flex;
+
             align-items: center;
+
             justify-content: center;
 
             padding: 30px;
@@ -98,10 +110,12 @@
             color: #0f172a;
         }
 
-
         .login-page-wrapper {
+
             width: 100%;
+
             max-width: 1050px;
+
             min-height: 620px;
 
             background: #ffffff;
@@ -120,8 +134,12 @@
                 0 8px 30px rgba(0, 0, 0, 0.12);
         }
 
+        /* =====================================================
+           BRAND PANEL
+        ====================================================== */
 
         .brand-panel {
+
             position: relative;
 
             overflow: hidden;
@@ -129,6 +147,7 @@
             padding: 60px 55px;
 
             display: flex;
+
             align-items: center;
 
             background:
@@ -142,8 +161,8 @@
             color: #ffffff;
         }
 
-
         .brand-panel::before {
+
             content: "";
 
             position: absolute;
@@ -160,8 +179,8 @@
                 rgba(255, 255, 255, 0.055);
         }
 
-
         .brand-panel::after {
+
             content: "";
 
             position: absolute;
@@ -178,8 +197,8 @@
                 rgba(255, 255, 255, 0.045);
         }
 
-
         .brand-content {
+
             position: relative;
 
             z-index: 2;
@@ -187,43 +206,54 @@
             width: 100%;
         }
 
+        /* =====================================================
+           VISIBLE HOTEL APP ICON
+        ====================================================== */
 
         .brand-logo {
-            width: 82px;
-            height: 82px;
 
-            border-radius: 20px;
+            width: 92px;
+
+            height: 92px;
+
+            border-radius: 22px;
 
             display: flex;
+
             align-items: center;
+
             justify-content: center;
 
             background:
                 rgba(255, 255, 255, 0.12);
 
             border:
-                1px solid rgba(255, 255, 255, 0.2);
+                1px solid rgba(255, 255, 255, 0.25);
 
             box-shadow:
-                0 12px 30px rgba(0, 0, 0, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.12);
+                0 12px 30px rgba(0, 0, 0, 0.20),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
 
-            backdrop-filter: blur(10px);
+            overflow: hidden;
 
             margin-bottom: 28px;
         }
 
+        .brand-logo img {
 
-        .brand-logo span {
-            font-size: 27px;
+            width: 100%;
 
-            font-weight: 800;
+            height: 100%;
 
-            letter-spacing: 1px;
+            display: block;
+
+            object-fit: cover;
+
+            border-radius: 22px;
         }
 
-
         .brand-title {
+
             margin: 0;
 
             font-size: 42px;
@@ -235,8 +265,8 @@
             letter-spacing: 0.5px;
         }
 
-
         .brand-system {
+
             margin-top: 10px;
 
             font-size: 19px;
@@ -247,8 +277,8 @@
                 rgba(255, 255, 255, 0.88);
         }
 
-
         .brand-description {
+
             max-width: 440px;
 
             margin-top: 25px;
@@ -261,8 +291,8 @@
             line-height: 1.75;
         }
 
-
         .feature-list {
+
             margin: 32px 0 0;
 
             padding: 0;
@@ -274,8 +304,8 @@
             gap: 14px;
         }
 
-
         .feature-item {
+
             display: flex;
 
             align-items: center;
@@ -288,9 +318,10 @@
                 rgba(255, 255, 255, 0.88);
         }
 
-
         .feature-icon {
+
             width: 32px;
+
             height: 32px;
 
             flex: 0 0 32px;
@@ -312,8 +343,12 @@
                 1px solid rgba(255, 255, 255, 0.08);
         }
 
+        /* =====================================================
+           LOGIN PANEL
+        ====================================================== */
 
         .login-panel {
+
             background: #ffffff;
 
             padding: 55px;
@@ -325,20 +360,20 @@
             justify-content: center;
         }
 
-
         .login-content {
+
             width: 100%;
 
             max-width: 390px;
         }
 
-
         .login-heading {
+
             margin-bottom: 34px;
         }
 
-
         .login-heading h1 {
+
             margin: 0;
 
             color: #0f172a;
@@ -350,8 +385,8 @@
             font-weight: 750;
         }
 
-
         .login-heading p {
+
             margin: 10px 0 0;
 
             color: #64748b;
@@ -361,13 +396,13 @@
             line-height: 1.6;
         }
 
-
         .form-group {
+
             margin-bottom: 21px;
         }
 
-
         .form-label {
+
             display: block;
 
             margin-bottom: 8px;
@@ -379,13 +414,13 @@
             font-weight: 700;
         }
 
-
         .input-wrapper {
+
             position: relative;
         }
 
-
         .input-icon {
+
             position: absolute;
 
             left: 15px;
@@ -408,8 +443,8 @@
             z-index: 2;
         }
 
-
         .login-input {
+
             width: 100%;
 
             height: 52px;
@@ -436,14 +471,14 @@
                 background 0.2s ease;
         }
 
-
         .login-input:hover {
+
             border-color:
                 #b9c5d4;
         }
 
-
         .login-input:focus {
+
             background: #ffffff;
 
             border-color:
@@ -454,13 +489,13 @@
                 rgba(37, 99, 235, 0.10);
         }
 
-
         .password-input {
+
             padding-right: 72px;
         }
 
-
         .show-password-btn {
+
             position: absolute;
 
             right: 8px;
@@ -491,14 +526,18 @@
             cursor: pointer;
         }
 
-
         .show-password-btn:hover {
+
             background:
                 #eff6ff;
         }
 
+        /* =====================================================
+           LOGIN BUTTON
+        ====================================================== */
 
         .login-button {
+
             width: 100%;
 
             height: 52px;
@@ -527,16 +566,20 @@
             box-shadow:
                 0 8px 20px
                 rgba(37, 99, 235, 0.22);
+
+            transition:
+                transform 0.2s ease,
+                opacity 0.2s ease;
         }
 
-
         .login-button:hover {
+
             transform:
                 translateY(-1px);
         }
 
-
         .login-button:disabled {
+
             opacity: 0.65;
 
             cursor: not-allowed;
@@ -544,8 +587,12 @@
             transform: none;
         }
 
+        /* =====================================================
+           LOGIN MESSAGE
+        ====================================================== */
 
         .login-status {
+
             display: none;
 
             margin-top: 17px;
@@ -559,8 +606,8 @@
             line-height: 1.5;
         }
 
-
         .login-status.error {
+
             display: block;
 
             background:
@@ -573,8 +620,8 @@
                 1px solid #fecaca;
         }
 
-
         .login-status.success {
+
             display: block;
 
             background:
@@ -587,12 +634,12 @@
                 1px solid #bbf7d0;
         }
 
-
         /* =====================================================
            PWA INSTALL BUTTON
         ====================================================== */
 
         .install-app-button {
+
             display: none;
 
             width: 100%;
@@ -624,8 +671,8 @@
                 border-color 0.2s ease;
         }
 
-
         .install-app-button:hover {
+
             background:
                 #dbeafe;
 
@@ -636,13 +683,13 @@
                 translateY(-1px);
         }
 
-
         .install-app-button.visible {
+
             display: block;
         }
 
-
         .install-app-note {
+
             display: none;
 
             margin-top: 8px;
@@ -656,13 +703,17 @@
             line-height: 1.5;
         }
 
-
         .install-app-note.visible {
+
             display: block;
         }
 
+        /* =====================================================
+           FOOTER
+        ====================================================== */
 
         .login-footer {
+
             margin-top: 30px;
 
             padding-top: 20px;
@@ -673,8 +724,8 @@
             text-align: center;
         }
 
-
         .login-footer p {
+
             margin: 0;
 
             color:
@@ -683,26 +734,30 @@
             font-size: 12px;
         }
 
-
         .login-footer p + p {
+
             margin-top: 5px;
         }
 
-
         .login-footer strong {
+
             color:
                 #64748b;
         }
 
+        /* =====================================================
+           TABLET
+        ====================================================== */
 
         @media (max-width: 850px) {
 
             body {
+
                 padding: 20px;
             }
 
-
             .login-page-wrapper {
+
                 max-width: 520px;
 
                 min-height: auto;
@@ -710,84 +765,88 @@
                 grid-template-columns: 1fr;
             }
 
-
             .brand-panel {
+
                 padding: 40px 35px;
 
                 min-height: 300px;
             }
 
-
             .brand-title {
+
                 font-size: 34px;
             }
 
-
             .brand-description,
             .feature-list {
+
                 display: none;
             }
 
-
             .login-panel {
+
                 padding: 40px 35px;
             }
-
         }
 
+        /* =====================================================
+           PHONE
+        ====================================================== */
 
         @media (max-width: 480px) {
 
             body {
+
                 padding: 12px;
             }
 
-
             .login-page-wrapper {
+
                 border-radius: 17px;
             }
 
-
             .brand-panel {
+
                 padding: 30px 25px;
 
                 min-height: 230px;
             }
 
-
             .brand-logo {
+
                 width: 65px;
 
                 height: 65px;
 
                 margin-bottom: 18px;
+
+                border-radius: 17px;
             }
 
+            .brand-logo img {
 
-            .brand-logo span {
-                font-size: 22px;
+                border-radius: 17px;
             }
-
 
             .brand-title {
+
                 font-size: 29px;
             }
 
-
             .brand-system {
+
                 font-size: 16px;
             }
 
-
             .login-panel {
+
                 padding: 35px 22px;
             }
 
-
             .login-heading h1 {
+
                 font-size: 26px;
             }
-
         }
 
     </style>
@@ -801,17 +860,24 @@
 <div class="login-page-wrapper">
 
 
-    <!-- =========================================================
+    <!-- =====================================================
          BRAND PANEL
-    ========================================================== -->
+    ====================================================== -->
 
     <section class="brand-panel">
 
         <div class="brand-content">
 
 
+            <!-- ACTUAL EDU TECH HMS APP ICON -->
+
             <div class="brand-logo">
-                <span>ET</span>
+
+                <img
+                    src="./icons/icon-192.png"
+                    alt="EDU TECH Hotel Management System"
+                >
+
             </div>
 
 
@@ -898,12 +964,11 @@
     </section>
 
 
-    <!-- =========================================================
+    <!-- =====================================================
          LOGIN PANEL
-    ========================================================== -->
+    ====================================================== -->
 
     <section class="login-panel">
-
 
         <div class="login-content">
 
@@ -913,7 +978,6 @@
                 <h1>
                     Welcome Back
                 </h1>
-
 
                 <p>
                     Sign in to continue to your hotel management system.
@@ -925,8 +989,9 @@
             <form id="loginForm">
 
 
-                <div class="form-group">
+                <!-- EMAIL -->
 
+                <div class="form-group">
 
                     <label
                         class="form-label"
@@ -937,7 +1002,6 @@
 
 
                     <div class="input-wrapper">
-
 
                         <span class="input-icon">
                             ✉
@@ -953,14 +1017,14 @@
                             required
                         >
 
-
                     </div>
 
                 </div>
 
 
-                <div class="form-group">
+                <!-- PASSWORD -->
 
+                <div class="form-group">
 
                     <label
                         class="form-label"
@@ -971,7 +1035,6 @@
 
 
                     <div class="input-wrapper">
-
 
                         <span class="input-icon">
                             🔒
@@ -996,11 +1059,12 @@
                             Show
                         </button>
 
-
                     </div>
 
                 </div>
 
+
+                <!-- LOGIN -->
 
                 <button
                     type="submit"
@@ -1011,9 +1075,7 @@
                 </button>
 
 
-                <!-- =================================================
-                     PWA INSTALL BUTTON
-                ================================================== -->
+                <!-- PWA INSTALL -->
 
                 <button
                     type="button"
@@ -1032,6 +1094,8 @@
                 </div>
 
 
+                <!-- MESSAGE -->
+
                 <div
                     id="loginMessage"
                     class="login-status"
@@ -1042,7 +1106,6 @@
 
 
             <div class="login-footer">
-
 
                 <p>
 
@@ -1058,7 +1121,6 @@
                 <p>
                     Secure hotel operations management
                 </p>
-
 
             </div>
 
@@ -1091,19 +1153,19 @@
 
 
 /* =========================================================
-   PWA SERVICE WORKER REGISTRATION
+   PWA SERVICE WORKER
 ========================================================= */
 
 if ("serviceWorker" in navigator) {
 
     window.addEventListener(
         "load",
-        function() {
+        function () {
 
             navigator.serviceWorker
                 .register("./service-worker.js")
                 .then(
-                    function(registration) {
+                    function (registration) {
 
                         console.log(
                             "EDU TECH HMS service worker registered:",
@@ -1113,7 +1175,7 @@ if ("serviceWorker" in navigator) {
                     }
                 )
                 .catch(
-                    function(error) {
+                    function (error) {
 
                         console.error(
                             "EDU TECH HMS service worker registration failed:",
@@ -1150,12 +1212,11 @@ const installAppNote =
 
 window.addEventListener(
     "beforeinstallprompt",
-    function(event) {
+    function (event) {
 
         event.preventDefault();
 
-        deferredInstallPrompt =
-            event;
+        deferredInstallPrompt = event;
 
 
         if (installAppButton) {
@@ -1183,11 +1244,12 @@ if (installAppButton) {
 
     installAppButton.addEventListener(
         "click",
-        async function() {
+        async function () {
 
             if (!deferredInstallPrompt) {
 
                 return;
+
             }
 
 
@@ -1204,8 +1266,7 @@ if (installAppButton) {
             );
 
 
-            deferredInstallPrompt =
-                null;
+            deferredInstallPrompt = null;
 
 
             installAppButton.classList.remove(
@@ -1229,15 +1290,14 @@ if (installAppButton) {
 
 window.addEventListener(
     "appinstalled",
-    function() {
+    function () {
 
         console.log(
             "EDU TECH HMS was installed successfully."
         );
 
 
-        deferredInstallPrompt =
-            null;
+        deferredInstallPrompt = null;
 
 
         if (installAppButton) {
@@ -1269,19 +1329,27 @@ window.addEventListener(
 ========================================================= */
 
 const loginForm =
-    document.getElementById("loginForm");
+    document.getElementById(
+        "loginForm"
+    );
 
 
 const loginButton =
-    document.getElementById("loginButton");
+    document.getElementById(
+        "loginButton"
+    );
 
 
 const loginMessage =
-    document.getElementById("loginMessage");
+    document.getElementById(
+        "loginMessage"
+    );
 
 
 const passwordInput =
-    document.getElementById("password");
+    document.getElementById(
+        "password"
+    );
 
 
 const showPasswordBtn =
@@ -1291,12 +1359,56 @@ const showPasswordBtn =
 
 
 /* =========================================================
-   STORAGE CLEANUP
+   MESSAGE FUNCTIONS
+========================================================= */
+
+function showMessage(
+    message,
+    type = "error"
+) {
+
+    if (!loginMessage) {
+
+        return;
+
+    }
+
+
+    loginMessage.textContent =
+        message;
+
+
+    loginMessage.className =
+        "login-status " +
+        type;
+
+}
+
+
+function hideMessage() {
+
+    if (!loginMessage) {
+
+        return;
+
+    }
+
+
+    loginMessage.textContent = "";
+
+    loginMessage.className =
+        "login-status";
+
+}
+
+
+/* =========================================================
+   CLEAR OLD SESSION DATA
 ========================================================= */
 
 function clearOldSessionData() {
 
-    const sessionKeys = [
+    const keys = [
 
         "hotelId",
         "hotel_id",
@@ -1320,57 +1432,14 @@ function clearOldSessionData() {
     ];
 
 
-    sessionKeys.forEach(
-        function(key) {
+    keys.forEach(
+        function (key) {
 
             try {
 
                 sessionStorage.removeItem(
                     key
                 );
-
-            } catch (error) {
-
-                console.error(
-                    "Could not remove sessionStorage key:",
-                    key,
-                    error
-                );
-
-            }
-
-        }
-    );
-
-
-    const localKeys = [
-
-        "hotelId",
-        "hotel_id",
-        "activeHotelId",
-        "active_hotel_id",
-        "selectedHotelId",
-        "selectedHotelID",
-        "hotelName",
-        "hotel_name",
-
-        "role",
-        "userRole",
-        "user_role",
-
-        "userName",
-        "userId",
-
-        "authenticatedUserId",
-        "authenticatedUserRole"
-
-    ];
-
-
-    localKeys.forEach(
-        function(key) {
-
-            try {
 
                 localStorage.removeItem(
                     key
@@ -1379,8 +1448,7 @@ function clearOldSessionData() {
             } catch (error) {
 
                 console.error(
-                    "Could not remove localStorage key:",
-                    key,
+                    "Storage cleanup error:",
                     error
                 );
 
@@ -1392,70 +1460,42 @@ function clearOldSessionData() {
 }
 
 
+clearOldSessionData();
+
+
 /* =========================================================
-   PASSWORD BUTTON
+   PASSWORD SHOW / HIDE
 ========================================================= */
 
-showPasswordBtn.addEventListener(
-    "click",
-    function() {
+if (showPasswordBtn) {
 
-        if (
-            passwordInput.type ===
-            "password"
-        ) {
+    showPasswordBtn.addEventListener(
+        "click",
+        function () {
 
-            passwordInput.type =
-                "text";
+            if (
+                passwordInput.type ===
+                "password"
+            ) {
 
-            showPasswordBtn.textContent =
-                "Hide";
+                passwordInput.type =
+                    "text";
 
-        } else {
+                showPasswordBtn.textContent =
+                    "Hide";
 
-            passwordInput.type =
-                "password";
+            } else {
 
-            showPasswordBtn.textContent =
-                "Show";
+                passwordInput.type =
+                    "password";
+
+                showPasswordBtn.textContent =
+                    "Show";
+
+            }
 
         }
-
-    }
-);
-
-
-/* =========================================================
-   MESSAGE
-========================================================= */
-
-function showMessage(
-    message,
-    type = "error"
-) {
-
-    loginMessage.className =
-        "login-status " + type;
-
-    loginMessage.textContent =
-        message;
-
-    loginMessage.style.display =
-        "block";
-
-}
-
-
-function hideMessage() {
-
-    loginMessage.textContent =
-        "";
-
-    loginMessage.style.display =
-        "none";
-
-    loginMessage.className =
-        "login-status";
+    );
 
 }
 
@@ -1467,6 +1507,13 @@ function hideMessage() {
 function setLoginLoading(
     loading
 ) {
+
+    if (!loginButton) {
+
+        return;
+
+    }
+
 
     if (loading) {
 
@@ -1507,339 +1554,547 @@ if (!window.supabaseClient) {
    LOGIN
 ========================================================= */
 
-loginForm.addEventListener(
-    "submit",
-    async function(event) {
+if (loginForm) {
 
-        event.preventDefault();
+    loginForm.addEventListener(
+        "submit",
+        async function (event) {
 
-        hideMessage();
+            event.preventDefault();
 
-        setLoginLoading(
-            true
-        );
+            hideMessage();
 
+            setLoginLoading(true);
 
-        const email =
-            document
-                .getElementById(
-                    "email"
-                )
-                .value
-                .trim()
-                .toLowerCase();
 
-
-        const password =
-            passwordInput.value;
-
-
-        if (!email) {
-
-            showMessage(
-                "Please enter your email address."
-            );
-
-            setLoginLoading(
-                false
-            );
-
-            return;
-
-        }
-
-
-        if (!password) {
-
-            showMessage(
-                "Please enter your password."
-            );
-
-            setLoginLoading(
-                false
-            );
-
-            return;
-
-        }
-
-
-        const db =
-            window.supabaseClient;
-
-
-        if (!db) {
-
-            showMessage(
-                "Supabase is not connected. Please check your internet connection and configuration."
-            );
-
-            setLoginLoading(
-                false
-            );
-
-            return;
-
-        }
-
-
-        try {
-
-
-            /* =================================================
-               STEP 1 — AUTHENTICATE
-            ================================================= */
-
-            const {
-                data: authData,
-                error: authError
-            } =
-                await db.auth.signInWithPassword({
-
-                    email: email,
-
-                    password: password
-
-                });
-
-
-            if (authError) {
-
-                console.error(
-                    "EDU TECH Login Error:",
-                    authError
-                );
-
-
-                showMessage(
-                    authError.message ||
-                    "Unable to sign in. Please check your email and password."
-                );
-
-
-                setLoginLoading(
-                    false
-                );
-
-
-                return;
-
-            }
-
-
-            const user =
-                authData &&
-                authData.user;
-
-
-            if (!user) {
-
-                await db.auth.signOut();
-
-
-                showMessage(
-                    "Login failed. No authenticated user was returned."
-                );
-
-
-                setLoginLoading(
-                    false
-                );
-
-
-                return;
-
-            }
-
-
-            /* =================================================
-               STEP 2 — LOAD PROFILE
-            ================================================= */
-
-            const {
-                data: profile,
-                error: profileError
-            } =
-                await db
-                    .from("profiles")
-                    .select(
-                        "id, full_name, role, hotel_id, is_active"
-                    )
-                    .eq(
-                        "id",
-                        user.id
-                    )
-                    .maybeSingle();
-
-
-            if (profileError) {
-
-                console.error(
-                    "EDU TECH Profile Error:",
-                    profileError
-                );
-
-
-                await db.auth.signOut();
-
-
-                showMessage(
-                    "Your account was authenticated, but your system profile could not be loaded."
-                );
-
-
-                setLoginLoading(
-                    false
-                );
-
-
-                return;
-
-            }
-
-
-            if (!profile) {
-
-                await db.auth.signOut();
-
-
-                showMessage(
-                    "Your account does not have a system profile. Please contact the System Owner."
-                );
-
-
-                setLoginLoading(
-                    false
-                );
-
-
-                return;
-
-            }
-
-
-            /* =================================================
-               STEP 3 — ACCOUNT STATUS
-            ================================================= */
-
-            if (
-                profile.is_active ===
-                false
-            ) {
-
-                await db.auth.signOut();
-
-                clearOldSessionData();
-
-
-                showMessage(
-                    "Access denied. Your account has been deactivated."
-                );
-
-
-                setLoginLoading(
-                    false
-                );
-
-
-                return;
-
-            }
-
-
-            /* =================================================
-               STEP 4 — NORMALIZE ROLE
-            ================================================= */
-
-            const role =
-                String(
-                    profile.role || ""
-                )
+            const email =
+                document
+                    .getElementById("email")
+                    .value
                     .trim()
-                    .toLowerCase()
-                    .replace(
-                        /\s+/g,
-                        "_"
+                    .toLowerCase();
+
+
+            const password =
+                passwordInput.value;
+
+
+            if (!email) {
+
+                showMessage(
+                    "Please enter your email address."
+                );
+
+                setLoginLoading(false);
+
+                return;
+
+            }
+
+
+            if (!password) {
+
+                showMessage(
+                    "Please enter your password."
+                );
+
+                setLoginLoading(false);
+
+                return;
+
+            }
+
+
+            const db =
+                window.supabaseClient;
+
+
+            if (!db) {
+
+                showMessage(
+                    "Supabase is not connected. Please check your internet connection and configuration."
+                );
+
+                setLoginLoading(false);
+
+                return;
+
+            }
+
+
+            try {
+
+
+                /* =================================================
+                   STEP 1 — AUTHENTICATE
+                ================================================= */
+
+                const {
+                    data: authData,
+                    error: authError
+                } =
+                    await db.auth.signInWithPassword({
+
+                        email: email,
+
+                        password: password
+
+                    });
+
+
+                if (authError) {
+
+                    console.error(
+                        "EDU TECH Login Error:",
+                        authError
+                    );
+
+                    showMessage(
+                        authError.message ||
+                        "Unable to sign in. Please check your email and password."
+                    );
+
+                    setLoginLoading(false);
+
+                    return;
+
+                }
+
+
+                const user =
+                    authData &&
+                    authData.user;
+
+
+                if (!user) {
+
+                    await db.auth.signOut();
+
+                    showMessage(
+                        "Login failed. No authenticated user was returned."
+                    );
+
+                    setLoginLoading(false);
+
+                    return;
+
+                }
+
+
+                /* =================================================
+                   STEP 2 — LOAD PROFILE
+                ================================================= */
+
+                const {
+                    data: profile,
+                    error: profileError
+                } =
+                    await db
+                        .from("profiles")
+                        .select(
+                            "id, full_name, role, hotel_id, is_active"
+                        )
+                        .eq(
+                            "id",
+                            user.id
+                        )
+                        .maybeSingle();
+
+
+                if (profileError) {
+
+                    console.error(
+                        "EDU TECH Profile Error:",
+                        profileError
+                    );
+
+                    await db.auth.signOut();
+
+                    showMessage(
+                        "Your account was authenticated, but your system profile could not be loaded."
+                    );
+
+                    setLoginLoading(false);
+
+                    return;
+
+                }
+
+
+                if (!profile) {
+
+                    await db.auth.signOut();
+
+                    showMessage(
+                        "Your account does not have a system profile. Please contact the System Owner."
+                    );
+
+                    setLoginLoading(false);
+
+                    return;
+
+                }
+
+
+                /* =================================================
+                   STEP 3 — ACTIVE USER
+                ================================================= */
+
+                if (profile.is_active === false) {
+
+                    await db.auth.signOut();
+
+                    showMessage(
+                        "Access denied. Your user account is inactive."
+                    );
+
+                    setLoginLoading(false);
+
+                    return;
+
+                }
+
+
+                /* =================================================
+                   STEP 4 — NORMALIZE ROLE
+                ================================================= */
+
+                const role =
+                    String(
+                        profile.role ||
+                        ""
+                    )
+                        .trim()
+                        .toLowerCase();
+
+
+                const allowedRoles = [
+
+                    "system_owner",
+                    "hotel_owner",
+                    "manager",
+                    "receptionist"
+
+                ];
+
+
+                if (
+                    !allowedRoles.includes(
+                        role
+                    )
+                ) {
+
+                    await db.auth.signOut();
+
+                    showMessage(
+                        "Your account role is not recognized by the hotel management system."
+                    );
+
+                    setLoginLoading(false);
+
+                    return;
+
+                }
+
+
+                /* =================================================
+                   STEP 5 — SYSTEM OWNER
+                ================================================= */
+
+                if (
+                    role ===
+                    "system_owner"
+                ) {
+
+                    sessionStorage.setItem(
+                        "authenticatedUserId",
+                        user.id
+                    );
+
+                    sessionStorage.setItem(
+                        "authenticatedUserRole",
+                        role
+                    );
+
+                    sessionStorage.setItem(
+                        "userName",
+                        profile.full_name ||
+                        user.email ||
+                        "System Owner"
                     );
 
 
-            const validRoles = [
-
-                "system_owner",
-                "hotel_owner",
-                "manager",
-                "receptionist"
-
-            ];
+                    showMessage(
+                        "System Owner login successful. Opening the system...",
+                        "success"
+                    );
 
 
-            if (
-                !validRoles.includes(
-                    role
-                )
-            ) {
+                    setTimeout(
+                        function () {
 
-                console.error(
-                    "EDU TECH Invalid Role:",
-                    profile.role
-                );
+                            window.location.href =
+                                "./index.html";
 
-
-                await db.auth.signOut();
+                        },
+                        500
+                    );
 
 
-                showMessage(
-                    "Your account has an invalid system role. Please contact the System Owner."
-                );
+                    return;
+
+                }
 
 
-                setLoginLoading(
-                    false
-                );
+                /* =================================================
+                   STEP 6 — HOTEL ID
+                ================================================= */
+
+                const hotelId =
+                    profile.hotel_id;
 
 
-                return;
+                if (
+                    hotelId === null ||
+                    hotelId === undefined ||
+                    hotelId === ""
+                ) {
 
-            }
+                    await db.auth.signOut();
+
+                    showMessage(
+                        "Your account is not assigned to a hotel. Please contact the System Owner."
+                    );
+
+                    setLoginLoading(false);
+
+                    return;
+
+                }
 
 
-            /* =================================================
-               STEP 5 — SYSTEM OWNER
-            ================================================= */
+                /* =================================================
+                   STEP 7 — LOAD HOTEL
+                ================================================= */
 
-            if (
-                role ===
-                "system_owner"
-            ) {
+                const {
+                    data: hotel,
+                    error: hotelError
+                } =
+                    await db
+                        .from("hotels")
+                        .select(
+                            "id, hotel_name, location, phone, status, subscription_start, subscription_end"
+                        )
+                        .eq(
+                            "id",
+                            hotelId
+                        )
+                        .maybeSingle();
+
+
+                if (hotelError) {
+
+                    console.error(
+                        "EDU TECH Hotel Error:",
+                        hotelError
+                    );
+
+                    await db.auth.signOut();
+
+                    showMessage(
+                        "Your assigned hotel could not be loaded. Please contact the System Owner."
+                    );
+
+                    setLoginLoading(false);
+
+                    return;
+
+                }
+
+
+                if (!hotel) {
+
+                    await db.auth.signOut();
+
+                    showMessage(
+                        "Your assigned hotel could not be found. Please contact the System Owner."
+                    );
+
+                    setLoginLoading(false);
+
+                    return;
+
+                }
+
+
+                /* =================================================
+                   STEP 8 — HOTEL STATUS
+                ================================================= */
+
+                const hotelStatus =
+                    String(
+                        hotel.status ||
+                        "active"
+                    )
+                        .trim()
+                        .toLowerCase();
+
+
+                if (
+                    hotelStatus ===
+                        "deactivated" ||
+                    hotelStatus ===
+                        "suspended"
+                ) {
+
+                    await db.auth.signOut();
+
+                    showMessage(
+                        "Access denied. Your hotel account is currently " +
+                        hotelStatus +
+                        "."
+                    );
+
+                    setLoginLoading(false);
+
+                    return;
+
+                }
+
+
+                /* =================================================
+                   STEP 9 — SUBSCRIPTION
+                ================================================= */
+
+                if (
+                    hotel.subscription_end
+                ) {
+
+                    const subscriptionEnd =
+                        new Date(
+                            hotel.subscription_end
+                        );
+
+
+                    if (
+                        !Number.isNaN(
+                            subscriptionEnd.getTime()
+                        )
+                    ) {
+
+                        const now =
+                            new Date();
+
+
+                        if (
+                            now >
+                            subscriptionEnd
+                        ) {
+
+                            await db.auth.signOut();
+
+                            showMessage(
+                                "Your hotel's subscription has expired. Please contact the System Owner."
+                            );
+
+                            setLoginLoading(false);
+
+                            return;
+
+                        }
+
+                    }
+
+                }
+
+
+                /* =================================================
+                   STEP 10 — SAVE SESSION
+                ================================================= */
 
                 sessionStorage.setItem(
                     "authenticatedUserId",
                     user.id
                 );
 
-
                 sessionStorage.setItem(
                     "authenticatedUserRole",
                     role
                 );
 
-
                 sessionStorage.setItem(
                     "userName",
                     profile.full_name ||
                     user.email ||
-                    "System Owner"
+                    "User"
+                );
+
+                sessionStorage.setItem(
+                    "hotelId",
+                    String(hotel.id)
+                );
+
+                sessionStorage.setItem(
+                    "hotel_id",
+                    String(hotel.id)
+                );
+
+                sessionStorage.setItem(
+                    "hotelName",
+                    hotel.hotel_name ||
+                    ""
+                );
+
+                sessionStorage.setItem(
+                    "hotel_name",
+                    hotel.hotel_name ||
+                    ""
                 );
 
 
+                /* =================================================
+                   STEP 11 — VERIFY SESSION
+                ================================================= */
+
+                const {
+                    data: sessionData,
+                    error: sessionError
+                } =
+                    await db.auth.getSession();
+
+
+                if (
+                    sessionError ||
+                    !sessionData ||
+                    !sessionData.session
+                ) {
+
+                    await db.auth.signOut();
+
+                    showMessage(
+                        "Login session could not be verified. Please try again."
+                    );
+
+                    setLoginLoading(false);
+
+                    return;
+
+                }
+
+
+                /* =================================================
+                   SUCCESS
+                ================================================= */
+
                 showMessage(
-                    "System Owner login successful. Opening the system...",
+                    "Login successful. Opening the hotel management system...",
                     "success"
                 );
 
 
                 setTimeout(
-                    function() {
+                    function () {
 
                         window.location.href =
                             "./index.html";
@@ -1849,394 +2104,47 @@ loginForm.addEventListener(
                 );
 
 
-                return;
-
-            }
-
-
-            /* =================================================
-               STEP 6 — HOTEL ID
-            ================================================= */
-
-            const hotelId =
-                profile.hotel_id;
-
-
-            if (
-                hotelId === null ||
-                hotelId === undefined ||
-                hotelId === ""
-            ) {
-
-                await db.auth.signOut();
-
-
-                showMessage(
-                    "Your account is not assigned to a hotel. Please contact the System Owner."
-                );
-
-
-                setLoginLoading(
-                    false
-                );
-
-
-                return;
-
-            }
-
-
-            /* =================================================
-               STEP 7 — LOAD HOTEL
-               
-               IMPORTANT:
-               Do NOT request hotels.email.
-               The hotels table does not contain an email column.
-            ================================================= */
-
-            const {
-                data: hotel,
-                error: hotelError
-            } =
-                await db
-                    .from("hotels")
-                    .select(
-                        "id, hotel_name, location, phone, status, subscription_start, subscription_end"
-                    )
-                    .eq(
-                        "id",
-                        hotelId
-                    )
-                    .maybeSingle();
-
-
-            if (hotelError) {
+            } catch (error) {
 
                 console.error(
-                    "EDU TECH Hotel Error:",
-                    hotelError
+                    "EDU TECH unexpected login error:",
+                    error
                 );
 
 
-                await db.auth.signOut();
-
-
-                showMessage(
-                    "Your assigned hotel could not be loaded. Please contact the System Owner."
-                );
-
-
-                setLoginLoading(
-                    false
-                );
-
-
-                return;
-
-            }
-
-
-            if (!hotel) {
-
-                await db.auth.signOut();
-
-
-                showMessage(
-                    "Your assigned hotel could not be found. Please contact the System Owner."
-                );
-
-
-                setLoginLoading(
-                    false
-                );
-
-
-                return;
-
-            }
-
-
-            /* =================================================
-               STEP 8 — HOTEL STATUS
-            ================================================= */
-
-            const hotelStatus =
-                String(
-                    hotel.status ||
-                    "active"
-                )
-                    .trim()
-                    .toLowerCase();
-
-
-            if (
-                hotelStatus ===
-                    "deactivated" ||
-                hotelStatus ===
-                    "suspended"
-            ) {
-
-                await db.auth.signOut();
-
-
-                showMessage(
-                    "Access denied. Your hotel account is currently " +
-                    hotelStatus +
-                    "."
-                );
-
-
-                setLoginLoading(
-                    false
-                );
-
-
-                return;
-
-            }
-
-
-            /* =================================================
-               STEP 9 — SUBSCRIPTION END DATE
-            ================================================= */
-
-            if (
-                hotel.subscription_end
-            ) {
-
-                const today =
-                    new Date();
-
-
-                today.setHours(
-                    0,
-                    0,
-                    0,
-                    0
-                );
-
-
-                const subscriptionEnd =
-                    new Date(
-                        hotel.subscription_end +
-                        "T00:00:00"
-                    );
-
-
-                if (
-                    !Number.isNaN(
-                        subscriptionEnd.getTime()
-                    ) &&
-                    subscriptionEnd <
-                        today
-                ) {
+                try {
 
                     await db.auth.signOut();
 
+                } catch (signOutError) {
 
-                    showMessage(
-                        "Access denied. Your hotel's subscription has expired. Please contact the System Owner for renewal."
+                    console.error(
+                        "Sign out error:",
+                        signOutError
                     );
-
-
-                    setLoginLoading(
-                        false
-                    );
-
-
-                    return;
 
                 }
 
-            }
-
-
-            /* =================================================
-               STEP 10 — SAVE APPLICATION SESSION DATA
-            ================================================= */
-
-            sessionStorage.setItem(
-                "authenticatedUserId",
-                user.id
-            );
-
-
-            sessionStorage.setItem(
-                "authenticatedUserRole",
-                role
-            );
-
-
-            sessionStorage.setItem(
-                "userName",
-                profile.full_name ||
-                user.email ||
-                ""
-            );
-
-
-            sessionStorage.setItem(
-                "hotelId",
-                String(
-                    hotel.id
-                )
-            );
-
-
-            sessionStorage.setItem(
-                "hotel_id",
-                String(
-                    hotel.id
-                )
-            );
-
-
-            sessionStorage.setItem(
-                "hotelName",
-                hotel.hotel_name ||
-                ""
-            );
-
-
-            sessionStorage.setItem(
-                "hotel_name",
-                hotel.hotel_name ||
-                ""
-            );
-
-
-            /* =================================================
-               STEP 11 — VERIFY SESSION BEFORE REDIRECT
-            ================================================= */
-
-            const {
-                data: sessionCheck,
-                error: sessionError
-            } =
-                await db.auth.getSession();
-
-
-            if (sessionError) {
-
-                console.error(
-                    "EDU TECH Session Verification Error:",
-                    sessionError
-                );
-
-
-                await db.auth.signOut();
-
 
                 showMessage(
-                    "Login succeeded, but the Supabase session could not be confirmed. Please try again."
+                    error &&
+                    error.message
+                        ? error.message
+                        : "An unexpected error occurred while signing in."
                 );
 
 
-                setLoginLoading(
-                    false
-                );
-
-
-                return;
+                setLoginLoading(false);
 
             }
-
-
-            if (
-                !sessionCheck ||
-                !sessionCheck.session
-            ) {
-
-                console.error(
-                    "EDU TECH: Supabase returned no session after login."
-                );
-
-
-                await db.auth.signOut();
-
-
-                showMessage(
-                    "Login succeeded, but no active session was created. Please try again."
-                );
-
-
-                setLoginLoading(
-                    false
-                );
-
-
-                return;
-
-            }
-
-
-            /* =================================================
-               STEP 12 — SUCCESS
-            ================================================= */
-
-            showMessage(
-                "Login successful. Opening " +
-                (
-                    hotel.hotel_name ||
-                    "your hotel"
-                ) +
-                "...",
-                "success"
-            );
-
-
-            setTimeout(
-                function() {
-
-                    window.location.href =
-                        "./index.html";
-
-                },
-                500
-            );
-
-
-        } catch (error) {
-
-            console.error(
-                "EDU TECH Unexpected Login Error:",
-                error
-            );
-
-
-            try {
-
-                await db.auth.signOut();
-
-            } catch (signOutError) {
-
-                console.error(
-                    "EDU TECH Sign-Out Error:",
-                    signOutError
-                );
-
-            }
-
-
-            showMessage(
-                error &&
-                error.message
-                    ? error.message
-                    : "An unexpected error occurred while signing in. Please try again."
-            );
-
-
-            setLoginLoading(
-                false
-            );
 
         }
+    );
 
-    }
-);
+}
 
 </script>
 
-
 </body>
+
 </html>
