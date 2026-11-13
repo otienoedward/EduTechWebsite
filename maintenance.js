@@ -2,30 +2,15 @@
    EDU TECH HOTEL MANAGEMENT SYSTEM
    MAINTENANCE.JS
    ---------------------------------------------------------
-   VERSION: 2026.11.06.01
+   VERSION: 2026.11.13.01
    ---------------------------------------------------------
-   MATCHED EXACTLY TO CURRENT maintenance.html
-
-   FEATURES:
-   - Load current hotel
-   - Load maintenance records
-   - Load rooms
-   - Load employees / technicians
-   - Add maintenance task
-   - Edit maintenance task
-   - Delete maintenance task
-   - View maintenance task
-   - Search maintenance
-   - Filter by status
-   - Summary statistics
-   - Print report
-   - Save PDF
-   - Hotel-specific records
-
-   IMPORTANT:
-   - Maintenance is NOT connected to the financial ledger.
-   - Maintenance cost is stored as a record only.
-   - No financial transaction is created.
+   UPDATED:
+   - Technician is now entered manually
+   - No permanent technician required
+   - No Employees table required for technicians
+   - Technician name stored in assigned_to
+   - employee_id is no longer required
+   - Existing maintenance functionality preserved
    ========================================================= */
 
 (function () {
@@ -46,8 +31,6 @@
         maintenance: [],
 
         rooms: [],
-
-        employees: [],
 
         editingId: null,
 
@@ -74,6 +57,7 @@
             const sessionValue =
                 sessionStorage.getItem(key);
 
+
             if (
                 sessionValue !== null &&
                 sessionValue !== ""
@@ -87,6 +71,7 @@
             const localValue =
                 localStorage.getItem(key);
 
+
             if (
                 localValue !== null &&
                 localValue !== ""
@@ -97,6 +82,7 @@
             }
 
         }
+
 
         return null;
 
@@ -110,7 +96,9 @@
                 "hotelId",
                 "hotel_id",
                 "currentHotelId",
-                "current_hotel_id"
+                "current_hotel_id",
+                "roomHotel",
+                "selectedHotelId"
             ]);
 
 
@@ -304,6 +292,7 @@
                 error
             );
 
+
             const hotelName =
                 document.getElementById(
                     "maintenanceHotelName"
@@ -407,83 +396,6 @@
             state.rooms = [];
 
             populateRooms();
-
-        }
-
-    }
-
-
-    /* =====================================================
-       LOAD EMPLOYEES
-       ===================================================== */
-
-    async function loadEmployees() {
-
-        const supabase =
-            getSupabase();
-
-
-        if (
-            !supabase ||
-            !state.hotelId
-        ) {
-
-            state.employees = [];
-
-            populateTechnicians();
-
-            return;
-
-        }
-
-
-        try {
-
-            const {
-                data,
-                error
-            } =
-                await supabase
-                    .from("employees")
-                    .select("*")
-                    .eq(
-                        "hotel_id",
-                        state.hotelId
-                    )
-                    .order(
-                        "full_name",
-                        {
-                            ascending: true
-                        }
-                    );
-
-
-            if (error) {
-
-                throw error;
-
-            }
-
-
-            state.employees =
-                Array.isArray(data)
-                    ? data
-                    : [];
-
-
-            populateTechnicians();
-
-        } catch (error) {
-
-            console.error(
-                "Employees loading error:",
-                error
-            );
-
-
-            state.employees = [];
-
-            populateTechnicians();
 
         }
 
@@ -650,7 +562,7 @@
 
 
     /* =====================================================
-       ROOM / EMPLOYEE HELPERS
+       ROOM HELPERS
        ===================================================== */
 
     function getRoomById(id) {
@@ -671,48 +583,6 @@
                 Number(room.id) ===
                 Number(id)
         ) || null;
-
-    }
-
-
-    function getEmployeeById(id) {
-
-        if (
-            id === null ||
-            id === undefined ||
-            id === ""
-        ) {
-
-            return null;
-
-        }
-
-
-        return state.employees.find(
-            employee =>
-                Number(employee.id) ===
-                Number(id)
-        ) || null;
-
-    }
-
-
-    function getEmployeeName(employee) {
-
-        if (!employee) {
-
-            return "";
-
-        }
-
-
-        return (
-            employee.full_name ||
-            employee.name ||
-            employee.employee_name ||
-            employee.staff_name ||
-            ""
-        );
 
     }
 
@@ -744,29 +614,50 @@
     }
 
 
+    /* =====================================================
+       TECHNICIAN HELPER
+       -----------------------------------------------------
+       Technician is now stored directly in assigned_to.
+       No Employees lookup is required.
+       ===================================================== */
+
     function getTechnicianName(record) {
 
         if (
+            record &&
             record.assigned_to !== null &&
             record.assigned_to !== undefined &&
             String(record.assigned_to).trim() !== ""
         ) {
 
-            return record.assigned_to;
+            return String(
+                record.assigned_to
+            ).trim();
 
         }
 
 
-        const employee =
-            getEmployeeById(
-                record.employee_id
-            );
+        /*
+         * Compatibility fallback:
+         * Some old records may have an employee/staff
+         * name stored under another field.
+         */
+
+        if (
+            record &&
+            record.technician_name !== null &&
+            record.technician_name !== undefined &&
+            String(record.technician_name).trim() !== ""
+        ) {
+
+            return String(
+                record.technician_name
+            ).trim();
+
+        }
 
 
-        return (
-            getEmployeeName(employee) ||
-            "-"
-        );
+        return "-";
 
     }
 
@@ -976,12 +867,15 @@
                         <tr>
 
                             <td>
+
                                 <span class="task-id">
                                     #${escapeHtml(
                                         record.id
                                     )}
                                 </span>
+
                             </td>
+
 
                             <td>
                                 ${escapeHtml(
@@ -991,12 +885,14 @@
                                 )}
                             </td>
 
+
                             <td>
                                 ${escapeHtml(
                                     record.issue ||
                                     "-"
                                 )}
                             </td>
+
 
                             <td>
                                 ${escapeHtml(
@@ -1006,19 +902,24 @@
                                 )}
                             </td>
 
+
                             <td>
                                 ${escapeHtml(
                                     date
                                 )}
                             </td>
 
+
                             <td>
+
                                 <span class="cost">
                                     KSh ${money(
                                         cost
                                     )}
                                 </span>
+
                             </td>
+
 
                             <td>
 
@@ -1027,12 +928,15 @@
                                         status
                                     )}"
                                 >
+
                                     ${escapeHtml(
                                         status
                                     )}
+
                                 </span>
 
                             </td>
+
 
                             <td>
 
@@ -1046,6 +950,7 @@
                                         View
                                     </button>
 
+
                                     <button
                                         type="button"
                                         class="small-btn btn-warning"
@@ -1053,6 +958,7 @@
                                     >
                                         Edit
                                     </button>
+
 
                                     <button
                                         type="button"
@@ -1248,86 +1154,6 @@
 
 
     /* =====================================================
-       POPULATE TECHNICIANS
-       ===================================================== */
-
-    function populateTechnicians() {
-
-        const select =
-            document.getElementById(
-                "maintenanceTechnician"
-            );
-
-
-        if (!select) {
-
-            return;
-
-        }
-
-
-        const currentValue =
-            select.value;
-
-
-        select.innerHTML = `
-
-            <option value="">
-                Select Technician
-            </option>
-
-        `;
-
-
-        state.employees.forEach(
-            employee => {
-
-                const name =
-                    getEmployeeName(
-                        employee
-                    );
-
-
-                if (!name) {
-
-                    return;
-
-                }
-
-
-                const option =
-                    document.createElement(
-                        "option"
-                    );
-
-
-                option.value =
-                    employee.id;
-
-
-                option.textContent =
-                    name;
-
-
-                select.appendChild(
-                    option
-                );
-
-            }
-        );
-
-
-        if (currentValue) {
-
-            select.value =
-                currentValue;
-
-        }
-
-    }
-
-
-    /* =====================================================
        OPEN ADD / EDIT MODAL
        ===================================================== */
 
@@ -1398,6 +1224,10 @@
         }
 
 
+        /*
+         * Technician is now a text field.
+         */
+
         const technician =
             document.getElementById(
                 "maintenanceTechnician"
@@ -1407,7 +1237,13 @@
         if (technician) {
 
             technician.value =
-                record?.employee_id || "";
+                getTechnicianName(
+                    record
+                ) === "-"
+                    ? ""
+                    : getTechnicianName(
+                        record
+                    );
 
         }
 
@@ -1644,10 +1480,12 @@
                             record.status
                         )}"
                     >
+
                         ${escapeHtml(
                             record.status ||
                             "Pending"
                         )}
+
                     </span>
 
                 </div>
@@ -1792,15 +1630,11 @@
         }
 
 
+        /* ROOM */
+
         const roomId =
             document.getElementById(
                 "maintenanceRoom"
-            )?.value || null;
-
-
-        const technicianId =
-            document.getElementById(
-                "maintenanceTechnician"
             )?.value || null;
 
 
@@ -1810,11 +1644,18 @@
             );
 
 
-        const selectedEmployee =
-            getEmployeeById(
-                technicianId
-            );
+        /* TECHNICIAN NAME */
 
+        const technicianName =
+            String(
+                document.getElementById(
+                    "maintenanceTechnician"
+                )?.value || ""
+            )
+            .trim();
+
+
+        /* ISSUE */
 
         const issue =
             String(
@@ -1825,12 +1666,16 @@
             .trim();
 
 
+        /* STATUS */
+
         const status =
             document.getElementById(
                 "maintenanceStatus"
             )?.value ||
             "Pending";
 
+
+        /* COST */
 
         const costValue =
             document.getElementById(
@@ -1844,6 +1689,8 @@
             );
 
 
+        /* NOTES */
+
         const notes =
             String(
                 document.getElementById(
@@ -1853,6 +1700,8 @@
             .trim() ||
             null;
 
+
+        /* VALIDATION */
 
         if (!issue) {
 
@@ -1881,11 +1730,28 @@
         }
 
 
-        const assignedTo =
-            getEmployeeName(
-                selectedEmployee
-            ) || null;
+        /*
+         * Technician is intentionally optional.
+         *
+         * This allows the hotel to save a task even
+         * before a technician has been assigned.
+         */
 
+        const assignedTo =
+            technicianName ||
+            null;
+
+
+        /*
+         * IMPORTANT:
+         *
+         * We continue using the existing assigned_to
+         * field in the maintenance table.
+         *
+         * employee_id is set to null because the hotel
+         * does not require technicians to be permanent
+         * employees.
+         */
 
         const payload = {
 
@@ -1914,9 +1780,7 @@
                     : null,
 
             employee_id:
-                technicianId
-                    ? Number(technicianId)
-                    : null,
+                null,
 
             hotel_id:
                 state.hotelId
@@ -1959,12 +1823,15 @@
 
                 closeMaintenanceModal();
 
+
                 await loadMaintenance();
+
 
                 showToast(
                     "Maintenance task updated successfully.",
                     "success"
                 );
+
 
                 return;
 
@@ -1994,7 +1861,9 @@
 
             closeMaintenanceModal();
 
+
             await loadMaintenance();
+
 
             showToast(
                 "Maintenance task saved successfully.",
@@ -2487,6 +2356,7 @@
 
         doc.setFontSize(8);
 
+
         doc.text(
             `Total Tasks: ${records.length}`,
             14,
@@ -2606,8 +2476,6 @@
 
                 await loadRooms();
 
-                await loadEmployees();
-
                 await loadMaintenance();
 
                 showToast(
@@ -2677,6 +2545,7 @@
 
                     }
 
+
                     return;
 
                 }
@@ -2700,6 +2569,7 @@
                     viewMaintenance(
                         id
                     );
+
 
                     return;
 
@@ -2749,7 +2619,7 @@
         );
 
 
-        /* CLOSE MODALS WHEN CLICKING OUTSIDE */
+        /* CLOSE MODALS OUTSIDE */
 
         document.getElementById(
             "maintenanceModal"
@@ -2788,6 +2658,27 @@
             }
         );
 
+
+        /* ESCAPE KEY */
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key ===
+                    "Escape"
+                ) {
+
+                    closeMaintenanceModal();
+
+                    closeViewMaintenanceModal();
+
+                }
+
+            }
+        );
+
     }
 
 
@@ -2803,8 +2694,6 @@
                 await loadHotel();
 
                 await loadRooms();
-
-                await loadEmployees();
 
                 await loadMaintenance();
 
@@ -2886,8 +2775,6 @@
         await loadHotel();
 
         await loadRooms();
-
-        await loadEmployees();
 
         await loadMaintenance();
 

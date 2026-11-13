@@ -145,9 +145,10 @@
         }
 
         .summary-label {
-            color: #64748b;
+            color: #475569;
             font-size: 13px;
             margin-bottom: 8px;
+            font-weight: 600;
         }
 
         .summary-value {
@@ -188,11 +189,12 @@
         .module-card-header h2 {
             margin: 0 0 5px;
             font-size: 19px;
+            color: #111827;
         }
 
         .module-card-header p {
             margin: 0;
-            color: #6b7280;
+            color: #475569;
             font-size: 13px;
         }
 
@@ -216,9 +218,15 @@
         .search-box {
             min-width: 260px;
             padding: 10px 12px;
-            border: 1px solid #d1d5db;
+            border: 1px solid #94a3b8;
             border-radius: 7px;
             outline: none;
+            color: #111827;
+            background: #ffffff;
+        }
+
+        .search-box::placeholder {
+            color: #64748b;
         }
 
         .search-box:focus,
@@ -231,10 +239,23 @@
 
         select {
             padding: 10px 12px;
-            border: 1px solid #d1d5db;
+            border: 1px solid #94a3b8;
             border-radius: 7px;
             background: white;
+            color: #111827;
             min-width: 150px;
+        }
+
+        input,
+        textarea {
+            color: #111827;
+            background: #ffffff;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #64748b;
+            opacity: 1;
         }
 
         .table-container {
@@ -249,8 +270,8 @@
         }
 
         th {
-            background: #f8fafc;
-            color: #475569;
+            background: #102a43;
+            color: #ffffff;
             font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.4px;
@@ -265,9 +286,15 @@
             border-bottom: 1px solid #eef2f7;
             font-size: 14px;
             vertical-align: middle;
+            color: #172033;
+            background: #ffffff;
         }
 
         tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        tbody tr:hover td {
             background: #f8fafc;
         }
 
@@ -279,6 +306,7 @@
         .cost {
             font-weight: 700;
             white-space: nowrap;
+            color: #102a43;
         }
 
         .status-badge {
@@ -328,7 +356,7 @@
         .loading-state {
             text-align: center;
             padding: 45px 20px;
-            color: #64748b;
+            color: #475569;
         }
 
         .error-state {
@@ -360,6 +388,7 @@
             overflow-y: auto;
             border-radius: 12px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+            color: #172033;
         }
 
         .modal-header {
@@ -373,13 +402,14 @@
         .modal-header h2 {
             margin: 0;
             font-size: 20px;
+            color: #102a43;
         }
 
         .modal-close {
             border: none;
             background: transparent;
             font-size: 26px;
-            color: #64748b;
+            color: #475569;
             cursor: pointer;
         }
 
@@ -406,7 +436,7 @@
         .form-group label {
             font-size: 13px;
             font-weight: 700;
-            color: #374151;
+            color: #172033;
         }
 
         .form-group input,
@@ -414,7 +444,7 @@
         .form-group textarea {
             width: 100%;
             padding: 10px 12px;
-            border: 1px solid #d1d5db;
+            border: 1px solid #94a3b8;
             border-radius: 7px;
             outline: none;
             font-family: inherit;
@@ -423,6 +453,12 @@
         textarea {
             min-height: 90px;
             resize: vertical;
+        }
+
+        .technician-hint {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 1px;
         }
 
         .modal-footer {
@@ -570,21 +606,21 @@
 
 <body>
 
-    <!-- =========================================================
-         CENTRAL SIDEBAR
-         Same sidebar used by the other EDU TECH modules
-    ========================================================== -->
+    <!-- SIDEBAR -->
     <aside id="appSidebar" class="sidebar"></aside>
 
 
-    <!-- =========================================================
-         MAIN CONTENT
-    ========================================================== -->
+    <!-- MAIN CONTENT -->
     <main class="main-content">
 
         <div id="accessDenied">
+
             <h2>Access Denied</h2>
-            <p>You do not have permission to access the Maintenance module.</p>
+
+            <p>
+                You do not have permission to access the Maintenance module.
+            </p>
+
         </div>
 
 
@@ -594,12 +630,15 @@
             <div class="page-header">
 
                 <div class="page-title">
+
                     <h1>🔧 Maintenance</h1>
 
                     <p>
                         Manage hotel maintenance requests, repairs and maintenance costs.
                     </p>
+
                 </div>
+
 
                 <div class="header-actions">
 
@@ -610,12 +649,14 @@
                         🖨️ Print Report
                     </button>
 
+
                     <button
                         type="button"
                         id="downloadMaintenancePDFButton"
                         class="btn btn-success">
                         📄 Save PDF
                     </button>
+
 
                     <button
                         type="button"
@@ -636,11 +677,13 @@
                     Currently Managing
                 </div>
 
+
                 <div
                     id="maintenanceHotelName"
                     class="hotel-name">
                     Loading hotel...
                 </div>
+
 
                 <div
                     id="maintenanceHotelLocation"
@@ -655,6 +698,7 @@
             <div class="summary-grid">
 
                 <div class="summary-card summary-blue">
+
                     <div class="summary-label">
                         Total Tasks
                     </div>
@@ -664,10 +708,12 @@
                         class="summary-value">
                         0
                     </div>
+
                 </div>
 
 
                 <div class="summary-card summary-yellow">
+
                     <div class="summary-label">
                         Pending
                     </div>
@@ -677,10 +723,12 @@
                         class="summary-value">
                         0
                     </div>
+
                 </div>
 
 
                 <div class="summary-card summary-orange">
+
                     <div class="summary-label">
                         In Progress
                     </div>
@@ -690,10 +738,12 @@
                         class="summary-value">
                         0
                     </div>
+
                 </div>
 
 
                 <div class="summary-card summary-green">
+
                     <div class="summary-label">
                         Completed
                     </div>
@@ -703,6 +753,7 @@
                         class="summary-value">
                         0
                     </div>
+
                 </div>
 
             </div>
@@ -733,6 +784,7 @@
                             id="maintenanceSearch"
                             class="search-box"
                             placeholder="Search task, room, issue or technician...">
+
 
                         <select id="maintenanceStatusFilter">
 
@@ -803,6 +855,7 @@
 
                         </thead>
 
+
                         <tbody id="maintenanceTableBody">
 
                             <tr>
@@ -830,9 +883,7 @@
     </main>
 
 
-    <!-- =========================================================
-         ADD / EDIT MODAL
-    ========================================================== -->
+    <!-- ADD / EDIT MODAL -->
     <div
         id="maintenanceModal"
         class="modal">
@@ -844,6 +895,7 @@
                 <h2 id="maintenanceModalTitle">
                     Add Maintenance Task
                 </h2>
+
 
                 <button
                     type="button"
@@ -866,11 +918,14 @@
 
                     <div class="form-grid">
 
+                        <!-- ROOM -->
+
                         <div class="form-group">
 
                             <label for="maintenanceRoom">
                                 Room
                             </label>
+
 
                             <select id="maintenanceRoom">
 
@@ -883,28 +938,37 @@
                         </div>
 
 
+                        <!-- TECHNICIAN - NOW FREE TEXT -->
+
                         <div class="form-group">
 
                             <label for="maintenanceTechnician">
-                                Technician
+                                Technician Name
                             </label>
 
-                            <select id="maintenanceTechnician">
 
-                                <option value="">
-                                    Select Technician
-                                </option>
+                            <input
+                                type="text"
+                                id="maintenanceTechnician"
+                                autocomplete="off"
+                                placeholder="Enter technician name">
 
-                            </select>
+
+                            <div class="technician-hint">
+                                Enter the technician or service provider handling this job.
+                            </div>
 
                         </div>
 
+
+                        <!-- ISSUE -->
 
                         <div class="form-group full">
 
                             <label for="maintenanceIssue">
                                 Issue
                             </label>
+
 
                             <input
                                 type="text"
@@ -915,11 +979,14 @@
                         </div>
 
 
+                        <!-- STATUS -->
+
                         <div class="form-group">
 
                             <label for="maintenanceStatus">
                                 Status
                             </label>
+
 
                             <select id="maintenanceStatus">
 
@@ -944,11 +1011,14 @@
                         </div>
 
 
+                        <!-- COST -->
+
                         <div class="form-group">
 
                             <label for="maintenanceCost">
                                 Cost (KSh)
                             </label>
+
 
                             <input
                                 type="number"
@@ -960,11 +1030,14 @@
                         </div>
 
 
+                        <!-- NOTES -->
+
                         <div class="form-group full">
 
                             <label for="maintenanceNotes">
                                 Notes
                             </label>
+
 
                             <textarea
                                 id="maintenanceNotes"
@@ -986,6 +1059,7 @@
                         Cancel
                     </button>
 
+
                     <button
                         type="submit"
                         id="saveMaintenanceButton"
@@ -1002,9 +1076,7 @@
     </div>
 
 
-    <!-- =========================================================
-         VIEW MODAL
-    ========================================================== -->
+    <!-- VIEW MODAL -->
     <div
         id="viewMaintenanceModal"
         class="modal">
@@ -1016,6 +1088,7 @@
                 <h2>
                     Maintenance Task Details
                 </h2>
+
 
                 <button
                     type="button"
@@ -1060,9 +1133,8 @@
     </div>
 
 
-    <!-- =========================================================
-         LIBRARIES / CENTRAL SYSTEM
-    ========================================================== -->
+    <!-- LIBRARIES -->
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script src="./supabase.js"></script>
