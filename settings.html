@@ -1,56 +1,549 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Settings - EDU TECH Hotel Management System</title>
+
     <link rel="stylesheet" href="./style.css">
 
     <style>
-        .settings-container {
-            padding: 25px;
-            max-width: 1200px;
-            margin: 0 auto;
+        /* =========================================================
+           EDU TECH HOTEL MANAGEMENT SYSTEM
+           SETTINGS PAGE - PROFESSIONAL MODULE LAYOUT
+           ========================================================= */
+
+        * {
+            box-sizing: border-box;
         }
 
-        .settings-header {
-            margin-bottom: 25px;
+        html {
+            scroll-behavior: smooth;
         }
 
-        .settings-header h1 {
-            margin: 0 0 8px;
-            font-size: 28px;
-        }
-
-        .settings-header p {
+        body.settings-page {
             margin: 0;
-            color: #666;
+            padding: 0;
+            min-height: 100vh;
+            background: #f4f7fb;
+            color: #1f2937;
+            font-family: Arial, Helvetica, sans-serif;
+            overflow-x: hidden;
         }
+
+        /* =========================================================
+           SIDEBAR
+           ========================================================= */
+
+        body.settings-page .sidebar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+
+            width: 260px !important;
+            height: 100vh !important;
+
+            margin: 0 !important;
+            padding: 0 !important;
+
+            background: #172033 !important;
+            color: #ffffff !important;
+
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+
+            z-index: 1000 !important;
+
+            box-shadow: 3px 0 12px rgba(0, 0, 0, 0.12);
+        }
+
+        body.settings-page .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        body.settings-page .sidebar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 10px;
+        }
+
+        body.settings-page .sidebar-header {
+            min-height: 76px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 18px 15px;
+
+            background: #111827;
+
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        body.settings-page .sidebar-header h2 {
+            margin: 0;
+
+            color: #ffffff;
+            font-size: 21px;
+            font-weight: 700;
+
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        body.settings-page .sidebar-nav {
+            display: flex !important;
+            flex-direction: column !important;
+
+            width: 100% !important;
+
+            margin: 0 !important;
+            padding: 12px 10px 20px !important;
+
+            gap: 4px !important;
+        }
+
+        body.settings-page .sidebar-nav a {
+            width: 100% !important;
+            min-height: 44px;
+
+            display: flex !important;
+            align-items: center !important;
+
+            padding: 11px 14px !important;
+
+            color: #dbe4f0 !important;
+            background: transparent !important;
+
+            text-decoration: none !important;
+
+            border-radius: 7px;
+
+            font-size: 14px;
+            font-weight: 500;
+
+            transition:
+                background 0.2s ease,
+                color 0.2s ease,
+                transform 0.2s ease;
+
+            white-space: nowrap;
+        }
+
+        body.settings-page .sidebar-nav a:hover {
+            background: #263449 !important;
+            color: #ffffff !important;
+
+            transform: translateX(2px);
+        }
+
+        body.settings-page .sidebar-nav a.active {
+            background: #2563eb !important;
+            color: #ffffff !important;
+
+            font-weight: 700;
+
+            box-shadow:
+                0 3px 8px rgba(37, 99, 235, 0.25);
+        }
+
+        body.settings-page .sidebar-nav a.logout-link {
+            margin-top: 10px;
+
+            color: #fecaca !important;
+        }
+
+        body.settings-page .sidebar-nav a.logout-link:hover {
+            background: #7f1d1d !important;
+            color: #ffffff !important;
+        }
+
+        .nav-icon {
+            width: 28px;
+            min-width: 28px;
+
+            margin-right: 7px;
+
+            font-size: 17px;
+            text-align: center;
+        }
+
+        /* =========================================================
+           MAIN CONTENT
+           ========================================================= */
+
+        body.settings-page .main-content {
+            position: relative;
+
+            width: calc(100% - 260px) !important;
+            min-width: 0;
+
+            min-height: 100vh;
+
+            margin-left: 260px !important;
+            padding: 0 !important;
+
+            background: #f4f7fb;
+        }
+
+        /* =========================================================
+           TOPBAR
+           ========================================================= */
+
+        body.settings-page .topbar {
+            position: sticky;
+            top: 0;
+
+            width: 100%;
+
+            min-height: 78px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            padding: 16px 28px;
+
+            background: #ffffff;
+
+            border-bottom: 1px solid #e5e7eb;
+
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+
+            z-index: 100;
+        }
+
+        body.settings-page .topbar-title h2 {
+            margin: 0 0 5px;
+
+            color: #111827;
+
+            font-size: 23px;
+            font-weight: 700;
+        }
+
+        body.settings-page .topbar-title p {
+            margin: 0;
+
+            color: #64748b;
+
+            font-size: 13px;
+        }
+
+        body.settings-page .user-info {
+            display: flex;
+            flex-direction: column;
+
+            align-items: flex-end;
+
+            gap: 3px;
+
+            padding: 8px 12px;
+
+            border-radius: 8px;
+
+            background: #f8fafc;
+
+            border: 1px solid #e2e8f0;
+        }
+
+        body.settings-page .user-info strong {
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        body.settings-page .user-info span {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        /* =========================================================
+           PAGE WORKSPACE
+           ========================================================= */
+
+        .settings-workspace {
+            width: 100%;
+            max-width: 1450px;
+
+            margin: 0 auto;
+
+            padding: 20px 28px 40px;
+        }
+
+        /* =========================================================
+           BACK NAVIGATION
+           ========================================================= */
+
+        .module-back-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+
+            padding: 12px 15px;
+
+            background: #ffffff;
+
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            min-height: 40px;
+
+            padding: 9px 15px;
+
+            color: #1d4ed8;
+            background: #eff6ff;
+
+            border: 1px solid #bfdbfe;
+            border-radius: 7px;
+
+            text-decoration: none;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            transition: all 0.2s ease;
+        }
+
+        .back-button:hover {
+            background: #dbeafe;
+            border-color: #93c5fd;
+
+            transform: translateX(-2px);
+        }
+
+        .back-arrow {
+            font-size: 19px;
+            line-height: 1;
+        }
+
+        .breadcrumb {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* =========================================================
+           PAGE INTRO
+           ========================================================= */
+
+        .settings-intro {
+            margin-bottom: 20px;
+
+            padding: 22px 24px;
+
+            background: linear-gradient(
+                135deg,
+                #ffffff 0%,
+                #f8fafc 100%
+            );
+
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+
+            box-shadow:
+                0 3px 10px rgba(15, 23, 42, 0.05);
+        }
+
+        .settings-intro-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+
+            gap: 20px;
+        }
+
+        .settings-intro h1 {
+            margin: 0 0 7px;
+
+            color: #111827;
+
+            font-size: 27px;
+            font-weight: 700;
+        }
+
+        .settings-intro p {
+            margin: 0;
+
+            color: #64748b;
+
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+
+            min-height: 34px;
+
+            padding: 6px 12px;
+
+            color: #1e40af;
+            background: #eff6ff;
+
+            border: 1px solid #bfdbfe;
+            border-radius: 20px;
+
+            font-size: 12px;
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+        /* =========================================================
+           LOADING
+           ========================================================= */
+
+        .loading-message {
+            display: none;
+
+            margin-bottom: 20px;
+
+            padding: 14px 16px;
+
+            color: #1e3a8a;
+            background: #eff6ff;
+
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+
+            font-size: 14px;
+        }
+
+        /* =========================================================
+           SETTINGS CARDS
+           ========================================================= */
 
         .settings-section {
-            background: #fff;
+            width: 100%;
+
+            margin-bottom: 22px;
+            padding: 24px;
+
+            background: #ffffff;
+
+            border: 1px solid #e2e8f0;
             border-radius: 10px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+
+            box-shadow:
+                0 3px 10px rgba(15, 23, 42, 0.05);
         }
 
-        .settings-section h2 {
-            margin-top: 0;
-            margin-bottom: 20px;
-            font-size: 20px;
+        .section-heading {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            margin: 0 0 20px;
+            padding-bottom: 14px;
+
+            border-bottom: 1px solid #e5e7eb;
         }
+
+        .section-icon {
+            width: 36px;
+            height: 36px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex-shrink: 0;
+
+            background: #eff6ff;
+            color: #2563eb;
+
+            border-radius: 8px;
+
+            font-size: 18px;
+        }
+
+        .section-heading-text h2 {
+            margin: 0 0 3px;
+
+            color: #1e293b;
+
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .section-heading-text p {
+            margin: 0;
+
+            color: #64748b;
+
+            font-size: 12px;
+        }
+
+        /* =========================================================
+           HOTEL ID BOX
+           ========================================================= */
+
+        .hotel-id-box {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+
+            gap: 7px;
+
+            margin-bottom: 22px;
+            padding: 13px 15px;
+
+            background: #f8fafc;
+
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid #2563eb;
+
+            border-radius: 7px;
+
+            color: #475569;
+
+            font-size: 13px;
+        }
+
+        .hotel-id-box strong {
+            color: #1e293b;
+        }
+
+        .hotel-id-separator {
+            color: #94a3b8;
+            margin: 0 4px;
+        }
+
+        /* =========================================================
+           FORM GRID
+           ========================================================= */
 
         .settings-grid {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 20px;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 18px 20px;
         }
 
         .settings-field {
             display: flex;
             flex-direction: column;
+
+            min-width: 0;
         }
 
         .settings-field.full-width {
@@ -58,832 +551,2143 @@
         }
 
         .settings-field label {
-            font-weight: 600;
             margin-bottom: 7px;
+
+            color: #334155;
+
+            font-size: 13px;
+            font-weight: 700;
         }
 
         .settings-field input,
         .settings-field select {
             width: 100%;
-            box-sizing: border-box;
-            padding: 11px 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            min-height: 43px;
+
+            padding: 10px 12px;
+
+            color: #1f2937;
+            background: #ffffff;
+
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+
+            outline: none;
+
+            font-family: inherit;
             font-size: 14px;
-            background: #fff;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
         }
 
         .settings-field input:focus,
         .settings-field select:focus {
-            outline: none;
-            border-color: #007bff;
+            border-color: #2563eb;
+
+            box-shadow:
+                0 0 0 3px rgba(37, 99, 235, 0.10);
         }
 
         .settings-field input[readonly] {
-            background: #f5f5f5;
+            color: #64748b;
+            background: #f8fafc;
+
             cursor: not-allowed;
         }
 
+        .settings-field small {
+            display: block;
+
+            margin-top: 7px;
+
+            color: #64748b;
+
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* =========================================================
+           FILE INPUT
+           ========================================================= */
+
+        .settings-field input[type="file"] {
+            min-height: auto;
+
+            padding: 9px 10px;
+
+            cursor: pointer;
+
+            background: #f8fafc;
+        }
+
+        /* =========================================================
+           LOGO PREVIEW
+           ========================================================= */
+
+        .logo-preview {
+            display: none;
+
+            margin-top: 12px;
+            padding: 12px;
+
+            background: #f8fafc;
+
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+
+        .logo-preview img {
+            display: block;
+
+            max-width: 200px;
+            max-height: 110px;
+
+            padding: 6px;
+
+            object-fit: contain;
+
+            background: #ffffff;
+
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+        }
+
+        /* =========================================================
+           BUTTONS
+           ========================================================= */
+
         .settings-actions {
-            margin-top: 20px;
             display: flex;
+            align-items: center;
+            justify-content: flex-end;
+
             gap: 10px;
-            flex-wrap: wrap;
+
+            margin-top: 22px;
+            padding-top: 18px;
+
+            border-top: 1px solid #e5e7eb;
         }
 
         .save-button {
-            background: #007bff;
-            color: white;
+            min-height: 42px;
+
+            padding: 10px 18px;
+
+            color: #ffffff;
+            background: #2563eb;
+
             border: none;
-            padding: 11px 20px;
-            border-radius: 6px;
+            border-radius: 7px;
+
             cursor: pointer;
-            font-weight: 600;
+
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
         }
 
         .save-button:hover {
-            opacity: 0.9;
+            background: #1d4ed8;
+
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 4px 10px rgba(37, 99, 235, 0.20);
         }
 
         .save-button:disabled {
             opacity: 0.6;
+
             cursor: not-allowed;
+
+            transform: none;
+            box-shadow: none;
         }
+
+        /* =========================================================
+           MESSAGES
+           ========================================================= */
 
         .message {
             display: none;
-            margin-top: 15px;
-            padding: 12px 15px;
-            border-radius: 6px;
-            font-size: 14px;
+
+            margin-top: 14px;
+            padding: 12px 14px;
+
+            border-radius: 7px;
+
+            font-size: 13px;
+            line-height: 1.5;
         }
 
         .message.success {
             display: block;
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+
+            color: #166534;
+            background: #f0fdf4;
+
+            border: 1px solid #bbf7d0;
         }
 
         .message.error {
             display: block;
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+
+            color: #991b1b;
+            background: #fef2f2;
+
+            border: 1px solid #fecaca;
         }
 
         .message.info {
             display: block;
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
+
+            color: #075985;
+            background: #f0f9ff;
+
+            border: 1px solid #bae6fd;
         }
 
-        .loading-message {
-            display: none;
-            padding: 15px;
-            background: #f1f1f1;
-            border-radius: 6px;
-            margin-bottom: 20px;
-        }
-
-        .hotel-id-box {
-            background: #f8f9fa;
-            padding: 12px 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-        }
-
-        .hotel-id-box strong {
-            margin-right: 5px;
-        }
-
-        .logo-preview {
-            display: none;
-            margin-top: 12px;
-        }
-
-        .logo-preview img {
-            max-width: 180px;
-            max-height: 100px;
-            object-fit: contain;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 5px;
-            background: #fff;
-        }
+        /* =========================================================
+           NOTIFICATIONS
+           ========================================================= */
 
         .checkbox-group {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
             gap: 12px;
         }
 
         .checkbox-item {
+            min-height: 48px;
+
             display: flex;
             align-items: center;
-            gap: 10px;
+
+            gap: 11px;
+
+            padding: 12px 14px;
+
+            color: #334155;
+            background: #f8fafc;
+
+            border: 1px solid #e2e8f0;
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            transition:
+                background 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+        .checkbox-item:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
         }
 
         .checkbox-item input[type="checkbox"] {
-            width: auto;
+            width: 17px;
+            height: 17px;
+
+            margin: 0;
+
+            accent-color: #2563eb;
+
+            cursor: pointer;
         }
+
+        /* =========================================================
+           SECURITY NOTE
+           ========================================================= */
+
+        .settings-note {
+            margin-top: 18px;
+            padding: 13px 15px;
+
+            color: #854d0e;
+            background: #fffbeb;
+
+            border: 1px solid #fde68a;
+            border-left: 4px solid #f59e0b;
+
+            border-radius: 7px;
+
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        /* =========================================================
+           SYSTEM INFORMATION
+           ========================================================= */
 
         .system-info {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
             gap: 15px;
         }
 
         .system-info-item {
-            background: #f8f9fa;
+            min-height: 90px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
             padding: 15px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
+
+            background: #f8fafc;
+
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
         }
 
         .system-info-item strong {
-            display: block;
-            margin-bottom: 5px;
+            margin-bottom: 7px;
+
+            color: #64748b;
+
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+
+        .system-info-item span {
+            color: #1e293b;
+
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        /* =========================================================
+           ACCESS DENIED
+           ========================================================= */
 
         #accessDenied {
             display: none;
-            padding: 60px 25px;
+
+            margin: 28px;
+
+            padding: 50px 25px;
+
             text-align: center;
+
+            background: #ffffff;
+
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+
+            box-shadow:
+                0 3px 10px rgba(15, 23, 42, 0.05);
+        }
+
+        #accessDenied .denied-icon {
+            font-size: 42px;
+            margin-bottom: 12px;
         }
 
         #accessDenied h2 {
-            color: #dc3545;
-            margin-bottom: 10px;
+            margin: 0 0 10px;
+
+            color: #dc2626;
+
+            font-size: 22px;
         }
 
         #accessDenied p {
-            color: #666;
-            margin-bottom: 20px;
+            margin: 0 0 20px;
+
+            color: #64748b;
+
+            font-size: 14px;
         }
 
         .back-dashboard-button {
-            display: inline-block;
-            background: #007bff;
-            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 10px 18px;
+
+            color: #ffffff;
+            background: #2563eb;
+
+            border-radius: 7px;
+
             text-decoration: none;
-            padding: 11px 20px;
-            border-radius: 6px;
-            font-weight: 600;
+
+            font-size: 13px;
+            font-weight: 700;
         }
 
         .back-dashboard-button:hover {
-            opacity: 0.9;
+            background: #1d4ed8;
         }
 
-        .role-badge {
-            display: inline-block;
-            margin-top: 6px;
-            padding: 4px 9px;
-            border-radius: 20px;
-            background: #eef2ff;
-            color: #334155;
-            font-size: 12px;
-            font-weight: 600;
+        /* =========================================================
+           RESPONSIVE TABLET
+           ========================================================= */
+
+        @media (max-width: 1100px) {
+
+            body.settings-page .sidebar {
+                width: 230px !important;
+            }
+
+            body.settings-page .main-content {
+                width: calc(100% - 230px) !important;
+                margin-left: 230px !important;
+            }
+
+            .settings-workspace {
+                padding: 18px 20px 35px;
+            }
+
+            .system-info {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
         }
 
-        .settings-note {
-            background: #fff8e1;
-            color: #795500;
-            border: 1px solid #f0d98c;
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 15px;
-            font-size: 13px;
-        }
+        /* =========================================================
+           RESPONSIVE MOBILE
+           ========================================================= */
 
-        @media (max-width: 768px) {
+        @media (max-width: 800px) {
+
+            body.settings-page .sidebar {
+                position: relative !important;
+
+                width: 100% !important;
+                height: auto !important;
+
+                min-height: auto !important;
+
+                overflow: visible !important;
+            }
+
+            body.settings-page .sidebar-header {
+                min-height: 65px;
+            }
+
+            body.settings-page .sidebar-nav {
+                display: grid !important;
+
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+
+                gap: 5px !important;
+
+                padding: 10px !important;
+            }
+
+            body.settings-page .sidebar-nav a {
+                min-height: 42px;
+            }
+
+            body.settings-page .main-content {
+                width: 100% !important;
+                margin-left: 0 !important;
+            }
+
+            body.settings-page .topbar {
+                position: relative;
+
+                padding: 15px 18px;
+            }
+
+            .settings-workspace {
+                padding: 15px;
+            }
+
+            .settings-intro-top {
+                flex-direction: column;
+            }
+
+            .role-badge {
+                align-self: flex-start;
+            }
+
             .settings-grid,
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+
+            .settings-field.full-width {
+                grid-column: auto;
+            }
+
             .system-info {
                 grid-template-columns: 1fr;
             }
 
-            .settings-container {
-                padding: 15px;
+            .module-back-section {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+
+        /* =========================================================
+           SMALL MOBILE
+           ========================================================= */
+
+        @media (max-width: 480px) {
+
+            body.settings-page .sidebar-nav {
+                grid-template-columns: 1fr !important;
+            }
+
+            body.settings-page .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            body.settings-page .user-info {
+                align-items: flex-start;
+                width: 100%;
+            }
+
+            .settings-workspace {
+                padding: 12px;
+            }
+
+            .settings-section {
+                padding: 17px;
+            }
+
+            .settings-intro {
+                padding: 18px;
+            }
+
+            .settings-intro h1 {
+                font-size: 23px;
+            }
+
+            .settings-actions {
+                justify-content: stretch;
+            }
+
+            .save-button {
+                width: 100%;
             }
         }
     </style>
 </head>
 
-<body>
+<body class="settings-page">
+
+    <!-- =========================================================
+         SIDEBAR
+         ========================================================= -->
 
     <aside class="sidebar">
+
         <div class="sidebar-header">
-            <h2>EDU TECH HMS</h2>
+            <h2>🏨 EDU TECH HMS</h2>
         </div>
 
         <nav class="sidebar-nav">
-            <a href="./index.html">Dashboard</a>
-            <a href="./rooms.html">Rooms</a>
-            <a href="./guests.html">Guests</a>
-            <a href="./reservations.html">Reservations</a>
-            <a href="./checkin.html">Check-in</a>
-            <a href="./checkout.html">Check-out</a>
-            <a href="./restaurant.html">Restaurant</a>
-            <a href="./inventory.html">Inventory</a>
-            <a href="./payments.html">Payments</a>
-            <a href="./expenses.html">Expenses</a>
-            <a href="./employees.html">Employees</a>
-            <a href="./housekeeping.html">Housekeeping</a>
-            <a href="./maintenance.html">Maintenance</a>
-            <a href="./reports.html">Reports</a>
 
-            <a href="./settings.html" id="settingsLink"
-               class="active" style="display:none;">
-                Settings
+            <a href="./index.html">
+                <span class="nav-icon">🏠</span>
+                <span>Dashboard</span>
             </a>
 
-            <a href="./hotels.html" id="hotelsLink"
+            <a href="./rooms.html">
+                <span class="nav-icon">🛏️</span>
+                <span>Rooms</span>
+            </a>
+
+            <a href="./guests.html">
+                <span class="nav-icon">👥</span>
+                <span>Guests</span>
+            </a>
+
+            <a href="./reservations.html">
+                <span class="nav-icon">📅</span>
+                <span>Reservations</span>
+            </a>
+
+            <a href="./checkin.html">
+                <span class="nav-icon">➡️</span>
+                <span>Check-in</span>
+            </a>
+
+            <a href="./checkout.html">
+                <span class="nav-icon">⬅️</span>
+                <span>Check-out</span>
+            </a>
+
+            <a href="./restaurant.html">
+                <span class="nav-icon">🍽️</span>
+                <span>Restaurant</span>
+            </a>
+
+            <a href="./inventory.html">
+                <span class="nav-icon">📦</span>
+                <span>Inventory</span>
+            </a>
+
+            <a href="./payments.html">
+                <span class="nav-icon">💳</span>
+                <span>Payments</span>
+            </a>
+
+            <a href="./expenses.html">
+                <span class="nav-icon">💰</span>
+                <span>Expenses</span>
+            </a>
+
+            <a href="./employees.html">
+                <span class="nav-icon">👨‍💼</span>
+                <span>Employees</span>
+            </a>
+
+            <a href="./housekeeping.html">
+                <span class="nav-icon">🧹</span>
+                <span>Housekeeping</span>
+            </a>
+
+            <a href="./maintenance.html">
+                <span class="nav-icon">🔧</span>
+                <span>Maintenance</span>
+            </a>
+
+            <a href="./reports.html">
+                <span class="nav-icon">📊</span>
+                <span>Reports</span>
+            </a>
+
+            <a href="./settings.html"
+               id="settingsLink"
+               class="active">
+                <span class="nav-icon">⚙️</span>
+                <span>Settings</span>
+            </a>
+
+            <a href="./hotels.html"
+               id="hotelsLink"
                style="display:none;">
-                Hotels
+                <span class="nav-icon">🏨</span>
+                <span>Hotels</span>
             </a>
 
-            <a href="#" id="logoutLink">Logout</a>
+            <a href="#"
+               id="logoutLink"
+               class="logout-link">
+                <span class="nav-icon">🚪</span>
+                <span>Logout</span>
+            </a>
+
         </nav>
     </aside>
 
+
+    <!-- =========================================================
+         MAIN CONTENT
+         ========================================================= -->
+
     <main class="main-content">
 
+        <!-- TOPBAR -->
+
         <header class="topbar">
-            <div>
+
+            <div class="topbar-title">
+
                 <h2>Settings</h2>
-                <p>System and hotel configuration</p>
+
+                <p>
+                    System and hotel configuration
+                </p>
+
             </div>
 
             <div class="user-info">
-                <strong id="topUserName">Loading...</strong>
-                <span id="topUserRole">Loading...</span>
+
+                <strong id="topUserName">
+                    Loading...
+                </strong>
+
+                <span id="topUserRole">
+                    Loading...
+                </span>
+
             </div>
+
         </header>
 
-        <section id="accessDenied">
-            <h2>Access Denied</h2>
-            <p>You do not have permission to access system settings.</p>
-            <a href="./index.html" class="back-dashboard-button">
-                Return to Dashboard
-            </a>
-        </section>
 
-        <div id="settingsContent"
-             class="settings-container"
-             style="display:none;">
+        <!-- =====================================================
+             WORKSPACE
+             ===================================================== -->
 
-            <div class="settings-header">
-                <h1>System Settings</h1>
+        <div class="settings-workspace">
+
+
+            <!-- BACK SECTION -->
+
+            <div class="module-back-section">
+
+                <a href="./index.html"
+                   class="back-button">
+
+                    <span class="back-arrow">←</span>
+
+                    <span>
+                        Back to Dashboard
+                    </span>
+
+                </a>
+
+                <div class="breadcrumb">
+                    Dashboard / Settings
+                </div>
+
+            </div>
+
+
+            <!-- ACCESS DENIED -->
+
+            <section id="accessDenied">
+
+                <div class="denied-icon">
+                    🔒
+                </div>
+
+                <h2>
+                    Access Denied
+                </h2>
+
                 <p>
-                    Manage hotel information, preferences,
-                    notifications and security settings.
+                    You do not have permission to access
+                    system settings.
                 </p>
 
-                <div id="currentRoleBadge" class="role-badge">
-                    Loading...
-                </div>
-            </div>
+                <a href="./index.html"
+                   class="back-dashboard-button">
 
-            <div id="loadingMessage" class="loading-message">
-                Loading hotel information and cloud settings...
-            </div>
+                    ← Return to Dashboard
 
-            <!-- HOTEL INFORMATION -->
+                </a>
 
-            <section class="settings-section">
-                <h2>Hotel Information</h2>
+            </section>
 
-                <div class="hotel-id-box">
-                    <strong>Current Hotel:</strong>
-                    <span id="currentHotelName">Loading...</span>
 
-                    &nbsp; | &nbsp;
+            <!-- SETTINGS CONTENT -->
 
-                    <strong>Hotel ID:</strong>
-                    <span id="currentHotelId">-</span>
-                </div>
+            <div id="settingsContent"
+                 style="display:none;">
 
-                <div class="settings-grid">
 
-                    <div class="settings-field">
-                        <label for="hotelName">Hotel Name</label>
-                        <input type="text" id="hotelName"
-                               placeholder="Hotel name">
-                    </div>
+                <!-- PAGE INTRO -->
 
-                    <div class="settings-field">
-                        <label for="hotelPhone">Phone</label>
-                        <input type="text" id="hotelPhone"
-                               placeholder="Hotel phone">
-                    </div>
+                <section class="settings-intro">
 
-                    <div class="settings-field">
-                        <label for="hotelEmail">Email</label>
-                        <input type="email" id="hotelEmail"
-                               placeholder="Hotel email">
-                    </div>
+                    <div class="settings-intro-top">
 
-                    <div class="settings-field">
-                        <label for="hotelLocation">Location</label>
-                        <input type="text" id="hotelLocation"
-                               placeholder="Hotel location">
-                    </div>
+                        <div>
 
-                    <div class="settings-field">
-                        <label for="hotelStatus">Hotel Status</label>
-                        <input type="text" id="hotelStatus" readonly>
-                    </div>
+                            <h1>
+                                System Settings
+                            </h1>
 
-                    <div class="settings-field">
-                        <label for="subscriptionStatus">
-                            Subscription Status
-                        </label>
-                        <input type="text" id="subscriptionStatus"
-                               readonly>
-                    </div>
+                            <p>
+                                Manage hotel information,
+                                preferences, notifications,
+                                security and system configuration.
+                            </p>
 
-                    <div class="settings-field">
-                        <label for="subscriptionStart">
-                            Subscription Start
-                        </label>
-                        <input type="text" id="subscriptionStart"
-                               readonly>
-                    </div>
-
-                    <div class="settings-field">
-                        <label for="subscriptionEnd">
-                            Subscription End
-                        </label>
-                        <input type="text" id="subscriptionEnd"
-                               readonly>
-                    </div>
-
-                    <div class="settings-field full-width">
-                        <label for="hotelLogo">Hotel Logo</label>
-                        <input type="file" id="hotelLogo"
-                               accept="image/png,image/jpeg,image/webp">
-
-                        <div id="logoPreview" class="logo-preview">
-                            <img id="logoPreviewImage"
-                                 src="" alt="Hotel Logo">
                         </div>
 
-                        <small>
-                            Select a PNG, JPG or WEBP image up to 1 MB.
-                            Your logo will be stored online for this hotel.
-                        </small>
+                        <div id="currentRoleBadge"
+                             class="role-badge">
+
+                            Loading...
+
+                        </div>
+
                     </div>
+
+                </section>
+
+
+                <!-- LOADING -->
+
+                <div id="loadingMessage"
+                     class="loading-message">
+
+                    Loading hotel information and cloud settings...
+
                 </div>
 
-                <div class="settings-actions">
-                    <button type="button" class="save-button"
+
+                <!-- =================================================
+                     HOTEL INFORMATION
+                     ================================================= -->
+
+                <section class="settings-section">
+
+                    <div class="section-heading">
+
+                        <div class="section-icon">
+                            🏨
+                        </div>
+
+                        <div class="section-heading-text">
+
+                            <h2>
+                                Hotel Information
+                            </h2>
+
+                            <p>
+                                Manage the selected hotel's
+                                basic information.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="hotel-id-box">
+
+                        <strong>
+                            Current Hotel:
+                        </strong>
+
+                        <span id="currentHotelName">
+                            Loading...
+                        </span>
+
+                        <span class="hotel-id-separator">
+                            |
+                        </span>
+
+                        <strong>
+                            Hotel ID:
+                        </strong>
+
+                        <span id="currentHotelId">
+                            -
+                        </span>
+
+                    </div>
+
+
+                    <div class="settings-grid">
+
+
+                        <div class="settings-field">
+
+                            <label for="hotelName">
+                                Hotel Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="hotelName"
+                                placeholder="Hotel name"
+                            >
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="hotelPhone">
+                                Phone
+                            </label>
+
+                            <input
+                                type="text"
+                                id="hotelPhone"
+                                placeholder="Hotel phone"
+                            >
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="hotelEmail">
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                id="hotelEmail"
+                                placeholder="Hotel email"
+                            >
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="hotelLocation">
+                                Location
+                            </label>
+
+                            <input
+                                type="text"
+                                id="hotelLocation"
+                                placeholder="Hotel location"
+                            >
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="hotelStatus">
+                                Hotel Status
+                            </label>
+
+                            <input
+                                type="text"
+                                id="hotelStatus"
+                                readonly
+                            >
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="subscriptionStatus">
+                                Subscription Status
+                            </label>
+
+                            <input
+                                type="text"
+                                id="subscriptionStatus"
+                                readonly
+                            >
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="subscriptionStart">
+                                Subscription Start
+                            </label>
+
+                            <input
+                                type="text"
+                                id="subscriptionStart"
+                                readonly
+                            >
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="subscriptionEnd">
+                                Subscription End
+                            </label>
+
+                            <input
+                                type="text"
+                                id="subscriptionEnd"
+                                readonly
+                            >
+
+                        </div>
+
+
+                        <div class="settings-field full-width">
+
+                            <label for="hotelLogo">
+                                Hotel Logo
+                            </label>
+
+                            <input
+                                type="file"
+                                id="hotelLogo"
+                                accept="image/png,image/jpeg,image/webp"
+                            >
+
+                            <div id="logoPreview"
+                                 class="logo-preview">
+
+                                <img
+                                    id="logoPreviewImage"
+                                    src=""
+                                    alt="Hotel Logo"
+                                >
+
+                            </div>
+
+                            <small>
+                                Select a PNG, JPG or WEBP image
+                                up to 1 MB. Your logo will be
+                                stored online for this hotel.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="settings-actions">
+
+                        <button
+                            type="button"
+                            class="save-button"
                             id="saveHotelButton">
-                        Save Hotel Information
-                    </button>
-                </div>
 
-                <div id="hotelMessage" class="message"></div>
-            </section>
+                            Save Hotel Information
 
-            <!-- SYSTEM PREFERENCES -->
+                        </button>
 
-            <section class="settings-section">
-                <h2>System Preferences</h2>
-
-                <div class="settings-grid">
-
-                    <div class="settings-field">
-                        <label for="currency">Currency</label>
-                        <select id="currency">
-                            <option value="KES">KES - Kenyan Shilling</option>
-                            <option value="USD">USD - US Dollar</option>
-                            <option value="EUR">EUR - Euro</option>
-                            <option value="GBP">GBP - British Pound</option>
-                        </select>
                     </div>
 
-                    <div class="settings-field">
-                        <label for="dateFormat">Date Format</label>
-                        <select id="dateFormat">
-                            <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                            <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-                        </select>
+
+                    <div id="hotelMessage"
+                         class="message">
                     </div>
 
-                    <div class="settings-field">
-                        <label for="timezone">Timezone</label>
-                        <select id="timezone">
-                            <option value="Africa/Nairobi">Africa/Nairobi</option>
-                            <option value="UTC">UTC</option>
-                            <option value="Africa/Kampala">Africa/Kampala</option>
-                            <option value="Africa/Dar_es_Salaam">
-                                Africa/Dar_es_Salaam
-                            </option>
-                        </select>
+                </section>
+
+
+                <!-- =================================================
+                     SYSTEM PREFERENCES
+                     ================================================= -->
+
+                <section class="settings-section">
+
+                    <div class="section-heading">
+
+                        <div class="section-icon">
+                            ⚙️
+                        </div>
+
+                        <div class="section-heading-text">
+
+                            <h2>
+                                System Preferences
+                            </h2>
+
+                            <p>
+                                Configure currency, date,
+                                timezone and language preferences.
+                            </p>
+
+                        </div>
+
                     </div>
 
-                    <div class="settings-field">
-                        <label for="language">Language</label>
-                        <select id="language">
-                            <option value="English">English</option>
-                            <option value="Swahili">Kiswahili</option>
-                        </select>
-                    </div>
-                </div>
 
-                <div class="settings-actions">
-                    <button type="button" class="save-button"
+                    <div class="settings-grid">
+
+
+                        <div class="settings-field">
+
+                            <label for="currency">
+                                Currency
+                            </label>
+
+                            <select id="currency">
+
+                                <option value="KES">
+                                    KES - Kenyan Shilling
+                                </option>
+
+                                <option value="USD">
+                                    USD - US Dollar
+                                </option>
+
+                                <option value="EUR">
+                                    EUR - Euro
+                                </option>
+
+                                <option value="GBP">
+                                    GBP - British Pound
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="dateFormat">
+                                Date Format
+                            </label>
+
+                            <select id="dateFormat">
+
+                                <option value="DD/MM/YYYY">
+                                    DD/MM/YYYY
+                                </option>
+
+                                <option value="MM/DD/YYYY">
+                                    MM/DD/YYYY
+                                </option>
+
+                                <option value="YYYY-MM-DD">
+                                    YYYY-MM-DD
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="timezone">
+                                Timezone
+                            </label>
+
+                            <select id="timezone">
+
+                                <option value="Africa/Nairobi">
+                                    Africa/Nairobi
+                                </option>
+
+                                <option value="UTC">
+                                    UTC
+                                </option>
+
+                                <option value="Africa/Kampala">
+                                    Africa/Kampala
+                                </option>
+
+                                <option value="Africa/Dar_es_Salaam">
+                                    Africa/Dar_es_Salaam
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="language">
+                                Language
+                            </label>
+
+                            <select id="language">
+
+                                <option value="English">
+                                    English
+                                </option>
+
+                                <option value="Swahili">
+                                    Kiswahili
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="settings-actions">
+
+                        <button
+                            type="button"
+                            class="save-button"
                             id="savePreferencesButton">
-                        Save Preferences
-                    </button>
-                </div>
 
-                <div id="preferencesMessage" class="message"></div>
-            </section>
+                            Save Preferences
 
-            <!-- NOTIFICATIONS -->
+                        </button>
 
-            <section class="settings-section">
-                <h2>Notifications</h2>
+                    </div>
 
-                <div class="checkbox-group">
-                    <label class="checkbox-item">
-                        <input type="checkbox"
-                               id="reservationNotifications">
-                        <span>Reservation notifications</span>
-                    </label>
 
-                    <label class="checkbox-item">
-                        <input type="checkbox"
-                               id="paymentNotifications">
-                        <span>Payment notifications</span>
-                    </label>
+                    <div id="preferencesMessage"
+                         class="message">
+                    </div>
 
-                    <label class="checkbox-item">
-                        <input type="checkbox"
-                               id="maintenanceNotifications">
-                        <span>Maintenance notifications</span>
-                    </label>
+                </section>
 
-                    <label class="checkbox-item">
-                        <input type="checkbox"
-                               id="housekeepingNotifications">
-                        <span>Housekeeping notifications</span>
-                    </label>
-                </div>
 
-                <div class="settings-actions">
-                    <button type="button" class="save-button"
+                <!-- =================================================
+                     NOTIFICATIONS
+                     ================================================= -->
+
+                <section class="settings-section">
+
+                    <div class="section-heading">
+
+                        <div class="section-icon">
+                            🔔
+                        </div>
+
+                        <div class="section-heading-text">
+
+                            <h2>
+                                Notifications
+                            </h2>
+
+                            <p>
+                                Choose which hotel activities
+                                should generate notifications.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="checkbox-group">
+
+
+                        <label class="checkbox-item">
+
+                            <input
+                                type="checkbox"
+                                id="reservationNotifications"
+                            >
+
+                            <span>
+                                Reservation notifications
+                            </span>
+
+                        </label>
+
+
+                        <label class="checkbox-item">
+
+                            <input
+                                type="checkbox"
+                                id="paymentNotifications"
+                            >
+
+                            <span>
+                                Payment notifications
+                            </span>
+
+                        </label>
+
+
+                        <label class="checkbox-item">
+
+                            <input
+                                type="checkbox"
+                                id="maintenanceNotifications"
+                            >
+
+                            <span>
+                                Maintenance notifications
+                            </span>
+
+                        </label>
+
+
+                        <label class="checkbox-item">
+
+                            <input
+                                type="checkbox"
+                                id="housekeepingNotifications"
+                            >
+
+                            <span>
+                                Housekeeping notifications
+                            </span>
+
+                        </label>
+
+
+                    </div>
+
+
+                    <div class="settings-actions">
+
+                        <button
+                            type="button"
+                            class="save-button"
                             id="saveNotificationsButton">
-                        Save Notifications
-                    </button>
-                </div>
 
-                <div id="notificationsMessage" class="message"></div>
-            </section>
+                            Save Notifications
 
-            <!-- SECURITY -->
+                        </button>
 
-            <section class="settings-section">
-                <h2>Security</h2>
-
-                <div class="settings-grid">
-
-                    <div class="settings-field">
-                        <label for="sessionTimeout">
-                            Session Timeout Preference
-                        </label>
-                        <select id="sessionTimeout">
-                            <option value="15">15 Minutes</option>
-                            <option value="30">30 Minutes</option>
-                            <option value="60">1 Hour</option>
-                            <option value="120">2 Hours</option>
-                            <option value="240">4 Hours</option>
-                        </select>
                     </div>
 
-                    <div class="settings-field">
-                        <label for="loginProtection">
-                            Login Protection Preference
-                        </label>
-                        <select id="loginProtection">
-                            <option value="enabled">Enabled</option>
-                            <option value="disabled">Disabled</option>
-                        </select>
+
+                    <div id="notificationsMessage"
+                         class="message">
                     </div>
-                </div>
 
-                <div class="settings-note">
-                    These are saved preferences only. Enforcing session
-                    expiry and login protection requires additional
-                    authentication logic in the application.
-                </div>
+                </section>
 
-                <div class="settings-actions">
-                    <button type="button" class="save-button"
+
+                <!-- =================================================
+                     SECURITY
+                     ================================================= -->
+
+                <section class="settings-section">
+
+                    <div class="section-heading">
+
+                        <div class="section-icon">
+                            🔐
+                        </div>
+
+                        <div class="section-heading-text">
+
+                            <h2>
+                                Security
+                            </h2>
+
+                            <p>
+                                Configure security-related
+                                system preferences.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="settings-grid">
+
+
+                        <div class="settings-field">
+
+                            <label for="sessionTimeout">
+                                Session Timeout Preference
+                            </label>
+
+                            <select id="sessionTimeout">
+
+                                <option value="15">
+                                    15 Minutes
+                                </option>
+
+                                <option value="30">
+                                    30 Minutes
+                                </option>
+
+                                <option value="60">
+                                    1 Hour
+                                </option>
+
+                                <option value="120">
+                                    2 Hours
+                                </option>
+
+                                <option value="240">
+                                    4 Hours
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="settings-field">
+
+                            <label for="loginProtection">
+                                Login Protection Preference
+                            </label>
+
+                            <select id="loginProtection">
+
+                                <option value="enabled">
+                                    Enabled
+                                </option>
+
+                                <option value="disabled">
+                                    Disabled
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="settings-note">
+
+                        These are saved preferences only.
+                        Enforcing session expiry and login
+                        protection requires additional
+                        authentication logic in the application.
+
+                    </div>
+
+
+                    <div class="settings-actions">
+
+                        <button
+                            type="button"
+                            class="save-button"
                             id="saveSecurityButton">
-                        Save Security Settings
-                    </button>
-                </div>
 
-                <div id="securityMessage" class="message"></div>
-            </section>
+                            Save Security Settings
 
-            <!-- SYSTEM INFORMATION -->
+                        </button>
 
-            <section class="settings-section">
-                <h2>System Information</h2>
-
-                <div class="system-info">
-                    <div class="system-info-item">
-                        <strong>System Name</strong>
-                        <span>EDU TECH Hotel Management System</span>
                     </div>
 
-                    <div class="system-info-item">
-                        <strong>Version</strong>
-                        <span>1.0</span>
+
+                    <div id="securityMessage"
+                         class="message">
                     </div>
 
-                    <div class="system-info-item">
-                        <strong>Platform</strong>
-                        <span>Web</span>
+                </section>
+
+
+                <!-- =================================================
+                     SYSTEM INFORMATION
+                     ================================================= -->
+
+                <section class="settings-section">
+
+                    <div class="section-heading">
+
+                        <div class="section-icon">
+                            ℹ️
+                        </div>
+
+                        <div class="section-heading-text">
+
+                            <h2>
+                                System Information
+                            </h2>
+
+                            <p>
+                                Current EDU TECH HMS platform information.
+                            </p>
+
+                        </div>
+
                     </div>
 
-                    <div class="system-info-item">
-                        <strong>Database</strong>
-                        <span>Supabase</span>
+
+                    <div class="system-info">
+
+
+                        <div class="system-info-item">
+
+                            <strong>
+                                System Name
+                            </strong>
+
+                            <span>
+                                EDU TECH Hotel Management System
+                            </span>
+
+                        </div>
+
+
+                        <div class="system-info-item">
+
+                            <strong>
+                                Version
+                            </strong>
+
+                            <span>
+                                1.0
+                            </span>
+
+                        </div>
+
+
+                        <div class="system-info-item">
+
+                            <strong>
+                                Platform
+                            </strong>
+
+                            <span>
+                                Web
+                            </span>
+
+                        </div>
+
+
+                        <div class="system-info-item">
+
+                            <strong>
+                                Database
+                            </strong>
+
+                            <span>
+                                Supabase
+                            </span>
+
+                        </div>
+
+
                     </div>
-                </div>
-            </section>
+
+                </section>
+
+
+            </div>
+
         </div>
+
     </main>
 
+
+    <!-- =========================================================
+         SUPABASE
+         ========================================================= -->
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script src="./supabase.js"></script>
+
     <script src="./script.js"></script>
 
+
+    <!-- =========================================================
+         SETTINGS JAVASCRIPT
+         ========================================================= -->
+
     <script>
+
     (() => {
+
         "use strict";
 
+
+        /* =========================================================
+           SUPABASE CLIENT
+           ========================================================= */
+
         const db = window.supabaseClient;
+
+
+        /* =========================================================
+           STATE
+           ========================================================= */
 
         let currentUser = null;
         let currentProfile = null;
         let currentRole = null;
+
         let lastHotelId = null;
+
         let hotelChangeCheckRunning = false;
+
         let currentSettings = null;
+
         let currentLogoPath = null;
+
+
+        /* =========================================================
+           HELPER
+           ========================================================= */
 
         const $ = id => document.getElementById(id);
 
-        const hotelName = $("hotelName");
-        const hotelPhone = $("hotelPhone");
-        const hotelEmail = $("hotelEmail");
-        const hotelLocation = $("hotelLocation");
-        const hotelStatus = $("hotelStatus");
-        const subscriptionStatus = $("subscriptionStatus");
-        const subscriptionStart = $("subscriptionStart");
-        const subscriptionEnd = $("subscriptionEnd");
-        const hotelLogo = $("hotelLogo");
-        const logoPreview = $("logoPreview");
-        const logoPreviewImage = $("logoPreviewImage");
-        const currentHotelIdElement = $("currentHotelId");
-        const currentHotelName = $("currentHotelName");
-        const loadingMessage = $("loadingMessage");
-        const settingsContent = $("settingsContent");
-        const accessDenied = $("accessDenied");
-        const settingsLink = $("settingsLink");
-        const hotelsLink = $("hotelsLink");
+
+        /* =========================================================
+           DOM REFERENCES
+           ========================================================= */
+
+        const hotelName =
+            $("hotelName");
+
+        const hotelPhone =
+            $("hotelPhone");
+
+        const hotelEmail =
+            $("hotelEmail");
+
+        const hotelLocation =
+            $("hotelLocation");
+
+        const hotelStatus =
+            $("hotelStatus");
+
+        const subscriptionStatus =
+            $("subscriptionStatus");
+
+        const subscriptionStart =
+            $("subscriptionStart");
+
+        const subscriptionEnd =
+            $("subscriptionEnd");
+
+        const hotelLogo =
+            $("hotelLogo");
+
+        const logoPreview =
+            $("logoPreview");
+
+        const logoPreviewImage =
+            $("logoPreviewImage");
+
+        const currentHotelIdElement =
+            $("currentHotelId");
+
+        const currentHotelName =
+            $("currentHotelName");
+
+        const loadingMessage =
+            $("loadingMessage");
+
+        const settingsContent =
+            $("settingsContent");
+
+        const accessDenied =
+            $("accessDenied");
+
+        const settingsLink =
+            $("settingsLink");
+
+        const hotelsLink =
+            $("hotelsLink");
+
+
+        /* =========================================================
+           DEFAULT SETTINGS
+           ========================================================= */
 
         const DEFAULT_SETTINGS = {
-            currency: "KES",
-            date_format: "DD/MM/YYYY",
-            timezone: "Africa/Nairobi",
-            language: "English",
 
-            reservation_notifications: true,
-            payment_notifications: true,
-            maintenance_notifications: true,
-            housekeeping_notifications: true,
+            currency:
+                "KES",
 
-            session_timeout: 60,
-            login_protection: "enabled",
+            date_format:
+                "DD/MM/YYYY",
 
-            logo_url: null,
-            logo_path: null
+            timezone:
+                "Africa/Nairobi",
+
+            language:
+                "English",
+
+            reservation_notifications:
+                true,
+
+            payment_notifications:
+                true,
+
+            maintenance_notifications:
+                true,
+
+            housekeeping_notifications:
+                true,
+
+            session_timeout:
+                60,
+
+            login_protection:
+                "enabled",
+
+            logo_url:
+                null,
+
+            logo_path:
+                null
         };
 
+
+        /* =========================================================
+           ROLE NORMALIZATION
+           ========================================================= */
+
         function normalizeRole(role) {
+
             return String(role || "")
                 .trim()
                 .toLowerCase()
                 .replace(/[\s-]+/g, "_");
+
         }
+
+
+        /* =========================================================
+           ROLE DISPLAY
+           ========================================================= */
 
         function formatRoleName(role) {
+
             const names = {
-                system_owner: "System Owner",
-                hotel_owner: "Hotel Owner",
-                manager: "Manager",
-                receptionist: "Receptionist"
+
+                system_owner:
+                    "System Owner",
+
+                hotel_owner:
+                    "Hotel Owner",
+
+                manager:
+                    "Manager",
+
+                receptionist:
+                    "Receptionist"
+
             };
 
-            return names[role] || role || "User";
+            return names[role] ||
+                   role ||
+                   "User";
+
         }
+
+
+        /* =========================================================
+           PERMISSION
+           ========================================================= */
 
         function canManageSettings() {
-            return currentRole === "system_owner" ||
-                   currentRole === "hotel_owner";
-        }
 
-        function showMessage(elementId, message, type) {
-            const element = $(elementId);
-            if (!element) return;
-
-            element.textContent = message;
-            element.className = "message " + type;
-        }
-
-        function clearMessage(elementId) {
-            const element = $(elementId);
-
-            if (element) {
-                element.textContent = "";
-                element.className = "message";
-            }
-        }
-
-        function setButtonLoading(button, loading, originalText) {
-            button.disabled = loading;
-            button.textContent = loading
-                ? "Saving..."
-                : originalText;
-        }
-
-        function formatDate(value) {
-            if (!value) return "Not set";
-
-            const match = String(value).match(
-                /^(\d{4})-(\d{2})-(\d{2})$/
+            return (
+                currentRole === "system_owner" ||
+                currentRole === "hotel_owner"
             );
 
-            if (match) {
-                return `${match[3]}/${match[2]}/${match[1]}`;
-            }
-
-            const date = new Date(value);
-
-            if (Number.isNaN(date.getTime())) {
-                return String(value);
-            }
-
-            return date.toLocaleDateString("en-GB");
         }
 
-        function getActiveHotelId() {
-            if (currentRole === "system_owner") {
-                const stored =
-                    sessionStorage.getItem("activeHotelId") ||
-                    sessionStorage.getItem("active_hotel_id") ||
-                    sessionStorage.getItem("selectedHotelId") ||
-                    sessionStorage.getItem("selectedHotelID") ||
-                    localStorage.getItem("activeHotelId") ||
-                    localStorage.getItem("active_hotel_id");
 
-                const id = Number(stored);
+        /* =========================================================
+           MESSAGE
+           ========================================================= */
 
-                return Number.isSafeInteger(id) && id > 0
-                    ? id
-                    : null;
+        function showMessage(
+            elementId,
+            message,
+            type
+        ) {
+
+            const element =
+                $(elementId);
+
+            if (!element) return;
+
+            element.textContent =
+                message;
+
+            element.className =
+                "message " + type;
+
+        }
+
+
+        function clearMessage(elementId) {
+
+            const element =
+                $(elementId);
+
+            if (element) {
+
+                element.textContent =
+                    "";
+
+                element.className =
+                    "message";
+
             }
+
+        }
+
+
+        /* =========================================================
+           BUTTON LOADING
+           ========================================================= */
+
+        function setButtonLoading(
+            button,
+            loading,
+            originalText
+        ) {
+
+            if (!button) return;
+
+            button.disabled =
+                loading;
+
+            button.textContent =
+                loading
+                    ? "Saving..."
+                    : originalText;
+
+        }
+
+
+        /* =========================================================
+           FORMAT DATE
+           ========================================================= */
+
+        function formatDate(value) {
+
+            if (!value) {
+                return "Not set";
+            }
+
+            const match =
+                String(value).match(
+                    /^(\d{4})-(\d{2})-(\d{2})$/
+                );
+
+            if (match) {
+
+                return (
+                    `${match[3]}/${match[2]}/${match[1]}`
+                );
+
+            }
+
+            const date =
+                new Date(value);
 
             if (
-                currentRole === "hotel_owner" &&
-                currentProfile &&
-                currentProfile.hotel_id
+                Number.isNaN(
+                    date.getTime()
+                )
             ) {
-                const id = Number(currentProfile.hotel_id);
 
-                return Number.isSafeInteger(id) && id > 0
-                    ? id
-                    : null;
+                return String(value);
+
             }
 
-            return null;
+            return date.toLocaleDateString(
+                "en-GB"
+            );
+
         }
 
+
+        /* =========================================================
+           ACTIVE HOTEL
+           ========================================================= */
+
+        function getActiveHotelId() {
+
+            if (
+                currentRole ===
+                "system_owner"
+            ) {
+
+                const stored =
+                    sessionStorage.getItem(
+                        "activeHotelId"
+                    ) ||
+
+                    sessionStorage.getItem(
+                        "active_hotel_id"
+                    ) ||
+
+                    sessionStorage.getItem(
+                        "selectedHotelId"
+                    ) ||
+
+                    sessionStorage.getItem(
+                        "selectedHotelID"
+                    ) ||
+
+                    localStorage.getItem(
+                        "activeHotelId"
+                    ) ||
+
+                    localStorage.getItem(
+                        "active_hotel_id"
+                    );
+
+                const id =
+                    Number(stored);
+
+                return (
+                    Number.isSafeInteger(id) &&
+                    id > 0
+                )
+                    ? id
+                    : null;
+
+            }
+
+
+            if (
+                currentRole ===
+                    "hotel_owner" &&
+
+                currentProfile &&
+
+                currentProfile.hotel_id
+            ) {
+
+                const id =
+                    Number(
+                        currentProfile.hotel_id
+                    );
+
+                return (
+                    Number.isSafeInteger(id) &&
+                    id > 0
+                )
+                    ? id
+                    : null;
+
+            }
+
+
+            return null;
+
+        }
+
+
+        /* =========================================================
+           LOAD CURRENT USER
+           ========================================================= */
+
         async function loadCurrentUser() {
+
             if (!db) {
+
                 throw new Error(
                     "Supabase client is not available. Check supabase.js."
                 );
+
             }
 
-            const { data, error } = await db.auth.getUser();
 
-            if (error || !data || !data.user) {
+            const {
+                data,
+                error
+            } = await db.auth.getUser();
+
+
+            if (
+                error ||
+                !data ||
+                !data.user
+            ) {
+
                 throw new Error(
                     "Your login session is invalid or expired."
                 );
+
             }
 
-            currentUser = data.user;
+
+            currentUser =
+                data.user;
+
 
             const {
                 data: profile,
                 error: profileError
             } = await db
                 .from("profiles")
-                .select("id, full_name, role, hotel_id")
-                .eq("id", currentUser.id)
+                .select(
+                    "id, full_name, role, hotel_id"
+                )
+                .eq(
+                    "id",
+                    currentUser.id
+                )
                 .single();
 
-            if (profileError || !profile) {
+
+            if (
+                profileError ||
+                !profile
+            ) {
+
                 throw new Error(
                     "Your user profile could not be found."
                 );
+
             }
 
-            currentProfile = profile;
-            currentRole = normalizeRole(profile.role);
+
+            currentProfile =
+                profile;
+
+            currentRole =
+                normalizeRole(
+                    profile.role
+                );
+
 
             $("topUserName").textContent =
                 profile.full_name ||
                 currentUser.email ||
                 "User";
 
+
             $("topUserRole").textContent =
-                formatRoleName(currentRole);
+                formatRoleName(
+                    currentRole
+                );
+
 
             $("currentRoleBadge").textContent =
-                "Role: " + formatRoleName(currentRole);
+                "Role: " +
+                formatRoleName(
+                    currentRole
+                );
+
         }
+
+
+        /* =========================================================
+           PERMISSIONS
+           ========================================================= */
 
         function applyPermissions() {
+
             if (!canManageSettings()) {
-                settingsContent.style.display = "none";
-                accessDenied.style.display = "block";
-                settingsLink.style.display = "none";
-                hotelsLink.style.display = "none";
+
+                settingsContent.style.display =
+                    "none";
+
+                accessDenied.style.display =
+                    "block";
+
+                settingsLink.style.display =
+                    "none";
+
+                hotelsLink.style.display =
+                    "none";
+
                 return false;
+
             }
 
-            accessDenied.style.display = "none";
-            settingsContent.style.display = "block";
-            settingsLink.style.display = "block";
+
+            accessDenied.style.display =
+                "none";
+
+            settingsContent.style.display =
+                "block";
+
+            settingsLink.style.display =
+                "flex";
+
 
             hotelsLink.style.display =
-                currentRole === "system_owner"
-                    ? "block"
+                currentRole ===
+                "system_owner"
+                    ? "flex"
                     : "none";
 
+
             return true;
+
         }
+
+
+        /* =========================================================
+           RESET DEFAULT SETTINGS
+           ========================================================= */
 
         function resetSettingsToDefaults() {
-            $("currency").value = DEFAULT_SETTINGS.currency;
-            $("dateFormat").value = DEFAULT_SETTINGS.date_format;
-            $("timezone").value = DEFAULT_SETTINGS.timezone;
-            $("language").value = DEFAULT_SETTINGS.language;
 
-            $("reservationNotifications").checked = true;
-            $("paymentNotifications").checked = true;
-            $("maintenanceNotifications").checked = true;
-            $("housekeepingNotifications").checked = true;
+            $("currency").value =
+                DEFAULT_SETTINGS.currency;
 
-            $("sessionTimeout").value = "60";
-            $("loginProtection").value = "enabled";
+            $("dateFormat").value =
+                DEFAULT_SETTINGS.date_format;
 
-            currentSettings = { ...DEFAULT_SETTINGS };
-            currentLogoPath = null;
+            $("timezone").value =
+                DEFAULT_SETTINGS.timezone;
 
-            logoPreviewImage.removeAttribute("src");
-            logoPreview.style.display = "none";
-            hotelLogo.value = "";
+            $("language").value =
+                DEFAULT_SETTINGS.language;
+
+
+            $("reservationNotifications").checked =
+                true;
+
+            $("paymentNotifications").checked =
+                true;
+
+            $("maintenanceNotifications").checked =
+                true;
+
+            $("housekeepingNotifications").checked =
+                true;
+
+
+            $("sessionTimeout").value =
+                "60";
+
+            $("loginProtection").value =
+                "enabled";
+
+
+            currentSettings =
+                {
+                    ...DEFAULT_SETTINGS
+                };
+
+            currentLogoPath =
+                null;
+
+
+            logoPreviewImage.removeAttribute(
+                "src"
+            );
+
+            logoPreview.style.display =
+                "none";
+
+            hotelLogo.value =
+                "";
+
         }
 
+
+        /* =========================================================
+           LOAD HOTEL INFORMATION
+           ========================================================= */
+
         async function loadHotelInformation() {
-            loadingMessage.style.display = "block";
+
+            loadingMessage.style.display =
+                "block";
+
 
             try {
-                const hotelId = getActiveHotelId();
+
+                const hotelId =
+                    getActiveHotelId();
+
 
                 if (!hotelId) {
+
                     throw new Error(
-                        currentRole === "system_owner"
+
+                        currentRole ===
+                        "system_owner"
+
                             ? "Select a hotel from the Hotels section first."
+
                             : "No hotel is assigned to your user profile."
+
                     );
+
                 }
 
-                const { data, error } = await db
+
+                const {
+                    data,
+                    error
+                } = await db
                     .from("hotels")
                     .select(`
                         id,
@@ -896,57 +2700,128 @@
                         subscription_end,
                         subscription_status
                     `)
-                    .eq("id", hotelId)
+                    .eq(
+                        "id",
+                        hotelId
+                    )
                     .single();
 
-                if (error) throw error;
 
-                if (!data) {
-                    throw new Error("The selected hotel was not found.");
+                if (error) {
+                    throw error;
                 }
 
-                currentHotelIdElement.textContent = data.id;
+
+                if (!data) {
+
+                    throw new Error(
+                        "The selected hotel was not found."
+                    );
+
+                }
+
+
+                currentHotelIdElement.textContent =
+                    data.id;
+
 
                 currentHotelName.textContent =
-                    data.hotel_name || "Unnamed Hotel";
+                    data.hotel_name ||
+                    "Unnamed Hotel";
 
-                hotelName.value = data.hotel_name || "";
-                hotelPhone.value = data.phone || "";
-                hotelEmail.value = data.email || "";
-                hotelLocation.value = data.location || "";
-                hotelStatus.value = data.status || "Not set";
+
+                hotelName.value =
+                    data.hotel_name ||
+                    "";
+
+                hotelPhone.value =
+                    data.phone ||
+                    "";
+
+                hotelEmail.value =
+                    data.email ||
+                    "";
+
+                hotelLocation.value =
+                    data.location ||
+                    "";
+
+                hotelStatus.value =
+                    data.status ||
+                    "Not set";
+
 
                 subscriptionStatus.value =
-                    data.subscription_status || "Not set";
+                    data.subscription_status ||
+                    "Not set";
+
 
                 subscriptionStart.value =
-                    formatDate(data.subscription_start);
+                    formatDate(
+                        data.subscription_start
+                    );
+
 
                 subscriptionEnd.value =
-                    formatDate(data.subscription_end);
+                    formatDate(
+                        data.subscription_end
+                    );
 
-                lastHotelId = Number(data.id);
 
-                await loadCloudSettings(data.id);
+                lastHotelId =
+                    Number(data.id);
 
-                showMessage(
-                    "hotelMessage",
-                    "Hotel information and cloud settings loaded successfully.",
-                    "success"
+
+                await loadCloudSettings(
+                    data.id
                 );
 
-            } catch (error) {
-                console.error("Hotel loading error:", error);
+
+                showMessage(
+
+                    "hotelMessage",
+
+                    "Hotel information and cloud settings loaded successfully.",
+
+                    "success"
+
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Hotel loading error:",
+                    error
+                );
 
                 throw error;
 
-            } finally {
-                loadingMessage.style.display = "none";
             }
+
+            finally {
+
+                loadingMessage.style.display =
+                    "none";
+
+            }
+
         }
 
-        async function loadCloudSettings(hotelId) {
-            const { data, error } = await db
+
+        /* =========================================================
+           LOAD CLOUD SETTINGS
+           ========================================================= */
+
+        async function loadCloudSettings(
+            hotelId
+        ) {
+
+            const {
+                data,
+                error
+            } = await db
                 .from("hotel_settings")
                 .select(`
                     id,
@@ -965,27 +2840,52 @@
                     logo_path,
                     updated_at
                 `)
-                .eq("hotel_id", hotelId)
+                .eq(
+                    "hotel_id",
+                    hotelId
+                )
                 .maybeSingle();
 
+
             if (error) {
+
                 throw new Error(
-                    "Unable to load cloud settings: " + error.message
+                    "Unable to load cloud settings: " +
+                    error.message
                 );
+
             }
 
+
             const settings = {
+
                 ...DEFAULT_SETTINGS,
+
                 ...(data || {})
+
             };
 
-            currentSettings = settings;
-            currentLogoPath = settings.logo_path || null;
 
-            $("currency").value = settings.currency;
-            $("dateFormat").value = settings.date_format;
-            $("timezone").value = settings.timezone;
-            $("language").value = settings.language;
+            currentSettings =
+                settings;
+
+            currentLogoPath =
+                settings.logo_path ||
+                null;
+
+
+            $("currency").value =
+                settings.currency;
+
+            $("dateFormat").value =
+                settings.date_format;
+
+            $("timezone").value =
+                settings.timezone;
+
+            $("language").value =
+                settings.language;
+
 
             $("reservationNotifications").checked =
                 settings.reservation_notifications;
@@ -999,136 +2899,275 @@
             $("housekeepingNotifications").checked =
                 settings.housekeeping_notifications;
 
+
             $("sessionTimeout").value =
-                String(settings.session_timeout);
+                String(
+                    settings.session_timeout
+                );
 
             $("loginProtection").value =
                 settings.login_protection;
 
+
             if (settings.logo_url) {
-                logoPreviewImage.src = settings.logo_url;
-                logoPreview.style.display = "block";
-            } else {
-                logoPreviewImage.removeAttribute("src");
-                logoPreview.style.display = "none";
+
+                logoPreviewImage.src =
+                    settings.logo_url;
+
+                logoPreview.style.display =
+                    "block";
+
             }
 
-            hotelLogo.value = "";
+            else {
+
+                logoPreviewImage.removeAttribute(
+                    "src"
+                );
+
+                logoPreview.style.display =
+                    "none";
+
+            }
+
+
+            hotelLogo.value =
+                "";
+
 
             console.log(
                 "Cloud settings loaded for hotel:",
                 hotelId
             );
+
         }
 
-        async function saveCloudSettings(values) {
-            const hotelId = getActiveHotelId();
+
+        /* =========================================================
+           SAVE CLOUD SETTINGS
+           ========================================================= */
+
+        async function saveCloudSettings(
+            values
+        ) {
+
+            const hotelId =
+                getActiveHotelId();
+
 
             if (!hotelId) {
-                throw new Error("No active hotel is selected.");
+
+                throw new Error(
+                    "No active hotel is selected."
+                );
+
             }
 
+
             const payload = {
-                hotel_id: hotelId,
+
+                hotel_id:
+                    hotelId,
+
                 ...values,
-                updated_at: new Date().toISOString()
+
+                updated_at:
+                    new Date().toISOString()
+
             };
 
-            const { data, error } = await db
+
+            const {
+                data,
+                error
+            } = await db
                 .from("hotel_settings")
-                .upsert(payload, {
-                    onConflict: "hotel_id"
-                })
+                .upsert(
+                    payload,
+                    {
+                        onConflict:
+                            "hotel_id"
+                    }
+                )
                 .select("*")
                 .single();
 
+
             if (error) {
+
                 throw new Error(
+
                     "Cloud settings could not be saved: " +
                     error.message
+
                 );
+
             }
 
+
             if (!data) {
+
                 throw new Error(
                     "The database did not return the saved settings."
                 );
+
             }
+
 
             currentSettings = {
+
                 ...DEFAULT_SETTINGS,
+
                 ...data
+
             };
 
-            currentLogoPath = data.logo_path || null;
+
+            currentLogoPath =
+                data.logo_path ||
+                null;
+
 
             return data;
+
         }
 
+
+        /* =========================================================
+           SAVE HOTEL INFORMATION
+           ========================================================= */
+
         async function saveHotelInformation() {
+
             if (!canManageSettings()) {
+
                 showMessage(
+
                     "hotelMessage",
+
                     "You do not have permission to change hotel information.",
+
                     "error"
+
                 );
+
                 return;
+
             }
 
-            const button = $("saveHotelButton");
-            const hotelId = getActiveHotelId();
+
+            const button =
+                $("saveHotelButton");
+
+
+            const hotelId =
+                getActiveHotelId();
+
 
             if (!hotelId) {
+
                 showMessage(
+
                     "hotelMessage",
+
                     "No active hotel is available.",
+
                     "error"
+
                 );
+
                 return;
+
             }
 
-            const name = hotelName.value.trim();
-            const phone = hotelPhone.value.trim();
-            const email = hotelEmail.value.trim();
-            const location = hotelLocation.value.trim();
+
+            const name =
+                hotelName.value.trim();
+
+            const phone =
+                hotelPhone.value.trim();
+
+            const email =
+                hotelEmail.value.trim();
+
+            const location =
+                hotelLocation.value.trim();
+
 
             if (!name) {
+
                 showMessage(
+
                     "hotelMessage",
+
                     "Please enter the hotel name.",
+
                     "error"
+
                 );
+
                 return;
+
             }
+
 
             if (
                 email &&
                 !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
             ) {
+
                 showMessage(
+
                     "hotelMessage",
+
                     "Please enter a valid hotel email address.",
+
                     "error"
+
                 );
+
                 return;
+
             }
 
+
             setButtonLoading(
+
                 button,
+
                 true,
+
                 "Save Hotel Information"
+
             );
 
+
             try {
-                const { data, error } = await db
+
+                const {
+                    data,
+                    error
+                } = await db
                     .from("hotels")
                     .update({
-                        hotel_name: name,
-                        location: location,
-                        phone: phone,
-                        email: email
+
+                        hotel_name:
+                            name,
+
+                        location:
+                            location,
+
+                        phone:
+                            phone,
+
+                        email:
+                            email
+
                     })
-                    .eq("id", hotelId)
+                    .eq(
+                        "id",
+                        hotelId
+                    )
                     .select(`
                         id,
                         hotel_name,
@@ -1142,252 +3181,523 @@
                     `)
                     .single();
 
-                if (error) throw error;
+
+                if (error) {
+                    throw error;
+                }
+
 
                 if (!data) {
+
                     throw new Error(
                         "No hotel information was returned after saving."
                     );
+
                 }
 
+
                 currentHotelName.textContent =
-                    data.hotel_name || "Unnamed Hotel";
+                    data.hotel_name ||
+                    "Unnamed Hotel";
+
 
                 showMessage(
+
                     "hotelMessage",
+
                     "Hotel information saved successfully in Supabase.",
+
                     "success"
+
                 );
 
-            } catch (error) {
-                console.error("Hotel save error:", error);
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Hotel save error:",
+                    error
+                );
+
 
                 showMessage(
+
                     "hotelMessage",
+
                     "Unable to save hotel information: " +
-                    (error.message || "Unknown error"),
+                    (
+                        error.message ||
+                        "Unknown error"
+                    ),
+
                     "error"
+
                 );
 
-            } finally {
-                setButtonLoading(
-                    button,
-                    false,
-                    "Save Hotel Information"
-                );
             }
+
+            finally {
+
+                setButtonLoading(
+
+                    button,
+
+                    false,
+
+                    "Save Hotel Information"
+
+                );
+
+            }
+
         }
 
-        async function uploadHotelLogo(file) {
-            const hotelId = getActiveHotelId();
+
+        /* =========================================================
+           UPLOAD HOTEL LOGO
+           ========================================================= */
+
+        async function uploadHotelLogo(
+            file
+        ) {
+
+            const hotelId =
+                getActiveHotelId();
+
 
             if (!hotelId) {
-                throw new Error("No active hotel is selected.");
+
+                throw new Error(
+                    "No active hotel is selected."
+                );
+
             }
 
+
             const allowedTypes = [
+
                 "image/png",
+
                 "image/jpeg",
+
                 "image/webp"
+
             ];
 
-            if (!allowedTypes.includes(file.type)) {
+
+            if (
+                !allowedTypes.includes(
+                    file.type
+                )
+            ) {
+
                 throw new Error(
                     "Please select a PNG, JPG or WEBP image."
                 );
+
             }
 
-            if (file.size > 1024 * 1024) {
+
+            if (
+                file.size >
+                1024 * 1024
+            ) {
+
                 throw new Error(
                     "The logo is too large. Maximum file size is 1 MB."
                 );
+
             }
 
+
             const extensionByType = {
-                "image/png": "png",
-                "image/jpeg": "jpg",
-                "image/webp": "webp"
+
+                "image/png":
+                    "png",
+
+                "image/jpeg":
+                    "jpg",
+
+                "image/webp":
+                    "webp"
+
             };
 
-            const extension = extensionByType[file.type];
+
+            const extension =
+                extensionByType[
+                    file.type
+                ];
+
 
             const filePath =
+
                 `${hotelId}/${Date.now()}-${Math.random()
                     .toString(36)
                     .slice(2, 10)}.${extension}`;
 
-            const { data: uploadData, error: uploadError } =
-                await db.storage
-                    .from("hotel-logos")
-                    .upload(filePath, file, {
-                        cacheControl: "3600",
-                        contentType: file.type,
-                        upsert: false
-                    });
+
+            const {
+                data: uploadData,
+                error: uploadError
+            } = await db.storage
+                .from("hotel-logos")
+                .upload(
+                    filePath,
+                    file,
+                    {
+                        cacheControl:
+                            "3600",
+
+                        contentType:
+                            file.type,
+
+                        upsert:
+                            false
+                    }
+                );
+
 
             if (uploadError) {
+
                 throw new Error(
-                    "Logo upload failed: " + uploadError.message
+
+                    "Logo upload failed: " +
+                    uploadError.message
+
                 );
+
             }
 
-            const { data: publicData } = db.storage
-                .from("hotel-logos")
-                .getPublicUrl(uploadData.path);
 
-            const publicUrl = publicData &&
+            const {
+                data: publicData
+            } = db.storage
+                .from("hotel-logos")
+                .getPublicUrl(
+                    uploadData.path
+                );
+
+
+            const publicUrl =
+                publicData &&
                 publicData.publicUrl;
 
+
             if (!publicUrl) {
+
                 throw new Error(
+
                     "The logo was uploaded, but its public URL could not be generated."
+
                 );
+
             }
 
+
             try {
-                const saved = await saveCloudSettings({
-                    logo_url: publicUrl,
-                    logo_path: uploadData.path
-                });
 
-                currentLogoPath = saved.logo_path;
+                const saved =
+                    await saveCloudSettings({
 
-                logoPreviewImage.src = publicUrl;
-                logoPreview.style.display = "block";
+                        logo_url:
+                            publicUrl,
 
-                hotelLogo.value = "";
+                        logo_path:
+                            uploadData.path
+
+                    });
+
+
+                currentLogoPath =
+                    saved.logo_path;
+
+
+                logoPreviewImage.src =
+                    publicUrl;
+
+                logoPreview.style.display =
+                    "block";
+
+
+                hotelLogo.value =
+                    "";
+
 
                 showMessage(
+
                     "hotelMessage",
+
                     "Hotel logo uploaded and saved online successfully.",
+
                     "success"
+
                 );
 
-            } catch (error) {
+            }
+
+            catch (error) {
+
                 console.error(
                     "Logo settings save error:",
                     error
                 );
 
+
                 throw new Error(
+
                     "The logo uploaded, but its details could not be saved to hotel settings. " +
                     error.message
+
                 );
+
             }
+
         }
 
-        hotelLogo.addEventListener("change", async function () {
-            if (!canManageSettings()) {
-                this.value = "";
 
-                showMessage(
-                    "hotelMessage",
-                    "You do not have permission to change the hotel logo.",
-                    "error"
-                );
+        /* =========================================================
+           LOGO CHANGE
+           ========================================================= */
 
-                return;
+        hotelLogo.addEventListener(
+            "change",
+            async function () {
+
+                if (!canManageSettings()) {
+
+                    this.value = "";
+
+                    showMessage(
+
+                        "hotelMessage",
+
+                        "You do not have permission to change the hotel logo.",
+
+                        "error"
+
+                    );
+
+                    return;
+
+                }
+
+
+                const file =
+                    this.files &&
+                    this.files[0];
+
+
+                if (!file) return;
+
+
+                const button =
+                    $("saveHotelButton");
+
+
+                button.disabled =
+                    true;
+
+                button.textContent =
+                    "Uploading Logo...";
+
+
+                try {
+
+                    await uploadHotelLogo(
+                        file
+                    );
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "Logo upload error:",
+                        error
+                    );
+
+
+                    showMessage(
+
+                        "hotelMessage",
+
+                        error.message ||
+                        "Unable to upload hotel logo.",
+
+                        "error"
+
+                    );
+
+
+                    this.value =
+                        "";
+
+                }
+
+                finally {
+
+                    button.disabled =
+                        false;
+
+                    button.textContent =
+                        "Save Hotel Information";
+
+                }
+
             }
+        );
 
-            const file = this.files && this.files[0];
 
-            if (!file) return;
-
-            const button = $("saveHotelButton");
-
-            button.disabled = true;
-            button.textContent = "Uploading Logo...";
-
-            try {
-                await uploadHotelLogo(file);
-
-            } catch (error) {
-                console.error("Logo upload error:", error);
-
-                showMessage(
-                    "hotelMessage",
-                    error.message || "Unable to upload hotel logo.",
-                    "error"
-                );
-
-                this.value = "";
-
-            } finally {
-                button.disabled = false;
-                button.textContent = "Save Hotel Information";
-            }
-        });
+        /* =========================================================
+           SAVE PREFERENCES
+           ========================================================= */
 
         async function savePreferences() {
+
             if (!canManageSettings()) {
+
                 showMessage(
+
                     "preferencesMessage",
+
                     "You do not have permission to change preferences.",
+
                     "error"
+
                 );
+
                 return;
+
             }
 
-            const button = $("savePreferencesButton");
+
+            const button =
+                $("savePreferencesButton");
+
 
             setButtonLoading(
+
                 button,
+
                 true,
+
                 "Save Preferences"
+
             );
 
+
             try {
+
                 await saveCloudSettings({
-                    currency: $("currency").value,
-                    date_format: $("dateFormat").value,
-                    timezone: $("timezone").value,
-                    language: $("language").value
+
+                    currency:
+                        $("currency").value,
+
+                    date_format:
+                        $("dateFormat").value,
+
+                    timezone:
+                        $("timezone").value,
+
+                    language:
+                        $("language").value
+
                 });
 
+
                 showMessage(
+
                     "preferencesMessage",
+
                     "Preferences saved successfully to Supabase cloud.",
+
                     "success"
+
                 );
 
-            } catch (error) {
-                console.error("Preference save error:", error);
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Preference save error:",
+                    error
+                );
+
 
                 showMessage(
+
                     "preferencesMessage",
+
                     error.message,
+
                     "error"
+
                 );
 
-            } finally {
-                setButtonLoading(
-                    button,
-                    false,
-                    "Save Preferences"
-                );
             }
+
+            finally {
+
+                setButtonLoading(
+
+                    button,
+
+                    false,
+
+                    "Save Preferences"
+
+                );
+
+            }
+
         }
 
+
+        /* =========================================================
+           SAVE NOTIFICATIONS
+           ========================================================= */
+
         async function saveNotifications() {
+
             if (!canManageSettings()) {
+
                 showMessage(
+
                     "notificationsMessage",
+
                     "You do not have permission to change notification settings.",
+
                     "error"
+
                 );
+
                 return;
+
             }
 
-            const button = $("saveNotificationsButton");
+
+            const button =
+                $("saveNotificationsButton");
+
 
             setButtonLoading(
+
                 button,
+
                 true,
+
                 "Save Notifications"
+
             );
 
+
             try {
+
                 await saveCloudSettings({
+
                     reservation_notifications:
                         $("reservationNotifications").checked,
 
@@ -1399,236 +3709,468 @@
 
                     housekeeping_notifications:
                         $("housekeepingNotifications").checked
+
                 });
 
+
                 showMessage(
+
                     "notificationsMessage",
+
                     "Notification settings saved successfully to Supabase cloud.",
+
                     "success"
+
                 );
 
-            } catch (error) {
-                console.error("Notification save error:", error);
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Notification save error:",
+                    error
+                );
+
 
                 showMessage(
+
                     "notificationsMessage",
+
                     error.message,
+
                     "error"
+
                 );
 
-            } finally {
-                setButtonLoading(
-                    button,
-                    false,
-                    "Save Notifications"
-                );
             }
+
+            finally {
+
+                setButtonLoading(
+
+                    button,
+
+                    false,
+
+                    "Save Notifications"
+
+                );
+
+            }
+
         }
 
+
+        /* =========================================================
+           SAVE SECURITY
+           ========================================================= */
+
         async function saveSecurity() {
+
             if (!canManageSettings()) {
+
                 showMessage(
+
                     "securityMessage",
+
                     "You do not have permission to change security preferences.",
+
                     "error"
+
                 );
+
                 return;
+
             }
 
-            const button = $("saveSecurityButton");
+
+            const button =
+                $("saveSecurityButton");
+
 
             setButtonLoading(
+
                 button,
+
                 true,
+
                 "Save Security Settings"
+
             );
 
+
             try {
+
                 await saveCloudSettings({
+
                     session_timeout:
-                        Number($("sessionTimeout").value),
+                        Number(
+                            $("sessionTimeout").value
+                        ),
 
                     login_protection:
                         $("loginProtection").value
+
                 });
 
+
                 showMessage(
+
                     "securityMessage",
+
                     "Security preferences saved online. These preferences are not yet enforced by the authentication system.",
+
                     "info"
+
                 );
 
-            } catch (error) {
-                console.error("Security save error:", error);
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Security save error:",
+                    error
+                );
+
 
                 showMessage(
+
                     "securityMessage",
+
                     error.message,
+
                     "error"
+
                 );
 
-            } finally {
-                setButtonLoading(
-                    button,
-                    false,
-                    "Save Security Settings"
-                );
             }
+
+            finally {
+
+                setButtonLoading(
+
+                    button,
+
+                    false,
+
+                    "Save Security Settings"
+
+                );
+
+            }
+
         }
 
-        $("savePreferencesButton").addEventListener(
-            "click",
-            savePreferences
-        );
 
-        $("saveNotificationsButton").addEventListener(
-            "click",
-            saveNotifications
-        );
+        /* =========================================================
+           BUTTON EVENTS
+           ========================================================= */
 
-        $("saveSecurityButton").addEventListener(
-            "click",
-            saveSecurity
-        );
+        $("savePreferencesButton")
+            .addEventListener(
+                "click",
+                savePreferences
+            );
 
-        $("saveHotelButton").addEventListener(
-            "click",
-            saveHotelInformation
-        );
 
-        $("logoutLink").addEventListener(
-            "click",
-            async function (event) {
-                event.preventDefault();
+        $("saveNotificationsButton")
+            .addEventListener(
+                "click",
+                saveNotifications
+            );
 
-                try {
-                    if (db) {
-                        const { error } = await db.auth.signOut();
 
-                        if (error) throw error;
+        $("saveSecurityButton")
+            .addEventListener(
+                "click",
+                saveSecurity
+            );
+
+
+        $("saveHotelButton")
+            .addEventListener(
+                "click",
+                saveHotelInformation
+            );
+
+
+        /* =========================================================
+           LOGOUT
+           ========================================================= */
+
+        $("logoutLink")
+            .addEventListener(
+                "click",
+                async function (event) {
+
+                    event.preventDefault();
+
+
+                    try {
+
+                        if (db) {
+
+                            const {
+                                error
+                            } = await db.auth.signOut();
+
+
+                            if (error) {
+                                throw error;
+                            }
+
+                        }
+
+
+                        sessionStorage.clear();
+
+
+                        window.location.href =
+                            "./login.html";
+
                     }
 
-                    sessionStorage.clear();
+                    catch (error) {
 
-                    window.location.href = "./login.html";
+                        console.error(
+                            "Logout error:",
+                            error
+                        );
 
-                } catch (error) {
-                    console.error("Logout error:", error);
 
-                    showMessage(
-                        "hotelMessage",
-                        "Logout failed: " + error.message,
-                        "error"
-                    );
+                        showMessage(
+
+                            "hotelMessage",
+
+                            "Logout failed: " +
+                            error.message,
+
+                            "error"
+
+                        );
+
+                    }
+
                 }
-            }
-        );
+            );
+
+
+        /* =========================================================
+           CHECK HOTEL CHANGE
+           ========================================================= */
 
         async function checkForHotelChange() {
+
             if (
                 !canManageSettings() ||
                 hotelChangeCheckRunning
             ) {
+
                 return;
+
             }
 
-            const hotelId = getActiveHotelId();
+
+            const hotelId =
+                getActiveHotelId();
+
 
             if (!hotelId) {
+
                 showMessage(
+
                     "hotelMessage",
-                    currentRole === "system_owner"
+
+                    currentRole ===
+                    "system_owner"
+
                         ? "Select a hotel from the Hotels section first."
+
                         : "No hotel is assigned to your user profile.",
+
                     "error"
+
                 );
 
                 return;
+
             }
+
 
             if (
-                String(hotelId) === String(lastHotelId)
+                String(hotelId) ===
+                String(lastHotelId)
             ) {
+
                 return;
+
             }
 
-            hotelChangeCheckRunning = true;
+
+            hotelChangeCheckRunning =
+                true;
+
 
             try {
+
                 resetSettingsToDefaults();
 
                 await loadHotelInformation();
 
-            } catch (error) {
+            }
+
+            catch (error) {
+
                 console.error(
+
                     "Hotel change loading error:",
+
                     error
+
                 );
+
 
                 showMessage(
+
                     "hotelMessage",
+
                     "Unable to load selected hotel: " +
-                    (error.message || "Unknown error"),
+                    (
+                        error.message ||
+                        "Unknown error"
+                    ),
+
                     "error"
+
                 );
 
-            } finally {
-                hotelChangeCheckRunning = false;
             }
+
+            finally {
+
+                hotelChangeCheckRunning =
+                    false;
+
+            }
+
         }
 
+
+        /* =========================================================
+           INITIALIZE
+           ========================================================= */
+
         async function initializeSettings() {
-            console.log("EDU TECH Settings initializing...");
+
+            console.log(
+                "EDU TECH Settings initializing..."
+            );
+
 
             try {
+
                 await loadCurrentUser();
 
-                const allowed = applyPermissions();
+
+                const allowed =
+                    applyPermissions();
+
 
                 if (!allowed) {
+
                     console.log(
+
                         "Settings access denied for role:",
+
                         currentRole
+
                     );
 
                     return;
+
                 }
+
 
                 await checkForHotelChange();
 
-            } catch (error) {
+            }
+
+            catch (error) {
+
                 console.error(
+
                     "Settings initialization error:",
+
                     error
+
                 );
 
-                settingsContent.style.display = "none";
-                accessDenied.style.display = "block";
 
-                accessDenied.querySelector("p").textContent =
+                settingsContent.style.display =
+                    "none";
+
+                accessDenied.style.display =
+                    "block";
+
+
+                accessDenied.querySelector("p")
+                    .textContent =
+
                     error.message ||
+
                     "Unable to initialize Settings.";
+
             }
+
         }
 
-        window.addEventListener("pageshow", function () {
-            checkForHotelChange();
-        });
+
+        /* =========================================================
+           PAGE SHOW
+           ========================================================= */
+
+        window.addEventListener(
+            "pageshow",
+            function () {
+
+                checkForHotelChange();
+
+            }
+        );
+
+
+        /* =========================================================
+           VISIBILITY CHANGE
+           ========================================================= */
 
         document.addEventListener(
             "visibilitychange",
             function () {
+
                 if (
-                    document.visibilityState === "visible"
+                    document.visibilityState ===
+                    "visible"
                 ) {
+
                     checkForHotelChange();
+
                 }
+
             }
         );
 
+
+        /* =========================================================
+           START
+           ========================================================= */
+
         initializeSettings();
 
+
     })();
+
     </script>
 
 </body>
