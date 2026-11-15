@@ -1,566 +1,78 @@
 /* =========================================================
-   EDU TECH HOTEL MANAGEMENT SYSTEM
-   VISIBILITY & TEXT CONTRAST FIX
-   ---------------------------------------------------------
-   This section improves text visibility without changing
-   the existing JavaScript or system functionality.
+   MAINTENANCE ACTION BUTTONS
    ========================================================= */
 
-/* ---------- GLOBAL TEXT ---------- */
-
-html,
-body {
-    color: #172033 !important;
+.maintenance-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
-body {
-    background-color: #eef3f8;
-}
-
-/* ---------- MAIN CONTENT ---------- */
-
-main,
-.main-content,
-.content,
-.page-content,
-.dashboard-content,
-.container,
-section {
-    color: #172033;
-}
-
-/* ---------- HEADINGS ---------- */
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    color: #102a43 !important;
+/* General maintenance action button */
+.maintenance-actions button {
+    border: none;
+    border-radius: 6px;
+    padding: 7px 12px;
+    font-size: 13px;
     font-weight: 700;
+    cursor: pointer;
+    color: #ffffff;
+    min-width: 70px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
-.page-title,
-.page-header h1,
-.page-header h2 {
-    color: #102a43 !important;
+/* EDIT */
+.maintenance-actions .edit-btn {
+    background: #2563eb;
+    color: #ffffff;
 }
 
-/* ---------- NORMAL TEXT ---------- */
-
-p,
-span,
-label,
-small,
-strong,
-div {
-    color: inherit;
-}
-
-/* ---------- SIDEBAR ---------- */
-
-.sidebar,
-.side-bar,
-nav.sidebar {
-    color: #ffffff !important;
-}
-
-.sidebar *,
-.side-bar *,
-nav.sidebar * {
-    color: #ffffff !important;
-}
-
-.sidebar a,
-.side-bar a,
-nav.sidebar a {
-    color: #ffffff !important;
-}
-
-.sidebar a:hover,
-.side-bar a:hover,
-nav.sidebar a:hover {
-    color: #ffffff !important;
-}
-
-/* Keep active sidebar links highly visible */
-
-.sidebar a.active,
-.side-bar a.active,
-nav.sidebar a.active,
-.sidebar .active,
-.side-bar .active {
-    color: #ffffff !important;
-    font-weight: 700;
-}
-
-/* ---------- TOP HEADER ---------- */
-
-header,
-.topbar,
-.top-bar,
-.navbar,
-.page-header {
-    color: #102a43;
-}
-
-header *,
-.topbar *,
-.top-bar *,
-.navbar *,
-.page-header * {
-    color: inherit;
-}
-
-/* ---------- CARDS ---------- */
-
-.card,
-.dashboard-card,
-.stat-card,
-.summary-card,
-.info-card,
-.metric-card,
-.panel,
-.box {
-    color: #172033 !important;
-}
-
-.card h1,
-.card h2,
-.card h3,
-.card h4,
-.card h5,
-.card h6,
-.dashboard-card h1,
-.dashboard-card h2,
-.dashboard-card h3,
-.stat-card h1,
-.stat-card h2,
-.stat-card h3,
-.summary-card h1,
-.summary-card h2,
-.summary-card h3 {
-    color: #102a43 !important;
-}
-
-.card p,
-.card span,
-.dashboard-card p,
-.dashboard-card span,
-.stat-card p,
-.stat-card span,
-.summary-card p,
-.summary-card span {
-    color: #334e68 !important;
-}
-
-/* ---------- TABLES ---------- */
-
-table {
-    color: #172033 !important;
-    background: #ffffff;
-}
-
-thead {
-    background: #102a43 !important;
-}
-
-thead th {
-    color: #ffffff !important;
-    background: #102a43 !important;
-    font-weight: 700;
-}
-
-tbody {
-    color: #172033 !important;
-}
-
-tbody tr {
-    color: #172033 !important;
-    background: #ffffff;
-}
-
-tbody tr:nth-child(even) {
-    background: #f5f8fb;
-}
-
-tbody tr:hover {
-    background: #e8f1f8;
-}
-
-tbody td {
-    color: #172033 !important;
-    background: transparent;
-}
-
-/* ---------- TABLE LINKS ---------- */
-
-table a {
-    color: #075985 !important;
-    font-weight: 600;
-}
-
-table a:hover {
-    color: #0369a1 !important;
-}
-
-/* ---------- FORMS ---------- */
-
-label {
-    color: #172033 !important;
-    font-weight: 600;
-}
-
-input,
-select,
-textarea {
-    color: #172033 !important;
-    background: #ffffff !important;
-    border: 1px solid #9aaabd;
-}
-
-input::placeholder,
-textarea::placeholder {
-    color: #64748b !important;
-    opacity: 1;
-}
-
-input:focus,
-select:focus,
-textarea:focus {
-    color: #102a43 !important;
-    background: #ffffff !important;
-    border-color: #2563eb;
-    outline: none;
-}
-
-/* Dropdown options */
-
-select option {
-    color: #172033 !important;
-    background: #ffffff !important;
-}
-
-/* ---------- BUTTONS ---------- */
-
-button {
-    font-weight: 600;
-}
-
-button,
-.btn,
-.button {
-    color: #ffffff !important;
-}
-
-/* Primary buttons */
-
-.btn-primary,
-.primary,
-button.primary,
-button[type="submit"] {
-    color: #ffffff !important;
-}
-
-/* Secondary/light buttons */
-
-.btn-secondary,
-.secondary {
-    color: #172033 !important;
-}
-
-/* ---------- MODALS ---------- */
-
-.modal,
-.modal-content,
-.modal-dialog,
-.dialog,
-.popup {
-    color: #172033 !important;
-}
-
-.modal-content {
-    background: #ffffff !important;
-}
-
-.modal-content h1,
-.modal-content h2,
-.modal-content h3,
-.modal-content h4,
-.modal-content h5,
-.modal-content h6 {
-    color: #102a43 !important;
-}
-
-.modal-content p,
-.modal-content span,
-.modal-content label {
-    color: #334e68 !important;
-}
-
-/* ---------- CHECKOUT PAGE ---------- */
-
-.checkout-page,
-.checkout-container,
-.checkout-content {
-    color: #172033 !important;
-}
-
-.checkout-page h1,
-.checkout-page h2,
-.checkout-page h3,
-.checkout-page h4 {
-    color: #102a43 !important;
-}
-
-.checkout-page label {
-    color: #172033 !important;
-    font-weight: 700;
-}
-
-.checkout-page input,
-.checkout-page select,
-.checkout-page textarea {
-    color: #172033 !important;
-    background: #ffffff !important;
-}
-
-/* Checkout summary */
-
-.checkout-summary,
-.checkout-card,
-.checkout-details,
-.summary {
-    color: #172033 !important;
-    background: #ffffff;
-}
-
-.checkout-summary strong,
-.checkout-card strong,
-.checkout-details strong,
-.summary strong {
-    color: #102a43 !important;
-}
-
-/* ---------- STATUS BADGES ---------- */
-
-.status,
-.badge {
-    font-weight: 700;
-}
-
-/* Make text visible regardless of background */
-
-.status.available,
-.badge.available {
-    color: #166534 !important;
-}
-
-.status.occupied,
-.badge.occupied {
-    color: #991b1b !important;
-}
-
-.status.cleaning,
-.badge.cleaning {
-    color: #92400e !important;
-}
-
-.status.maintenance,
-.badge.maintenance {
-    color: #7c2d12 !important;
-}
-
-.status.active,
-.badge.active {
-    color: #166534 !important;
-}
-
-.status.pending,
-.badge.pending {
-    color: #92400e !important;
-}
-
-.status.completed,
-.badge.completed {
-    color: #166534 !important;
-}
-
-/* ---------- LINKS ---------- */
-
-a {
-    color: #075985;
+.maintenance-actions .edit-btn:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
 }
 
-a:hover {
-    color: #0369a1;
+/* POST COST */
+.maintenance-actions .post-btn {
+    background: #16a34a;
+    color: #ffffff;
 }
 
-/* ---------- ALERTS / MESSAGES ---------- */
-
-.alert,
-.message,
-.notice,
-.error,
-.success,
-.warning {
-    font-weight: 600;
-}
-
-.alert,
-.message {
-    color: #172033 !important;
-}
-
-.error {
-    color: #991b1b !important;
-}
-
-.success {
-    color: #166534 !important;
-}
-
-.warning {
-    color: #92400e !important;
-}
-
-/* ---------- DROPDOWNS / MENUS ---------- */
-
-.dropdown-menu,
-.menu,
-.context-menu {
-    background: #ffffff !important;
-    color: #172033 !important;
-}
-
-.dropdown-menu *,
-.menu *,
-.context-menu * {
-    color: #172033 !important;
-}
-
-.dropdown-menu a:hover,
-.menu a:hover {
-    background: #e8f1f8;
-    color: #075985 !important;
-}
-
-/* ---------- DATA / NUMBERS ---------- */
-
-.amount,
-.total,
-.balance,
-.revenue,
-.expense,
-.price,
-.currency {
-    color: #102a43 !important;
-    font-weight: 700;
+.maintenance-actions .post-btn:hover {
+    background: #15803d;
+    transform: translateY(-1px);
 }
 
-/* ---------- FINANCIAL VALUES ---------- */
-
-.money-in,
-.income,
-.revenue-value {
-    color: #166534 !important;
-    font-weight: 700;
-}
-
-.money-out,
-.expense-value {
-    color: #991b1b !important;
-    font-weight: 700;
-}
-
-/* ---------- PAGINATION ---------- */
-
-.pagination a,
-.pagination button {
-    color: #172033 !important;
-    background: #ffffff;
-}
-
-.pagination a.active,
-.pagination button.active {
-    color: #ffffff !important;
-}
-
-/* ---------- FOOTER ---------- */
-
-footer {
-    color: #334e68 !important;
-}
-
-footer * {
-    color: inherit !important;
-}
-
-/* ---------- ICON VISIBILITY ---------- */
-
-i,
-svg,
-.icon {
-    opacity: 1;
+/* DELETE */
+.maintenance-actions .delete-btn {
+    background: #dc2626;
+    color: #ffffff;
 }
-
-/* ---------- DISABLED CONTROLS ---------- */
 
-button:disabled,
-input:disabled,
-select:disabled,
-textarea:disabled {
-    color: #64748b !important;
-    opacity: 0.75;
+.maintenance-actions .delete-btn:hover {
+    background: #b91c1c;
+    transform: translateY(-1px);
 }
 
-/* ---------- SHINY / LIQUID BACKGROUND ----------
-   Keep the background attractive while maintaining
-   enough contrast for the content.
-   -------------------------------------------------- */
-
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: -1;
-    background:
-        radial-gradient(
-            circle at 15% 20%,
-            rgba(255, 255, 255, 0.55),
-            transparent 28%
-        ),
-        radial-gradient(
-            circle at 85% 15%,
-            rgba(96, 165, 250, 0.18),
-            transparent 30%
-        ),
-        radial-gradient(
-            circle at 75% 80%,
-            rgba(14, 165, 233, 0.14),
-            transparent 32%
-        );
+/* Disabled buttons */
+.maintenance-actions button:disabled {
+    background: #9ca3af;
+    color: #ffffff;
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none;
 }
 
-/* ---------- IMPORTANT ----------
-   Prevent decorative layers from hiding text.
-   -------------------------------------------------- */
-
-* {
-    text-shadow: none;
-}
+/* Make buttons remain visible on smaller screens */
+@media (max-width: 768px) {
+    .maintenance-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
 
-.card,
-.dashboard-card,
-.stat-card,
-.summary-card,
-.panel,
-.box,
-.modal-content,
-table,
-form {
-    position: relative;
-    z-index: 1;
+    .maintenance-actions button {
+        width: 100%;
+    }
 }

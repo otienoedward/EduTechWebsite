@@ -1,48 +1,108 @@
 /* =========================================================
    EDU TECH HOTEL MANAGEMENT SYSTEM
-   FINANCIAL ENGINE
-   VERSION: 2026.11.13.22
+   CENTRAL FINANCIAL ENGINE
+   VERSION: 2026.11.15.02
+
+   PURPOSE
    ---------------------------------------------------------
-   SAFE DATABASE VERSION
+   Central financial engine for:
 
-   IMPORTANT:
-   financial_transactions is NOT assumed to contain:
-   - guest_id
-   - payment_method
-   - reservation_id
+   - Accommodation revenue
+   - Guest payments
+   - Restaurant sales
+   - Expenses
+   - Salaries
+   - Salary advances
+   - Inventory purchases
+   - Maintenance expenses
+   - Transfers
+   - Reversals
+   - Cashier handovers
+   - Bank deposits
+   - Cash movement history
 
-   The engine therefore DOES NOT send those fields.
+   IMPORTANT CASHIER SCHEMA NOTES
+   ---------------------------------------------------------
+   cashier_handovers DOES NOT contain:
 
-   financial_accounts is read using select("*")
-   and never assumes a "code" column exists.
+      created_by
+      difference
+
+   bank_deposits DOES NOT contain:
+
+      created_by
+
+   Therefore those fields are NOT inserted into
+   cashier_handovers.
+
+   HANDOVER CONFIRMATION
+   ---------------------------------------------------------
+   The database has a CHECK constraint on the
+   cashier_handovers.status column.
+
+   The values "confirmed" and "completed" are not
+   accepted by that constraint.
+
+   Therefore confirmation DOES NOT change status.
+
+   Confirmation is recorded using:
+
+      confirmed_at
+
+   Difference is calculated by JavaScript and returned
+   to the cashier page. It is NOT stored in
+   cashier_handovers.
+
+   IMPORTANT LEDGER RULE
+   ---------------------------------------------------------
+   Guest payments and expenses are financial transactions
+   and are posted to financial_transactions.
+
+   A cashier handover is an operational confirmation of
+   physical cash. It is NOT posted again as a guest
+   payment, otherwise the same money would be duplicated.
+
 ========================================================= */
 
 (function () {
+
     "use strict";
 
-    const VERSION = "2026.11.13.22";
 
-    console.log(
-        "%cEDU TECH Financial Engine " + VERSION + " loaded",
-        "color:#0b7dda;font-weight:bold;"
-    );
+    /* =====================================================
+       VERSION
+    ===================================================== */
+
+    const VERSION = "2026.11.15.02";
+
+
+    /* =====================================================
+       GLOBAL FLAGS
+    ===================================================== */
+
+    window.EDUTECH_FINANCIAL_ENGINE_READY = false;
+
+
+    /* =====================================================
+       VALID TRANSACTION TYPES
+    ===================================================== */
+
+    const VALID_TRANSACTION_TYPES = [
+        "income",
+        "expense",
+        "salary",
+        "salary_advance",
+        "transfer",
+        "other"
+    ];
+
 
     /* =====================================================
        BASIC HELPERS
     ===================================================== */
 
-    function safeText(value) {
-        if (
-            value === null ||
-            value === undefined
-        ) {
-            return "";
-        }
+    function roundMoney(value) {
 
-        return String(value).trim();
-    }
-
-    function money(value) {
         const number = Number(value);
 
         if (!Number.isFinite(number)) {
@@ -54,647 +114,655 @@
         ) / 100;
     }
 
-    function positiveMoney(value) {
-        const amount = money(value);
 
-        return amount > 0 ? amount : 0;
+    function money(value) {
+
+        return roundMoney(value).toFixed(2);
     }
 
-    function todayDate() {
-        return new Date()
-            .toISOString()
-            .slice(0, 10);
-    }
 
-    function generateTransactionNumber() {
-        const now = new Date();
+    function makeError(message) {
 
-        const datePart =
-            now.getFullYear() +
-            String(now.getMonth() + 1).padStart(2, "0") +
-            String(now.getDate()).padStart(2, "0");
-
-        const randomPart =
-            Math.floor(
-                100000 +
-                Math.random() * 900000
-            );
-
-        return (
-            "TXN-" +
-            datePart +
-            "-" +
-            randomPart
+        return new Error(
+            String(
+                message ||
+                "Unknown financial engine error."
+            )
         );
     }
 
-    /* =====================================================
-       CURRENT USER
-    ===================================================== */
 
-    function getCurrentUserId() {
-        try {
-            const possibleUsers = [
-                window.currentUser,
-                window.loggedInUser,
-                window.user,
-                window.currentUserProfile
-            ];
+    function safeNumber(value) {
 
-            for (
-                const user of possibleUsers
-            ) {
-                if (
-                    user &&
-                    typeof user === "object"
-                ) {
-                    return (
-                        user.id ||
-                        user.user_id ||
-                        user.userId ||
-                        null
-                    );
-                }
-            }
-        } catch (error) {
-            console.warn(
-                "Unable to determine current user:",
-                error
-            );
-        }
+        const number = Number(value);
 
-        return null;
+        return Number.isFinite(number)
+            ? number
+            : 0;
     }
+
+
+    function createId() {
+
+        return (
+            Date.now().toString(36) +
+            Math.random()
+                .toString(36)
+                .substring(2, 10)
+        ).toUpperCase();
+    }
+
+
+    async function withTimeout(
+        promise,
+        milliseconds,
+        message
+    ) {
+
+        let timer;
+
+        const timeout = new Promise(
+            function (_, reject) {
+
+                timer = setTimeout(
+                    function () {
+
+                        reject(
+                            makeError(
+                                message ||
+                                "Operation timed out."
+                            )
+                        );
+
+                    },
+                    milliseconds
+                );
+
+            }
+        );
+
+        try {
+
+            return await Promise.race([
+                promise,
+                timeout
+            ]);
+
+        } finally {
+
+            clearTimeout(timer);
+
+        }
+    }
+
 
     /* =====================================================
        SUPABASE CLIENT
     ===================================================== */
 
-    function getSupabaseClient() {
+    async function waitForSupabaseClient() {
 
-        if (
-            window.supabaseClient &&
-            typeof window.supabaseClient.from ===
-                "function"
+        const start = Date.now();
+
+        while (
+            Date.now() - start <
+            15000
         ) {
-            return window.supabaseClient;
+
+            const candidates = [
+
+                window.supabaseClient,
+
+                window.supabaseClientInstance,
+
+                window.edutechSupabase,
+
+                window.EDUTECH_SUPABASE
+
+            ];
+
+
+            for (
+                const candidate
+                of candidates
+            ) {
+
+                if (
+                    candidate &&
+                    typeof candidate.from ===
+                        "function" &&
+                    candidate.auth &&
+                    typeof candidate.auth.getUser ===
+                        "function"
+                ) {
+
+                    return candidate;
+
+                }
+
+            }
+
+
+            if (
+                window.supabase &&
+                typeof window.supabase.from ===
+                    "function" &&
+                window.supabase.auth &&
+                typeof window.supabase.auth.getUser ===
+                    "function"
+            ) {
+
+                return window.supabase;
+
+            }
+
+
+            await new Promise(
+                function (resolve) {
+
+                    setTimeout(
+                        resolve,
+                        250
+                    );
+
+                }
+            );
+
         }
 
-        if (
-            window.supabase &&
-            typeof window.supabase.from ===
-                "function"
-        ) {
-            return window.supabase;
-        }
 
-        throw new Error(
-            "Supabase client is not available. Check that supabase.js loads before financial-engine.js."
+        throw makeError(
+            "Supabase client is not available. " +
+            "Make sure supabase.js loads before financial-engine.js."
         );
     }
 
-    /* =====================================================
-       LEGACY ARGUMENT SUPPORT
-    ===================================================== */
 
-    function normalizeOptions(
-        first,
-        second
-    ) {
+    async function getDb() {
 
-        /*
-           Supports:
+        return await waitForSupabaseClient();
 
-           postPayment(options)
-
-           and older:
-
-           postPayment(supabase, options)
-        */
-
-        if (
-            second &&
-            typeof second === "object" &&
-            !Array.isArray(second)
-        ) {
-            return second;
-        }
-
-        if (
-            first &&
-            typeof first === "object" &&
-            !Array.isArray(first)
-        ) {
-            return first;
-        }
-
-        return {};
     }
 
+
     /* =====================================================
-       PAYMENT METHOD
+       HOTEL / USER
     ===================================================== */
 
-    function normalizePaymentMethod(
-        value
-    ) {
+    async function getCurrentUser() {
 
-        const raw =
-            safeText(value)
-                .toLowerCase();
+        const db =
+            await getDb();
 
-        const normalized =
-            raw.replace(
-                /[\s_-]+/g,
-                ""
+
+        const result =
+            await db.auth.getUser();
+
+
+        if (result.error) {
+
+            throw makeError(
+                "Unable to identify the current user: " +
+                result.error.message
             );
 
-        if (
-            normalized === "mpesa" ||
-            normalized === "m"
-        ) {
-            return "mpesa";
         }
 
-        if (
-            normalized === "card"
-        ) {
-            return "card";
-        }
 
         if (
-            normalized === "bank" ||
-            normalized ===
-                "banktransfer" ||
-            normalized ===
-                "transfer"
+            !result.data ||
+            !result.data.user
         ) {
-            return "bank";
+
+            throw makeError(
+                "No authenticated user was found."
+            );
+
         }
 
-        return "cash";
+
+        return result.data.user;
+
     }
 
-    /* =====================================================
-       LOAD FINANCIAL ACCOUNTS
-    ===================================================== */
 
-    async function getFinancialAccounts(
-        hotelId
-    ) {
+    async function getCurrentProfile() {
 
-        const supabase =
-            getSupabaseClient();
+        const db =
+            await getDb();
 
-        if (!hotelId) {
-            throw new Error(
-                "Hotel ID is required to load financial accounts."
-            );
-        }
 
-        const {
-            data,
-            error
-        } =
-            await supabase
-                .from(
-                    "financial_accounts"
+        const user =
+            await getCurrentUser();
+
+
+        const result =
+            await db
+                .from("profiles")
+                .select(
+                    "id,full_name,role,hotel_id,is_active"
                 )
+                .eq(
+                    "id",
+                    user.id
+                )
+                .maybeSingle();
+
+
+        if (result.error) {
+
+            throw makeError(
+                "Unable to load user profile: " +
+                result.error.message
+            );
+
+        }
+
+
+        if (!result.data) {
+
+            throw makeError(
+                "No profile was found for the current user."
+            );
+
+        }
+
+
+        if (
+            result.data.is_active === false
+        ) {
+
+            throw makeError(
+                "The current user account is inactive."
+            );
+
+        }
+
+
+        if (!result.data.hotel_id) {
+
+            throw makeError(
+                "The current user is not assigned to a hotel."
+            );
+
+        }
+
+
+        return result.data;
+
+    }
+
+
+    async function getHotelId() {
+
+        const profile =
+            await getCurrentProfile();
+
+
+        return Number(
+            profile.hotel_id
+        );
+
+    }
+
+
+    async function getCurrentHotel() {
+
+        const db =
+            await getDb();
+
+
+        const hotelId =
+            await getHotelId();
+
+
+        const result =
+            await db
+                .from("hotels")
+                .select("*")
+                .eq(
+                    "id",
+                    hotelId
+                )
+                .maybeSingle();
+
+
+        if (result.error) {
+
+            throw makeError(
+                "Unable to load hotel: " +
+                result.error.message
+            );
+
+        }
+
+
+        return result.data || null;
+
+    }
+
+
+    /* =====================================================
+       ACCOUNT HELPERS
+    ===================================================== */
+
+    async function getAccountByCode(
+        hotelId,
+        accountCode
+    ) {
+
+        const db =
+            await getDb();
+
+
+        const result =
+            await db
+                .from("financial_accounts")
                 .select("*")
                 .eq(
                     "hotel_id",
                     hotelId
-                );
+                )
+                .eq(
+                    "account_code",
+                    String(accountCode)
+                )
+                .maybeSingle();
 
-        if (error) {
-            throw new Error(
-                "Unable to load financial accounts: " +
-                error.message
+
+        if (result.error) {
+
+            throw makeError(
+                "Unable to load financial account " +
+                accountCode +
+                ": " +
+                result.error.message
             );
+
         }
 
-        return Array.isArray(data)
-            ? data
-            : [];
+
+        return result.data || null;
+
     }
 
-    /* =====================================================
-       ACCOUNT ID
-    ===================================================== */
 
-    function getAccountId(
-        account
-    ) {
-
-        if (!account) {
-            return null;
-        }
-
-        return (
-            account.id ||
-            account.account_id ||
-            account.accountId ||
-            null
-        );
-    }
-
-    /* =====================================================
-       ACCOUNT SEARCH VALUES
-    ===================================================== */
-
-    function getAccountSearchText(
-        account
-    ) {
-
-        if (
-            !account ||
-            typeof account !==
-                "object"
-        ) {
-            return "";
-        }
-
-        const fields = [
-            "id",
-            "account_id",
-            "account_name",
-            "account_number",
-            "account_type",
-            "name",
-            "title",
-            "description",
-            "type",
-            "category"
-        ];
-
-        const values = [];
-
-        fields.forEach(
-            function (field) {
-
-                if (
-                    Object.prototype
-                        .hasOwnProperty.call(
-                            account,
-                            field
-                        )
-                ) {
-
-                    const value =
-                        safeText(
-                            account[field]
-                        );
-
-                    if (value) {
-                        values.push(
-                            value
-                        );
-                    }
-                }
-            }
-        );
-
-        return values
-            .join(" ")
-            .toLowerCase();
-    }
-
-    /* =====================================================
-       FIND ACCOUNT BY KEYWORDS
-    ===================================================== */
-
-    function findAccountByKeywords(
-        accounts,
-        keywords
-    ) {
-
-        if (
-            !Array.isArray(accounts)
-        ) {
-            return null;
-        }
-
-        for (
-            const account of accounts
-        ) {
-
-            const searchable =
-                getAccountSearchText(
-                    account
-                );
-
-            for (
-                const keyword of keywords
-            ) {
-
-                const normalizedKeyword =
-                    safeText(
-                        keyword
-                    ).toLowerCase();
-
-                if (
-                    normalizedKeyword &&
-                    searchable.includes(
-                        normalizedKeyword
-                    )
-                ) {
-                    return account;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /* =====================================================
-       FIND CASH ACCOUNT
-    ===================================================== */
-
-    function findCashAccount(
-        accounts
-    ) {
-
-        return findAccountByKeywords(
-            accounts,
-            [
-                "cash",
-                "cash account",
-                "cash on hand"
-            ]
-        );
-    }
-
-    /* =====================================================
-       FIND M-PESA ACCOUNT
-    ===================================================== */
-
-    function findMpesaAccount(
-        accounts
-    ) {
-
-        return findAccountByKeywords(
-            accounts,
-            [
-                "mpesa",
-                "m-pesa",
-                "mobile money",
-                "mobile"
-            ]
-        );
-    }
-
-    /* =====================================================
-       FIND CARD ACCOUNT
-    ===================================================== */
-
-    function findCardAccount(
-        accounts
-    ) {
-
-        return findAccountByKeywords(
-            accounts,
-            [
-                "card",
-                "bank card",
-                "credit card",
-                "debit card"
-            ]
-        );
-    }
-
-    /* =====================================================
-       FIND BANK ACCOUNT
-    ===================================================== */
-
-    function findBankAccount(
-        accounts
-    ) {
-
-        return findAccountByKeywords(
-            accounts,
-            [
-                "bank",
-                "bank account"
-            ]
-        );
-    }
-
-    /* =====================================================
-       FIND RECEIVABLE ACCOUNT
-    ===================================================== */
-
-    function findReceivableAccount(
-        accounts
-    ) {
-
-        return findAccountByKeywords(
-            accounts,
-            [
-                "accounts receivable",
-                "receivable",
-                "guest receivable",
-                "guest receivables"
-            ]
-        );
-    }
-
-    /* =====================================================
-       RESOLVE PAYMENT ACCOUNT
-    ===================================================== */
-
-    async function resolvePaymentAccount(
+    async function ensureAccount(
         hotelId,
-        paymentMethod
+        accountCode,
+        accountName,
+        accountType
     ) {
 
-        const accounts =
-            await getFinancialAccounts(
-                hotelId
-            );
+        const db =
+            await getDb();
 
-        if (
-            !accounts.length
-        ) {
-            throw new Error(
-                "No financial accounts have been created for this hotel."
-            );
-        }
-
-        const method =
-            normalizePaymentMethod(
-                paymentMethod
-            );
 
         let account =
-            null;
-
-        if (
-            method === "cash"
-        ) {
-            account =
-                findCashAccount(
-                    accounts
-                );
-        }
-
-        if (
-            method === "mpesa"
-        ) {
-            account =
-                findMpesaAccount(
-                    accounts
-                );
-        }
-
-        if (
-            method === "card"
-        ) {
-            account =
-                findCardAccount(
-                    accounts
-                );
-        }
-
-        if (
-            method === "bank"
-        ) {
-            account =
-                findBankAccount(
-                    accounts
-                );
-        }
-
-        if (!account) {
-
-            const available =
-                accounts
-                    .map(
-                        function (item) {
-
-                            return {
-                                id:
-                                    getAccountId(
-                                        item
-                                    ),
-                                name:
-                                    item.account_name ||
-                                    item.name ||
-                                    item.title ||
-                                    "",
-                                number:
-                                    item.account_number ||
-                                    "",
-                                type:
-                                    item.account_type ||
-                                    item.type ||
-                                    ""
-                            };
-                        }
-                    );
-
-            throw new Error(
-                "No financial account was found for payment method '" +
-                method +
-                "'. Available accounts: " +
-                JSON.stringify(
-                    available
-                )
-            );
-        }
-
-        const accountId =
-            getAccountId(
-                account
+            await getAccountByCode(
+                hotelId,
+                accountCode
             );
 
-        if (!accountId) {
-            throw new Error(
-                "The payment account exists but has no valid account ID."
-            );
+
+        if (account) {
+
+            return account;
+
         }
 
-        return {
-            account:
-                account,
 
-            accountId:
-                accountId,
+        const insertResult =
+            await db
+                .from("financial_accounts")
+                .insert({
 
-            method:
-                method,
+                    hotel_id:
+                        hotelId,
 
-            accounts:
-                accounts
-        };
+                    account_code:
+                        accountCode,
+
+                    account_name:
+                        accountName,
+
+                    account_type:
+                        accountType,
+
+                    status:
+                        "active"
+
+                })
+                .select("*")
+                .single();
+
+
+        if (insertResult.error) {
+
+            throw makeError(
+                "Unable to create financial account " +
+                accountCode +
+                ": " +
+                insertResult.error.message
+            );
+
+        }
+
+
+        return insertResult.data;
+
     }
 
-    /* =====================================================
-       FIND SPECIFIC ACCOUNT
-    ===================================================== */
 
-    async function findFinancialAccount(
-        hotelId,
-        identifier
-    ) {
-
-        const accounts =
-            await getFinancialAccounts(
-                hotelId
-            );
-
-        const target =
-            safeText(
-                identifier
-            ).toLowerCase();
-
-        for (
-            const account of accounts
-        ) {
-
-            const searchable =
-                getAccountSearchText(
-                    account
-                );
-
-            if (
-                searchable.includes(
-                    target
-                )
-            ) {
-                return account;
-            }
-        }
-
-        throw new Error(
-            "Unable to find financial account '" +
-            safeText(identifier) +
-            "'."
-        );
-    }
-
-    /* =====================================================
-       GET RUNNING BALANCE
-       -----------------------------------------------------
-       We only request fields needed by the engine.
-    ===================================================== */
-
-    async function getRunningBalance(
+    async function ensureCoreAccounts(
         hotelId
     ) {
 
-        const supabase =
-            getSupabaseClient();
+        const accounts = {};
 
-        const {
-            data,
-            error
-        } =
-            await supabase
-                .from(
-                    "financial_transactions"
-                )
+
+        accounts.bank =
+            await ensureAccount(
+                hotelId,
+                "1000",
+                "Bank",
+                "asset"
+            );
+
+
+        accounts.cash =
+            await ensureAccount(
+                hotelId,
+                "1010",
+                "Cash",
+                "asset"
+            );
+
+
+        accounts.mpesa =
+            await ensureAccount(
+                hotelId,
+                "1020",
+                "M-Pesa",
+                "asset"
+            );
+
+
+        accounts.employeeAdvances =
+            await ensureAccount(
+                hotelId,
+                "1030",
+                "Employee Advances",
+                "asset"
+            );
+
+
+        accounts.card =
+            await ensureAccount(
+                hotelId,
+                "1040",
+                "Card",
+                "asset"
+            );
+
+
+        accounts.receivables =
+            await ensureAccount(
+                hotelId,
+                "1100",
+                "Guest Receivables",
+                "asset"
+            );
+
+
+        accounts.payables =
+            await ensureAccount(
+                hotelId,
+                "2000",
+                "Accounts Payable",
+                "liability"
+            );
+
+
+        accounts.salaryPayable =
+            await ensureAccount(
+                hotelId,
+                "2010",
+                "Employee Salary Payable",
+                "liability"
+            );
+
+
+        accounts.vatPayable =
+            await ensureAccount(
+                hotelId,
+                "2030",
+                "VAT Payable",
+                "liability"
+            );
+
+
+        accounts.ownerEquity =
+            await ensureAccount(
+                hotelId,
+                "3000",
+                "Owner Equity",
+                "equity"
+            );
+
+
+        accounts.roomRevenue =
+            await ensureAccount(
+                hotelId,
+                "4000",
+                "Room Revenue",
+                "revenue"
+            );
+
+
+        accounts.restaurantRevenue =
+            await ensureAccount(
+                hotelId,
+                "4010",
+                "Restaurant Revenue",
+                "revenue"
+            );
+
+
+        accounts.otherRevenue =
+            await ensureAccount(
+                hotelId,
+                "4020",
+                "Other Revenue",
+                "revenue"
+            );
+
+
+        accounts.salaryExpense =
+            await ensureAccount(
+                hotelId,
+                "5000",
+                "Salaries Expense",
+                "expense"
+            );
+
+
+        accounts.foodExpense =
+            await ensureAccount(
+                hotelId,
+                "5010",
+                "Food Expense",
+                "expense"
+            );
+
+
+        accounts.utilitiesExpense =
+            await ensureAccount(
+                hotelId,
+                "5020",
+                "Utilities Expense",
+                "expense"
+            );
+
+
+        accounts.maintenanceExpense =
+            await ensureAccount(
+                hotelId,
+                "5030",
+                "Maintenance Expense",
+                "expense"
+            );
+
+
+        accounts.cleaningExpense =
+            await ensureAccount(
+                hotelId,
+                "5040",
+                "Cleaning Expense",
+                "expense"
+            );
+
+
+        accounts.inventoryExpense =
+            await ensureAccount(
+                hotelId,
+                "5050",
+                "Inventory Expense",
+                "expense"
+            );
+
+
+        accounts.otherExpense =
+            await ensureAccount(
+                hotelId,
+                "5060",
+                "Other Expenses",
+                "expense"
+            );
+
+
+        return accounts;
+
+    }
+
+
+    /* =====================================================
+       RUNNING BALANCE
+    ===================================================== */
+
+    async function getCurrentRunningBalance(
+        hotelId
+    ) {
+
+        const db =
+            await getDb();
+
+
+        const result =
+            await db
+                .from("financial_transactions")
                 .select(
-                    "balance_after"
+                    "money_in,money_out,created_at,id"
                 )
                 .eq(
                     "hotel_id",
@@ -703,127 +771,385 @@
                 .order(
                     "created_at",
                     {
-                        ascending:
-                            false
+                        ascending: true
+                    }
+                )
+                .order(
+                    "id",
+                    {
+                        ascending: true
+                    }
+                );
+
+
+        if (result.error) {
+
+            throw makeError(
+                "Unable to calculate running balance: " +
+                result.error.message
+            );
+
+        }
+
+
+        let balance = 0;
+
+
+        for (
+            const transaction
+            of result.data || []
+        ) {
+
+            balance =
+                roundMoney(
+                    balance +
+                    roundMoney(
+                        transaction.money_in
+                    ) -
+                    roundMoney(
+                        transaction.money_out
+                    )
+                );
+
+        }
+
+
+        return balance;
+
+    }
+
+
+    /* =====================================================
+       TRANSACTION NUMBER
+    ===================================================== */
+
+    async function generateTransactionNumber(
+        hotelId
+    ) {
+
+        const db =
+            await getDb();
+
+
+        const prefix =
+            "FIN-" +
+            hotelId +
+            "-" +
+            new Date()
+                .toISOString()
+                .slice(0, 10)
+                .replace(/-/g, "");
+
+
+        const result =
+            await db
+                .from("financial_transactions")
+                .select(
+                    "transaction_number"
+                )
+                .eq(
+                    "hotel_id",
+                    hotelId
+                )
+                .like(
+                    "transaction_number",
+                    prefix + "-%"
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
                     }
                 )
                 .limit(1);
 
-        if (error) {
-            throw new Error(
-                "Unable to read financial balance: " +
-                error.message
+
+        if (result.error) {
+
+            throw makeError(
+                "Unable to generate transaction number: " +
+                result.error.message
             );
+
         }
+
+
+        let nextNumber = 1;
+
 
         if (
-            data &&
-            data.length &&
-            data[0].balance_after !==
-                null &&
-            data[0].balance_after !==
-                undefined
+            result.data &&
+            result.data.length
         ) {
-            return money(
-                data[0].balance_after
-            );
+
+            const latest =
+                String(
+                    result.data[0]
+                        .transaction_number ||
+                    ""
+                );
+
+
+            const parts =
+                latest.split("-");
+
+
+            const lastPart =
+                Number(
+                    parts[
+                        parts.length - 1
+                    ]
+                );
+
+
+            if (
+                Number.isFinite(
+                    lastPart
+                )
+            ) {
+
+                nextNumber =
+                    lastPart + 1;
+
+            }
+
         }
 
-        return 0;
+
+        return (
+            prefix +
+            "-" +
+            String(
+                nextNumber
+            ).padStart(
+                5,
+                "0"
+            )
+        );
+
     }
 
+
     /* =====================================================
-       BUILD TRANSACTION ROW
-       -----------------------------------------------------
-       THIS IS THE CRITICAL PART.
-
-       We deliberately send ONLY fields that the financial
-       engine knows about.
-
-       NEVER SEND:
-       guest_id
-       payment_method
-       reservation_id
+       DUPLICATE REFERENCE CHECK
     ===================================================== */
 
-    async function buildTransactionRow(
+    async function findTransactionByReference(
+        hotelId,
+        referenceNumber
+    ) {
+
+        if (!referenceNumber) {
+
+            return null;
+
+        }
+
+
+        const db =
+            await getDb();
+
+
+        const result =
+            await db
+                .from("financial_transactions")
+                .select("*")
+                .eq(
+                    "hotel_id",
+                    hotelId
+                )
+                .eq(
+                    "reference_number",
+                    referenceNumber
+                )
+                .eq(
+                    "is_reversal",
+                    false
+                )
+                .limit(1);
+
+
+        if (result.error) {
+
+            throw makeError(
+                "Unable to check duplicate financial reference: " +
+                result.error.message
+            );
+
+        }
+
+
+        return (
+            result.data &&
+            result.data.length
+                ? result.data[0]
+                : null
+        );
+
+    }
+
+
+    /* =====================================================
+       CORE TRANSACTION POSTING
+    ===================================================== */
+
+    async function postTransaction(
         options
     ) {
 
+        options =
+            options || {};
+
+
         const hotelId =
-            options.hotelId ||
-            options.hotel_id;
+            Number(
+                options.hotelId ||
+                await getHotelId()
+            );
+
 
         const amount =
-            positiveMoney(
+            roundMoney(
                 options.amount
             );
 
-        if (!hotelId) {
-            throw new Error(
-                "Financial transaction requires hotel ID."
-            );
-        }
 
-        if (
-            amount <= 0
-        ) {
-            throw new Error(
+        if (amount <= 0) {
+
+            throw makeError(
                 "Financial transaction amount must be greater than zero."
             );
+
         }
 
-        const previousBalance =
-            await getRunningBalance(
+
+        const transactionType =
+            options.transactionType ||
+            "other";
+
+
+        if (
+            !VALID_TRANSACTION_TYPES.includes(
+                transactionType
+            )
+        ) {
+
+            throw makeError(
+                "Invalid financial transaction type: " +
+                transactionType
+            );
+
+        }
+
+
+        const referenceNumber =
+            options.referenceNumber ||
+            null;
+
+
+        const existing =
+            await findTransactionByReference(
+                hotelId,
+                referenceNumber
+            );
+
+
+        if (existing) {
+
+            return {
+
+                success:
+                    true,
+
+                alreadyPosted:
+                    true,
+
+                transaction:
+                    existing
+
+            };
+
+        }
+
+
+        const db =
+            await getDb();
+
+
+        const currentBalance =
+            await getCurrentRunningBalance(
                 hotelId
             );
 
+
         const moneyIn =
-            options.moneyIn !==
-            undefined
-                ? positiveMoney(
-                    options.moneyIn
-                )
-                : amount;
-
-        const moneyOut =
-            options.moneyOut !==
-            undefined
-                ? positiveMoney(
-                    options.moneyOut
-                )
-                : 0;
-
-        const balanceAfter =
-            money(
-                previousBalance +
-                moneyIn -
-                moneyOut
+            roundMoney(
+                options.moneyIn
             );
 
-        /*
-           IMPORTANT:
 
-           Do NOT add reservation_id here.
-           Do NOT add payment_method here.
-           Do NOT add guest_id here.
-        */
+        const moneyOut =
+            roundMoney(
+                options.moneyOut
+            );
 
-        return {
+
+        const calculatedIn =
+            moneyIn > 0
+                ? moneyIn
+                : (
+                    moneyOut === 0
+                        ? amount
+                        : 0
+                );
+
+
+        const calculatedOut =
+            moneyOut > 0
+                ? moneyOut
+                : 0;
+
+
+        const balanceAfter =
+            roundMoney(
+                currentBalance +
+                calculatedIn -
+                calculatedOut
+            );
+
+
+        const transactionNumber =
+            options.transactionNumber ||
+            await generateTransactionNumber(
+                hotelId
+            );
+
+
+        const user =
+            await getCurrentUser();
+
+
+        const payload = {
+
             hotel_id:
                 hotelId,
 
             transaction_number:
-                options.transactionNumber ||
-                generateTransactionNumber(),
-
-            transaction_type:
-                options.transactionType ||
-                "Payment",
+                transactionNumber,
 
             transaction_date:
                 options.transactionDate ||
-                todayDate(),
+                new Date().toISOString(),
+
+            transaction_type:
+                transactionType,
+
+            description:
+                options.description ||
+                "Financial transaction",
+
+            reference_number:
+                referenceNumber,
 
             debit_account_id:
                 options.debitAccountId ||
@@ -837,306 +1163,69 @@
                 amount,
 
             money_in:
-                moneyIn,
+                calculatedIn,
 
             money_out:
-                moneyOut,
+                calculatedOut,
 
             balance_after:
                 balanceAfter,
 
-            description:
-                options.description ||
-                "Financial transaction",
-
-            reference_number:
-                options.referenceNumber ||
-                null,
-
             is_reversal:
-                options.isReversal ===
-                true,
+                Boolean(
+                    options.isReversal
+                ),
 
             reversed_transaction_id:
                 options.reversedTransactionId ||
                 null,
 
             created_by:
-                options.createdBy ||
-                getCurrentUserId()
+                user.id
+
         };
-    }
 
-    /* =====================================================
-       POST FINANCIAL TRANSACTION
-    ===================================================== */
 
-    async function postTransaction(
-        options
-    ) {
-
-        const supabase =
-            getSupabaseClient();
-
-        const row =
-            await buildTransactionRow(
-                options
-            );
-
-        /*
-           Safety protection:
-           remove fields that must NEVER enter
-           financial_transactions.
-        */
-
-        delete row.guest_id;
-        delete row.payment_method;
-        delete row.reservation_id;
-
-        console.log(
-            "EDU TECH financial transaction row:",
-            row
-        );
-
-        const {
-            data,
-            error
-        } =
-            await supabase
+        const result =
+            await db
                 .from(
                     "financial_transactions"
                 )
                 .insert(
-                    row
+                    payload
                 )
-                .select()
-                .maybeSingle();
+                .select("*")
+                .single();
 
-        if (error) {
-            throw new Error(
+
+        if (result.error) {
+
+            throw makeError(
                 "Unable to post financial transaction: " +
-                error.message
+                result.error.message
             );
+
         }
 
+
         return {
+
             success:
                 true,
 
-            data:
-                data,
+            alreadyPosted:
+                false,
 
             transaction:
-                data,
+                result.data
 
-            row:
-                row
         };
+
     }
+
 
     /* =====================================================
-       POST PAYMENT
-       -----------------------------------------------------
-       Supports:
-
-       postPayment(options)
-
-       and:
-
-       postPayment(supabase, options)
-    ===================================================== */
-
-    async function postPayment(
-        first,
-        second
-    ) {
-
-        const options =
-            normalizeOptions(
-                first,
-                second
-            );
-
-        const hotelId =
-            options.hotelId ||
-            options.hotel_id;
-
-        const amount =
-            options.amount !==
-            undefined
-                ? options.amount
-                : options.payment;
-
-        const paymentMethod =
-            options.paymentMethod ||
-            options.payment_method ||
-            options.method ||
-            "cash";
-
-        const referenceNumber =
-            options.referenceNumber ||
-            options.reference_number ||
-            options.reference ||
-            null;
-
-        const description =
-            options.description ||
-            "Guest payment at check-out";
-
-        if (!hotelId) {
-            throw new Error(
-                "Payment failed: hotel ID is missing."
-            );
-        }
-
-        const paymentAmount =
-            positiveMoney(
-                amount
-            );
-
-        if (
-            paymentAmount <= 0
-        ) {
-            throw new Error(
-                "Payment failed: payment amount must be greater than zero."
-            );
-        }
-
-        console.log(
-            "Financial Engine processing payment:",
-            {
-                hotelId:
-                    hotelId,
-
-                amount:
-                    paymentAmount,
-
-                paymentMethod:
-                    paymentMethod,
-
-                reference:
-                    referenceNumber
-            }
-        );
-
-        /*
-           Find the account receiving the money.
-        */
-
-        const paymentAccount =
-            await resolvePaymentAccount(
-                hotelId,
-                paymentMethod
-            );
-
-        /*
-           Find Accounts Receivable.
-        */
-
-        const accounts =
-            paymentAccount.accounts;
-
-        const receivableAccount =
-            findReceivableAccount(
-                accounts
-            );
-
-        if (
-            !receivableAccount
-        ) {
-            throw new Error(
-                "Accounts Receivable financial account was not found for this hotel."
-            );
-        }
-
-        const debitAccountId =
-            paymentAccount.accountId;
-
-        const creditAccountId =
-            getAccountId(
-                receivableAccount
-            );
-
-        if (
-            !creditAccountId
-        ) {
-            throw new Error(
-                "Accounts Receivable account has no valid ID."
-            );
-        }
-
-        /*
-           POST ONLY THE SAFE FIELDS.
-        */
-
-        return await postTransaction({
-            hotelId:
-                hotelId,
-
-            amount:
-                paymentAmount,
-
-            debitAccountId:
-                debitAccountId,
-
-            creditAccountId:
-                creditAccountId,
-
-            transactionType:
-                "Payment",
-
-            moneyIn:
-                paymentAmount,
-
-            moneyOut:
-                0,
-
-            description:
-                description,
-
-            referenceNumber:
-                referenceNumber
-        });
-    }
-
-    /* =====================================================
-       COMPATIBILITY METHODS
-    ===================================================== */
-
-    async function recordPayment(
-        first,
-        second
-    ) {
-        return await postPayment(
-            first,
-            second
-        );
-    }
-
-    async function createPayment(
-        first,
-        second
-    ) {
-        return await postPayment(
-            first,
-            second
-        );
-    }
-
-    async function addPayment(
-        first,
-        second
-    ) {
-        return await postPayment(
-            first,
-            second
-        );
-    }
-
-    /* =====================================================
-       ACCOMMODATION CHARGE
-       -----------------------------------------------------
-       This version also avoids reservation_id.
+       ACCOMMODATION LEDGER
     ===================================================== */
 
     async function postAccommodationCharge(
@@ -1146,88 +1235,425 @@
         options =
             options || {};
 
+
         const hotelId =
-            options.hotelId ||
-            options.hotel_id;
-
-        const amount =
-            positiveMoney(
-                options.amount ||
-                options.total ||
-                options.totalBill
+            Number(
+                options.hotelId ||
+                await getHotelId()
             );
 
-        if (!hotelId) {
-            throw new Error(
-                "Accommodation charge requires hotel ID."
+
+        const reservationId =
+            options.reservationId ||
+            null;
+
+
+        const referenceBase =
+            options.referenceNumber ||
+            (
+                reservationId
+                    ? "ACCOM-" +
+                      reservationId
+                    : null
             );
+
+
+        if (!referenceBase) {
+
+            throw makeError(
+                "Reservation ID or accommodation reference is required."
+            );
+
         }
+
+
+        let roomRevenue =
+            roundMoney(
+                options.roomRevenue
+            );
+
+
+        let vatAmount =
+            roundMoney(
+                options.vatAmount
+            );
+
+
+        const suppliedAmount =
+            roundMoney(
+                options.amount
+            );
+
 
         if (
-            amount <= 0
+            roomRevenue <= 0 &&
+            suppliedAmount > 0
         ) {
-            throw new Error(
-                "Accommodation charge amount must be greater than zero."
-            );
+
+            const vatRate =
+                safeNumber(
+                    options.vatRate
+                );
+
+
+            vatAmount =
+                roundMoney(
+                    suppliedAmount *
+                    vatRate /
+                    100
+                );
+
+
+            roomRevenue =
+                roundMoney(
+                    suppliedAmount -
+                    vatAmount
+                );
+
         }
 
+
+        const grossAmount =
+            roundMoney(
+                roomRevenue +
+                vatAmount
+            );
+
+
+        if (grossAmount <= 0) {
+
+            throw makeError(
+                "Accommodation charge must be greater than zero."
+            );
+
+        }
+
+
+        const revenueReference =
+            referenceBase.endsWith(
+                "-REV"
+            )
+                ? referenceBase
+                : referenceBase + "-REV";
+
+
+        const vatReference =
+            referenceBase.endsWith(
+                "-VAT"
+            )
+                ? referenceBase
+                : referenceBase + "-VAT";
+
+
+        const existingRevenue =
+            await findTransactionByReference(
+                hotelId,
+                revenueReference
+            );
+
+
+        const existingVat =
+            await findTransactionByReference(
+                hotelId,
+                vatReference
+            );
+
+
+        if (
+            existingRevenue &&
+            (
+                vatAmount <= 0 ||
+                existingVat
+            )
+        ) {
+
+            return {
+
+                success:
+                    true,
+
+                alreadyPosted:
+                    true,
+
+                revenueTransaction:
+                    existingRevenue,
+
+                vatTransaction:
+                    existingVat ||
+                    null,
+
+                netAmount:
+                    roomRevenue,
+
+                vatAmount:
+                    vatAmount,
+
+                grossAmount:
+                    grossAmount
+
+            };
+
+        }
+
+
+        if (
+            existingRevenue &&
+            vatAmount > 0 &&
+            !existingVat
+        ) {
+
+            throw makeError(
+                "Accommodation revenue is already posted but the VAT posting is missing. The transaction was not duplicated."
+            );
+
+        }
+
+
+        if (
+            existingVat &&
+            !existingRevenue
+        ) {
+
+            throw makeError(
+                "Accommodation VAT is already posted but the revenue posting is missing. The transaction was not duplicated."
+            );
+
+        }
+
+
         const accounts =
-            await getFinancialAccounts(
+            await ensureCoreAccounts(
                 hotelId
             );
 
-        const receivableAccount =
-            findReceivableAccount(
-                accounts
-            );
+
+        const revenueResult =
+            await postTransaction({
+
+                hotelId:
+                    hotelId,
+
+                transactionType:
+                    "income",
+
+                amount:
+                    roomRevenue,
+
+                moneyIn:
+                    0,
+
+                moneyOut:
+                    0,
+
+                description:
+                    options.description ||
+                    "Accommodation revenue",
+
+                referenceNumber:
+                    revenueReference,
+
+                debitAccountId:
+                    accounts.receivables.id,
+
+                creditAccountId:
+                    accounts.roomRevenue.id
+
+            });
+
+
+        let vatResult =
+            null;
+
 
         if (
-            !receivableAccount
+            vatAmount > 0
         ) {
-            throw new Error(
-                "Accounts Receivable financial account was not found."
-            );
+
+            vatResult =
+                await postTransaction({
+
+                    hotelId:
+                        hotelId,
+
+                    transactionType:
+                        "income",
+
+                    amount:
+                        vatAmount,
+
+                    moneyIn:
+                        0,
+
+                    moneyOut:
+                        0,
+
+                    description:
+                        "Accommodation VAT",
+
+                    referenceNumber:
+                        vatReference,
+
+                    debitAccountId:
+                        accounts.receivables.id,
+
+                    creditAccountId:
+                        accounts.vatPayable.id
+
+                });
+
         }
 
-        const revenueAccount =
-            findAccountByKeywords(
-                accounts,
-                [
-                    "room revenue",
-                    "accommodation revenue",
-                    "hotel revenue",
-                    "room income",
-                    "accommodation income"
-                ]
+
+        return {
+
+            success:
+                true,
+
+            alreadyPosted:
+                false,
+
+            revenueTransaction:
+                revenueResult.transaction,
+
+            vatTransaction:
+                vatResult
+                    ? vatResult.transaction
+                    : null,
+
+            netAmount:
+                roomRevenue,
+
+            vatAmount:
+                vatAmount,
+
+            grossAmount:
+                grossAmount
+
+        };
+
+    }
+
+
+    /* =====================================================
+       PAYMENT
+    ===================================================== */
+
+    async function postPayment(
+        options
+    ) {
+
+        options =
+            options || {};
+
+
+        const hotelId =
+            Number(
+                options.hotelId ||
+                await getHotelId()
             );
 
-        if (
-            !revenueAccount
-        ) {
-            throw new Error(
-                "Accommodation Revenue financial account was not found."
+
+        const amount =
+            roundMoney(
+                options.amount
             );
+
+
+        if (amount <= 0) {
+
+            throw makeError(
+                "Payment amount must be greater than zero."
+            );
+
         }
+
+
+        const paymentId =
+            options.paymentId ||
+            null;
+
+
+        const reference =
+            options.referenceNumber ||
+            (
+                paymentId
+                    ? "PAY-" +
+                      paymentId
+                    : "PAY-" +
+                      createId()
+            );
+
+
+        const accounts =
+            await ensureCoreAccounts(
+                hotelId
+            );
+
+
+        let paymentAccount =
+            options.paymentAccountId ||
+            null;
+
+
+        if (!paymentAccount) {
+
+            const method =
+                String(
+                    options.paymentMethod ||
+                    "cash"
+                ).toLowerCase();
+
+
+            if (
+                method === "cash" ||
+                method === "cashier"
+            ) {
+
+                paymentAccount =
+                    accounts.cash.id;
+
+            } else if (
+                method === "mpesa" ||
+                method === "m-pesa"
+            ) {
+
+                paymentAccount =
+                    accounts.mpesa.id;
+
+            } else if (
+                method === "card"
+            ) {
+
+                paymentAccount =
+                    accounts.card.id;
+
+            } else if (
+                method === "bank"
+            ) {
+
+                paymentAccount =
+                    accounts.bank.id;
+
+            } else {
+
+                paymentAccount =
+                    accounts.cash.id;
+
+            }
+
+        }
+
 
         return await postTransaction({
+
             hotelId:
                 hotelId,
 
+            transactionType:
+                "transfer",
+
             amount:
                 amount,
-
-            debitAccountId:
-                getAccountId(
-                    receivableAccount
-                ),
-
-            creditAccountId:
-                getAccountId(
-                    revenueAccount
-                ),
-
-            transactionType:
-                "Accommodation",
 
             moneyIn:
                 amount,
@@ -1237,9 +1663,21 @@
 
             description:
                 options.description ||
-                "Accommodation charge"
+                "Guest payment",
+
+            referenceNumber:
+                reference,
+
+            debitAccountId:
+                paymentAccount,
+
+            creditAccountId:
+                accounts.receivables.id
+
         });
+
     }
+
 
     /* =====================================================
        EXPENSE
@@ -1252,83 +1690,66 @@
         options =
             options || {};
 
+
         const hotelId =
-            options.hotelId ||
-            options.hotel_id;
+            Number(
+                options.hotelId ||
+                await getHotelId()
+            );
+
 
         const amount =
-            positiveMoney(
+            roundMoney(
                 options.amount
             );
 
-        if (!hotelId) {
-            throw new Error(
-                "Expense requires hotel ID."
-            );
-        }
 
-        if (
-            amount <= 0
-        ) {
-            throw new Error(
+        if (amount <= 0) {
+
+            throw makeError(
                 "Expense amount must be greater than zero."
             );
+
         }
 
+
         const accounts =
-            await getFinancialAccounts(
+            await ensureCoreAccounts(
                 hotelId
             );
 
+
         const expenseAccount =
-            findAccountByKeywords(
-                accounts,
-                [
-                    "expense",
-                    "expenses"
-                ]
+            options.expenseAccountId ||
+            accounts.otherExpense.id;
+
+
+        const paymentAccount =
+            options.paymentAccountId ||
+            accounts.cash.id;
+
+
+        const reference =
+            options.referenceNumber ||
+            (
+                options.expenseId
+                    ? "EXP-" +
+                      options.expenseId
+                    : "EXP-" +
+                      createId()
             );
 
-        const cashAccount =
-            findCashAccount(
-                accounts
-            );
-
-        if (
-            !expenseAccount
-        ) {
-            throw new Error(
-                "Expense financial account was not found."
-            );
-        }
-
-        if (
-            !cashAccount
-        ) {
-            throw new Error(
-                "Cash financial account was not found."
-            );
-        }
 
         return await postTransaction({
+
             hotelId:
                 hotelId,
 
+            transactionType:
+                "expense",
+
             amount:
                 amount,
-
-            debitAccountId:
-                getAccountId(
-                    expenseAccount
-                ),
-
-            creditAccountId:
-                getAccountId(
-                    cashAccount
-                ),
-
-            transactionType:
-                "Expense",
 
             moneyIn:
                 0,
@@ -1338,100 +1759,261 @@
 
             description:
                 options.description ||
-                "Expense"
+                "Hotel expense",
+
+            referenceNumber:
+                reference,
+
+            debitAccountId:
+                expenseAccount,
+
+            creditAccountId:
+                paymentAccount
+
         });
+
     }
 
+
     /* =====================================================
-       OTHER REVENUE
+       SALARY
     ===================================================== */
 
-    async function postOtherRevenue(
+    async function postSalary(
         options
     ) {
 
         options =
             options || {};
 
+
         const hotelId =
-            options.hotelId ||
-            options.hotel_id;
+            Number(
+                options.hotelId ||
+                await getHotelId()
+            );
+
 
         const amount =
-            positiveMoney(
+            roundMoney(
                 options.amount
             );
 
-        if (!hotelId) {
-            throw new Error(
-                "Revenue requires hotel ID."
+
+        if (amount <= 0) {
+
+            throw makeError(
+                "Salary amount must be greater than zero."
             );
+
         }
 
-        if (
-            amount <= 0
-        ) {
-            throw new Error(
-                "Revenue amount must be greater than zero."
-            );
-        }
 
         const accounts =
-            await getFinancialAccounts(
+            await ensureCoreAccounts(
                 hotelId
             );
 
-        const revenueAccount =
-            findAccountByKeywords(
-                accounts,
-                [
-                    "other revenue",
-                    "other income",
-                    "revenue",
-                    "income"
-                ]
+
+        const reference =
+            options.referenceNumber ||
+            (
+                options.employeeId
+                    ? "SAL-" +
+                      options.employeeId +
+                      "-" +
+                      createId()
+                    : "SAL-" +
+                      createId()
             );
 
-        const cashAccount =
-            findCashAccount(
-                accounts
-            );
-
-        if (
-            !revenueAccount
-        ) {
-            throw new Error(
-                "Revenue financial account was not found."
-            );
-        }
-
-        if (
-            !cashAccount
-        ) {
-            throw new Error(
-                "Cash financial account was not found."
-            );
-        }
 
         return await postTransaction({
+
             hotelId:
                 hotelId,
+
+            transactionType:
+                "salary",
 
             amount:
                 amount,
 
+            moneyIn:
+                0,
+
+            moneyOut:
+                amount,
+
+            description:
+                options.description ||
+                "Employee salary",
+
+            referenceNumber:
+                reference,
+
             debitAccountId:
-                getAccountId(
-                    cashAccount
-                ),
+                accounts.salaryExpense.id,
 
             creditAccountId:
-                getAccountId(
-                    revenueAccount
-                ),
+                options.paymentAccountId ||
+                accounts.cash.id
+
+        });
+
+    }
+
+
+    /* =====================================================
+       SALARY ADVANCE
+    ===================================================== */
+
+    async function postSalaryAdvance(
+        options
+    ) {
+
+        options =
+            options || {};
+
+
+        const hotelId =
+            Number(
+                options.hotelId ||
+                await getHotelId()
+            );
+
+
+        const amount =
+            roundMoney(
+                options.amount
+            );
+
+
+        if (amount <= 0) {
+
+            throw makeError(
+                "Salary advance must be greater than zero."
+            );
+
+        }
+
+
+        const accounts =
+            await ensureCoreAccounts(
+                hotelId
+            );
+
+
+        const reference =
+            options.referenceNumber ||
+            (
+                options.employeeId
+                    ? "ADV-" +
+                      options.employeeId +
+                      "-" +
+                      createId()
+                    : "ADV-" +
+                      createId()
+            );
+
+
+        return await postTransaction({
+
+            hotelId:
+                hotelId,
 
             transactionType:
-                "Revenue",
+                "salary_advance",
+
+            amount:
+                amount,
+
+            moneyIn:
+                0,
+
+            moneyOut:
+                amount,
+
+            description:
+                options.description ||
+                "Employee salary advance",
+
+            referenceNumber:
+                reference,
+
+            debitAccountId:
+                accounts.employeeAdvances.id,
+
+            creditAccountId:
+                options.paymentAccountId ||
+                accounts.cash.id
+
+        });
+
+    }
+
+
+    /* =====================================================
+       RESTAURANT SALE
+    ===================================================== */
+
+    async function postRestaurantSale(
+        options
+    ) {
+
+        options =
+            options || {};
+
+
+        const hotelId =
+            Number(
+                options.hotelId ||
+                await getHotelId()
+            );
+
+
+        const amount =
+            roundMoney(
+                options.amount
+            );
+
+
+        if (amount <= 0) {
+
+            throw makeError(
+                "Restaurant sale must be greater than zero."
+            );
+
+        }
+
+
+        const accounts =
+            await ensureCoreAccounts(
+                hotelId
+            );
+
+
+        const reference =
+            options.referenceNumber ||
+            (
+                options.saleId
+                    ? "REST-" +
+                      options.saleId
+                    : "REST-" +
+                      createId()
+            );
+
+
+        return await postTransaction({
+
+            hotelId:
+                hotelId,
+
+            transactionType:
+                "income",
+
+            amount:
+                amount,
 
             moneyIn:
                 amount,
@@ -1441,227 +2023,251 @@
 
             description:
                 options.description ||
-                "Other revenue"
+                "Restaurant sale",
+
+            referenceNumber:
+                reference,
+
+            debitAccountId:
+                options.paymentAccountId ||
+                accounts.cash.id,
+
+            creditAccountId:
+                accounts.restaurantRevenue.id
+
         });
+
     }
 
+
     /* =====================================================
-       LEDGER
+       MAINTENANCE EXPENSE
     ===================================================== */
 
-    async function getLedger(
+    async function postMaintenanceExpense(
         options
     ) {
 
         options =
             options || {};
 
-        const supabase =
-            getSupabaseClient();
 
         const hotelId =
-            options.hotelId ||
-            options.hotel_id;
-
-        if (!hotelId) {
-            throw new Error(
-                "Hotel ID is required for ledger."
+            Number(
+                options.hotelId ||
+                await getHotelId()
             );
+
+
+        const accounts =
+            await ensureCoreAccounts(
+                hotelId
+            );
+
+
+        return await postExpense({
+
+            hotelId:
+                hotelId,
+
+            amount:
+                options.amount,
+
+            description:
+                options.description ||
+                "Maintenance expense",
+
+            referenceNumber:
+                options.referenceNumber ||
+                (
+                    options.maintenanceId
+                        ? "MAINT-" +
+                          options.maintenanceId
+                        : "MAINT-" +
+                          createId()
+                ),
+
+            expenseAccountId:
+                accounts.maintenanceExpense.id,
+
+            paymentAccountId:
+                options.paymentAccountId ||
+                accounts.cash.id
+
+        });
+
+    }
+
+
+    /* =====================================================
+       INVENTORY EXPENSE
+    ===================================================== */
+
+    async function postInventoryPurchase(
+        options
+    ) {
+
+        options =
+            options || {};
+
+
+        const hotelId =
+            Number(
+                options.hotelId ||
+                await getHotelId()
+            );
+
+
+        const accounts =
+            await ensureCoreAccounts(
+                hotelId
+            );
+
+
+        return await postExpense({
+
+            hotelId:
+                hotelId,
+
+            amount:
+                options.amount,
+
+            description:
+                options.description ||
+                "Inventory purchase",
+
+            referenceNumber:
+                options.referenceNumber ||
+                (
+                    options.purchaseId
+                        ? "INV-" +
+                          options.purchaseId
+                        : "INV-" +
+                          createId()
+                ),
+
+            expenseAccountId:
+                accounts.inventoryExpense.id,
+
+            paymentAccountId:
+                options.paymentAccountId ||
+                accounts.cash.id
+
+        });
+
+    }
+
+
+    /* =====================================================
+       TRANSFER
+    ===================================================== */
+
+    async function postTransfer(
+        options
+    ) {
+
+        options =
+            options || {};
+
+
+        const hotelId =
+            Number(
+                options.hotelId ||
+                await getHotelId()
+            );
+
+
+        const amount =
+            roundMoney(
+                options.amount
+            );
+
+
+        if (amount <= 0) {
+
+            throw makeError(
+                "Transfer amount must be greater than zero."
+            );
+
         }
 
-        let query =
-            supabase
-                .from(
-                    "financial_transactions"
-                )
-                .select("*")
-                .eq(
-                    "hotel_id",
-                    hotelId
-                );
-
-        /*
-           Do not depend on reservation_id.
-        */
-
-        query =
-            query.order(
-                "created_at",
-                {
-                    ascending:
-                        false
-                }
-            );
 
         if (
-            options.limit
+            !options.fromAccountId ||
+            !options.toAccountId
         ) {
-            query =
-                query.limit(
-                    Number(
-                        options.limit
-                    )
-                );
+
+            throw makeError(
+                "Both source and destination accounts are required."
+            );
+
         }
 
-        const {
-            data,
-            error
-        } =
-            await query;
 
-        if (error) {
-            throw new Error(
-                "Unable to load financial ledger: " +
-                error.message
-            );
-        }
+        const reference =
+            options.referenceNumber ||
+            "TRANSFER-" +
+            createId();
 
-        return data || [];
-    }
 
-    /* =====================================================
-       SUMMARY
-    ===================================================== */
+        return await postTransaction({
 
-    async function getSummary(
-        hotelId
-    ) {
+            hotelId:
+                hotelId,
 
-        const ledger =
-            await getLedger({
-                hotelId:
-                    hotelId
-            });
+            transactionType:
+                "transfer",
 
-        let totalIn =
-            0;
-
-        let totalOut =
-            0;
-
-        ledger.forEach(
-            function (row) {
-
-                totalIn +=
-                    positiveMoney(
-                        row.money_in
-                    );
-
-                totalOut +=
-                    positiveMoney(
-                        row.money_out
-                    );
-            }
-        );
-
-        return {
-            totalIn:
-                money(
-                    totalIn
-                ),
-
-            totalOut:
-                money(
-                    totalOut
-                ),
-
-            net:
-                money(
-                    totalIn -
-                    totalOut
-                ),
-
-            transactionCount:
-                ledger.length
-        };
-    }
-
-    /* =====================================================
-       VAT
-    ===================================================== */
-
-    function calculateVAT(
-        amount,
-        rate
-    ) {
-
-        const base =
-            positiveMoney(
-                amount
-            );
-
-        const vatRate =
-            Number(rate) || 0;
-
-        const vat =
-            money(
-                base *
-                (
-                    vatRate /
-                    100
-                )
-            );
-
-        return {
             amount:
-                base,
+                amount,
 
-            rate:
-                vatRate,
+            moneyIn:
+                0,
 
-            vat:
-                vat,
+            moneyOut:
+                0,
 
-            totalIncludingVAT:
-                money(
-                    base +
-                    vat
-                )
-        };
+            description:
+                options.description ||
+                "Account transfer",
+
+            referenceNumber:
+                reference,
+
+            debitAccountId:
+                options.toAccountId,
+
+            creditAccountId:
+                options.fromAccountId
+
+        });
+
     }
 
+
     /* =====================================================
-       REVERSE TRANSACTION
-       -----------------------------------------------------
-       Does not use reservation_id.
+       REVERSAL
     ===================================================== */
 
     async function reverseTransaction(
-        options
+        transactionId
     ) {
 
-        options =
-            options || {};
-
-        const supabase =
-            getSupabaseClient();
-
-        const hotelId =
-            options.hotelId ||
-            options.hotel_id;
-
-        const transactionId =
-            options.transactionId ||
-            options.transaction_id;
-
-        if (!hotelId) {
-            throw new Error(
-                "Hotel ID is required for reversal."
-            );
-        }
-
         if (!transactionId) {
-            throw new Error(
+
+            throw makeError(
                 "Transaction ID is required for reversal."
             );
+
         }
 
-        const {
-            data: original,
-            error
-        } =
-            await supabase
+
+        const db =
+            await getDb();
+
+
+        const result =
+            await db
                 .from(
                     "financial_transactions"
                 )
@@ -1670,33 +2276,100 @@
                     "id",
                     transactionId
                 )
-                .eq(
-                    "hotel_id",
-                    hotelId
-                )
                 .maybeSingle();
 
-        if (error) {
-            throw new Error(
-                "Unable to find transaction for reversal: " +
-                error.message
+
+        if (result.error) {
+
+            throw makeError(
+                "Unable to load transaction for reversal: " +
+                result.error.message
             );
+
         }
+
+
+        const original =
+            result.data;
+
 
         if (!original) {
-            throw new Error(
-                "Transaction was not found."
+
+            throw makeError(
+                "The financial transaction was not found."
             );
+
         }
 
+
+        if (original.is_reversal) {
+
+            throw makeError(
+                "A reversal transaction cannot be reversed again."
+            );
+
+        }
+
+
+        const reversalReference =
+            "REV-" +
+            original.transaction_number;
+
+
+        const existing =
+            await findTransactionByReference(
+                original.hotel_id,
+                reversalReference
+            );
+
+
+        if (existing) {
+
+            return {
+
+                success:
+                    true,
+
+                alreadyPosted:
+                    true,
+
+                transaction:
+                    existing
+
+            };
+
+        }
+
+
         return await postTransaction({
+
             hotelId:
-                hotelId,
+                original.hotel_id,
+
+            transactionType:
+                original.transaction_type,
 
             amount:
-                positiveMoney(
+                safeNumber(
                     original.amount
                 ),
+
+            moneyIn:
+                safeNumber(
+                    original.money_out
+                ),
+
+            moneyOut:
+                safeNumber(
+                    original.money_in
+                ),
+
+            description:
+                "Reversal of " +
+                original.transaction_number,
+
+            referenceNumber:
+                reversalReference,
 
             debitAccountId:
                 original.credit_account_id,
@@ -1704,124 +2377,1089 @@
             creditAccountId:
                 original.debit_account_id,
 
-            transactionType:
-                "Reversal",
-
-            moneyIn:
-                original.money_out ||
-                0,
-
-            moneyOut:
-                original.money_in ||
-                0,
-
-            description:
-                options.description ||
-                (
-                    "Reversal of transaction " +
-                    (
-                        original.transaction_number ||
-                        original.id
-                    )
-                ),
-
-            referenceNumber:
-                original.reference_number,
-
             isReversal:
                 true,
 
             reversedTransactionId:
-                transactionId
+                original.id
+
         });
+
     }
+
+
+    /* =====================================================
+       CASH PAYMENTS
+    ===================================================== */
+
+    async function getCashPayments(
+        options
+    ) {
+
+        options =
+            options || {};
+
+
+        const hotelId =
+            Number(
+                options.hotelId ||
+                await getHotelId()
+            );
+
+
+        const db =
+            await getDb();
+
+
+        const accounts =
+            await ensureCoreAccounts(
+                hotelId
+            );
+
+
+        const result =
+            await db
+                .from(
+                    "financial_transactions"
+                )
+                .select("*")
+                .eq(
+                    "hotel_id",
+                    hotelId
+                )
+                .eq(
+                    "transaction_type",
+                    "transfer"
+                )
+                .eq(
+                    "is_reversal",
+                    false
+                )
+                .eq(
+                    "debit_account_id",
+                    accounts.cash.id
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (result.error) {
+
+            throw makeError(
+                "Unable to load cash payments: " +
+                result.error.message
+            );
+
+        }
+
+
+        return result.data || [];
+
+    }
+
+
+    /* =====================================================
+       CASHIER HANDOVERS
+    ===================================================== */
+
+    async function getCashierHandovers(
+        options
+    ) {
+
+        options =
+            options || {};
+
+
+        const hotelId =
+            Number(
+                options.hotelId ||
+                await getHotelId()
+            );
+
+
+        const db =
+            await getDb();
+
+
+        let query =
+            db
+                .from(
+                    "cashier_handovers"
+                )
+                .select("*")
+                .eq(
+                    "hotel_id",
+                    hotelId
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        /*
+         * The database status constraint is currently
+         * unknown/restricted.
+         *
+         * We therefore keep the normal status filtering
+         * for values that the cashier page requests.
+         */
+
+        if (options.status) {
+
+            query =
+                query.eq(
+                    "status",
+                    options.status
+                );
+
+        }
+
+
+        const result =
+            await query;
+
+
+        if (result.error) {
+
+            throw makeError(
+                "Unable to load cashier handovers: " +
+                result.error.message
+            );
+
+        }
+
+
+        return result.data || [];
+
+    }
+
+
+    /* =====================================================
+       CREATE CASHIER HANDOVER
+    ===================================================== */
+
+    async function createCashierHandover(
+        options
+    ) {
+
+        options =
+            options || {};
+
+
+        const hotelId =
+            Number(
+                options.hotelId ||
+                await getHotelId()
+            );
+
+
+        const expectedAmount =
+            roundMoney(
+                options.expectedAmount
+            );
+
+
+        const actualAmount =
+            roundMoney(
+                options.actualAmount
+            );
+
+
+        if (expectedAmount < 0) {
+
+            throw makeError(
+                "Expected cash amount cannot be negative."
+            );
+
+        }
+
+
+        if (actualAmount < 0) {
+
+            throw makeError(
+                "Actual cash amount cannot be negative."
+            );
+
+        }
+
+
+        const difference =
+            roundMoney(
+                actualAmount -
+                expectedAmount
+            );
+
+
+        const db =
+            await getDb();
+
+
+        const handoverNumber =
+            options.handoverNumber ||
+            (
+                "HAND-" +
+                hotelId +
+                "-" +
+                Date.now()
+            );
+
+
+        /*
+         * IMPORTANT
+         * -------------------------------------------------
+         * cashier_handovers DOES NOT contain:
+         *
+         * created_by
+         * difference
+         *
+         * Therefore neither is inserted.
+         */
+
+        const payload = {
+
+            hotel_id:
+                hotelId,
+
+            handover_number:
+                handoverNumber,
+
+            handover_date:
+                options.handoverDate ||
+                new Date().toISOString(),
+
+            expected_amount:
+                expectedAmount,
+
+            actual_amount:
+                actualAmount,
+
+            status:
+                "pending",
+
+            notes:
+                options.notes ||
+                null
+
+        };
+
+
+        const result =
+            await db
+                .from(
+                    "cashier_handovers"
+                )
+                .insert(
+                    payload
+                )
+                .select("*")
+                .single();
+
+
+        if (result.error) {
+
+            throw makeError(
+                "Unable to create cashier handover: " +
+                result.error.message
+            );
+
+        }
+
+
+        return {
+
+            success:
+                true,
+
+            handover:
+                result.data,
+
+            difference:
+                difference
+
+        };
+
+    }
+
+
+    /* =====================================================
+       CONFIRM CASHIER HANDOVER
+    ===================================================== */
+
+    async function confirmCashierHandover(
+        handoverId
+    ) {
+
+        if (!handoverId) {
+
+            throw makeError(
+                "Handover ID is required."
+            );
+
+        }
+
+
+        const db =
+            await getDb();
+
+
+        /*
+         * IMPORTANT
+         * -------------------------------------------------
+         * The database rejects both "confirmed" and
+         * "completed" because of the cashier_handovers
+         * status CHECK constraint.
+         *
+         * Therefore we DO NOT change the status here.
+         *
+         * We record the confirmation using confirmed_at.
+         *
+         * This does NOT create another financial transaction.
+         * The original guest payment remains the financial
+         * ledger transaction.
+         */
+
+        const confirmationTime =
+            new Date().toISOString();
+
+
+        const result =
+            await db
+                .from(
+                    "cashier_handovers"
+                )
+                .update({
+
+                    confirmed_at:
+                        confirmationTime
+
+                })
+                .eq(
+                    "id",
+                    handoverId
+                )
+                .select("*")
+                .single();
+
+
+        if (result.error) {
+
+            throw makeError(
+                "Unable to confirm cashier handover: " +
+                result.error.message
+            );
+
+        }
+
+
+        const handover =
+            result.data;
+
+
+        const expectedAmount =
+            safeNumber(
+                handover.expected_amount
+            );
+
+
+        const actualAmount =
+            safeNumber(
+                handover.actual_amount
+            );
+
+
+        return {
+
+            success:
+                true,
+
+            handover:
+                handover,
+
+            difference:
+                roundMoney(
+                    actualAmount -
+                    expectedAmount
+                )
+
+        };
+
+    }
+
+
+    /* =====================================================
+       BANK DEPOSITS
+    ===================================================== */
+
+    async function getBankDeposits(
+        options
+    ) {
+
+        options =
+            options || {};
+
+
+        const hotelId =
+            Number(
+                options.hotelId ||
+                await getHotelId()
+            );
+
+
+        const db =
+            await getDb();
+
+
+        let query =
+            db
+                .from(
+                    "bank_deposits"
+                )
+                .select("*")
+                .eq(
+                    "hotel_id",
+                    hotelId
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (options.status) {
+
+            query =
+                query.eq(
+                    "status",
+                    options.status
+                );
+
+        }
+
+
+        const result =
+            await query;
+
+
+        if (result.error) {
+
+            throw makeError(
+                "Unable to load bank deposits: " +
+                result.error.message
+            );
+
+        }
+
+
+        return result.data || [];
+
+    }
+
+
+    /* =====================================================
+       CREATE BANK DEPOSIT
+    ===================================================== */
+
+    async function createBankDeposit(
+        options
+    ) {
+
+        options =
+            options || {};
+
+
+        const hotelId =
+            Number(
+                options.hotelId ||
+                await getHotelId()
+            );
+
+
+        const expectedAmount =
+            roundMoney(
+                options.expectedAmount
+            );
+
+
+        const actualAmount =
+            roundMoney(
+                options.actualAmount
+            );
+
+
+        if (expectedAmount < 0) {
+
+            throw makeError(
+                "Expected deposit amount cannot be negative."
+            );
+
+        }
+
+
+        if (actualAmount <= 0) {
+
+            throw makeError(
+                "Bank deposit amount must be greater than zero."
+            );
+
+        }
+
+
+        const difference =
+            roundMoney(
+                actualAmount -
+                expectedAmount
+            );
+
+
+        const db =
+            await getDb();
+
+
+        const depositNumber =
+            options.depositNumber ||
+            (
+                "DEP-" +
+                hotelId +
+                "-" +
+                Date.now()
+            );
+
+
+        /*
+         * IMPORTANT:
+         *
+         * bank_deposits DOES NOT contain created_by.
+         */
+
+        const payload = {
+
+            hotel_id:
+                hotelId,
+
+            deposit_number:
+                depositNumber,
+
+            deposit_date:
+                options.depositDate ||
+                new Date().toISOString(),
+
+            bank_account_id:
+                options.bankAccountId ||
+                null,
+
+            expected_amount:
+                expectedAmount,
+
+            actual_amount:
+                actualAmount,
+
+            difference:
+                difference,
+
+            reference:
+                options.reference ||
+                null,
+
+            status:
+                "pending"
+
+        };
+
+
+        const result =
+            await db
+                .from(
+                    "bank_deposits"
+                )
+                .insert(
+                    payload
+                )
+                .select("*")
+                .single();
+
+
+        if (result.error) {
+
+            throw makeError(
+                "Unable to create bank deposit: " +
+                result.error.message
+            );
+
+        }
+
+
+        return {
+
+            success:
+                true,
+
+            deposit:
+                result.data,
+
+            difference:
+                difference
+
+        };
+
+    }
+
+
+    /* =====================================================
+       CONFIRM BANK DEPOSIT
+    ===================================================== */
+
+    async function confirmBankDeposit(
+        depositId
+    ) {
+
+        if (!depositId) {
+
+            throw makeError(
+                "Bank deposit ID is required."
+            );
+
+        }
+
+
+        const db =
+            await getDb();
+
+
+        const result =
+            await db
+                .from(
+                    "bank_deposits"
+                )
+                .update({
+
+                    status:
+                        "confirmed",
+
+                    confirmed_at:
+                        new Date().toISOString()
+
+                })
+                .eq(
+                    "id",
+                    depositId
+                )
+                .select("*")
+                .single();
+
+
+        if (result.error) {
+
+            throw makeError(
+                "Unable to confirm bank deposit: " +
+                result.error.message
+            );
+
+        }
+
+
+        return {
+
+            success:
+                true,
+
+            deposit:
+                result.data
+
+        };
+
+    }
+
+
+    /* =====================================================
+       CASHIER BALANCE
+    ===================================================== */
+
+    async function getCashierCashBalance(
+        options
+    ) {
+
+        options =
+            options || {};
+
+
+        const hotelId =
+            Number(
+                options.hotelId ||
+                await getHotelId()
+            );
+
+
+        const db =
+            await getDb();
+
+
+        const accounts =
+            await ensureCoreAccounts(
+                hotelId
+            );
+
+
+        const cashAccountId =
+            accounts.cash.id;
+
+
+        const result =
+            await db
+                .from(
+                    "financial_transactions"
+                )
+                .select(
+                    "money_in,money_out,debit_account_id,credit_account_id,amount"
+                )
+                .eq(
+                    "hotel_id",
+                    hotelId
+                )
+                .eq(
+                    "is_reversal",
+                    false
+                );
+
+
+        if (result.error) {
+
+            throw makeError(
+                "Unable to calculate cashier balance: " +
+                result.error.message
+            );
+
+        }
+
+
+        let balance = 0;
+
+
+        for (
+            const transaction
+            of result.data || []
+        ) {
+
+            const amount =
+                roundMoney(
+                    transaction.amount
+                );
+
+
+            if (
+                transaction.debit_account_id ===
+                cashAccountId
+            ) {
+
+                balance =
+                    roundMoney(
+                        balance +
+                        amount
+                    );
+
+            }
+
+
+            if (
+                transaction.credit_account_id ===
+                cashAccountId
+            ) {
+
+                balance =
+                    roundMoney(
+                        balance -
+                        amount
+                    );
+
+            }
+
+        }
+
+
+        /*
+         * Handover records are operational records.
+         * They are not deducted from the financial ledger
+         * balance.
+         */
+
+        return roundMoney(
+            balance
+        );
+
+    }
+
+
+    /* =====================================================
+       CASH MOVEMENTS
+    ===================================================== */
+
+    async function getCashMovements(
+        options
+    ) {
+
+        options =
+            options || {};
+
+
+        const hotelId =
+            Number(
+                options.hotelId ||
+                await getHotelId()
+            );
+
+
+        const db =
+            await getDb();
+
+
+        const accounts =
+            await ensureCoreAccounts(
+                hotelId
+            );
+
+
+        const cashAccountId =
+            accounts.cash.id;
+
+
+        const result =
+            await db
+                .from(
+                    "financial_transactions"
+                )
+                .select("*")
+                .eq(
+                    "hotel_id",
+                    hotelId
+                )
+                .or(
+                    "debit_account_id.eq." +
+                    cashAccountId +
+                    ",credit_account_id.eq." +
+                    cashAccountId
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (result.error) {
+
+            throw makeError(
+                "Unable to load cash movements: " +
+                result.error.message
+            );
+
+        }
+
+
+        return result.data || [];
+
+    }
+
+
+    /* =====================================================
+       REBUILD RUNNING BALANCES
+    ===================================================== */
+
+    async function rebuildRunningBalances(
+        hotelId
+    ) {
+
+        hotelId =
+            Number(
+                hotelId ||
+                await getHotelId()
+            );
+
+
+        const db =
+            await getDb();
+
+
+        const result =
+            await db
+                .from(
+                    "financial_transactions"
+                )
+                .select(
+                    "id,money_in,money_out,created_at"
+                )
+                .eq(
+                    "hotel_id",
+                    hotelId
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: true
+                    }
+                )
+                .order(
+                    "id",
+                    {
+                        ascending: true
+                    }
+                );
+
+
+        if (result.error) {
+
+            throw makeError(
+                "Unable to load transactions for balance rebuild: " +
+                result.error.message
+            );
+
+        }
+
+
+        let balance = 0;
+
+
+        for (
+            const transaction
+            of result.data || []
+        ) {
+
+            balance =
+                roundMoney(
+                    balance +
+                    safeNumber(
+                        transaction.money_in
+                    ) -
+                    safeNumber(
+                        transaction.money_out
+                    )
+                );
+
+
+            const updateResult =
+                await db
+                    .from(
+                        "financial_transactions"
+                    )
+                    .update({
+
+                        balance_after:
+                            balance
+
+                    })
+                    .eq(
+                        "id",
+                        transaction.id
+                    );
+
+
+            if (updateResult.error) {
+
+                throw makeError(
+                    "Unable to rebuild transaction balance: " +
+                    updateResult.error.message
+                );
+
+            }
+
+        }
+
+
+        return {
+
+            success:
+                true,
+
+            finalBalance:
+                balance
+
+        };
+
+    }
+
 
     /* =====================================================
        HEALTH CHECK
     ===================================================== */
 
-    async function healthCheck(
-        hotelId
-    ) {
-
-        const result = {
-            version:
-                VERSION,
-
-            supabase:
-                false,
-
-            financialAccounts:
-                false,
-
-            financialTransactions:
-                false,
-
-            accountsFound:
-                0,
-
-            status:
-                "unknown"
-        };
+    async function healthCheck() {
 
         try {
 
-            const supabase =
-                getSupabaseClient();
+            const db =
+                await getDb();
 
-            result.supabase =
-                true;
 
-            const accounts =
-                await getFinancialAccounts(
-                    hotelId
-                );
+            const hotelId =
+                await getHotelId();
 
-            result.financialAccounts =
-                true;
 
-            result.accountsFound =
-                accounts.length;
-
-            const {
-                error
-            } =
-                await supabase
+            const result =
+                await db
                     .from(
                         "financial_transactions"
                     )
-                    .select(
-                        "id"
-                    )
+                    .select("id")
                     .eq(
                         "hotel_id",
                         hotelId
                     )
                     .limit(1);
 
-            if (error) {
-                throw error;
+
+            if (result.error) {
+
+                throw result.error;
+
             }
 
-            result.financialTransactions =
-                true;
 
-            result.status =
-                "healthy";
+            return {
 
-            return result;
+                success:
+                    true,
+
+                ready:
+                    true,
+
+                hotelId:
+                    hotelId,
+
+                version:
+                    VERSION
+
+            };
 
         } catch (error) {
 
-            result.status =
-                "error";
+            return {
 
-            result.error =
-                error.message;
+                success:
+                    false,
 
-            return result;
+                ready:
+                    false,
+
+                error:
+                    error.message,
+
+                version:
+                    VERSION
+
+            };
+
         }
+
     }
+
 
     /* =====================================================
        PUBLIC API
@@ -1829,115 +3467,172 @@
 
     const FinancialEngine = {
 
-        version:
+        VERSION:
             VERSION,
 
-        getSupabaseClient:
-            getSupabaseClient,
+        waitForSupabaseClient:
+            waitForSupabaseClient,
 
-        normalizePaymentMethod:
-            normalizePaymentMethod,
+        getDb:
+            getDb,
 
-        getFinancialAccounts:
-            getFinancialAccounts,
+        getHotelId:
+            getHotelId,
 
-        findFinancialAccount:
-            findFinancialAccount,
+        getCurrentUser:
+            getCurrentUser,
 
-        resolvePaymentAccount:
-            resolvePaymentAccount,
+        getCurrentProfile:
+            getCurrentProfile,
 
-        getRunningBalance:
-            getRunningBalance,
+        getCurrentHotel:
+            getCurrentHotel,
 
-        buildTransactionRow:
-            buildTransactionRow,
+        ensureCoreAccounts:
+            ensureCoreAccounts,
+
+        getAccountByCode:
+            getAccountByCode,
+
+        getCurrentRunningBalance:
+            getCurrentRunningBalance,
 
         postTransaction:
             postTransaction,
 
-        postPayment:
-            postPayment,
-
-        recordPayment:
-            recordPayment,
-
-        createPayment:
-            createPayment,
-
-        addPayment:
-            addPayment,
-
         postAccommodationCharge:
             postAccommodationCharge,
+
+        postPayment:
+            postPayment,
 
         postExpense:
             postExpense,
 
-        postOtherRevenue:
-            postOtherRevenue,
+        postSalary:
+            postSalary,
+
+        postSalaryAdvance:
+            postSalaryAdvance,
+
+        postRestaurantSale:
+            postRestaurantSale,
+
+        postMaintenanceExpense:
+            postMaintenanceExpense,
+
+        postInventoryPurchase:
+            postInventoryPurchase,
+
+        postTransfer:
+            postTransfer,
 
         reverseTransaction:
             reverseTransaction,
 
-        getLedger:
-            getLedger,
+        getCashPayments:
+            getCashPayments,
 
-        getSummary:
-            getSummary,
+        getCashierHandovers:
+            getCashierHandovers,
 
-        calculateVAT:
-            calculateVAT,
+        createCashierHandover:
+            createCashierHandover,
+
+        confirmCashierHandover:
+            confirmCashierHandover,
+
+        getBankDeposits:
+            getBankDeposits,
+
+        createBankDeposit:
+            createBankDeposit,
+
+        confirmBankDeposit:
+            confirmBankDeposit,
+
+        getCashierCashBalance:
+            getCashierCashBalance,
+
+        getCashMovements:
+            getCashMovements,
+
+        rebuildRunningBalances:
+            rebuildRunningBalances,
 
         healthCheck:
             healthCheck
+
     };
+
 
     /* =====================================================
        GLOBAL EXPORTS
     ===================================================== */
 
+    window.EDUTECH_FINANCIAL_ENGINE =
+        FinancialEngine;
+
+
     window.FinancialEngine =
         FinancialEngine;
 
-    window.EDUTECH_FINANCIAL_ENGINE =
-        FinancialEngine;
+
+    window.EDUTECH_FINANCIAL_ENGINE_VERSION =
+        VERSION;
+
+
+    /* =====================================================
+       READY FLAG
+    ===================================================== */
 
     window.EDUTECH_FINANCIAL_ENGINE_READY =
         true;
 
-    window.postPayment =
-        function (options) {
-            return FinancialEngine.postPayment(
-                options
-            );
-        };
 
-    window.postTransaction =
-        function (options) {
-            return FinancialEngine.postTransaction(
-                options
-            );
-        };
+    /* =====================================================
+       READY EVENT
+    ===================================================== */
 
-    window.postExpense =
-        function (options) {
-            return FinancialEngine.postExpense(
-                options
-            );
-        };
+    try {
 
-    window.postAccommodationCharge =
-        function (options) {
-            return FinancialEngine.postAccommodationCharge(
-                options
-            );
-        };
+        window.dispatchEvent(
+            new CustomEvent(
+                "edutech-financial-engine-ready",
+                {
+                    detail: {
+
+                        version:
+                            VERSION,
+
+                        engine:
+                            FinancialEngine
+
+                    }
+                }
+            )
+        );
+
+
+    } catch (error) {
+
+        console.warn(
+            "EDU TECH Financial Engine ready event could not be dispatched.",
+            error
+        );
+
+    }
+
+
+    /* =====================================================
+       CONSOLE MESSAGE
+    ===================================================== */
 
     console.log(
-        "%cEDU TECH Financial Engine READY - " +
-        VERSION,
-        "color:#16803c;font-weight:bold;"
+        "EDU TECH Financial Engine " +
+        VERSION +
+        " loaded successfully."
     );
+
 
 })();

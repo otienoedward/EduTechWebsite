@@ -29,14 +29,60 @@
 
     <style>
 
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
+        /* =====================================================
+           PAGE LAYOUT
+           Prevent fixed sidebar from covering the page
+        ====================================================== */
+
+        * {
+            box-sizing: border-box;
         }
 
-        .page-content {
-            padding: 25px;
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
         }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            overflow-x: hidden;
+            background: #f5f7fa;
+        }
+
+        /*
+         * The sidebar is fixed at 260px.
+         * The reservation content therefore starts after 260px.
+         */
+        .page-content {
+            margin-left: 260px !important;
+            width: calc(100% - 260px) !important;
+            min-width: 0;
+            padding: 25px 28px !important;
+            position: relative;
+            z-index: 1;
+            box-sizing: border-box;
+        }
+
+        /*
+         * Keep the sidebar above the page content.
+         */
+        .sidebar {
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 260px !important;
+            height: 100vh !important;
+            z-index: 1000 !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+        }
+
+
+        /* =====================================================
+           PAGE HEADER
+        ====================================================== */
 
         .page-header {
             display: flex;
@@ -45,17 +91,30 @@
             gap: 15px;
             margin-bottom: 25px;
             flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .page-header > div {
+            min-width: 0;
         }
 
         .page-header h1 {
             margin: 0;
             font-size: 28px;
+            line-height: 1.2;
+            word-break: break-word;
         }
 
         .page-header p {
             margin: 6px 0 0;
             color: #666;
+            line-height: 1.5;
         }
+
+
+        /* =====================================================
+           BUTTONS
+        ====================================================== */
 
         .btn {
             border: none;
@@ -63,6 +122,7 @@
             padding: 10px 16px;
             cursor: pointer;
             font-weight: 600;
+            white-space: nowrap;
         }
 
         .btn:disabled {
@@ -95,11 +155,17 @@
             color: white;
         }
 
+
+        /* =====================================================
+           SUMMARY
+        ====================================================== */
+
         .summary-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 15px;
             margin-bottom: 25px;
+            width: 100%;
         }
 
         .summary-card {
@@ -107,29 +173,113 @@
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            min-width: 0;
         }
 
         .summary-card h3 {
             margin: 0 0 10px;
             font-size: 15px;
             color: #666;
+            line-height: 1.4;
         }
 
         .summary-card .number {
             font-size: 28px;
             font-weight: bold;
+            overflow-wrap: anywhere;
         }
+
+
+        /* =====================================================
+           HOTEL CONTEXT
+        ====================================================== */
+
+        .hotel-context {
+            background: #eef5ff;
+            padding: 12px 15px;
+            border-radius: 7px;
+            margin-bottom: 20px;
+            color: #174a8b;
+            font-weight: 600;
+            width: 100%;
+            box-sizing: border-box;
+            overflow-wrap: anywhere;
+        }
+
+
+        /* =====================================================
+           MESSAGES
+        ====================================================== */
+
+        .message {
+            display: none;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            width: 100%;
+            box-sizing: border-box;
+            overflow-wrap: anywhere;
+        }
+
+        .message.success {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #842029;
+        }
+
+        .message.info {
+            background: #cff4fc;
+            color: #055160;
+        }
+
+
+        /* =====================================================
+           TABLE CARD
+        ====================================================== */
 
         .table-card {
             background: white;
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+            /*
+             * Important:
+             * The table itself can scroll horizontally instead
+             * of being cut by the sidebar or browser window.
+             */
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
             overflow-x: auto;
+            overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-toolbar {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .reservation-table-wrapper {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
         }
 
         table {
             width: 100%;
+            min-width: 1050px;
             border-collapse: collapse;
         }
 
@@ -138,11 +288,26 @@
             padding: 12px;
             border-bottom: 1px solid #eee;
             text-align: left;
+            vertical-align: middle;
         }
 
         th {
             background: #f8f9fa;
+            white-space: nowrap;
         }
+
+        td {
+            white-space: nowrap;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+
+        /* =====================================================
+           STATUS
+        ====================================================== */
 
         .status {
             display: inline-block;
@@ -150,6 +315,7 @@
             border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
+            white-space: nowrap;
         }
 
         .status-pending {
@@ -177,11 +343,27 @@
             color: #41464b;
         }
 
+
+        /* =====================================================
+           ACTION BUTTONS
+        ====================================================== */
+
         .action-buttons {
             display: flex;
             gap: 7px;
             flex-wrap: wrap;
+            min-width: 130px;
         }
+
+        .action-buttons .btn {
+            padding: 8px 12px;
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           MODAL
+        ====================================================== */
 
         .modal-overlay {
             display: none;
@@ -192,6 +374,7 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            overflow-y: auto;
         }
 
         .modal {
@@ -202,11 +385,18 @@
             padding: 25px;
             max-height: 90vh;
             overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.25);
         }
 
         .modal h2 {
             margin-top: 0;
+            line-height: 1.3;
         }
+
+
+        /* =====================================================
+           FORM
+        ====================================================== */
 
         .form-group {
             margin-bottom: 15px;
@@ -225,6 +415,14 @@
             padding: 11px;
             border: 1px solid #ccc;
             border-radius: 6px;
+            max-width: 100%;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 2px rgba(13,110,253,0.12);
         }
 
         .form-group input[readonly] {
@@ -238,38 +436,13 @@
             justify-content: flex-end;
             gap: 10px;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
 
-        .message {
-            display: none;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-        }
 
-        .message.success {
-            background: #d1e7dd;
-            color: #0f5132;
-        }
-
-        .message.error {
-            background: #f8d7da;
-            color: #842029;
-        }
-
-        .message.info {
-            background: #cff4fc;
-            color: #055160;
-        }
-
-        .hotel-context {
-            background: #eef5ff;
-            padding: 12px 15px;
-            border-radius: 7px;
-            margin-bottom: 20px;
-            color: #174a8b;
-            font-weight: 600;
-        }
+        /* =====================================================
+           NOTES
+        ====================================================== */
 
         .amount-box {
             background: #f8f9fa;
@@ -278,12 +451,14 @@
             margin-top: 10px;
             font-weight: bold;
             line-height: 1.8;
+            overflow-wrap: anywhere;
         }
 
         .rate-note {
             margin-top: 5px;
             color: #666;
             font-size: 12px;
+            line-height: 1.5;
         }
 
         .guest-identity-note {
@@ -291,6 +466,7 @@
             margin-bottom: 15px;
             font-size: 12px;
             color: #666;
+            line-height: 1.5;
         }
 
         .room-note {
@@ -300,6 +476,7 @@
             border-radius: 6px;
             margin-bottom: 15px;
             font-size: 13px;
+            line-height: 1.5;
         }
 
         .availability-note {
@@ -309,24 +486,115 @@
             border-radius: 6px;
             margin-bottom: 15px;
             font-size: 13px;
+            line-height: 1.5;
         }
 
-        @media (max-width: 900px) {
+
+        /* =====================================================
+           TABLE MESSAGE
+        ====================================================== */
+
+        #reservationsTableBody td[colspan] {
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ====================================================== */
+
+        @media (max-width: 1100px) {
 
             .summary-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
         }
 
-        @media (max-width: 600px) {
+
+        @media (max-width: 900px) {
+
+            .page-content {
+                margin-left: 260px !important;
+                width: calc(100% - 260px) !important;
+                padding: 20px !important;
+            }
+
+            .page-header {
+                align-items: flex-start;
+            }
+
+            .page-header .btn {
+                width: auto;
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            /*
+             * Keep the sidebar relationship correct even on
+             * smaller screens. The page itself remains readable
+             * and the table scrolls horizontally.
+             */
+            .page-content {
+                margin-left: 260px !important;
+                width: calc(100% - 260px) !important;
+                padding: 15px !important;
+            }
 
             .summary-grid {
                 grid-template-columns: 1fr;
             }
 
+            .table-card {
+                padding: 12px;
+            }
+
+            .page-header h1 {
+                font-size: 24px;
+            }
+
+            .modal-overlay {
+                padding: 10px;
+            }
+
+            .modal {
+                padding: 18px;
+                max-height: 95vh;
+            }
+
+        }
+
+
+        /* =====================================================
+           VERY NARROW VIEW
+        ====================================================== */
+
+        @media (max-width: 520px) {
+
             .page-content {
-                padding: 15px;
+                margin-left: 260px !important;
+                width: calc(100% - 260px) !important;
+                padding: 12px !important;
+            }
+
+            .page-header {
+                margin-bottom: 18px;
+            }
+
+            .page-header .btn {
+                width: 100%;
+            }
+
+            .modal-actions {
+                justify-content: stretch;
+            }
+
+            .modal-actions .btn {
+                flex: 1 1 100%;
             }
 
         }
@@ -472,7 +740,7 @@
 
         <div class="table-card">
 
-            <div style="margin-bottom:15px;">
+            <div class="table-toolbar">
 
                 <button
                     id="refreshBtn"
@@ -486,68 +754,72 @@
             </div>
 
 
-            <table>
+            <div class="reservation-table-wrapper">
 
-                <thead>
+                <table>
 
-                    <tr>
+                    <thead>
 
-                        <th>
-                            ID
-                        </th>
+                        <tr>
 
-                        <th>
-                            Guest
-                        </th>
+                            <th>
+                                ID
+                            </th>
 
-                        <th>
-                            National ID / Passport
-                        </th>
+                            <th>
+                                Guest
+                            </th>
 
-                        <th>
-                            Room
-                        </th>
+                            <th>
+                                National ID / Passport
+                            </th>
 
-                        <th>
-                            Check In
-                        </th>
+                            <th>
+                                Room
+                            </th>
 
-                        <th>
-                            Check Out
-                        </th>
+                            <th>
+                                Check In
+                            </th>
 
-                        <th>
-                            Amount
-                        </th>
+                            <th>
+                                Check Out
+                            </th>
 
-                        <th>
-                            Status
-                        </th>
+                            <th>
+                                Amount
+                            </th>
 
-                        <th>
-                            Actions
-                        </th>
+                            <th>
+                                Status
+                            </th>
 
-                    </tr>
+                            <th>
+                                Actions
+                            </th>
 
-                </thead>
+                        </tr>
+
+                    </thead>
 
 
-                <tbody
-                    id="reservationsTableBody"
-                >
+                    <tbody
+                        id="reservationsTableBody"
+                    >
 
-                    <tr>
+                        <tr>
 
-                        <td colspan="9">
-                            Loading reservations...
-                        </td>
+                            <td colspan="9">
+                                Loading reservations...
+                            </td>
 
-                    </tr>
+                        </tr>
 
-                </tbody>
+                    </tbody>
 
-            </table>
+                </table>
+
+            </div>
 
         </div>
 
@@ -574,10 +846,7 @@
                 id="reservationForm"
             >
 
-
-                <!-- =========================================
-                     GUEST
-                ========================================== -->
+                <!-- GUEST -->
 
                 <div class="form-group">
 
@@ -599,9 +868,7 @@
                 </div>
 
 
-                <!-- =========================================
-                     NATIONAL ID / PASSPORT
-                ========================================== -->
+                <!-- NATIONAL ID / PASSPORT -->
 
                 <div class="form-group">
 
@@ -627,9 +894,7 @@
                 </div>
 
 
-                <!-- =========================================
-                     ROOM
-                ========================================== -->
+                <!-- ROOM -->
 
                 <div class="form-group">
 
@@ -661,9 +926,7 @@
                 </div>
 
 
-                <!-- =========================================
-                     CHECK IN
-                ========================================== -->
+                <!-- CHECK IN -->
 
                 <div class="form-group">
 
@@ -680,9 +943,7 @@
                 </div>
 
 
-                <!-- =========================================
-                     CHECK OUT
-                ========================================== -->
+                <!-- CHECK OUT -->
 
                 <div class="form-group">
 
@@ -699,9 +960,7 @@
                 </div>
 
 
-                <!-- =========================================
-                     NIGHTLY RATE
-                ========================================== -->
+                <!-- NIGHTLY RATE -->
 
                 <div class="form-group">
 
@@ -730,9 +989,7 @@
                 </div>
 
 
-                <!-- =========================================
-                     STATUS
-                ========================================== -->
+                <!-- STATUS -->
 
                 <div class="form-group">
 
@@ -770,9 +1027,7 @@
                 </div>
 
 
-                <!-- =========================================
-                     TOTAL AMOUNT
-                ========================================== -->
+                <!-- TOTAL AMOUNT -->
 
                 <div class="form-group">
 
@@ -825,9 +1080,7 @@
                 </div>
 
 
-                <!-- =========================================
-                     BUTTONS
-                ========================================== -->
+                <!-- BUTTONS -->
 
                 <div class="modal-actions">
 
@@ -1501,10 +1754,6 @@
 
             try {
 
-                // -------------------------------------------------
-                // CENTRAL SUPABASE CONNECTION
-                // -------------------------------------------------
-
                 if (
                     typeof window.waitForEDUTechSupabase ===
                     "function"
@@ -1581,10 +1830,6 @@
                 currentUser =
                     authData.user;
 
-
-                // -------------------------------------------------
-                // PROFILE
-                // -------------------------------------------------
 
                 setTableMessage(
                     "Loading user profile..."
@@ -1684,10 +1929,6 @@
                     currentUser.id
                 );
 
-
-                // -------------------------------------------------
-                // HOTEL
-                // -------------------------------------------------
 
                 setTableMessage(
                     "Loading hotel information..."
@@ -1891,10 +2132,6 @@
                 }
 
 
-                // -------------------------------------------------
-                // HOTEL CONTEXT
-                // -------------------------------------------------
-
                 const hotelContext =
                     getElement(
                         "hotelContext"
@@ -1909,10 +2146,6 @@
 
                 }
 
-
-                // -------------------------------------------------
-                // LOAD DATA
-                // -------------------------------------------------
 
                 setTableMessage(
                     "Loading guests..."
@@ -2632,10 +2865,6 @@
                             .toLowerCase();
 
 
-                    // -----------------------------------------
-                    // Do not offer maintenance rooms.
-                    // -----------------------------------------
-
                     if (
                         status ===
                         "maintenance"
@@ -2645,12 +2874,6 @@
 
                     }
 
-
-                    // -----------------------------------------
-                    // Occupied rooms are only allowed when
-                    // editing the reservation that already uses
-                    // that room.
-                    // -----------------------------------------
 
                     if (
                         status ===
@@ -3850,16 +4073,8 @@
 
             try {
 
-                // ---------------------------------------------
-                // Refresh reservations before checking conflict
-                // ---------------------------------------------
-
                 await loadReservations();
 
-
-                // ---------------------------------------------
-                // Check room availability
-                // ---------------------------------------------
 
                 await checkRoomAvailability(
                     roomId,
@@ -3876,10 +4091,6 @@
 
                 }
 
-
-                // ---------------------------------------------
-                // Determine database columns
-                // ---------------------------------------------
 
                 if (
                     reservations.length > 0
@@ -4244,10 +4455,6 @@
                     );
 
 
-                // -------------------------------------------------
-                // ADD
-                // -------------------------------------------------
-
                 if (addButton) {
 
                     addButton.addEventListener(
@@ -4257,10 +4464,6 @@
 
                 }
 
-
-                // -------------------------------------------------
-                // REFRESH
-                // -------------------------------------------------
 
                 if (refreshButton) {
 
@@ -4328,10 +4531,6 @@
                 }
 
 
-                // -------------------------------------------------
-                // GUEST
-                // -------------------------------------------------
-
                 if (guestSelect) {
 
                     guestSelect.addEventListener(
@@ -4342,10 +4541,6 @@
                 }
 
 
-                // -------------------------------------------------
-                // ROOM
-                // -------------------------------------------------
-
                 if (roomSelect) {
 
                     roomSelect.addEventListener(
@@ -4355,10 +4550,6 @@
 
                 }
 
-
-                // -------------------------------------------------
-                // DATES
-                // -------------------------------------------------
 
                 if (checkIn) {
 
@@ -4388,10 +4579,6 @@
                 }
 
 
-                // -------------------------------------------------
-                // NIGHTLY RATE
-                // -------------------------------------------------
-
                 if (nightlyRate) {
 
                     nightlyRate.addEventListener(
@@ -4405,10 +4592,6 @@
 
                 }
 
-
-                // -------------------------------------------------
-                // AMOUNT
-                // -------------------------------------------------
 
                 if (amount) {
 
@@ -4462,10 +4645,6 @@
                 }
 
 
-                // -------------------------------------------------
-                // CANCEL
-                // -------------------------------------------------
-
                 if (cancelButton) {
 
                     cancelButton.addEventListener(
@@ -4476,10 +4655,6 @@
                 }
 
 
-                // -------------------------------------------------
-                // FORM
-                // -------------------------------------------------
-
                 if (form) {
 
                     form.addEventListener(
@@ -4489,10 +4664,6 @@
 
                 }
 
-
-                // -------------------------------------------------
-                // CLOSE MODAL BY BACKDROP
-                // -------------------------------------------------
 
                 if (modal) {
 
@@ -4514,10 +4685,6 @@
 
                 }
 
-
-                // -------------------------------------------------
-                // INITIALIZE
-                // -------------------------------------------------
 
                 initializeReservationPage();
 

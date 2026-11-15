@@ -1,575 +1,769 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Payments - EDU TECH Hotel Management System</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet" href="./style.css">
+    <title>
+        Payments - EDU TECH Hotel Management System
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="./style.css?v=20261114-01"
+    >
 
     <style>
+
         /* =========================================================
-           PAYMENTS PAGE
-        ========================================================= */
+           PAYMENTS PAGE LAYOUT FIX
+           ========================================================= */
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        /*
+         * Keep the main Payments page completely clear of
+         * the fixed sidebar.
+         */
+        .main-content {
+            margin-left: 260px !important;
+            width: calc(100% - 260px) !important;
+            min-width: 0;
+            padding: 24px 28px !important;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 1;
+        }
+
+        /*
+         * Make sure the sidebar stays above the page,
+         * but does not cover the Payments content.
+         */
+        .sidebar {
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 260px !important;
+            height: 100vh !important;
+            z-index: 1000 !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            box-sizing: border-box;
+        }
+
+        .sidebar nav a {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            white-space: normal;
+            overflow: visible;
+        }
+
+        /* =========================================================
+           TOP BAR
+           ========================================================= */
 
         .payments-page {
-            padding: 20px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
+        .payments-topbar {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 24px;
         }
 
-        .page-header h1 {
+        .payments-topbar h1 {
+            margin: 0 0 7px 0;
+            line-height: 1.25;
+            word-break: normal;
+            overflow-wrap: anywhere;
+        }
+
+        .payments-topbar p {
             margin: 0;
+            line-height: 1.5;
         }
 
-        .page-header p {
-            margin: 5px 0 0;
-            color: #666;
-        }
+        /* =========================================================
+           SUMMARY CARDS
+           ========================================================= */
 
-        .header-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .summary-grid {
+        .payment-summary-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            width: 100%;
+            margin-bottom: 24px;
         }
 
-        .summary-card {
-            background: #fff;
-            border-radius: 10px;
+        .payment-summary-card {
+            min-width: 0;
+            box-sizing: border-box;
             padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
 
-        .summary-card h3 {
-            margin: 0 0 8px;
+        .payment-summary-card h3 {
+            margin: 0 0 10px 0;
             font-size: 14px;
-            color: #666;
+            line-height: 1.4;
         }
 
-        .summary-card .value {
-            font-size: 25px;
-            font-weight: bold;
+        .payment-summary-card .summary-value {
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1.3;
+            overflow-wrap: anywhere;
         }
 
-        .table-card {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            overflow: hidden;
-        }
+        /* =========================================================
+           TOOLBAR
+           ========================================================= */
 
-        .table-toolbar {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
+        .payments-toolbar {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            justify-content: space-between;
+            gap: 14px;
             flex-wrap: wrap;
+            width: 100%;
+            margin-bottom: 18px;
         }
 
-        .search-box {
-            flex: 1;
-            min-width: 250px;
+        .payments-search {
+            flex: 1 1 320px;
+            min-width: 220px;
         }
 
-        .search-box input {
+        .payments-search input {
             width: 100%;
             box-sizing: border-box;
             padding: 11px 13px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
             font-size: 14px;
         }
 
-        .table-wrapper {
+        .payments-toolbar-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .payments-toolbar button {
+            border: none;
+            border-radius: 8px;
+            padding: 11px 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        #openPaymentModal {
+            background: #2563eb;
+            color: white;
+        }
+
+        #refreshPayments {
+            background: #374151;
+            color: white;
+        }
+
+        #searchResultInfo {
+            width: 100%;
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: -8px;
+        }
+
+        /* =========================================================
+           TABLE
+           ========================================================= */
+
+        .payments-table-card {
+            width: 100%;
+            max-width: 100%;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+
+        .payments-table-wrapper {
             width: 100%;
             overflow-x: auto;
+            overflow-y: visible;
         }
 
         .payments-table {
             width: 100%;
+            min-width: 1150px;
             border-collapse: collapse;
-            min-width: 1050px;
         }
 
         .payments-table th,
         .payments-table td {
             padding: 12px 10px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #e5e7eb;
             text-align: left;
+            vertical-align: middle;
             white-space: nowrap;
         }
 
         .payments-table th {
-            background: #f7f7f7;
-            font-weight: 600;
+            background: #f8fafc;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .payments-table td {
+            font-size: 13px;
         }
 
         .payments-table tbody tr:hover {
-            background: #fafafa;
+            background: #f9fafb;
         }
 
-        .status-badge {
+        .payment-status {
             display: inline-block;
             padding: 5px 9px;
-            border-radius: 20px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .payment-status-paid {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .payment-status-partial {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .payment-status-unpaid {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .payment-status-pending {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .payment-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: nowrap;
+        }
+
+        .payment-actions button {
+            border: none;
+            border-radius: 6px;
+            padding: 7px 10px;
+            cursor: pointer;
             font-size: 12px;
             font-weight: 600;
         }
 
-        .status-paid {
-            background: #dff5e5;
-            color: #16733a;
-        }
-
-        .status-part {
-            background: #fff1cc;
-            color: #8a6200;
-        }
-
-        .status-pending {
-            background: #eee;
-            color: #555;
-        }
-
-        .status-nocharge {
-            background: #e6e6e6;
-            color: #555;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .action-buttons button {
-            border: none;
-            padding: 7px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .btn-primary {
-            background: #0d6efd;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .btn-success {
-            background: #198754;
+        .receipt-button {
+            background: #2563eb;
             color: white;
         }
 
-        .btn-warning {
-            background: #ffc107;
-            color: #111;
-        }
-
-        .btn-danger {
-            background: #dc3545;
+        .ledger-button {
+            background: #059669;
             color: white;
         }
 
-        .btn-primary:hover,
-        .btn-secondary:hover,
-        .action-buttons button:hover {
-            opacity: 0.9;
-        }
-
-        .loading-row,
-        .empty-row,
-        .error-row {
-            text-align: center !important;
-            padding: 30px !important;
-        }
-
-        .error-row {
-            color: #b42318;
-            background: #fff3f2;
+        .ledger-button.pending {
+            background: #d97706;
         }
 
         /* =========================================================
-           MODAL
-        ========================================================= */
+           MODALS
+           ========================================================= */
 
-        .modal {
-            display: none;
+        .payment-modal,
+        .receipt-modal {
             position: fixed;
-            z-index: 9999;
             inset: 0;
-            background: rgba(0,0,0,0.55);
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
-
-        .modal.show {
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.55);
+            z-index: 5000;
+            box-sizing: border-box;
         }
 
-        .modal-content {
-            width: 100%;
-            max-width: 650px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            overflow: hidden;
-        }
-
-        .modal-header {
+        .payment-modal.show,
+        .receipt-modal.show {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 20px;
-            border-bottom: 1px solid #eee;
         }
 
-        .modal-header h2 {
+        .payment-modal-content,
+        .receipt-modal-content {
+            width: min(620px, 100%);
+            max-height: 90vh;
+            overflow-y: auto;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.25);
+            box-sizing: border-box;
+        }
+
+        .payment-modal-header,
+        .receipt-modal-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .payment-modal-header h2,
+        .receipt-modal-header h2 {
             margin: 0;
+            font-size: 19px;
         }
 
         .modal-close {
             border: none;
             background: transparent;
-            font-size: 28px;
+            font-size: 24px;
             cursor: pointer;
         }
 
-        .modal-body {
+        .payment-form {
             padding: 20px;
         }
 
-        .modal-footer {
-            padding: 15px 20px;
-            border-top: 1px solid #eee;
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
+        .payment-form-group {
+            margin-bottom: 16px;
         }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
+        .payment-form-group label {
             display: block;
             margin-bottom: 6px;
-            font-weight: 600;
+            font-size: 13px;
+            font-weight: 700;
         }
 
-        .form-group input,
-        .form-group select {
+        .payment-form-group input,
+        .payment-form-group select {
             width: 100%;
             box-sizing: border-box;
-            padding: 11px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            padding: 11px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
             font-size: 14px;
-        }
-
-        .form-help {
-            font-size: 12px;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        .balance-box {
-            padding: 12px;
-            background: #f4f7fb;
-            border-radius: 6px;
-            margin-bottom: 15px;
-        }
-
-        /* =========================================================
-           RECEIPT
-        ========================================================= */
-
-        .receipt-content {
-            max-width: 700px;
-        }
-
-        .receipt {
-            padding: 20px;
             background: white;
         }
 
-        .receipt-header {
-            text-align: center;
-            margin-bottom: 20px;
+        .payment-balance-box {
+            padding: 13px;
+            border-radius: 8px;
+            background: #f3f4f6;
+            font-weight: 700;
+            margin-bottom: 16px;
         }
 
-        .receipt-header h2 {
-            margin: 0;
+        .payment-form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
-        .receipt-header p {
-            margin: 4px 0;
+        .payment-form-actions button {
+            border: none;
+            border-radius: 8px;
+            padding: 11px 17px;
+            cursor: pointer;
+            font-weight: 700;
         }
 
-        .receipt-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
+        #cancelPaymentModal,
+        #closePaymentModal,
+        #closeReceiptButton,
+        #closeReceiptModal {
+            background: #6b7280;
+            color: white;
         }
 
-        .receipt-table td {
-            padding: 8px;
-            border-bottom: 1px solid #eee;
+        #savePayment {
+            background: #2563eb;
+            color: white;
         }
 
-        .receipt-table td:last-child {
-            text-align: right;
-            font-weight: 600;
+        #printReceipt {
+            background: #059669;
+            color: white;
         }
 
-        .receipt-total {
-            font-size: 18px;
-            font-weight: bold;
+        #receiptBody {
+            padding: 22px;
+        }
+
+        /* =========================================================
+           MESSAGES
+           ========================================================= */
+
+        .payment-message {
+            display: none;
+            margin-bottom: 18px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .payment-message.show {
+            display: block;
+        }
+
+        .payment-message.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .payment-message.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .payment-message.warning {
+            background: #fef3c7;
+            color: #92400e;
         }
 
         /* =========================================================
            RESPONSIVE
-        ========================================================= */
+           ========================================================= */
 
-        @media (max-width: 800px) {
+        @media (max-width: 1000px) {
 
-            .summary-grid {
+            .payment-summary-grid {
                 grid-template-columns: 1fr;
             }
 
-            .payments-page {
-                padding: 10px;
+        }
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                width: 220px !important;
+            }
+
+            .main-content {
+                margin-left: 220px !important;
+                width: calc(100% - 220px) !important;
+                padding: 20px !important;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .sidebar {
+                position: relative !important;
+                width: 100% !important;
+                height: auto !important;
+                max-height: none;
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 16px !important;
+            }
+
+            .payments-toolbar {
+                align-items: stretch;
+            }
+
+            .payments-toolbar-buttons {
+                width: 100%;
+            }
+
+            .payments-toolbar-buttons button {
+                flex: 1;
             }
 
         }
 
         /* =========================================================
            PRINT
-        ========================================================= */
+           ========================================================= */
 
         @media print {
 
-            body * {
-                visibility: hidden !important;
-            }
-
-            #receiptModal,
-            #receiptModal * {
-                visibility: visible !important;
-            }
-
-            #receiptModal {
-                position: absolute !important;
-                inset: 0 !important;
-                display: block !important;
-                background: white !important;
-                padding: 0 !important;
-            }
-
-            #receiptModal .modal-content {
-                max-width: none !important;
-                box-shadow: none !important;
-            }
-
-            #receiptModal .modal-header,
-            #receiptModal .modal-footer {
+            .sidebar,
+            .payments-toolbar,
+            .payment-actions,
+            button {
                 display: none !important;
             }
 
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+            }
+
         }
+
     </style>
+
 </head>
+
 
 <body>
 
     <!-- =========================================================
-         CENTRAL SIDEBAR
-    ========================================================= -->
+         SIDEBAR
+         ========================================================= -->
 
-    <aside
-        id="appSidebar"
-        class="sidebar">
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <h2>EDU TECH</h2>
+
+            <span>
+                HOTEL SYSTEM
+            </span>
+
+        </div>
+
+        <nav>
+
+            <a href="./index.html">
+                🏠 Dashboard
+            </a>
+
+            <a href="./rooms.html">
+                🛏️ Rooms
+            </a>
+
+            <a href="./guests.html">
+                👤 Guests
+            </a>
+
+            <a href="./reservations.html">
+                📅 Reservations
+            </a>
+
+            <a href="./checkin.html">
+                🛎️ Check-in
+            </a>
+
+            <a href="./checkout.html">
+                🚪 Check-out
+            </a>
+
+            <a href="./restaurant.html">
+                🍽️ Restaurant
+            </a>
+
+            <a href="./inventory.html">
+                📦 Inventory
+            </a>
+
+            <a
+                href="./payments.html"
+                class="active"
+            >
+                💰 Payments
+            </a>
+
+            <a href="./expenses.html">
+                💸 Expenses
+            </a>
+
+            <a href="./employees.html">
+                👨‍💼 Employees
+            </a>
+
+            <a href="./housekeeping.html">
+                🧹 Housekeeping
+            </a>
+
+            <a href="./maintenance.html">
+                🔧 Maintenance
+            </a>
+
+            <a href="./reports.html">
+                📊 Reports
+            </a>
+
+            <a href="./settings.html">
+                ⚙️ Settings
+            </a>
+
+        </nav>
+
     </aside>
 
 
     <!-- =========================================================
          MAIN CONTENT
-    ========================================================= -->
+         ========================================================= -->
 
     <main class="main-content">
 
         <div class="payments-page">
 
-            <!-- =================================================
-                 HEADER
-            ================================================= -->
+            <header class="payments-topbar">
 
-            <div class="page-header">
+                <h1>
+                    Payments
+                </h1>
 
-                <div>
+                <p>
+                    Record, monitor and manage hotel guest payments
+                </p>
 
-                    <h1>
-                        Payments
-                    </h1>
-
-                    <p>
-                        Record guest payments, track balances
-                        and automatically post transactions
-                        to the financial ledger.
-                    </p>
-
-                </div>
+            </header>
 
 
-                <div class="header-actions">
+            <!-- MESSAGE -->
 
-                    <button
-                        type="button"
-                        id="refreshPayments"
-                        class="btn-secondary">
-
-                        ↻ Refresh
-
-                    </button>
-
-
-                    <button
-                        type="button"
-                        id="openPaymentModal"
-                        class="btn-primary">
-
-                        + Record Payment
-
-                    </button>
-
-                </div>
-
-            </div>
+            <div
+                id="paymentMessage"
+                class="payment-message"
+            ></div>
 
 
             <!-- =================================================
-                 SUMMARY CARDS
-            ================================================= -->
+                 SUMMARY
+                 ================================================= -->
 
-            <div class="summary-grid">
+            <section class="payment-summary-grid">
 
-                <div class="summary-card">
+                <div class="payment-summary-card">
 
                     <h3>
                         Total Payments
                     </h3>
 
                     <div
-                        class="value"
-                        id="totalPayments">
-
+                        id="totalPayments"
+                        class="summary-value"
+                    >
                         KSh 0.00
-
                     </div>
 
                 </div>
 
 
-                <div class="summary-card">
+                <div class="payment-summary-card">
 
                     <h3>
-                        Number of Payments
+                        Payment Count
                     </h3>
 
                     <div
-                        class="value"
-                        id="paymentCount">
-
+                        id="paymentCount"
+                        class="summary-value"
+                    >
                         0
-
                     </div>
 
                 </div>
 
 
-                <div class="summary-card">
+                <div class="payment-summary-card">
 
                     <h3>
                         Total Outstanding
                     </h3>
 
                     <div
-                        class="value"
-                        id="totalOutstanding">
-
+                        id="totalOutstanding"
+                        class="summary-value"
+                    >
                         KSh 0.00
-
                     </div>
 
                 </div>
 
-            </div>
+            </section>
 
 
             <!-- =================================================
-                 PAYMENT TABLE
-            ================================================= -->
+                 TOOLBAR
+                 ================================================= -->
 
-            <div class="table-card">
+            <section class="payments-toolbar">
 
-                <div class="table-toolbar">
+                <div class="payments-search">
 
-                    <div class="search-box">
-
-                        <input
-                            type="search"
-                            id="paymentSearch"
-                            placeholder="Search payment number, guest, room, method, date, amount..."
-                            autocomplete="off">
-
-                    </div>
-
-
-                    <div>
-
-                        <span
-                            id="searchResultInfo">
-                        </span>
-
-                    </div>
+                    <input
+                        type="search"
+                        id="paymentSearch"
+                        placeholder="Search payment, guest, room or payment number..."
+                        autocomplete="off"
+                    >
 
                 </div>
 
 
-                <div class="table-wrapper">
+                <div class="payments-toolbar-buttons">
+
+                    <button
+                        type="button"
+                        id="refreshPayments"
+                    >
+                        ↻ Refresh
+                    </button>
+
+                    <button
+                        type="button"
+                        id="openPaymentModal"
+                    >
+                        + Record Payment
+                    </button>
+
+                </div>
+
+
+                <div
+                    id="searchResultInfo"
+                ></div>
+
+            </section>
+
+
+            <!-- =================================================
+                 PAYMENTS TABLE
+                 ================================================= -->
+
+            <section class="payments-table-card">
+
+                <div class="payments-table-wrapper">
 
                     <table class="payments-table">
 
@@ -578,7 +772,7 @@
                             <tr>
 
                                 <th>
-                                    Payment No
+                                    Payment No.
                                 </th>
 
                                 <th>
@@ -621,15 +815,16 @@
 
                         </thead>
 
-
-                        <tbody id="paymentsTableBody">
+                        <tbody
+                            id="paymentsTableBody"
+                        >
 
                             <tr>
 
                                 <td
                                     colspan="10"
-                                    class="loading-row">
-
+                                    style="text-align:center;padding:30px;"
+                                >
                                     Loading payments...
 
                                 </td>
@@ -642,7 +837,7 @@
 
                 </div>
 
-            </div>
+            </section>
 
         </div>
 
@@ -651,188 +846,156 @@
 
     <!-- =========================================================
          RECORD PAYMENT MODAL
-    ========================================================= -->
+         ========================================================= -->
 
     <div
         id="paymentModal"
-        class="modal">
+        class="payment-modal"
+    >
 
-        <div class="modal-content">
+        <div class="payment-modal-content">
 
-            <div class="modal-header">
+            <div class="payment-modal-header">
 
                 <h2>
-                    Record Guest Payment
+                    Record Payment
                 </h2>
-
 
                 <button
                     type="button"
+                    class="modal-close"
                     id="closePaymentModal"
-                    class="modal-close">
-
+                >
                     ×
-
                 </button>
 
             </div>
 
 
-            <form id="paymentForm">
+            <form
+                id="paymentForm"
+                class="payment-form"
+            >
 
-                <div class="modal-body">
+                <div class="payment-form-group">
 
-                    <div class="form-group">
+                    <label for="paymentReservation">
+                        Reservation
+                    </label>
 
-                        <label for="paymentReservation">
+                    <select
+                        id="paymentReservation"
+                        required
+                    >
 
-                            Reservation
+                        <option value="">
+                            Select reservation
+                        </option>
 
-                        </label>
-
-
-                        <select
-                            id="paymentReservation"
-                            required>
-
-                            <option value="">
-
-                                Select reservation
-
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div
-                        id="paymentBalance"
-                        class="balance-box">
-
-                        Remaining balance:
-
-                        <strong>
-                            KSh 0.00
-                        </strong>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="paymentAmount">
-
-                            Payment Amount
-
-                        </label>
-
-
-                        <input
-                            type="number"
-                            id="paymentAmount"
-                            min="0.01"
-                            step="0.01"
-                            placeholder="Enter amount"
-                            required>
-
-
-                        <div class="form-help">
-
-                            Payment amount includes VAT
-                            at 16%.
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="paymentMethod">
-
-                            Payment Method
-
-                        </label>
-
-
-                        <select
-                            id="paymentMethod"
-                            required>
-
-                            <option value="">
-
-                                Select payment method
-
-                            </option>
-
-                            <option value="cash">
-
-                                Cash
-
-                            </option>
-
-                            <option value="mpesa">
-
-                                M-Pesa
-
-                            </option>
-
-                            <option value="bank">
-
-                                Bank
-
-                            </option>
-
-                            <option value="card">
-
-                                Card
-
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="paymentDate">
-
-                            Payment Date
-
-                        </label>
-
-
-                        <input
-                            type="date"
-                            id="paymentDate"
-                            required>
-
-                    </div>
+                    </select>
 
                 </div>
 
 
-                <div class="modal-footer">
+                <div class="payment-form-group">
+
+                    <label for="paymentAmount">
+                        Payment Amount
+                    </label>
+
+                    <input
+                        type="number"
+                        id="paymentAmount"
+                        min="0.01"
+                        step="0.01"
+                        required
+                        placeholder="Enter amount"
+                    >
+
+                </div>
+
+
+                <div class="payment-form-group">
+
+                    <label for="paymentMethod">
+                        Payment Method
+                    </label>
+
+                    <select
+                        id="paymentMethod"
+                        required
+                    >
+
+                        <option value="">
+                            Select payment method
+                        </option>
+
+                        <option value="CASH">
+                            CASH
+                        </option>
+
+                        <option value="MPESA">
+                            MPESA
+                        </option>
+
+                        <option value="CARD">
+                            CARD
+                        </option>
+
+                        <option value="BANK">
+                            BANK
+                        </option>
+
+                        <option value="CHEQUE">
+                            CHEQUE
+                        </option>
+
+                        <option value="OTHER">
+                            OTHER
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="payment-form-group">
+
+                    <label for="paymentDate">
+                        Payment Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="paymentDate"
+                        required
+                    >
+
+                </div>
+
+
+                <div
+                    id="paymentBalance"
+                    class="payment-balance-box"
+                >
+                    Select a reservation to see the balance.
+                </div>
+
+
+                <div class="payment-form-actions">
 
                     <button
                         type="button"
                         id="cancelPaymentModal"
-                        class="btn-secondary">
-
+                    >
                         Cancel
-
                     </button>
-
 
                     <button
                         type="submit"
                         id="savePayment"
-                        class="btn-primary">
-
+                    >
                         Save Payment
-
                     </button>
 
                 </div>
@@ -846,58 +1009,52 @@
 
     <!-- =========================================================
          RECEIPT MODAL
-    ========================================================= -->
+         ========================================================= -->
 
     <div
         id="receiptModal"
-        class="modal">
+        class="receipt-modal"
+    >
 
-        <div class="modal-content receipt-content">
+        <div class="receipt-modal-content">
 
-            <div class="modal-header">
+            <div class="receipt-modal-header">
 
                 <h2>
                     Payment Receipt
                 </h2>
 
-
                 <button
                     type="button"
+                    class="modal-close"
                     id="closeReceiptModal"
-                    class="modal-close">
-
+                >
                     ×
-
                 </button>
 
             </div>
+
+
+            <div id="receiptBody"></div>
 
 
             <div
-                id="receiptBody"
-                class="modal-body">
-            </div>
-
-
-            <div class="modal-footer">
-
-                <button
-                    type="button"
-                    id="printReceipt"
-                    class="btn-primary">
-
-                    Print Receipt
-
-                </button>
-
+                class="payment-form-actions"
+                style="padding:0 20px 20px 20px;"
+            >
 
                 <button
                     type="button"
                     id="closeReceiptButton"
-                    class="btn-secondary">
-
+                >
                     Close
+                </button>
 
+                <button
+                    type="button"
+                    id="printReceipt"
+                >
+                    Print Receipt
                 </button>
 
             </div>
@@ -908,32 +1065,21 @@
 
 
     <!-- =========================================================
-         IMPORTANT SCRIPT ORDER
-         ---------------------------------------------------------
-         1. Supabase library
-         2. Supabase connection
-         3. Access control
-         4. Sidebar
-         5. FINANCIAL ENGINE
-         6. PAYMENTS
-         
-         financial-engine.js MUST load before payments.js.
-    ========================================================= -->
+         SCRIPTS
+         ========================================================= -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <script src="./supabase.js"></script>
+    <script src="./supabase.js?v=20261113-31"></script>
 
-    <script src="./access-control.js"></script>
+    <script src="./financial-engine.js?v=20261114.03"></script>
 
-    <script src="./sidebar.js"></script>
+    <script src="./access-control.js?v=20261113-25"></script>
 
-    <!-- FINANCIAL ENGINE MUST COME FIRST -->
-    <script src="./financial-engine.js"></script>
+    <script src="./sidebar.js?v=20261113-25"></script>
 
-    <!-- PAYMENTS MUST COME AFTER FINANCIAL ENGINE -->
-    <script src="./payments.js"></script>
+    <script src="./payments.js?v=20261114-02"></script>
 
 </body>
+
 </html>
-```

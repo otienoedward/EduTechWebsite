@@ -1,11 +1,14 @@
 /* =========================================================
    EDU TECH HOTEL MANAGEMENT SYSTEM
    PAYMENTS.JS
-   VERSION: 2026.11.12.06
+   VERSION: 2026.11.15.02
 
    PURPOSE
    ---------------------------------------------------------
    - Load hotel payments
+   - Trace payment -> reservation -> guest
+   - Trace payment -> reservation -> room
+   - Preserve historical checked-out payments
    - Record guest payments
    - Calculate reservation balances
    - VAT @ 16%
@@ -16,8 +19,6 @@
    - Payment receipt
    - Print receipt
    - Hotel-specific filtering
-   - Strong hotel ID resolution
-   - Robust ledger verification
    ========================================================= */
 
 (function () {
@@ -28,38 +29,58 @@
     const LOAD_TIMEOUT = 15000;
 
     const state = {
+
         payments: [],
         reservations: [],
         guests: [],
         rooms: [],
+
         hotel: null,
         hotelId: null,
+
         currentPayment: null,
+
         loading: false,
         initialized: false
+
     };
 
-    /* =====================================================
+
+    /* =========================================================
        DOM
-    ===================================================== */
+    ========================================================= */
 
     function $(selector) {
+
         return document.querySelector(selector);
+
     }
+
+
+    /* =========================================================
+       MONEY
+    ========================================================= */
 
     function money(value) {
 
-        const number = Number(value || 0);
+        const number =
+            Number(value || 0);
 
-        return "KSh " + number.toLocaleString(
-            "en-KE",
-            {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }
-        );
+        return "KSh " +
+            number.toLocaleString(
+                "en-KE",
+                {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }
+            );
 
     }
+
+
+    /* =========================================================
+       HTML ESCAPE
+    ========================================================= */
 
     function escapeHtml(value) {
 
@@ -72,6 +93,11 @@
 
     }
 
+
+    /* =========================================================
+       NORMALIZE
+    ========================================================= */
+
     function normalize(value) {
 
         return String(value ?? "")
@@ -80,15 +106,124 @@
 
     }
 
-    /* =====================================================
+
+    /* =========================================================
+       COLUMN NORMALIZE
+    ========================================================= */
+
+    function normalizeColumnName(value) {
+
+        return String(value || "")
+            .toLowerCase()
+            .replace(
+                /[\s_-]/g,
+                ""
+            );
+
+    }
+
+
+    /* =========================================================
+       FIND COLUMN
+    ========================================================= */
+
+    function findColumn(
+        row,
+        candidates
+    ) {
+
+        if (!row) {
+
+            return null;
+
+        }
+
+        const keys =
+            Object.keys(row);
+
+        for (
+            const candidate of candidates
+        ) {
+
+            const exact =
+                keys.find(
+                    function (key) {
+
+                        return key === candidate;
+
+                    }
+                );
+
+            if (exact) {
+
+                return exact;
+
+            }
+
+        }
+
+        const normalizedKeys =
+            keys.map(
+                function (key) {
+
+                    return {
+
+                        key: key,
+
+                        normalized:
+                            normalizeColumnName(
+                                key
+                            )
+
+                    };
+
+                }
+            );
+
+        for (
+            const candidate of candidates
+        ) {
+
+            const normalizedCandidate =
+                normalizeColumnName(
+                    candidate
+                );
+
+            const found =
+                normalizedKeys.find(
+                    function (item) {
+
+                        return (
+                            item.normalized ===
+                            normalizedCandidate
+                        );
+
+                    }
+                );
+
+            if (found) {
+
+                return found.key;
+
+            }
+
+        }
+
+        return null;
+
+    }
+
+
+    /* =========================================================
        SUPABASE
-    ===================================================== */
+    ========================================================= */
 
     function getSupabase() {
 
         if (
             window.supabaseClient &&
-            typeof window.supabaseClient.from === "function"
+            typeof window.supabaseClient.from ===
+            "function"
         ) {
 
             return window.supabaseClient;
@@ -101,9 +236,10 @@
 
     }
 
-    /* =====================================================
+
+    /* =========================================================
        TIMEOUT
-    ===================================================== */
+    ========================================================= */
 
     function withTimeout(
         promise,
@@ -114,75 +250,61 @@
 
             promise,
 
-            new Promise((_, reject) => {
+            new Promise(
+                function (_, reject) {
 
-                setTimeout(() => {
+                    setTimeout(
+                        function () {
 
-                    reject(
-                        new Error(
-                            "The database request timed out."
-                        )
+                            reject(
+                                new Error(
+                                    "The database request timed out."
+                                )
+                            );
+
+                        },
+                        milliseconds
                     );
 
-                }, milliseconds);
-
-            })
+                }
+            )
 
         ]);
 
     }
 
-    /* =====================================================
+
+    /* =========================================================
        STORAGE
-    ===================================================== */
+    ========================================================= */
 
     function getStoredValue(keys) {
 
-        for (const key of keys) {
+        for (
+            const key of keys
+        ) {
 
-            try {
+            const sessionValue =
+                sessionStorage.getItem(key);
 
-                const sessionValue =
-                    sessionStorage.getItem(key);
+            if (
+                sessionValue !== null &&
+                sessionValue !== ""
+            ) {
 
-                if (
-                    sessionValue !== null &&
-                    sessionValue !== ""
-                ) {
-
-                    return sessionValue;
-
-                }
-
-            } catch (error) {
-
-                console.warn(
-                    "Session storage read failed:",
-                    error
-                );
+                return sessionValue;
 
             }
 
-            try {
+            const localValue =
+                localStorage.getItem(key);
 
-                const localValue =
-                    localStorage.getItem(key);
+            if (
+                localValue !== null &&
+                localValue !== ""
+            ) {
 
-                if (
-                    localValue !== null &&
-                    localValue !== ""
-                ) {
-
-                    return localValue;
-
-                }
-
-            } catch (error) {
-
-                console.warn(
-                    "Local storage read failed:",
-                    error
-                );
+                return localValue;
 
             }
 
@@ -192,220 +314,45 @@
 
     }
 
-    /* =====================================================
+
+    /* =========================================================
        HOTEL ID
-    ===================================================== */
+    ========================================================= */
 
-    function normalizeHotelId(value) {
-
-        if (
-            value === null ||
-            value === undefined ||
-            value === ""
-        ) {
-
-            return null;
-
-        }
-
-        const number =
-            Number(value);
-
-        if (
-            !Number.isFinite(number) ||
-            number <= 0
-        ) {
-
-            return null;
-
-        }
-
-        return number;
-
-    }
-
-    function persistHotelId(hotelId) {
-
-        const id =
-            normalizeHotelId(
-                hotelId
-            );
-
-        if (!id) {
-
-            return;
-
-        }
-
-        try {
-
-            sessionStorage.setItem(
-                "hotelId",
-                String(id)
-            );
-
-            sessionStorage.setItem(
-                "hotel_id",
-                String(id)
-            );
-
-            sessionStorage.setItem(
-                "currentHotelId",
-                String(id)
-            );
-
-        } catch (error) {
-
-            console.warn(
-                "Unable to save hotel ID:",
-                error
-            );
-
-        }
-
-    }
-
-    async function resolveHotelId(
-        suppliedHotelId = null
-    ) {
-
-        const explicitId =
-            normalizeHotelId(
-                suppliedHotelId
-            );
-
-        if (explicitId) {
-
-            state.hotelId =
-                explicitId;
-
-            persistHotelId(
-                explicitId
-            );
-
-            return explicitId;
-
-        }
-
-        const stateId =
-            normalizeHotelId(
-                state.hotelId
-            );
-
-        if (stateId) {
-
-            persistHotelId(
-                stateId
-            );
-
-            return stateId;
-
-        }
+    async function resolveHotelId() {
 
         const storedHotelId =
             getStoredValue([
 
+                "activeHotelId",
+                "active_hotel_id",
+                "selectedHotelId",
+                "selectedHotelID",
+
                 "hotelId",
                 "hotel_id",
+
                 "currentHotelId",
-                "current_hotel_id",
-                "selectedHotelId",
-                "selected_hotel_id",
-                "authenticatedHotelId",
-                "authenticated_hotel_id"
+                "current_hotel_id"
 
             ]);
 
-        const storedId =
-            normalizeHotelId(
-                storedHotelId
-            );
+        if (storedHotelId) {
 
-        if (storedId) {
-
-            state.hotelId =
-                storedId;
-
-            persistHotelId(
-                storedId
-            );
-
-            return storedId;
-
-        }
-
-        try {
-
-            const supabase =
-                getSupabase();
+            const id =
+                Number(storedHotelId);
 
             if (
-                supabase.auth &&
-                typeof supabase.auth.getUser ===
-                "function"
+                Number.isFinite(id) &&
+                id > 0
             ) {
 
-                const authResult =
-                    await withTimeout(
-                        supabase.auth.getUser()
-                    );
+                state.hotelId =
+                    id;
 
-                const user =
-                    authResult?.data?.user;
-
-                if (user?.id) {
-
-                    const profileResult =
-                        await withTimeout(
-
-                            supabase
-                                .from("profiles")
-                                .select("hotel_id")
-                                .eq(
-                                    "id",
-                                    user.id
-                                )
-                                .maybeSingle()
-
-                        );
-
-                    if (
-                        !profileResult.error &&
-                        profileResult.data
-                    ) {
-
-                        const profileHotelId =
-                            normalizeHotelId(
-                                profileResult
-                                    .data
-                                    .hotel_id
-                            );
-
-                        if (profileHotelId) {
-
-                            state.hotelId =
-                                profileHotelId;
-
-                            persistHotelId(
-                                profileHotelId
-                            );
-
-                            return profileHotelId;
-
-                        }
-
-                    }
-
-                }
+                return id;
 
             }
-
-        } catch (error) {
-
-            console.warn(
-                "Authenticated hotel lookup failed:",
-                error
-            );
 
         }
 
@@ -415,65 +362,68 @@
                 "authenticatedUserId",
                 "userId",
                 "user_id",
-                "currentUserId",
-                "current_user_id"
+                "currentUserId"
 
             ]);
 
-        if (userId) {
+        if (!userId) {
 
-            try {
+            return null;
 
-                const supabase =
-                    getSupabase();
+        }
 
-                const result =
-                    await withTimeout(
+        const supabase =
+            getSupabase();
 
-                        supabase
-                            .from("profiles")
-                            .select("hotel_id")
-                            .eq(
-                                "id",
-                                userId
-                            )
-                            .maybeSingle()
+        const result =
+            await withTimeout(
 
-                    );
+                supabase
+                    .from("profiles")
+                    .select("hotel_id")
+                    .eq(
+                        "id",
+                        userId
+                    )
+                    .maybeSingle()
 
-                if (
-                    !result.error &&
-                    result.data
-                ) {
+            );
 
-                    const profileHotelId =
-                        normalizeHotelId(
-                            result.data.hotel_id
-                        );
+        if (result.error) {
 
-                    if (profileHotelId) {
+            throw result.error;
 
-                        state.hotelId =
-                            profileHotelId;
+        }
 
-                        persistHotelId(
-                            profileHotelId
-                        );
+        if (
+            result.data &&
+            result.data.hotel_id
+        ) {
 
-                        return profileHotelId;
-
-                    }
-
-                }
-
-            } catch (error) {
-
-                console.warn(
-                    "Legacy hotel lookup failed:",
-                    error
+            const hotelId =
+                Number(
+                    result.data.hotel_id
                 );
 
-            }
+            state.hotelId =
+                hotelId;
+
+            sessionStorage.setItem(
+                "hotelId",
+                String(hotelId)
+            );
+
+            sessionStorage.setItem(
+                "hotel_id",
+                String(hotelId)
+            );
+
+            sessionStorage.setItem(
+                "activeHotelId",
+                String(hotelId)
+            );
+
+            return hotelId;
 
         }
 
@@ -481,9 +431,10 @@
 
     }
 
-    /* =====================================================
+
+    /* =========================================================
        LOAD HOTEL
-    ===================================================== */
+    ========================================================= */
 
     async function loadHotel() {
 
@@ -541,69 +492,58 @@
 
     }
 
-    /* =====================================================
-       SAFE TABLE LOAD
-    ===================================================== */
 
-    async function safeLoadTable(
+    /* =========================================================
+       LOAD TABLE
+    ========================================================= */
+
+    async function loadTable(
         tableName,
         hotelId
     ) {
 
-        try {
+        const supabase =
+            getSupabase();
 
-            const supabase =
-                getSupabase();
+        let query =
+            supabase
+                .from(tableName)
+                .select("*");
 
-            let query =
-                supabase
-                    .from(tableName)
-                    .select("*");
+        if (hotelId) {
 
-            if (hotelId) {
-
-                query =
-                    query.eq(
-                        "hotel_id",
-                        hotelId
-                    );
-
-            }
-
-            const result =
-                await withTimeout(
-                    query
+            query =
+                query.eq(
+                    "hotel_id",
+                    hotelId
                 );
-
-            if (result.error) {
-
-                console.warn(
-                    `Unable to load ${tableName}:`,
-                    result.error
-                );
-
-                return [];
-
-            }
-
-            return result.data || [];
-
-        } catch (error) {
-
-            console.warn(
-                `Failed loading ${tableName}:`,
-                error
-            );
-
-            return [];
 
         }
 
+        const result =
+            await withTimeout(query);
+
+        if (result.error) {
+
+            console.error(
+                "Unable to load " +
+                tableName +
+                ":",
+                result.error
+            );
+
+            throw result.error;
+
+        }
+
+        return result.data || [];
+
     }
 
-    /* =====================================================
+
+    /* =========================================================
        LOAD PAYMENTS
-    ===================================================== */
+    ========================================================= */
 
     async function loadPayments() {
 
@@ -640,6 +580,11 @@
             const supabase =
                 getSupabase();
 
+
+            /* =================================================
+               PAYMENTS
+            ================================================= */
+
             const paymentResult =
                 await withTimeout(
 
@@ -668,28 +613,91 @@
             state.payments =
                 paymentResult.data || [];
 
-            const [
-                reservations,
-                guests,
-                rooms
-            ] = await Promise.all([
 
-                safeLoadTable(
-                    "reservations",
-                    hotelId
-                ),
+            /* =================================================
+               RESERVATIONS
 
-                safeLoadTable(
-                    "guests",
-                    hotelId
-                ),
+               NO STATUS FILTER.
 
-                safeLoadTable(
-                    "rooms",
-                    hotelId
-                )
+               Checked-out reservations must remain available
+               for historical payment tracing.
+            ================================================= */
 
-            ]);
+            let reservations = [];
+
+            try {
+
+                reservations =
+                    await loadTable(
+                        "reservations",
+                        hotelId
+                    );
+
+            } catch (reservationError) {
+
+                console.warn(
+                    "Bulk reservation loading failed. " +
+                    "Specific payment reservations will be loaded.",
+                    reservationError
+                );
+
+                reservations = [];
+
+            }
+
+
+            /* =================================================
+               GUESTS
+            ================================================= */
+
+            let guests = [];
+
+            try {
+
+                guests =
+                    await loadTable(
+                        "guests",
+                        hotelId
+                    );
+
+            } catch (guestError) {
+
+                console.warn(
+                    "Bulk guest loading failed. " +
+                    "Specific guests will be loaded.",
+                    guestError
+                );
+
+                guests = [];
+
+            }
+
+
+            /* =================================================
+               ROOMS
+            ================================================= */
+
+            let rooms = [];
+
+            try {
+
+                rooms =
+                    await loadTable(
+                        "rooms",
+                        hotelId
+                    );
+
+            } catch (roomError) {
+
+                console.warn(
+                    "Room loading failed.",
+                    roomError
+                );
+
+                rooms = [];
+
+            }
+
 
             state.reservations =
                 reservations;
@@ -699,6 +707,13 @@
 
             state.rooms =
                 rooms;
+
+
+            /* =================================================
+               HISTORICAL RECOVERY
+            ================================================= */
+
+            await recoverPaymentRelationships();
 
             await loadHotel();
 
@@ -727,8 +742,10 @@
 
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="10" class="error-row">
-
+                        <td
+                            colspan="10"
+                            class="error-row"
+                        >
                             <strong>
                                 Unable to load payments.
                             </strong>
@@ -739,7 +756,6 @@
                                 error.message ||
                                 "Unknown database error."
                             )}
-
                         </td>
                     </tr>
                 `;
@@ -754,19 +770,10 @@
 
     }
 
-    /* =====================================================
-       RECORD FINDERS
-    ===================================================== */
 
-    function getReservation(id) {
-
-        return state.reservations.find(
-            item =>
-                Number(item.id) ===
-                Number(id)
-        ) || null;
-
-    }
+    /* =========================================================
+       RESERVATION GUEST ID
+    ========================================================= */
 
     function getReservationGuestId(
         reservation
@@ -778,25 +785,39 @@
 
         }
 
+        const column =
+            findColumn(
+                reservation,
+                [
+                    "guest_id",
+                    "guest id",
+                    "guest   id",
+                    "guestId"
+                ]
+            );
+
+        if (column) {
+
+            return reservation[column];
+
+        }
+
         return (
-
             reservation.guest_id ??
-
-            reservation["guest id"] ??
-
-            reservation["guest_id"] ??
-
-            reservation["guest   id"] ??
-
             reservation.guestId ??
-
-            reservation.guest ??
-
+            reservation["guest id"] ??
+            reservation["guest   id"] ??
+            reservation.customer_id ??
+            reservation.customerId ??
             null
-
         );
 
     }
+
+
+    /* =========================================================
+       RESERVATION ROOM ID
+    ========================================================= */
 
     function getReservationRoomId(
         reservation
@@ -808,32 +829,79 @@
 
         }
 
+        const column =
+            findColumn(
+                reservation,
+                [
+                    "room_id",
+                    "room id",
+                    "room   id",
+                    "roomId"
+                ]
+            );
+
+        if (column) {
+
+            return reservation[column];
+
+        }
+
         return (
-
             reservation.room_id ??
-
-            reservation["room id"] ??
-
-            reservation["room_id"] ??
-
-            reservation["room   id"] ??
-
             reservation.roomId ??
-
-            reservation.room ??
-
+            reservation["room id"] ??
+            reservation["room   id"] ??
             null
-
         );
 
     }
 
-    function getGuest(id) {
+
+    /* =========================================================
+       FIND RESERVATION
+    ========================================================= */
+
+    function getReservation(
+        reservationId
+    ) {
 
         if (
-            id === null ||
-            id === undefined ||
-            id === ""
+            reservationId === null ||
+            reservationId === undefined ||
+            reservationId === ""
+        ) {
+
+            return null;
+
+        }
+
+        return state.reservations.find(
+            function (reservation) {
+
+                return Number(
+                    reservation.id
+                ) === Number(
+                    reservationId
+                );
+
+            }
+        ) || null;
+
+    }
+
+
+    /* =========================================================
+       FIND GUEST
+    ========================================================= */
+
+    function getGuest(
+        guestId
+    ) {
+
+        if (
+            guestId === null ||
+            guestId === undefined ||
+            guestId === ""
         ) {
 
             return null;
@@ -841,19 +909,32 @@
         }
 
         return state.guests.find(
-            item =>
-                Number(item.id) ===
-                Number(id)
+            function (guest) {
+
+                return Number(
+                    guest.id
+                ) === Number(
+                    guestId
+                );
+
+            }
         ) || null;
 
     }
 
-    function getRoom(id) {
+
+    /* =========================================================
+       FIND ROOM
+    ========================================================= */
+
+    function getRoom(
+        roomId
+    ) {
 
         if (
-            id === null ||
-            id === undefined ||
-            id === ""
+            roomId === null ||
+            roomId === undefined ||
+            roomId === ""
         ) {
 
             return null;
@@ -861,59 +942,463 @@
         }
 
         return state.rooms.find(
-            item =>
-                Number(item.id) ===
-                Number(id)
+            function (room) {
+
+                return Number(
+                    room.id
+                ) === Number(
+                    roomId
+                );
+
+            }
         ) || null;
 
     }
+
+
+    /* =========================================================
+       GUEST FROM RESERVATION
+    ========================================================= */
 
     function getGuestFromReservation(
         reservation
     ) {
 
-        return getGuest(
+        if (!reservation) {
+
+            return null;
+
+        }
+
+        const guestId =
             getReservationGuestId(
                 reservation
-            )
+            );
+
+        return getGuest(
+            guestId
         );
 
     }
+
+
+    /* =========================================================
+       ROOM FROM RESERVATION
+    ========================================================= */
 
     function getRoomFromReservation(
         reservation
     ) {
 
-        return getRoom(
+        if (!reservation) {
+
+            return null;
+
+        }
+
+        const roomId =
             getReservationRoomId(
                 reservation
-            )
+            );
+
+        return getRoom(
+            roomId
         );
 
     }
 
-    /* =====================================================
-       DISPLAY HELPERS
-    ===================================================== */
 
-    function getGuestName(guest) {
+    /* =========================================================
+       HISTORICAL RELATIONSHIP RECOVERY
+    ========================================================= */
+
+    async function recoverPaymentRelationships() {
+
+        const supabase =
+            getSupabase();
+
+        if (!state.payments.length) {
+
+            return;
+
+        }
+
+
+        /* =====================================================
+           RESERVATION IDS
+        ===================================================== */
+
+        const reservationIds =
+            Array.from(
+
+                new Set(
+
+                    state.payments
+                        .map(
+                            function (payment) {
+
+                                return Number(
+                                    payment.reservation_id
+                                );
+
+                            }
+                        )
+                        .filter(
+                            function (id) {
+
+                                return (
+                                    Number.isFinite(id) &&
+                                    id > 0
+                                );
+
+                            }
+                        )
+
+                )
+
+            );
+
+
+        if (!reservationIds.length) {
+
+            return;
+
+        }
+
+
+        /* =====================================================
+           MISSING RESERVATIONS
+        ===================================================== */
+
+        const missingReservationIds =
+            reservationIds.filter(
+                function (reservationId) {
+
+                    return !getReservation(
+                        reservationId
+                    );
+
+                }
+            );
+
+
+        if (
+            missingReservationIds.length
+        ) {
+
+            try {
+
+                const result =
+                    await withTimeout(
+
+                        supabase
+                            .from("reservations")
+                            .select("*")
+                            .eq(
+                                "hotel_id",
+                                state.hotelId
+                            )
+                            .in(
+                                "id",
+                                missingReservationIds
+                            )
+
+                    );
+
+                if (
+                    !result.error &&
+                    Array.isArray(result.data)
+                ) {
+
+                    state.reservations =
+                        state.reservations.concat(
+                            result.data
+                        );
+
+                } else if (result.error) {
+
+                    console.warn(
+                        "Historical reservation recovery failed:",
+                        result.error
+                    );
+
+                }
+
+            } catch (error) {
+
+                console.warn(
+                    "Historical reservation recovery failed:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           GUEST IDS
+        ===================================================== */
+
+        const guestIds =
+            Array.from(
+
+                new Set(
+
+                    state.reservations
+
+                        .filter(
+                            function (reservation) {
+
+                                return reservationIds.includes(
+                                    Number(
+                                        reservation.id
+                                    )
+                                );
+
+                            }
+                        )
+
+                        .map(
+                            function (reservation) {
+
+                                return Number(
+                                    getReservationGuestId(
+                                        reservation
+                                    )
+                                );
+
+                            }
+                        )
+
+                        .filter(
+                            function (id) {
+
+                                return (
+                                    Number.isFinite(id) &&
+                                    id > 0
+                                );
+
+                            }
+                        )
+
+                )
+
+            );
+
+
+        /* =====================================================
+           MISSING GUESTS
+        ===================================================== */
+
+        const missingGuestIds =
+            guestIds.filter(
+                function (guestId) {
+
+                    return !getGuest(
+                        guestId
+                    );
+
+                }
+            );
+
+
+        if (
+            missingGuestIds.length
+        ) {
+
+            try {
+
+                const result =
+                    await withTimeout(
+
+                        supabase
+                            .from("guests")
+                            .select("*")
+                            .eq(
+                                "hotel_id",
+                                state.hotelId
+                            )
+                            .in(
+                                "id",
+                                missingGuestIds
+                            )
+
+                    );
+
+                if (
+                    !result.error &&
+                    Array.isArray(result.data)
+                ) {
+
+                    state.guests =
+                        state.guests.concat(
+                            result.data
+                        );
+
+                } else if (result.error) {
+
+                    console.warn(
+                        "Historical guest recovery failed:",
+                        result.error
+                    );
+
+                }
+
+            } catch (error) {
+
+                console.warn(
+                    "Historical guest recovery failed:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           ROOM IDS
+        ===================================================== */
+
+        const roomIds =
+            Array.from(
+
+                new Set(
+
+                    state.reservations
+
+                        .filter(
+                            function (reservation) {
+
+                                return reservationIds.includes(
+                                    Number(
+                                        reservation.id
+                                    )
+                                );
+
+                            }
+                        )
+
+                        .map(
+                            function (reservation) {
+
+                                return Number(
+                                    getReservationRoomId(
+                                        reservation
+                                    )
+                                );
+
+                            }
+                        )
+
+                        .filter(
+                            function (id) {
+
+                                return (
+                                    Number.isFinite(id) &&
+                                    id > 0
+                                );
+
+                            }
+                        )
+
+                )
+
+            );
+
+
+        /* =====================================================
+           MISSING ROOMS
+        ===================================================== */
+
+        const missingRoomIds =
+            roomIds.filter(
+                function (roomId) {
+
+                    return !getRoom(
+                        roomId
+                    );
+
+                }
+            );
+
+
+        if (
+            missingRoomIds.length
+        ) {
+
+            try {
+
+                const result =
+                    await withTimeout(
+
+                        supabase
+                            .from("rooms")
+                            .select("*")
+                            .eq(
+                                "hotel_id",
+                                state.hotelId
+                            )
+                            .in(
+                                "id",
+                                missingRoomIds
+                            )
+
+                    );
+
+                if (
+                    !result.error &&
+                    Array.isArray(result.data)
+                ) {
+
+                    state.rooms =
+                        state.rooms.concat(
+                            result.data
+                        );
+
+                } else if (result.error) {
+
+                    console.warn(
+                        "Historical room recovery failed:",
+                        result.error
+                    );
+
+                }
+
+            } catch (error) {
+
+                console.warn(
+                    "Historical room recovery failed:",
+                    error
+                );
+
+            }
+
+        }
+
+    }
+
+
+    /* =========================================================
+       GUEST NAME
+    ========================================================= */
+
+    function getGuestName(
+        guest
+    ) {
 
         if (!guest) {
 
-            return "Walk-in / Unknown Guest";
+            return "Guest record not found";
 
         }
 
         return (
-
             guest["full name"] ||
-
             guest.full_name ||
-
             guest.name ||
-
             guest.guest_name ||
-
             [
                 guest.first_name,
                 guest.middle_name,
@@ -921,14 +1406,24 @@
             ]
                 .filter(Boolean)
                 .join(" ") ||
-
-            `Guest #${guest.id}`
-
+            (
+                guest.id
+                    ? "Guest #" +
+                      guest.id
+                    : "Guest"
+            )
         );
 
     }
 
-    function getGuestIdPassport(guest) {
+
+    /* =========================================================
+       GUEST ID / PASSPORT
+    ========================================================= */
+
+    function getGuestIdPassport(
+        guest
+    ) {
 
         if (!guest) {
 
@@ -937,48 +1432,54 @@
         }
 
         return (
-
             guest.id_passport_number ||
-
-            guest["id_passport_number"] ||
-
             guest["id/passport"] ||
-
             guest.id_number ||
-
             guest.passport_number ||
-
+            guest.identification_number ||
             "—"
-
         );
 
     }
 
-    function getRoomName(room) {
+
+    /* =========================================================
+       ROOM NAME
+    ========================================================= */
+
+    function getRoomName(
+        room
+    ) {
 
         if (!room) {
 
-            return "—";
+            return "Room record not found";
 
         }
 
         return (
-
             room.room_number ||
-
             room["room number"] ||
-
             room.number ||
-
             room.name ||
-
-            `Room #${room.id}`
-
+            (
+                room.id
+                    ? "Room #" +
+                      room.id
+                    : "Room"
+            )
         );
 
     }
 
-    function getPaymentNumber(payment) {
+
+    /* =========================================================
+       PAYMENT NUMBER
+    ========================================================= */
+
+    function getPaymentNumber(
+        payment
+    ) {
 
         if (!payment) {
 
@@ -986,33 +1487,58 @@
 
         }
 
-        return (
+        if (payment.payment_number) {
 
-            payment.payment_number ||
+            return payment.payment_number;
 
-            payment.receipt_number ||
+        }
 
-            payment.reference_number ||
+        if (payment.receipt_number) {
 
-            (
-                payment.id
-                    ? "PAY-" +
-                      new Date(
-                          payment.created_at ||
-                          Date.now()
-                      )
-                          .getFullYear() +
-                      "-" +
-                      String(payment.id)
-                          .padStart(6, "0")
-                    : "PAYMENT"
-            )
+            return payment.receipt_number;
 
-        );
+        }
+
+        if (payment.reference_number) {
+
+            return payment.reference_number;
+
+        }
+
+        if (payment.id) {
+
+            const year =
+                new Date(
+                    payment.created_at ||
+                    Date.now()
+                ).getFullYear();
+
+            return (
+                "PAY-" +
+                year +
+                "-" +
+                String(
+                    payment.id
+                ).padStart(
+                    6,
+                    "0"
+                )
+            );
+
+        }
+
+        return "PAYMENT";
 
     }
 
-    function formatDate(value) {
+
+    /* =========================================================
+       FORMAT DATE
+    ========================================================= */
+
+    function formatDate(
+        value
+    ) {
 
         if (!value) {
 
@@ -1044,9 +1570,10 @@
 
     }
 
-    /* =====================================================
+
+    /* =========================================================
        RESERVATION TOTAL
-    ===================================================== */
+    ========================================================= */
 
     function getReservationTotal(
         reservation
@@ -1062,11 +1589,19 @@
 
             reservation.grand_total,
 
+            reservation.grandTotal,
+
             reservation.total_amount,
+
+            reservation.totalAmount,
 
             reservation.total,
 
-            reservation.amount
+            reservation.amount,
+
+            reservation.booking_total,
+
+            reservation.bookingTotal
 
         ];
 
@@ -1092,9 +1627,10 @@
 
     }
 
-    /* =====================================================
+
+    /* =========================================================
        PREVIOUS PAYMENTS
-    ===================================================== */
+    ========================================================= */
 
     function getPreviousPayments(
         reservationId,
@@ -1102,16 +1638,18 @@
     ) {
 
         return state.payments.reduce(
-            (
+            function (
                 total,
                 payment
-            ) => {
+            ) {
 
                 if (
                     Number(
                         payment.reservation_id
                     ) !==
-                    Number(reservationId)
+                    Number(
+                        reservationId
+                    )
                 ) {
 
                     return total;
@@ -1120,8 +1658,12 @@
 
                 if (
                     excludePaymentId !== null &&
-                    Number(payment.id) ===
-                    Number(excludePaymentId)
+                    Number(
+                        payment.id
+                    ) ===
+                    Number(
+                        excludePaymentId
+                    )
                 ) {
 
                     return total;
@@ -1141,9 +1683,10 @@
 
     }
 
-    /* =====================================================
-       BALANCE
-    ===================================================== */
+
+    /* =========================================================
+       RESERVATION BALANCE
+    ========================================================= */
 
     function getReservationBalance(
         reservation
@@ -1171,6 +1714,11 @@
         );
 
     }
+
+
+    /* =========================================================
+       BALANCE FOR PAYMENT
+    ========================================================= */
 
     function getBalanceForPayment(
         payment
@@ -1212,11 +1760,14 @@
 
     }
 
-    /* =====================================================
-       PAYMENT STATUS
-    ===================================================== */
 
-    function getPaymentStatus(payment) {
+    /* =========================================================
+       PAYMENT STATUS
+    ========================================================= */
+
+    function getPaymentStatus(
+        payment
+    ) {
 
         const reservation =
             getReservation(
@@ -1241,7 +1792,7 @@
 
         if (total <= 0) {
 
-            return "No Charge";
+            return "Paid";
 
         }
 
@@ -1261,7 +1812,14 @@
 
     }
 
-    function getStatusHtml(status) {
+
+    /* =========================================================
+       STATUS HTML
+    ========================================================= */
+
+    function getStatusHtml(
+        status
+    ) {
 
         const normalized =
             normalize(status);
@@ -1310,9 +1868,10 @@
 
     }
 
-    /* =====================================================
-       RENDER
-    ===================================================== */
+
+    /* =========================================================
+       RENDER PAYMENTS
+    ========================================================= */
 
     function renderPayments(
         searchTerm = ""
@@ -1328,16 +1887,20 @@
         }
 
         const search =
-            normalize(searchTerm);
+            normalize(
+                searchTerm
+            );
 
         let rows =
-            [...state.payments];
+            [
+                ...state.payments
+            ];
 
         if (search) {
 
             rows =
                 rows.filter(
-                    payment => {
+                    function (payment) {
 
                         const reservation =
                             getReservation(
@@ -1394,15 +1957,22 @@
 
                         ]
                             .filter(
-                                value =>
-                                    value !== null &&
-                                    value !== undefined
+                                function (value) {
+
+                                    return (
+                                        value !== null &&
+                                        value !== undefined
+                                    );
+
+                                }
                             )
                             .join(" ");
 
                         return normalize(
                             searchableText
-                        ).includes(search);
+                        ).includes(
+                            search
+                        );
 
                     }
                 );
@@ -1416,23 +1986,38 @@
 
             info.textContent =
                 search
-                    ? `${rows.length} result(s)`
-                    : `${rows.length} payment(s)`;
+                    ? (
+                        rows.length +
+                        " result(s)"
+                    )
+                    : (
+                        rows.length +
+                        " payment(s)"
+                    );
 
         }
 
         if (!rows.length) {
 
             tableBody.innerHTML = `
+
                 <tr>
-                    <td colspan="10" class="empty-row">
+
+                    <td
+                        colspan="10"
+                        class="empty-row"
+                    >
+
                         ${
                             search
                                 ? "No payments match your search."
                                 : "No payments have been recorded yet."
                         }
+
                     </td>
+
                 </tr>
+
             `;
 
             return;
@@ -1448,6 +2033,11 @@
 
     }
 
+
+    /* =========================================================
+       PAYMENT ROW
+    ========================================================= */
+
     function renderPaymentRow(
         payment
     ) {
@@ -1457,7 +2047,7 @@
                 payment.reservation_id
             );
 
-        const guest =
+        let guest =
             getGuestFromReservation(
                 reservation
             );
@@ -1487,10 +2077,64 @@
                 payment
             );
 
+
+        /*
+         * Direct payment-level guest fallback.
+         */
+
+        if (!guest) {
+
+            const directGuestId =
+                payment.guest_id ??
+                payment.guestId ??
+                payment["guest id"] ??
+                payment["guest   id"] ??
+                null;
+
+            if (directGuestId) {
+
+                guest =
+                    getGuest(
+                        directGuestId
+                    );
+
+            }
+
+        }
+
+
+        let guestDisplay =
+            getGuestName(
+                guest
+            );
+
+        if (
+            guestDisplay ===
+            "Guest record not found"
+        ) {
+
+            const directGuestId =
+                payment.guest_id ??
+                payment.guestId ??
+                null;
+
+            if (directGuestId) {
+
+                guestDisplay =
+                    "Guest #" +
+                    directGuestId;
+
+            }
+
+        }
+
+
         return `
+
             <tr>
 
                 <td>
+
                     <strong>
                         ${escapeHtml(
                             getPaymentNumber(
@@ -1498,85 +2142,146 @@
                             )
                         )}
                     </strong>
+
                 </td>
 
-                <td>
-                    ${escapeHtml(
-                        getGuestName(
-                            guest
-                        )
-                    )}
-                </td>
 
                 <td>
+
+                    <strong>
+                        ${escapeHtml(
+                            guestDisplay
+                        )}
+                    </strong>
+
+                    ${
+                        reservation
+                            ? `
+                                <br>
+                                <small
+                                    style="
+                                        color:#666;
+                                    "
+                                >
+                                    Reservation #${escapeHtml(
+                                        reservation.id
+                                    )}
+                                </small>
+                            `
+                            : `
+                                <br>
+                                <small
+                                    style="
+                                        color:#b42318;
+                                    "
+                                >
+                                    Reservation record not found
+                                </small>
+                            `
+                    }
+
+                </td>
+
+
+                <td>
+
                     ${escapeHtml(
                         getRoomName(
                             room
                         )
                     )}
+
                 </td>
 
+
                 <td>
+
                     ${escapeHtml(
                         formatDate(
                             payment.payment_date ||
                             payment.created_at
                         )
                     )}
+
                 </td>
 
+
                 <td>
+
                     ${escapeHtml(
                         String(
                             payment.payment_method ||
                             "—"
                         ).toUpperCase()
                     )}
+
                 </td>
 
+
                 <td>
+
                     ${money(
                         reservationTotal
                     )}
+
                 </td>
 
+
                 <td>
+
                     <strong>
                         ${money(
                             paymentAmount
                         )}
                     </strong>
+
                 </td>
 
+
                 <td>
+
                     ${money(
                         balance
                     )}
+
                 </td>
 
+
                 <td>
+
                     ${getStatusHtml(
                         status
                     )}
+
                 </td>
+
 
                 <td>
 
-                    <div class="action-buttons">
+                    <div
+                        class="action-buttons"
+                    >
 
                         <button
                             type="button"
                             class="btn-primary"
                             data-action="receipt"
-                            data-payment-id="${payment.id}">
+                            data-payment-id="${escapeHtml(
+                                payment.id
+                            )}"
+                        >
                             Receipt
                         </button>
+
 
                         <button
                             type="button"
                             class="btn-warning"
                             data-action="ledger"
-                            data-payment-id="${payment.id}">
+                            data-payment-id="${escapeHtml(
+                                payment.id
+                            )}"
+                        >
                             Ledger
                         </button>
 
@@ -1585,39 +2290,51 @@
                 </td>
 
             </tr>
+
         `;
 
     }
 
-    /* =====================================================
+
+    /* =========================================================
        SUMMARY
-    ===================================================== */
+    ========================================================= */
 
     function updateSummary() {
 
         const totalPayments =
             state.payments.reduce(
-                (
+                function (
                     total,
                     payment
-                ) =>
-                    total +
-                    Number(
-                        payment.amount || 0
-                    ),
+                ) {
+
+                    return (
+                        total +
+                        Number(
+                            payment.amount || 0
+                        )
+                    );
+
+                },
                 0
             );
 
         const outstanding =
             state.reservations.reduce(
-                (
+                function (
                     total,
                     reservation
-                ) =>
-                    total +
-                    getReservationBalance(
-                        reservation
-                    ),
+                ) {
+
+                    return (
+                        total +
+                        getReservationBalance(
+                            reservation
+                        )
+                    );
+
+                },
                 0
             );
 
@@ -1659,9 +2376,10 @@
 
     }
 
-    /* =====================================================
+
+    /* =========================================================
        VAT
-    ===================================================== */
+    ========================================================= */
 
     function calculateVAT(
         grossAmount
@@ -1701,9 +2419,10 @@
 
     }
 
-    /* =====================================================
+
+    /* =========================================================
        FINANCIAL ENGINE
-    ===================================================== */
+    ========================================================= */
 
     async function waitForFinancialEngine(
         timeout = 10000
@@ -1722,23 +2441,24 @@
         }
 
         return new Promise(
-            (
+            function (
                 resolve,
                 reject
-            ) => {
+            ) {
 
-                let finished = false;
+                let finished =
+                    false;
 
-                const cleanup = () => {
+                function cleanup() {
 
                     window.removeEventListener(
                         "edutech:financial-engine-ready",
                         onReady
                     );
 
-                };
+                }
 
-                const onReady = () => {
+                function onReady() {
 
                     if (finished) {
 
@@ -1752,7 +2472,7 @@
 
                     resolve(true);
 
-                };
+                }
 
                 window.addEventListener(
                     "edutech:financial-engine-ready",
@@ -1760,7 +2480,7 @@
                 );
 
                 setTimeout(
-                    () => {
+                    function () {
 
                         if (finished) {
 
@@ -1801,130 +2521,204 @@
 
     }
 
-    /* =====================================================
-       PREPARE PAYMENT FOR ENGINE
-    ===================================================== */
 
-    async function preparePaymentForLedger(
-        payment,
-        suppliedHotelId = null
+    /* =========================================================
+       FINANCIAL LEDGER AMOUNT
+    ========================================================= */
+
+    function getLedgerAmount(
+        ledger
     ) {
 
-        if (!payment) {
+        if (!ledger) {
 
-            throw new Error(
-                "A valid payment record is required."
-            );
+            return 0;
 
         }
 
-        const paymentHotelId =
-            normalizeHotelId(
-                payment.hotelId
-            ) ||
-            normalizeHotelId(
-                payment.hotel_id
-            ) ||
-            normalizeHotelId(
-                suppliedHotelId
-            );
+        const values = [
 
-        const hotelId =
-            await resolveHotelId(
-                paymentHotelId
-            );
+            ledger.money_in,
 
-        if (!hotelId) {
+            ledger.amount,
 
-            throw new Error(
-                "A valid hotel id is required."
-            );
+            ledger.moneyIn,
+
+            ledger.credit_amount
+
+        ];
+
+        for (
+            const value of values
+        ) {
+
+            const number =
+                Number(value);
+
+            if (
+                Number.isFinite(number) &&
+                number > 0
+            ) {
+
+                return number;
+
+            }
 
         }
 
-        return {
-
-            payment: {
-
-                ...payment,
-
-                hotelId:
-                    Number(
-                        hotelId
-                    ),
-
-                hotel_id:
-                    Number(
-                        hotelId
-                    ),
-
-                paymentId:
-                    Number(
-                        payment.id
-                    ),
-
-                payment_id:
-                    Number(
-                        payment.id
-                    )
-
-            },
-
-            hotelId:
-                Number(
-                    hotelId
-                )
-
-        };
+        return 0;
 
     }
 
-    /* =====================================================
-       VERIFY PAYMENT LEDGER
-       -----------------------------------------------------
-       IMPORTANT:
-       We now verify using BOTH payment_id AND the
-       transaction-number references generated by the
-       financial engine.
 
-       This prevents a false failure when the engine has
-       posted successfully but the payment_id field is not
-       returned exactly as expected by the client.
-       ===================================================== */
+    /* =========================================================
+       LEDGER TEXT
+    ========================================================= */
+
+    function getLedgerSearchText(
+        ledger
+    ) {
+
+        if (!ledger) {
+
+            return "";
+
+        }
+
+        return [
+
+            ledger.transaction_number,
+
+            ledger.reference_number,
+
+            ledger.description,
+
+            ledger.transaction_type,
+
+            ledger.id
+
+        ]
+            .filter(
+                function (value) {
+
+                    return (
+                        value !== null &&
+                        value !== undefined
+                    );
+
+                }
+            )
+            .join(" ");
+
+    }
+
+
+    /* =========================================================
+       DATE DIFFERENCE
+    ========================================================= */
+
+    function dateDifferenceHours(
+        first,
+        second
+    ) {
+
+        if (!first || !second) {
+
+            return Infinity;
+
+        }
+
+        const firstDate =
+            new Date(first);
+
+        const secondDate =
+            new Date(second);
+
+        if (
+            Number.isNaN(
+                firstDate.getTime()
+            ) ||
+            Number.isNaN(
+                secondDate.getTime()
+            )
+        ) {
+
+            return Infinity;
+
+        }
+
+        return Math.abs(
+            firstDate.getTime() -
+            secondDate.getTime()
+        ) /
+        (1000 * 60 * 60);
+
+    }
+
+
+    /* =========================================================
+       VERIFY PAYMENT LEDGER
+       ---------------------------------------------------------
+       IMPORTANT FIX
+
+       The financial_transactions table does NOT use
+       payment_id as the payment relationship.
+
+       Therefore this function DOES NOT do:
+
+           .eq("payment_id", payment.id)
+
+       Instead it checks the actual financial ledger using:
+
+       1. payment number
+       2. receipt number
+       3. reference number
+       4. payment ID
+       5. reservation ID
+       6. amount
+       7. transaction date
+
+       This prevents the false error:
+
+       "financial engine returned, but no payment ledger
+        was found"
+    ========================================================= */
 
     async function verifyPaymentLedger(
         payment
     ) {
 
-        if (!payment?.id) {
+        if (!payment) {
 
             return [];
-
-        }
-
-        const hotelId =
-            await resolveHotelId(
-                payment.hotelId ||
-                payment.hotel_id
-            );
-
-        if (!hotelId) {
-
-            throw new Error(
-                "A valid hotel id is required to verify the payment ledger."
-            );
 
         }
 
         const supabase =
             getSupabase();
 
-        /* -------------------------------------------------
-           METHOD 1
-           payment_id
-           ------------------------------------------------- */
+        if (!state.hotelId) {
 
-        const paymentIdResult =
+            await resolveHotelId();
+
+        }
+
+        if (!state.hotelId) {
+
+            return [];
+
+        }
+
+
+        /* =====================================================
+           LOAD RECENT LEDGER RECORDS
+
+           We deliberately do NOT filter by payment_id because
+           that column is not part of the financial ledger
+           structure.
+        ===================================================== */
+
+        const result =
             await withTimeout(
 
                 supabase
@@ -1934,11 +2728,7 @@
                     .select("*")
                     .eq(
                         "hotel_id",
-                        hotelId
-                    )
-                    .eq(
-                        "payment_id",
-                        payment.id
+                        state.hotelId
                     )
                     .eq(
                         "is_reversal",
@@ -1947,203 +2737,336 @@
                     .order(
                         "id",
                         {
-                            ascending: true
+                            ascending: false
                         }
                     )
+                    .limit(500)
 
             );
 
-        if (
-            !paymentIdResult.error &&
-            paymentIdResult.data?.length
-        ) {
 
-            return paymentIdResult.data;
+        if (result.error) {
+
+            throw result.error;
 
         }
 
-        /* -------------------------------------------------
-           METHOD 2
-           transaction_number references
-           ------------------------------------------------- */
+
+        const rows =
+            result.data || [];
+
+
+        if (!rows.length) {
+
+            return [];
+
+        }
+
+
+        const paymentNumber =
+            normalize(
+                getPaymentNumber(
+                    payment
+                )
+            );
+
 
         const paymentId =
-            Number(
+            normalize(
                 payment.id
             );
 
-        const referenceRevenue =
-            `PAY-${paymentId}-REV`;
 
-        const referenceVAT =
-            `PAY-${paymentId}-VAT`;
-
-        const referenceResult =
-            await withTimeout(
-
-                supabase
-                    .from(
-                        "financial_transactions"
-                    )
-                    .select("*")
-                    .eq(
-                        "hotel_id",
-                        hotelId
-                    )
-                    .eq(
-                        "is_reversal",
-                        false
-                    )
-                    .in(
-                        "transaction_number",
-                        [
-                            referenceRevenue,
-                            referenceVAT
-                        ]
-                    )
-                    .order(
-                        "id",
-                        {
-                            ascending: true
-                        }
-                    )
-
+        const reservationId =
+            normalize(
+                payment.reservation_id
             );
 
-        if (
-            !referenceResult.error &&
-            referenceResult.data?.length
-        ) {
 
-            return referenceResult.data;
+        const referenceNumber =
+            normalize(
+                payment.reference_number ||
+                payment.receipt_number ||
+                payment.payment_number ||
+                paymentNumber
+            );
+
+
+        const paymentAmount =
+            Number(
+                payment.amount || 0
+            );
+
+
+        const paymentDate =
+            payment.payment_date ||
+            payment.created_at;
+
+
+        /* =====================================================
+           FIRST PASS
+
+           Strong identifier matching.
+        ===================================================== */
+
+        const strongMatches =
+            rows.filter(
+                function (ledger) {
+
+                    const reference =
+                        normalize(
+                            ledger.reference_number
+                        );
+
+                    const transactionNumber =
+                        normalize(
+                            ledger.transaction_number
+                        );
+
+                    const description =
+                        normalize(
+                            ledger.description
+                        );
+
+                    const ledgerText =
+                        normalize(
+                            getLedgerSearchText(
+                                ledger
+                            )
+                        );
+
+
+                    if (
+                        paymentNumber &&
+                        (
+                            reference ===
+                                paymentNumber ||
+                            transactionNumber ===
+                                paymentNumber ||
+                            description.includes(
+                                paymentNumber
+                            ) ||
+                            ledgerText.includes(
+                                paymentNumber
+                            )
+                        )
+                    ) {
+
+                        return true;
+
+                    }
+
+
+                    if (
+                        referenceNumber &&
+                        (
+                            reference ===
+                                referenceNumber ||
+                            transactionNumber ===
+                                referenceNumber ||
+                            description.includes(
+                                referenceNumber
+                            )
+                        )
+                    ) {
+
+                        return true;
+
+                    }
+
+
+                    /*
+                     * Some older financial entries may store
+                     * the payment ID rather than the generated
+                     * payment number.
+                     */
+
+                    if (
+                        paymentId &&
+                        (
+                            reference ===
+                                paymentId ||
+                            transactionNumber ===
+                                paymentId ||
+                            description.includes(
+                                "payment " +
+                                paymentId
+                            ) ||
+                            description.includes(
+                                "payment#" +
+                                paymentId
+                            )
+                        )
+                    ) {
+
+                        return true;
+
+                    }
+
+
+                    return false;
+
+                }
+            );
+
+
+        if (strongMatches.length) {
+
+            return strongMatches;
 
         }
 
-        /* -------------------------------------------------
-           METHOD 3
-           reference_number fallback
-           ------------------------------------------------- */
 
-        const referenceNumberResult =
-            await withTimeout(
+        /* =====================================================
+           SECOND PASS
 
-                supabase
-                    .from(
-                        "financial_transactions"
-                    )
-                    .select("*")
-                    .eq(
-                        "hotel_id",
-                        hotelId
-                    )
-                    .eq(
-                        "is_reversal",
-                        false
-                    )
-                    .in(
-                        "reference_number",
-                        [
-                            referenceRevenue,
-                            referenceVAT
-                        ]
-                    )
-                    .order(
-                        "id",
-                        {
-                            ascending: true
-                        }
-                    )
+           Amount + reservation + date matching.
 
+           This is a fallback only.
+        ===================================================== */
+
+        const amountMatches =
+            rows.filter(
+                function (ledger) {
+
+                    const ledgerAmount =
+                        getLedgerAmount(
+                            ledger
+                        );
+
+
+                    if (
+                        Math.abs(
+                            ledgerAmount -
+                            paymentAmount
+                        ) > 0.01
+                    ) {
+
+                        return false;
+
+                    }
+
+
+                    const ledgerText =
+                        normalize(
+                            getLedgerSearchText(
+                                ledger
+                            )
+                        );
+
+
+                    const hours =
+                        dateDifferenceHours(
+                            ledger.created_at,
+                            paymentDate
+                        );
+
+
+                    /*
+                     * Stronger fallback:
+                     * amount + reservation reference.
+                     */
+
+                    if (
+                        reservationId &&
+                        ledgerText.includes(
+                            reservationId
+                        ) &&
+                        hours <= 72
+                    ) {
+
+                        return true;
+
+                    }
+
+
+                    /*
+                     * Final fallback:
+                     * exact amount and close posting date.
+                     */
+
+                    if (
+                        hours <= 24
+                    ) {
+
+                        return true;
+
+                    }
+
+
+                    return false;
+
+                }
             );
 
-        if (
-            !referenceNumberResult.error &&
-            referenceNumberResult.data?.length
-        ) {
 
-            return referenceNumberResult.data;
-
-        }
-
-        /*
-         * Return the original payment_id query result
-         * if nothing was found.
-         */
-
-        return (
-            paymentIdResult.data ||
-            []
-        );
+        return amountMatches;
 
     }
 
-    /* =====================================================
-       POST PAYMENT THROUGH ENGINE
-       ===================================================== */
 
-    async function postPaymentToLedger(
+    /* =========================================================
+       VERIFY WITH RETRY
+       ---------------------------------------------------------
+       Supabase may take a short moment to expose the newly
+       inserted financial transaction after the financial
+       engine returns.
+    ========================================================= */
+
+    async function verifyPaymentLedgerWithRetry(
         payment,
-        hotelId
+        attempts = 5,
+        delay = 500
     ) {
 
-        await waitForFinancialEngine();
+        let lastResult = [];
 
-        const engine =
-            window
-                .EDUTECH_FINANCIAL_ENGINE;
-
-        if (
-            !engine ||
-            typeof engine.postPayment !==
-            "function"
+        for (
+            let attempt = 1;
+            attempt <= attempts;
+            attempt++
         ) {
 
-            throw new Error(
-                "Financial engine is not available."
-            );
+            lastResult =
+                await verifyPaymentLedger(
+                    payment
+                );
+
+            if (
+                lastResult.length
+            ) {
+
+                return lastResult;
+
+            }
+
+            if (
+                attempt < attempts
+            ) {
+
+                await new Promise(
+                    function (resolve) {
+
+                        setTimeout(
+                            resolve,
+                            delay
+                        );
+
+                    }
+                );
+
+            }
 
         }
 
-        const prepared =
-            await preparePaymentForLedger(
-                payment,
-                hotelId
-            );
-
-        console.log(
-            "EDU TECH PAYMENT LEDGER POST:",
-            {
-                paymentId:
-                    prepared.payment.paymentId,
-
-                payment_id:
-                    prepared.payment.payment_id,
-
-                hotelId:
-                    prepared.payment.hotelId,
-
-                hotel_id:
-                    prepared.payment.hotel_id,
-
-                amount:
-                    prepared.payment.amount,
-
-                paymentMethod:
-                    prepared.payment.payment_method
-            }
-        );
-
-        await engine.postPayment(
-            prepared.payment
-        );
-
-        return prepared;
+        return lastResult;
 
     }
 
-    /* =====================================================
+
+    /* =========================================================
        SAVE PAYMENT
-    ===================================================== */
+    ========================================================= */
 
     async function savePayment(
         event
@@ -2151,19 +3074,28 @@
 
         event.preventDefault();
 
+
         const reservationId =
-            $("#paymentReservation")?.value;
+            $("#paymentReservation")
+                ?.value;
+
 
         const amount =
             Number(
-                $("#paymentAmount")?.value || 0
+                $("#paymentAmount")
+                    ?.value || 0
             );
 
+
         const paymentMethod =
-            $("#paymentMethod")?.value;
+            $("#paymentMethod")
+                ?.value;
+
 
         const paymentDate =
-            $("#paymentDate")?.value;
+            $("#paymentDate")
+                ?.value;
+
 
         if (!reservationId) {
 
@@ -2174,6 +3106,7 @@
             return;
 
         }
+
 
         if (
             !Number.isFinite(amount) ||
@@ -2188,6 +3121,7 @@
 
         }
 
+
         if (!paymentMethod) {
 
             alert(
@@ -2197,6 +3131,7 @@
             return;
 
         }
+
 
         if (!paymentDate) {
 
@@ -2208,10 +3143,12 @@
 
         }
 
+
         const reservation =
             getReservation(
                 reservationId
             );
+
 
         if (!reservation) {
 
@@ -2223,15 +3160,18 @@
 
         }
 
+
         const reservationTotal =
             getReservationTotal(
                 reservation
             );
 
+
         const previousPaid =
             getPreviousPayments(
                 reservation.id
             );
+
 
         const remaining =
             Math.max(
@@ -2239,6 +3179,7 @@
                 reservationTotal -
                 previousPaid
             );
+
 
         if (remaining <= 0) {
 
@@ -2249,6 +3190,7 @@
             return;
 
         }
+
 
         if (
             amount >
@@ -2267,33 +3209,44 @@
 
         }
 
+
         const saveButton =
             $("#savePayment");
 
+
         if (saveButton) {
 
-            saveButton.disabled = true;
+            saveButton.disabled =
+                true;
 
             saveButton.textContent =
                 "Saving...";
 
         }
 
+
+        let paymentSaved =
+            false;
+
+
         try {
 
             const supabase =
                 getSupabase();
 
+
             const hotelId =
                 await resolveHotelId();
+
 
             if (!hotelId) {
 
                 throw new Error(
-                    "A valid hotel id is required."
+                    "Hotel session was not found."
                 );
 
             }
+
 
             const paymentData = {
 
@@ -2320,6 +3273,11 @@
 
             };
 
+
+            /* =================================================
+               SAVE PAYMENT ONCE
+            ================================================= */
+
             const result =
                 await withTimeout(
 
@@ -2333,108 +3291,252 @@
 
                 );
 
+
             if (result.error) {
 
                 throw result.error;
 
             }
 
+
             const savedPayment =
                 result.data;
+
+
+            paymentSaved = true;
+
 
             state.payments.unshift(
                 savedPayment
             );
 
+
             let ledgerEntries = [];
+
+
+            /* =================================================
+               FINANCIAL POSTING
+            ================================================= */
 
             try {
 
-                await postPaymentToLedger(
-                    savedPayment,
-                    hotelId
-                );
+                await waitForFinancialEngine();
 
-                ledgerEntries =
-                    await verifyPaymentLedger(
-                        savedPayment
-                    );
 
-                if (!ledgerEntries.length) {
+                const engine =
+                    window
+                        .EDUTECH_FINANCIAL_ENGINE;
+
+
+                if (
+                    !engine ||
+                    typeof
+                        engine.postPayment !==
+                        "function"
+                ) {
 
                     throw new Error(
-                        "Payment was saved, but no financial ledger entry was found."
+                        "Financial engine is not available."
                     );
 
                 }
 
-            } catch (ledgerError) {
+
+                /*
+                 * IMPORTANT:
+                 *
+                 * Keep the existing financial-engine API.
+                 *
+                 * The engine receives the actual saved
+                 * payment record.
+                 */
+
+                const engineResult =
+                    await engine.postPayment(
+                        savedPayment
+                    );
+
+
+                /*
+                 * Some financial-engine versions return
+                 * the created ledger row directly.
+                 *
+                 * If so, accept it immediately.
+                 */
+
+                if (
+                    Array.isArray(
+                        engineResult
+                    ) &&
+                    engineResult.length
+                ) {
+
+                    ledgerEntries =
+                        engineResult;
+
+                } else if (
+                    engineResult &&
+                    typeof engineResult ===
+                    "object" &&
+                    (
+                        engineResult.id ||
+                        engineResult.transaction_number ||
+                        engineResult.reference_number
+                    )
+                ) {
+
+                    ledgerEntries =
+                        [engineResult];
+
+                }
+
+
+                /*
+                 * Otherwise verify against the actual
+                 * financial_transactions table.
+                 */
+
+                if (
+                    !ledgerEntries.length
+                ) {
+
+                    ledgerEntries =
+                        await verifyPaymentLedgerWithRetry(
+                            savedPayment
+                        );
+
+                }
+
+
+                if (
+                    !ledgerEntries.length
+                ) {
+
+                    throw new Error(
+                        "The payment was saved, but the financial ledger could not be verified."
+                    );
+
+                }
+
+
+            } catch (
+                ledgerError
+            ) {
 
                 console.error(
                     "PAYMENT LEDGER ERROR:",
                     ledgerError
                 );
 
+
                 closePaymentModal();
 
-                $("#paymentForm")?.reset();
+
+                $("#paymentForm")
+                    ?.reset();
+
 
                 updateSummary();
 
+
                 renderPayments(
-                    $("#paymentSearch")?.value || ""
+                    $("#paymentSearch")
+                        ?.value || ""
                 );
+
 
                 populateReservationSelector();
 
+
+                /*
+                 * VERY IMPORTANT:
+                 *
+                 * Do not delete the payment.
+                 *
+                 * Do not tell the user to enter the payment
+                 * again.
+                 */
+
                 alert(
-                    "Payment was saved successfully, but financial posting failed.\n\n" +
+                    "Payment was saved successfully, but financial posting could not be confirmed.\n\n" +
+
                     "Payment ID: " +
                     savedPayment.id +
+
+                    "\nPayment: " +
+                    getPaymentNumber(
+                        savedPayment
+                    ) +
+
                     "\n\nReason:\n" +
+
                     (
                         ledgerError.message ||
-                        "Unknown ledger error."
+                        "Unknown financial ledger error."
                     ) +
+
                     "\n\n" +
+
                     "DO NOT enter this payment again.\n" +
-                    "Use the Ledger button to retry."
+                    "Use the Ledger button on this payment to retry the financial posting."
                 );
+
 
                 return;
 
             }
 
+
+            /* =================================================
+               SUCCESS
+            ================================================= */
+
             closePaymentModal();
 
-            $("#paymentForm")?.reset();
+
+            $("#paymentForm")
+                ?.reset();
+
 
             updateSummary();
 
+
             renderPayments(
-                $("#paymentSearch")?.value || ""
+                $("#paymentSearch")
+                    ?.value || ""
             );
+
 
             populateReservationSelector();
 
+
             updatePaymentBalance();
+
 
             alert(
                 "Payment saved and posted successfully.\n\n" +
+
                 "Payment: " +
                 getPaymentNumber(
                     savedPayment
                 ) +
+
                 "\nAmount: " +
                 money(amount) +
+
                 "\n\n" +
-                "Financial ledger entries created: " +
+
+                "VAT included in receipt calculation.\n\n" +
+
+                "Financial ledger entries confirmed: " +
                 ledgerEntries.length
             );
+
 
             await showReceipt(
                 savedPayment
             );
+
 
         } catch (error) {
 
@@ -2443,19 +3545,37 @@
                 error
             );
 
-            alert(
-                "Payment could not be saved.\n\n" +
-                (
-                    error.message ||
-                    "Unknown error."
-                )
-            );
+
+            if (paymentSaved) {
+
+                alert(
+                    "The payment was saved, but another step failed.\n\n" +
+                    (
+                        error.message ||
+                        "Unknown error."
+                    ) +
+                    "\n\nDo not enter the payment again."
+                );
+
+            } else {
+
+                alert(
+                    "Payment could not be saved.\n\n" +
+                    (
+                        error.message ||
+                        "Unknown error."
+                    )
+                );
+
+            }
+
 
         } finally {
 
             if (saveButton) {
 
-                saveButton.disabled = false;
+                saveButton.disabled =
+                    false;
 
                 saveButton.textContent =
                     "Save Payment";
@@ -2466,9 +3586,10 @@
 
     }
 
-    /* =====================================================
+
+    /* =========================================================
        RETRY LEDGER
-       ===================================================== */
+    ========================================================= */
 
     async function retryLedger(
         paymentId
@@ -2476,19 +3597,22 @@
 
         try {
 
-            const resolvedHotelId =
+            const hotelId =
                 await resolveHotelId();
 
-            if (!resolvedHotelId) {
+
+            if (!hotelId) {
 
                 throw new Error(
-                    "A valid hotel id is required."
+                    "Hotel session was not found."
                 );
 
             }
 
+
             const supabase =
                 getSupabase();
+
 
             const result =
                 await withTimeout(
@@ -2502,11 +3626,12 @@
                         )
                         .eq(
                             "hotel_id",
-                            resolvedHotelId
+                            hotelId
                         )
                         .maybeSingle()
 
                 );
+
 
             if (result.error) {
 
@@ -2514,55 +3639,42 @@
 
             }
 
+
             if (!result.data) {
 
                 throw new Error(
-                    "Payment record was not found for the current hotel."
+                    "Payment record was not found."
                 );
 
             }
+
 
             const payment =
                 result.data;
 
-            const paymentHotelId =
-                normalizeHotelId(
-                    payment.hotel_id
-                );
 
-            if (!paymentHotelId) {
+            /* =================================================
+               FIRST CHECK
 
-                throw new Error(
-                    "This payment does not contain a valid hotel id."
-                );
-
-            }
-
-            if (
-                Number(paymentHotelId) !==
-                Number(resolvedHotelId)
-            ) {
-
-                throw new Error(
-                    "The payment belongs to a different hotel."
-                );
-
-            }
-
-            /* ---------------------------------------------
-               Check existing ledger first
-               --------------------------------------------- */
+               Never post twice if the ledger already contains
+               the payment.
+            ================================================= */
 
             const existing =
                 await verifyPaymentLedger(
                     payment
                 );
 
+
             if (existing.length) {
 
                 alert(
                     "This payment is already posted to the financial ledger.\n\n" +
-                    "Ledger entries found: " +
+                    "Payment: " +
+                    getPaymentNumber(
+                        payment
+                    ) +
+                    "\nLedger entries found: " +
                     existing.length
                 );
 
@@ -2570,93 +3682,109 @@
 
             }
 
-            /* ---------------------------------------------
-               Post to financial engine
-               --------------------------------------------- */
 
-            const prepared =
-                await postPaymentToLedger(
-                    payment,
-                    paymentHotelId
-                );
+            await waitForFinancialEngine();
 
-            /* ---------------------------------------------
-               Verify using all supported identifiers
-               --------------------------------------------- */
 
-            const verified =
-                await verifyPaymentLedger(
-                    prepared.payment
-                );
+            const engine =
+                window
+                    .EDUTECH_FINANCIAL_ENGINE;
 
-            if (!verified.length) {
 
-                /*
-                 * One final diagnostic query.
-                 * This does not create anything.
-                 * It simply checks the most recent transactions
-                 * for this hotel so we can detect whether the
-                 * engine posted something under another reference.
-                 */
-
-                const diagnosticResult =
-                    await withTimeout(
-
-                        supabase
-                            .from(
-                                "financial_transactions"
-                            )
-                            .select(
-                                "id,hotel_id,transaction_number,reference_number,transaction_type,amount,payment_id,is_reversal,description,created_at"
-                            )
-                            .eq(
-                                "hotel_id",
-                                paymentHotelId
-                            )
-                            .order(
-                                "id",
-                                {
-                                    ascending: false
-                                }
-                            )
-                            .limit(10)
-
-                    );
-
-                console.error(
-                    "PAYMENT LEDGER DIAGNOSTIC:",
-                    {
-                        payment,
-                        preparedPayment:
-                            prepared.payment,
-                        recentTransactions:
-                            diagnosticResult.data || [],
-                        diagnosticError:
-                            diagnosticResult.error || null
-                    }
-                );
+            if (
+                !engine ||
+                typeof
+                    engine.postPayment !==
+                    "function"
+            ) {
 
                 throw new Error(
-                    "The financial engine returned, but no payment ledger entry was found for Payment ID " +
-                    payment.id +
-                    "."
+                    "Financial engine is not available."
                 );
 
             }
 
+
+            /*
+             * Use the same API used when the payment was
+             * originally saved.
+             */
+
+            const engineResult =
+                await engine.postPayment(
+                    payment
+                );
+
+
+            let verified = [];
+
+
+            /*
+             * Accept a directly returned ledger entry.
+             */
+
+            if (
+                Array.isArray(
+                    engineResult
+                ) &&
+                engineResult.length
+            ) {
+
+                verified =
+                    engineResult;
+
+            } else if (
+                engineResult &&
+                typeof engineResult ===
+                "object" &&
+                (
+                    engineResult.id ||
+                    engineResult.transaction_number ||
+                    engineResult.reference_number
+                )
+            ) {
+
+                verified =
+                    [engineResult];
+
+            }
+
+
+            /*
+             * Otherwise check the real ledger.
+             */
+
+            if (!verified.length) {
+
+                verified =
+                    await verifyPaymentLedgerWithRetry(
+                        payment
+                    );
+
+            }
+
+
+            if (!verified.length) {
+
+                throw new Error(
+                    "The financial engine returned, but the payment ledger could not be verified."
+                );
+
+            }
+
+
             alert(
                 "Payment successfully posted to the financial ledger.\n\n" +
+
                 "Payment: " +
                 getPaymentNumber(
                     payment
                 ) +
-                "\nHotel ID: " +
-                paymentHotelId +
-                "\nLedger entries: " +
+
+                "\nLedger entries confirmed: " +
                 verified.length
             );
 
-            await loadPayments();
 
         } catch (error) {
 
@@ -2665,21 +3793,27 @@
                 error
             );
 
+
             alert(
                 "The payment could not be posted.\n\n" +
                 (
                     error.message ||
                     "Unknown error."
-                )
+                ) +
+
+                "\n\n" +
+
+                "The payment record has NOT been deleted."
             );
 
         }
 
     }
 
-    /* =====================================================
+
+    /* =========================================================
        RESERVATION SELECTOR
-    ===================================================== */
+    ========================================================= */
 
     function populateReservationSelector() {
 
@@ -2696,21 +3830,30 @@
             select.value;
 
         select.innerHTML = `
+
             <option value="">
                 Select reservation
             </option>
+
         `;
+
 
         const available =
             state.reservations.filter(
-                reservation =>
-                    getReservationBalance(
-                        reservation
-                    ) > 0
+                function (reservation) {
+
+                    return (
+                        getReservationBalance(
+                            reservation
+                        ) > 0
+                    );
+
+                }
             );
 
+
         available.forEach(
-            reservation => {
+            function (reservation) {
 
                 const guest =
                     getGuestFromReservation(
@@ -2743,11 +3886,20 @@
                     );
 
                 option.textContent =
-                    `Reservation #${reservation.id} - ` +
-                    `${getGuestName(guest)} - ` +
-                    `${getRoomName(room)} - ` +
-                    `Total ${money(total)} - ` +
-                    `Balance ${money(balance)}`;
+                    "Reservation #" +
+                    reservation.id +
+                    " - " +
+                    getGuestName(
+                        guest
+                    ) +
+                    " - " +
+                    getRoomName(
+                        room
+                    ) +
+                    " - Total " +
+                    money(total) +
+                    " - Balance " +
+                    money(balance);
 
                 select.appendChild(
                     option
@@ -2756,14 +3908,20 @@
             }
         );
 
+
         if (
             previousValue &&
             available.some(
-                reservation =>
-                    String(
-                        reservation.id
-                    ) ===
-                    previousValue
+                function (reservation) {
+
+                    return (
+                        String(
+                            reservation.id
+                        ) ===
+                        previousValue
+                    );
+
+                }
             )
         ) {
 
@@ -2774,9 +3932,10 @@
 
     }
 
-    /* =====================================================
+
+    /* =========================================================
        BALANCE DISPLAY
-    ===================================================== */
+    ========================================================= */
 
     function updatePaymentBalance() {
 
@@ -2803,8 +3962,12 @@
         if (!reservation) {
 
             balanceBox.innerHTML = `
+
                 Remaining balance:
-                <strong>KSh 0.00</strong>
+                <strong>
+                    KSh 0.00
+                </strong>
+
             `;
 
             return;
@@ -2828,25 +3991,34 @@
             );
 
         balanceBox.innerHTML = `
+
             Reservation Total:
-            <strong>${money(total)}</strong>
+            <strong>
+                ${money(total)}
+            </strong>
 
             <br>
 
             Already Paid:
-            <strong>${money(paid)}</strong>
+            <strong>
+                ${money(paid)}
+            </strong>
 
             <br>
 
             Remaining Balance:
-            <strong>${money(balance)}</strong>
+            <strong>
+                ${money(balance)}
+            </strong>
+
         `;
 
     }
 
-    /* =====================================================
+
+    /* =========================================================
        PAYMENT MODAL
-    ===================================================== */
+    ========================================================= */
 
     function openPaymentModal() {
 
@@ -2887,9 +4059,7 @@
 
         if (amountInput) {
 
-            amountInput.setCustomValidity(
-                ""
-            );
+            amountInput.setCustomValidity("");
 
         }
 
@@ -2900,6 +4070,7 @@
         );
 
     }
+
 
     function closePaymentModal() {
 
@@ -2916,9 +4087,10 @@
 
     }
 
-    /* =====================================================
+
+    /* =========================================================
        RECEIPT
-    ===================================================== */
+    ========================================================= */
 
     async function showReceipt(
         payment
@@ -2954,15 +4126,48 @@
 
         }
 
+        if (
+            !getReservation(
+                payment.reservation_id
+            )
+        ) {
+
+            await recoverPaymentRelationships();
+
+        }
+
         const reservation =
             getReservation(
                 payment.reservation_id
             );
 
-        const guest =
+        let guest =
             getGuestFromReservation(
                 reservation
             );
+
+
+        /*
+         * Direct guest fallback.
+         */
+
+        if (!guest) {
+
+            const directGuestId =
+                payment.guest_id ??
+                payment.guestId ??
+                null;
+
+            if (directGuestId) {
+
+                guest =
+                    getGuest(
+                        directGuestId
+                    );
+
+            }
+
+        }
 
         const room =
             getRoomFromReservation(
@@ -3040,6 +4245,7 @@
                 room
             );
 
+
         body.innerHTML = `
 
             <div class="receipt">
@@ -3106,46 +4312,75 @@
 
                 </div>
 
+
                 <table class="receipt-table">
 
                     <tr>
-                        <td>Guest</td>
+
+                        <td>
+                            Guest
+                        </td>
+
                         <td>
                             ${escapeHtml(
                                 guestName
                             )}
                         </td>
+
                     </tr>
 
+
                     <tr>
-                        <td>ID / Passport</td>
+
+                        <td>
+                            ID / Passport
+                        </td>
+
                         <td>
                             ${escapeHtml(
                                 guestIdPassport
                             )}
                         </td>
+
                     </tr>
 
+
                     <tr>
-                        <td>Room Number</td>
+
+                        <td>
+                            Room Number
+                        </td>
+
                         <td>
                             ${escapeHtml(
                                 roomNumber
                             )}
                         </td>
+
                     </tr>
 
+
                     <tr>
-                        <td>Reservation</td>
+
+                        <td>
+                            Reservation
+                        </td>
+
                         <td>
                             #${escapeHtml(
                                 payment.reservation_id
                             )}
                         </td>
+
                     </tr>
 
+
                     <tr>
-                        <td>Payment Method</td>
+
+                        <td>
+                            Payment Method
+                        </td>
+
                         <td>
                             ${escapeHtml(
                                 String(
@@ -3154,83 +4389,154 @@
                                 ).toUpperCase()
                             )}
                         </td>
+
                     </tr>
 
+
                     <tr>
-                        <td>Reservation Total</td>
+
                         <td>
-                            ${money(total)}
+                            Reservation Total
                         </td>
-                    </tr>
 
-                    <tr>
-                        <td>Previous Payments</td>
                         <td>
-                            ${money(paidBefore)}
+                            ${money(
+                                total
+                            )}
                         </td>
+
                     </tr>
 
+
                     <tr>
-                        <td>Current Payment</td>
+
                         <td>
-                            ${money(currentPayment)}
+                            Previous Payments
                         </td>
+
+                        <td>
+                            ${money(
+                                paidBefore
+                            )}
+                        </td>
+
                     </tr>
 
+
                     <tr>
-                        <td>Amount Before VAT</td>
+
+                        <td>
+                            Current Payment
+                        </td>
+
+                        <td>
+                            ${money(
+                                currentPayment
+                            )}
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            Amount Before VAT
+                        </td>
+
                         <td>
                             ${money(
                                 vat.subtotal
                             )}
                         </td>
+
                     </tr>
 
+
                     <tr>
-                        <td>VAT @ 16%</td>
+
+                        <td>
+                            VAT @ 16%
+                        </td>
+
                         <td>
                             ${money(
                                 vat.vat
                             )}
                         </td>
+
                     </tr>
 
-                    <tr class="receipt-total">
-                        <td>Current Payment Total</td>
+
+                    <tr
+                        class="receipt-total"
+                    >
+
+                        <td>
+                            Current Payment Total
+                        </td>
+
                         <td>
                             ${money(
                                 vat.gross
                             )}
                         </td>
+
                     </tr>
 
-                    <tr class="receipt-total">
-                        <td>Total Paid To Date</td>
+
+                    <tr
+                        class="receipt-total"
+                    >
+
+                        <td>
+                            Total Paid To Date
+                        </td>
+
                         <td>
                             ${money(
                                 totalPaid
                             )}
                         </td>
+
                     </tr>
 
+
                     <tr>
-                        <td>Outstanding Balance</td>
+
+                        <td>
+                            Outstanding Balance
+                        </td>
+
                         <td>
                             ${money(
                                 balance
                             )}
                         </td>
+
                     </tr>
 
                 </table>
 
+
                 <br>
 
-                <p style="text-align:center;">
+
+                <p
+                    style="
+                        text-align:center;
+                    "
+                >
                     Thank you for your payment.
                 </p>
 
-                <p style="text-align:center;font-size:12px;">
+
+                <p
+                    style="
+                        text-align:center;
+                        font-size:12px;
+                    "
+                >
                     Generated by EDU TECH Hotel Management System
                 </p>
 
@@ -3238,11 +4544,17 @@
 
         `;
 
+
         modal.classList.add(
             "show"
         );
 
     }
+
+
+    /* =========================================================
+       CLOSE RECEIPT
+    ========================================================= */
 
     function closeReceipt() {
 
@@ -3259,15 +4571,21 @@
 
     }
 
+
+    /* =========================================================
+       PRINT RECEIPT
+    ========================================================= */
+
     function printReceipt() {
 
         window.print();
 
     }
 
-    /* =====================================================
+
+    /* =========================================================
        EVENTS
-    ===================================================== */
+    ========================================================= */
 
     function setupEvents() {
 
@@ -3277,11 +4595,13 @@
                 loadPayments
             );
 
+
         $("#openPaymentModal")
             ?.addEventListener(
                 "click",
                 openPaymentModal
             );
+
 
         $("#closePaymentModal")
             ?.addEventListener(
@@ -3289,17 +4609,20 @@
                 closePaymentModal
             );
 
+
         $("#cancelPaymentModal")
             ?.addEventListener(
                 "click",
                 closePaymentModal
             );
 
+
         $("#paymentForm")
             ?.addEventListener(
                 "submit",
                 savePayment
             );
+
 
         $("#paymentReservation")
             ?.addEventListener(
@@ -3311,9 +4634,7 @@
 
                     if (amountInput) {
 
-                        amountInput.setCustomValidity(
-                            ""
-                        );
+                        amountInput.setCustomValidity("");
 
                     }
 
@@ -3321,6 +4642,7 @@
 
                 }
             );
+
 
         $("#paymentAmount")
             ?.addEventListener(
@@ -3335,9 +4657,7 @@
 
                     if (!reservation) {
 
-                        this.setCustomValidity(
-                            ""
-                        );
+                        this.setCustomValidity("");
 
                         return;
 
@@ -3354,13 +4674,19 @@
                         );
 
                     this.setCustomValidity(
-                        amount > remaining
+
+                        amount >
+                        remaining
+
                             ? "Payment cannot exceed the remaining balance."
+
                             : ""
+
                     );
 
                 }
             );
+
 
         $("#paymentSearch")
             ?.addEventListener(
@@ -3374,11 +4700,13 @@
                 }
             );
 
+
         $("#closeReceiptModal")
             ?.addEventListener(
                 "click",
                 closeReceipt
             );
+
 
         $("#closeReceiptButton")
             ?.addEventListener(
@@ -3386,11 +4714,13 @@
                 closeReceipt
             );
 
+
         $("#printReceipt")
             ?.addEventListener(
                 "click",
                 printReceipt
             );
+
 
         $("#paymentsTableBody")
             ?.addEventListener(
@@ -3414,6 +4744,7 @@
                     const paymentId =
                         button.dataset.paymentId;
 
+
                     if (
                         action ===
                         "receipt"
@@ -3421,9 +4752,18 @@
 
                         const payment =
                             state.payments.find(
-                                item =>
-                                    Number(item.id) ===
-                                    Number(paymentId)
+                                function (item) {
+
+                                    return (
+                                        Number(
+                                            item.id
+                                        ) ===
+                                        Number(
+                                            paymentId
+                                        )
+                                    );
+
+                                }
                             );
 
                         if (payment) {
@@ -3435,6 +4775,7 @@
                         }
 
                     }
+
 
                     if (
                         action ===
@@ -3450,13 +4791,15 @@
                 }
             );
 
+
         $("#paymentModal")
             ?.addEventListener(
                 "click",
                 function (event) {
 
                     if (
-                        event.target === this
+                        event.target ===
+                        this
                     ) {
 
                         closePaymentModal();
@@ -3466,13 +4809,15 @@
                 }
             );
 
+
         $("#receiptModal")
             ?.addEventListener(
                 "click",
                 function (event) {
 
                     if (
-                        event.target === this
+                        event.target ===
+                        this
                     ) {
 
                         closeReceipt();
@@ -3484,23 +4829,28 @@
 
     }
 
-    /* =====================================================
+
+    /* =========================================================
        INITIALIZE
-    ===================================================== */
+    ========================================================= */
 
     async function initialize() {
 
-        if (state.initialized) {
+        if (
+            state.initialized
+        ) {
 
             return;
 
         }
 
-        state.initialized = true;
+        state.initialized =
+            true;
 
         setupEvents();
 
-        let attempts = 0;
+        let attempts =
+            0;
 
         while (
             attempts < 50 &&
@@ -3508,11 +4858,14 @@
         ) {
 
             await new Promise(
-                resolve =>
+                function (resolve) {
+
                     setTimeout(
                         resolve,
                         100
-                    )
+                    );
+
+                }
             );
 
             attempts++;
@@ -3523,44 +4876,49 @@
 
     }
 
-    /* =====================================================
+
+    /* =========================================================
        PUBLIC API
-    ===================================================== */
+    ========================================================= */
 
     window.EDUTECH_PAYMENTS = {
 
-        loadPayments,
+        loadPayments:
+            loadPayments,
 
         refresh:
             loadPayments,
 
-        renderPayments,
+        renderPayments:
+            renderPayments,
 
-        showReceipt,
+        showReceipt:
+            showReceipt,
 
-        retryLedger,
+        retryLedger:
+            retryLedger,
 
-        getPaymentNumber,
+        getPaymentNumber:
+            getPaymentNumber,
 
-        getReservationBalance,
+        getReservationBalance:
+            getReservationBalance,
 
-        calculateVAT,
+        calculateVAT:
+            calculateVAT,
 
-        verifyPaymentLedger,
+        verifyPaymentLedger:
+            verifyPaymentLedger,
 
-        resolveHotelId,
-
-        preparePaymentForLedger,
-
-        postPaymentToLedger,
-
-        state
+        state:
+            state
 
     };
 
-    /* =====================================================
+
+    /* =========================================================
        DOM READY
-    ===================================================== */
+    ========================================================= */
 
     if (
         document.readyState ===

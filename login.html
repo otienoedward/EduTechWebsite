@@ -1,8 +1,8 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -10,44 +10,20 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>
-        Sign In | EDU TECH Hotel Management System
-    </title>
+    <title>Sign In | EDU TECH Hotel Management System</title>
 
-    <link
-        rel="stylesheet"
-        href="./style.css"
-    >
+    <link rel="stylesheet" href="./style.css">
 
-    <!-- =========================================================
-         PWA
-    ========================================================== -->
+    <!-- PWA -->
+    <link rel="manifest" href="./manifest.json">
 
-    <link
-        rel="manifest"
-        href="./manifest.json"
-    >
-
-    <meta
-        name="theme-color"
-        content="#0f172a"
-    >
-
-    <meta
-        name="mobile-web-app-capable"
-        content="yes"
-    >
-
-    <meta
-        name="apple-mobile-web-app-capable"
-        content="yes"
-    >
-
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta
         name="apple-mobile-web-app-status-bar-style"
         content="default"
     >
-
     <meta
         name="apple-mobile-web-app-title"
         content="EDU TECH HMS"
@@ -59,7 +35,6 @@
     >
 
     <style>
-
         * {
             box-sizing: border-box;
         }
@@ -72,50 +47,34 @@
         }
 
         body {
-
             font-family:
                 "Segoe UI",
                 Arial,
                 Helvetica,
                 sans-serif;
 
-            background:
-                radial-gradient(
-                    circle at 15% 20%,
-                    rgba(59, 130, 246, 0.18),
-                    transparent 30%
-                ),
-                radial-gradient(
-                    circle at 85% 80%,
-                    rgba(37, 99, 235, 0.16),
-                    transparent 30%
-                ),
-                linear-gradient(
-                    135deg,
-                    #0f172a 0%,
-                    #172554 50%,
-                    #1e3a8a 100%
-                );
-
             min-height: 100vh;
 
             display: flex;
-
             align-items: center;
-
             justify-content: center;
 
-            padding: 30px;
+            padding: 25px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0f172a,
+                    #172554,
+                    #1d4ed8
+                );
 
             color: #0f172a;
         }
 
         .login-page-wrapper {
-
             width: 100%;
-
             max-width: 1050px;
-
             min-height: 620px;
 
             background: #ffffff;
@@ -130,24 +89,15 @@
                 1.05fr 0.95fr;
 
             box-shadow:
-                0 30px 80px rgba(0, 0, 0, 0.32),
-                0 8px 30px rgba(0, 0, 0, 0.12);
+                0 30px 80px rgba(0, 0, 0, 0.32);
         }
 
-        /* =====================================================
-           BRAND PANEL
-        ====================================================== */
-
         .brand-panel {
-
             position: relative;
-
-            overflow: hidden;
 
             padding: 60px 55px;
 
             display: flex;
-
             align-items: center;
 
             background:
@@ -161,99 +111,42 @@
             color: #ffffff;
         }
 
-        .brand-panel::before {
-
-            content: "";
-
-            position: absolute;
-
-            width: 420px;
-            height: 420px;
-
-            border-radius: 50%;
-
-            right: -180px;
-            top: -170px;
-
-            background:
-                rgba(255, 255, 255, 0.055);
-        }
-
-        .brand-panel::after {
-
-            content: "";
-
-            position: absolute;
-
-            width: 330px;
-            height: 330px;
-
-            border-radius: 50%;
-
-            left: -180px;
-            bottom: -160px;
-
-            background:
-                rgba(255, 255, 255, 0.045);
-        }
-
         .brand-content {
-
-            position: relative;
-
-            z-index: 2;
-
             width: 100%;
         }
 
-        /* =====================================================
-           VISIBLE HOTEL APP ICON
-        ====================================================== */
-
         .brand-logo {
-
             width: 92px;
-
             height: 92px;
 
             border-radius: 22px;
 
-            display: flex;
+            overflow: hidden;
 
-            align-items: center;
-
-            justify-content: center;
+            margin-bottom: 28px;
 
             background:
                 rgba(255, 255, 255, 0.12);
 
             border:
-                1px solid rgba(255, 255, 255, 0.25);
+                1px solid
+                rgba(255, 255, 255, 0.25);
 
             box-shadow:
-                0 12px 30px rgba(0, 0, 0, 0.20),
-                inset 0 1px 0 rgba(255, 255, 255, 0.15);
-
-            overflow: hidden;
-
-            margin-bottom: 28px;
+                0 12px 30px
+                rgba(0, 0, 0, 0.20);
         }
 
         .brand-logo img {
-
             width: 100%;
-
             height: 100%;
-
-            display: block;
 
             object-fit: cover;
 
-            border-radius: 22px;
+            display: block;
         }
 
         .brand-title {
-
             margin: 0;
 
             font-size: 42px;
@@ -261,12 +154,9 @@
             line-height: 1.1;
 
             font-weight: 800;
-
-            letter-spacing: 0.5px;
         }
 
         .brand-system {
-
             margin-top: 10px;
 
             font-size: 19px;
@@ -278,7 +168,6 @@
         }
 
         .brand-description {
-
             max-width: 440px;
 
             margin-top: 25px;
@@ -292,7 +181,6 @@
         }
 
         .feature-list {
-
             margin: 32px 0 0;
 
             padding: 0;
@@ -305,7 +193,6 @@
         }
 
         .feature-item {
-
             display: flex;
 
             align-items: center;
@@ -319,9 +206,7 @@
         }
 
         .feature-icon {
-
             width: 32px;
-
             height: 32px;
 
             flex: 0 0 32px;
@@ -334,21 +219,12 @@
             display: flex;
 
             align-items: center;
-
             justify-content: center;
 
             font-size: 15px;
-
-            border:
-                1px solid rgba(255, 255, 255, 0.08);
         }
 
-        /* =====================================================
-           LOGIN PANEL
-        ====================================================== */
-
         .login-panel {
-
             background: #ffffff;
 
             padding: 55px;
@@ -356,24 +232,19 @@
             display: flex;
 
             align-items: center;
-
             justify-content: center;
         }
 
         .login-content {
-
             width: 100%;
-
             max-width: 390px;
         }
 
         .login-heading {
-
             margin-bottom: 34px;
         }
 
         .login-heading h1 {
-
             margin: 0;
 
             color: #0f172a;
@@ -386,7 +257,6 @@
         }
 
         .login-heading p {
-
             margin: 10px 0 0;
 
             color: #64748b;
@@ -397,12 +267,10 @@
         }
 
         .form-group {
-
             margin-bottom: 21px;
         }
 
         .form-label {
-
             display: block;
 
             margin-bottom: 8px;
@@ -415,12 +283,10 @@
         }
 
         .input-wrapper {
-
             position: relative;
         }
 
         .input-icon {
-
             position: absolute;
 
             left: 15px;
@@ -436,15 +302,12 @@
 
             color: #64748b;
 
-            font-size: 16px;
-
             pointer-events: none;
 
             z-index: 2;
         }
 
         .login-input {
-
             width: 100%;
 
             height: 52px;
@@ -471,18 +334,10 @@
                 background 0.2s ease;
         }
 
-        .login-input:hover {
-
-            border-color:
-                #b9c5d4;
-        }
-
         .login-input:focus {
-
             background: #ffffff;
 
-            border-color:
-                #2563eb;
+            border-color: #2563eb;
 
             box-shadow:
                 0 0 0 4px
@@ -490,30 +345,20 @@
         }
 
         .password-input {
-
-            padding-right: 72px;
+            padding-right: 70px;
         }
 
         .show-password-btn {
-
             position: absolute;
 
-            right: 8px;
+            right: 10px;
 
             top: 50%;
 
             transform:
                 translateY(-50%);
 
-            height: 38px;
-
-            min-width: 54px;
-
-            padding: 0 8px;
-
             border: none;
-
-            border-radius: 8px;
 
             background: transparent;
 
@@ -524,25 +369,14 @@
             font-weight: 700;
 
             cursor: pointer;
+
+            padding: 8px;
         }
-
-        .show-password-btn:hover {
-
-            background:
-                #eff6ff;
-        }
-
-        /* =====================================================
-           LOGIN BUTTON
-        ====================================================== */
 
         .login-button {
-
             width: 100%;
 
             height: 52px;
-
-            margin-top: 7px;
 
             border: none;
 
@@ -557,29 +391,23 @@
 
             color: #ffffff;
 
-            font-size: 15px;
+            font-size: 14px;
 
             font-weight: 700;
 
             cursor: pointer;
 
-            box-shadow:
-                0 8px 20px
-                rgba(37, 99, 235, 0.22);
-
             transition:
-                transform 0.2s ease,
-                opacity 0.2s ease;
+                transform 0.15s ease,
+                opacity 0.15s ease;
         }
 
         .login-button:hover {
-
             transform:
                 translateY(-1px);
         }
 
         .login-button:disabled {
-
             opacity: 0.65;
 
             cursor: not-allowed;
@@ -587,391 +415,218 @@
             transform: none;
         }
 
-        /* =====================================================
-           LOGIN MESSAGE
-        ====================================================== */
-
         .login-status {
+            min-height: 22px;
 
-            display: none;
-
-            margin-top: 17px;
-
-            padding: 12px 14px;
-
-            border-radius: 9px;
+            margin-top: 18px;
 
             font-size: 13px;
 
             line-height: 1.5;
+
+            text-align: center;
         }
 
         .login-status.error {
-
-            display: block;
-
-            background:
-                #fef2f2;
-
-            color:
-                #b91c1c;
-
-            border:
-                1px solid #fecaca;
+            color: #dc2626;
         }
 
         .login-status.success {
-
-            display: block;
-
-            background:
-                #f0fdf4;
-
-            color:
-                #15803d;
-
-            border:
-                1px solid #bbf7d0;
+            color: #16a34a;
         }
 
-        /* =====================================================
-           PWA INSTALL BUTTON
-        ====================================================== */
+        .login-status.info {
+            color: #2563eb;
+        }
 
-        .install-app-button {
+        .login-footer {
+            margin-top: 30px;
 
+            text-align: center;
+
+            color: #64748b;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+        }
+
+        .login-footer p {
+            margin: 5px 0;
+        }
+
+        .install-button {
             display: none;
 
             width: 100%;
 
-            height: 46px;
+            margin-top: 15px;
 
-            margin-top: 14px;
+            height: 44px;
 
-            border:
-                1px solid #dbeafe;
+            border: 1px solid #2563eb;
 
             border-radius: 10px;
 
-            background:
-                #eff6ff;
+            background: #eff6ff;
 
-            color:
-                #1d4ed8;
-
-            font-size: 13px;
+            color: #1d4ed8;
 
             font-weight: 700;
 
             cursor: pointer;
-
-            transition:
-                background 0.2s ease,
-                transform 0.2s ease,
-                border-color 0.2s ease;
         }
 
-        .install-app-button:hover {
-
-            background:
-                #dbeafe;
-
-            border-color:
-                #bfdbfe;
-
-            transform:
-                translateY(-1px);
-        }
-
-        .install-app-button.visible {
-
+        .install-button.visible {
             display: block;
         }
 
-        .install-app-note {
-
+        .install-note {
             display: none;
 
-            margin-top: 8px;
+            margin-top: 10px;
 
             text-align: center;
 
-            color: #94a3b8;
+            color: #64748b;
 
             font-size: 11px;
-
-            line-height: 1.5;
         }
 
-        .install-app-note.visible {
-
+        .install-note.visible {
             display: block;
         }
 
-        /* =====================================================
-           FOOTER
-        ====================================================== */
-
-        .login-footer {
-
-            margin-top: 30px;
-
-            padding-top: 20px;
-
-            border-top:
-                1px solid #eef2f7;
-
-            text-align: center;
-        }
-
-        .login-footer p {
-
-            margin: 0;
-
-            color:
-                #94a3b8;
-
-            font-size: 12px;
-        }
-
-        .login-footer p + p {
-
-            margin-top: 5px;
-        }
-
-        .login-footer strong {
-
-            color:
-                #64748b;
-        }
-
-        /* =====================================================
-           TABLET
-        ====================================================== */
-
         @media (max-width: 850px) {
-
             body {
-
-                padding: 20px;
+                padding: 15px;
             }
 
             .login-page-wrapper {
-
-                max-width: 520px;
+                grid-template-columns: 1fr;
 
                 min-height: auto;
-
-                grid-template-columns: 1fr;
             }
 
             .brand-panel {
-
-                padding: 40px 35px;
-
-                min-height: 300px;
+                padding: 40px 30px;
             }
 
             .brand-title {
-
                 font-size: 34px;
             }
 
-            .brand-description,
-            .feature-list {
+            .brand-description {
+                margin-top: 18px;
+            }
 
-                display: none;
+            .feature-list {
+                margin-top: 22px;
             }
 
             .login-panel {
-
-                padding: 40px 35px;
+                padding: 40px 30px;
             }
         }
 
-        /* =====================================================
-           PHONE
-        ====================================================== */
-
         @media (max-width: 480px) {
-
-            body {
-
-                padding: 12px;
-            }
-
-            .login-page-wrapper {
-
-                border-radius: 17px;
-            }
-
             .brand-panel {
+                padding: 30px 22px;
+            }
 
-                padding: 30px 25px;
-
-                min-height: 230px;
+            .login-panel {
+                padding: 30px 22px;
             }
 
             .brand-logo {
-
-                width: 65px;
-
-                height: 65px;
-
-                margin-bottom: 18px;
-
-                border-radius: 17px;
-            }
-
-            .brand-logo img {
-
-                border-radius: 17px;
+                width: 75px;
+                height: 75px;
             }
 
             .brand-title {
-
-                font-size: 29px;
+                font-size: 30px;
             }
 
             .brand-system {
-
                 font-size: 16px;
             }
 
-            .login-panel {
-
-                padding: 35px 22px;
-            }
-
             .login-heading h1 {
-
                 font-size: 26px;
             }
         }
-
     </style>
-
 </head>
 
-
-<body class="login-page">
-
+<body>
 
 <div class="login-page-wrapper">
 
-
-    <!-- =====================================================
-         BRAND PANEL
-    ====================================================== -->
-
+    <!-- BRAND PANEL -->
     <section class="brand-panel">
 
         <div class="brand-content">
 
-
-            <!-- ACTUAL EDU TECH HMS APP ICON -->
-
             <div class="brand-logo">
-
                 <img
                     src="./icons/icon-192.png"
-                    alt="EDU TECH Hotel Management System"
+                    alt="EDU TECH HMS"
                 >
-
             </div>
 
-
-            <h2 class="brand-title">
+            <h1 class="brand-title">
                 EDU TECH
-            </h2>
-
+            </h1>
 
             <div class="brand-system">
                 Hotel Management System
             </div>
 
-
-            <p class="brand-description">
-
-                A complete hotel operations platform designed to help
-                manage rooms, guests, reservations, check-in,
-                check-out, payments, restaurant services and daily
-                hotel activities from one place.
-
-            </p>
-
+            <div class="brand-description">
+                A complete hotel operations platform designed
+                to help manage rooms, guests, reservations,
+                check-in, check-out, payments, restaurant
+                services and daily hotel activities from one place.
+            </div>
 
             <ul class="feature-list">
 
-
                 <li class="feature-item">
-
-                    <span class="feature-icon">
-                        🛏️
-                    </span>
-
-                    <span>
-                        Rooms &amp; Guest Management
-                    </span>
-
+                    <span class="feature-icon">🛏️</span>
+                    Rooms & Guest Management
                 </li>
 
-
                 <li class="feature-item">
-
-                    <span class="feature-icon">
-                        📅
-                    </span>
-
-                    <span>
-                        Reservations &amp; Check-in
-                    </span>
-
+                    <span class="feature-icon">📅</span>
+                    Reservations & Check-in
                 </li>
 
-
                 <li class="feature-item">
-
-                    <span class="feature-icon">
-                        💳
-                    </span>
-
-                    <span>
-                        Payments &amp; Financial Management
-                    </span>
-
+                    <span class="feature-icon">💳</span>
+                    Payments & Financial Management
                 </li>
 
-
                 <li class="feature-item">
-
-                    <span class="feature-icon">
-                        📊
-                    </span>
-
-                    <span>
-                        Reports &amp; Hotel Operations
-                    </span>
-
+                    <span class="feature-icon">🍽️</span>
+                    Restaurant & Inventory
                 </li>
 
+                <li class="feature-item">
+                    <span class="feature-icon">📊</span>
+                    Reports & Hotel Operations
+                </li>
 
             </ul>
-
 
         </div>
 
     </section>
 
 
-    <!-- =====================================================
-         LOGIN PANEL
-    ====================================================== -->
-
+    <!-- LOGIN PANEL -->
     <section class="login-panel">
 
         <div class="login-content">
-
 
             <div class="login-heading">
 
@@ -980,17 +635,18 @@
                 </h1>
 
                 <p>
-                    Sign in to continue to your hotel management system.
+                    Sign in to access the EDU TECH Hotel Management System.
                 </p>
 
             </div>
 
 
-            <form id="loginForm">
-
+            <form
+                id="loginForm"
+                autocomplete="on"
+            >
 
                 <!-- EMAIL -->
-
                 <div class="form-group">
 
                     <label
@@ -1000,20 +656,19 @@
                         Email Address
                     </label>
 
-
                     <div class="input-wrapper">
 
                         <span class="input-icon">
                             ✉
                         </span>
 
-
                         <input
-                            type="email"
                             id="email"
+                            name="email"
                             class="login-input"
-                            placeholder="Enter your email address"
+                            type="email"
                             autocomplete="username"
+                            placeholder="Enter your email address"
                             required
                         >
 
@@ -1023,7 +678,6 @@
 
 
                 <!-- PASSWORD -->
-
                 <div class="form-group">
 
                     <label
@@ -1033,23 +687,21 @@
                         Password
                     </label>
 
-
                     <div class="input-wrapper">
 
                         <span class="input-icon">
                             🔒
                         </span>
 
-
                         <input
-                            type="password"
                             id="password"
+                            name="password"
                             class="login-input password-input"
-                            placeholder="Enter your password"
+                            type="password"
                             autocomplete="current-password"
+                            placeholder="Enter your password"
                             required
                         >
-
 
                         <button
                             type="button"
@@ -1064,8 +716,7 @@
                 </div>
 
 
-                <!-- LOGIN -->
-
+                <!-- LOGIN BUTTON -->
                 <button
                     type="submit"
                     id="loginButton"
@@ -1075,32 +726,29 @@
                 </button>
 
 
-                <!-- PWA INSTALL -->
-
+                <!-- INSTALL APP -->
                 <button
                     type="button"
                     id="installAppButton"
-                    class="install-app-button"
+                    class="install-button"
                 >
-                    📲 Install EDU TECH HMS
+                    Install EDU TECH HMS
                 </button>
-
 
                 <div
                     id="installAppNote"
-                    class="install-app-note"
+                    class="install-note"
                 >
-                    Install EDU TECH HMS on this device for quick access.
+                    Install EDU TECH HMS on this device for easier access.
                 </div>
 
 
-                <!-- MESSAGE -->
-
+                <!-- STATUS -->
                 <div
                     id="loginMessage"
                     class="login-status"
+                    aria-live="polite"
                 ></div>
-
 
             </form>
 
@@ -1108,15 +756,9 @@
             <div class="login-footer">
 
                 <p>
-
-                    <strong>
-                        EDU TECH
-                    </strong>
-
+                    <strong>EDU TECH</strong>
                     Hotel Management System
-
                 </p>
-
 
                 <p>
                     Secure hotel operations management
@@ -1124,204 +766,218 @@
 
             </div>
 
-
         </div>
 
     </section>
-
 
 </div>
 
 
 <!-- =========================================================
      SUPABASE
-========================================================== -->
+========================================================= -->
 
-<script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-></script>
+<!-- Supabase CDN MUST load first -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
-<script
-    src="./supabase.js"
-></script>
+<!-- EDU TECH Supabase configuration -->
+<script src="./supabase.js?v=20261113.31"></script>
 
 
 <script>
-
 "use strict";
 
-
 /* =========================================================
-   PWA SERVICE WORKER
+   EDU TECH LOGIN
+   VERSION 2026.11.14.03
+
+   IMPORTANT:
+   This page waits for supabase.js to finish creating
+   window.supabaseClient before attempting login.
 ========================================================= */
 
-if ("serviceWorker" in navigator) {
 
-    window.addEventListener(
-        "load",
-        function () {
+/* =========================================================
+   SUPABASE CLIENT WAIT
+========================================================= */
 
-            navigator.serviceWorker
-                .register("./service-worker.js")
-                .then(
-                    function (registration) {
+function isValidSupabaseClient(client) {
 
-                        console.log(
-                            "EDU TECH HMS service worker registered:",
-                            registration.scope
-                        );
-
-                    }
-                )
-                .catch(
-                    function (error) {
-
-                        console.error(
-                            "EDU TECH HMS service worker registration failed:",
-                            error
-                        );
-
-                    }
-                );
-
-        }
+    return !!(
+        client &&
+        client.auth &&
+        typeof client.auth.signInWithPassword === "function" &&
+        typeof client.from === "function"
     );
 
 }
 
 
-/* =========================================================
-   PWA INSTALL SUPPORT
-========================================================= */
+async function waitForSupabaseClient(
+    timeout = 15000
+) {
 
-let deferredInstallPrompt = null;
-
-
-const installAppButton =
-    document.getElementById(
-        "installAppButton"
-    );
-
-
-const installAppNote =
-    document.getElementById(
-        "installAppNote"
-    );
+    /* Already ready */
+    if (
+        isValidSupabaseClient(
+            window.supabaseClient
+        )
+    ) {
+        return window.supabaseClient;
+    }
 
 
-window.addEventListener(
-    "beforeinstallprompt",
-    function (event) {
+    /* Use EDU TECH helper if available */
+    if (
+        typeof window.waitForEDUTechSupabase ===
+        "function"
+    ) {
 
-        event.preventDefault();
+        try {
 
-        deferredInstallPrompt = event;
+            const client =
+                await window.waitForEDUTechSupabase(
+                    timeout
+                );
 
+            if (
+                isValidSupabaseClient(client)
+            ) {
 
-        if (installAppButton) {
+                return client;
 
-            installAppButton.classList.add(
-                "visible"
-            );
+            }
 
-        }
+        } catch (error) {
 
-
-        if (installAppNote) {
-
-            installAppNote.classList.add(
-                "visible"
+            console.warn(
+                "EDU TECH Supabase helper failed:",
+                error
             );
 
         }
 
     }
-);
 
 
-if (installAppButton) {
+    /* Listen for readiness event */
+    const eventPromise =
+        new Promise(function (resolve) {
 
-    installAppButton.addEventListener(
-        "click",
-        async function () {
+            let finished = false;
 
-            if (!deferredInstallPrompt) {
+            const cleanup =
+                function () {
 
-                return;
+                    if (finished) {
+                        return;
+                    }
 
-            }
+                    finished = true;
+
+                    window.removeEventListener(
+                        "edutech:supabase-ready",
+                        handler
+                    );
+
+                };
 
 
-            deferredInstallPrompt.prompt();
+            const handler =
+                function () {
+
+                    const client =
+                        window.supabaseClient;
+
+                    if (
+                        isValidSupabaseClient(
+                            client
+                        )
+                    ) {
+
+                        cleanup();
+
+                        resolve(client);
+
+                    }
+
+                };
 
 
-            const choiceResult =
-                await deferredInstallPrompt.userChoice;
-
-
-            console.log(
-                "EDU TECH HMS install result:",
-                choiceResult.outcome
+            window.addEventListener(
+                "edutech:supabase-ready",
+                handler
             );
 
 
-            deferredInstallPrompt = null;
+            setTimeout(
+                function () {
 
+                    cleanup();
 
-            installAppButton.classList.remove(
-                "visible"
+                    resolve(null);
+
+                },
+                timeout
             );
 
+        });
 
-            if (installAppNote) {
 
-                installAppNote.classList.remove(
-                    "visible"
+    /* Poll as a fallback */
+    const start =
+        Date.now();
+
+
+    while (
+        Date.now() - start <
+        timeout
+    ) {
+
+        if (
+            isValidSupabaseClient(
+                window.supabaseClient
+            )
+        ) {
+
+            return window.supabaseClient;
+
+        }
+
+        await new Promise(
+            function (resolve) {
+
+                setTimeout(
+                    resolve,
+                    250
                 );
 
             }
-
-        }
-    );
-
-}
-
-
-window.addEventListener(
-    "appinstalled",
-    function () {
-
-        console.log(
-            "EDU TECH HMS was installed successfully."
         );
 
-
-        deferredInstallPrompt = null;
-
-
-        if (installAppButton) {
-
-            installAppButton.classList.remove(
-                "visible"
-            );
-
-        }
+    }
 
 
-        if (installAppNote) {
+    const eventClient =
+        await eventPromise;
 
-            installAppNote.textContent =
-                "EDU TECH HMS has been installed on this device.";
 
-            installAppNote.classList.add(
-                "visible"
-            );
+    if (
+        isValidSupabaseClient(
+            eventClient
+        )
+    ) {
 
-        }
+        return eventClient;
 
     }
-);
+
+
+    throw new Error(
+        "Supabase client could not be initialized."
+    );
+
+}
 
 
 /* =========================================================
@@ -1333,28 +989,34 @@ const loginForm =
         "loginForm"
     );
 
-
 const loginButton =
     document.getElementById(
         "loginButton"
     );
-
 
 const loginMessage =
     document.getElementById(
         "loginMessage"
     );
 
-
 const passwordInput =
     document.getElementById(
         "password"
     );
 
-
 const showPasswordBtn =
     document.getElementById(
         "showPasswordBtn"
+    );
+
+const installAppButton =
+    document.getElementById(
+        "installAppButton"
+    );
+
+const installAppNote =
+    document.getElementById(
+        "installAppNote"
     );
 
 
@@ -1368,15 +1030,11 @@ function showMessage(
 ) {
 
     if (!loginMessage) {
-
         return;
-
     }
-
 
     loginMessage.textContent =
         message;
-
 
     loginMessage.className =
         "login-status " +
@@ -1388,11 +1046,8 @@ function showMessage(
 function hideMessage() {
 
     if (!loginMessage) {
-
         return;
-
     }
-
 
     loginMessage.textContent = "";
 
@@ -1447,7 +1102,7 @@ function clearOldSessionData() {
 
             } catch (error) {
 
-                console.error(
+                console.warn(
                     "Storage cleanup error:",
                     error
                 );
@@ -1460,7 +1115,38 @@ function clearOldSessionData() {
 }
 
 
-clearOldSessionData();
+/* =========================================================
+   BUTTON STATE
+========================================================= */
+
+function setLoginLoading(
+    loading
+) {
+
+    if (!loginButton) {
+        return;
+    }
+
+
+    if (loading) {
+
+        loginButton.disabled =
+            true;
+
+        loginButton.textContent =
+            "Signing In...";
+
+    } else {
+
+        loginButton.disabled =
+            false;
+
+        loginButton.textContent =
+            "Sign In";
+
+    }
+
+}
 
 
 /* =========================================================
@@ -1501,51 +1187,259 @@ if (showPasswordBtn) {
 
 
 /* =========================================================
-   BUTTON STATE
+   PWA SERVICE WORKER
 ========================================================= */
 
-function setLoginLoading(
-    loading
+if (
+    "serviceWorker" in
+    navigator
 ) {
 
-    if (!loginButton) {
+    window.addEventListener(
+        "load",
+        function () {
 
-        return;
+            navigator.serviceWorker
+                .register(
+                    "./service-worker.js"
+                )
+                .then(
+                    function (registration) {
 
-    }
+                        console.log(
+                            "EDU TECH HMS service worker registered:",
+                            registration.scope
+                        );
 
+                    }
+                )
+                .catch(
+                    function (error) {
 
-    if (loading) {
+                        console.warn(
+                            "Service worker registration failed:",
+                            error
+                        );
 
-        loginButton.disabled =
-            true;
+                    }
+                );
 
-        loginButton.textContent =
-            "Signing In...";
-
-    } else {
-
-        loginButton.disabled =
-            false;
-
-        loginButton.textContent =
-            "Sign In";
-
-    }
+        }
+    );
 
 }
 
 
 /* =========================================================
-   SUPABASE CHECK
+   PWA INSTALL
 ========================================================= */
 
-if (!window.supabaseClient) {
+let deferredInstallPrompt =
+    null;
 
-    showMessage(
-        "The system could not connect to Supabase. Please check your Supabase configuration.",
-        "error"
+
+window.addEventListener(
+    "beforeinstallprompt",
+    function (event) {
+
+        event.preventDefault();
+
+        deferredInstallPrompt =
+            event;
+
+
+        if (installAppButton) {
+
+            installAppButton.classList.add(
+                "visible"
+            );
+
+        }
+
+
+        if (installAppNote) {
+
+            installAppNote.classList.add(
+                "visible"
+            );
+
+        }
+
+    }
+);
+
+
+if (installAppButton) {
+
+    installAppButton.addEventListener(
+        "click",
+        async function () {
+
+            if (
+                !deferredInstallPrompt
+            ) {
+
+                return;
+
+            }
+
+
+            deferredInstallPrompt.prompt();
+
+
+            try {
+
+                const result =
+                    await deferredInstallPrompt.userChoice;
+
+                console.log(
+                    "EDU TECH HMS install result:",
+                    result.outcome
+                );
+
+            } catch (error) {
+
+                console.warn(
+                    "Install prompt error:",
+                    error
+                );
+
+            }
+
+
+            deferredInstallPrompt =
+                null;
+
+
+            installAppButton.classList.remove(
+                "visible"
+            );
+
+
+            if (installAppNote) {
+
+                installAppNote.classList.remove(
+                    "visible"
+                );
+
+            }
+
+        }
     );
+
+}
+
+
+window.addEventListener(
+    "appinstalled",
+    function () {
+
+        console.log(
+            "EDU TECH HMS installed successfully."
+        );
+
+
+        deferredInstallPrompt =
+            null;
+
+
+        if (installAppButton) {
+
+            installAppButton.classList.remove(
+                "visible"
+            );
+
+        }
+
+
+        if (installAppNote) {
+
+            installAppNote.textContent =
+                "EDU TECH HMS has been installed on this device.";
+
+            installAppNote.classList.add(
+                "visible"
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   INITIAL SUPABASE CONNECTION CHECK
+========================================================= */
+
+async function initializeLoginPage() {
+
+    try {
+
+        showMessage(
+            "Connecting to secure system...",
+            "info"
+        );
+
+
+        const db =
+            await waitForSupabaseClient();
+
+
+        if (
+            !isValidSupabaseClient(db)
+        ) {
+
+            throw new Error(
+                "Supabase client is invalid."
+            );
+
+        }
+
+
+        showMessage(
+            "System ready. Please sign in.",
+            "success"
+        );
+
+
+        setTimeout(
+            function () {
+
+                if (
+                    loginMessage &&
+                    loginMessage.classList.contains(
+                        "success"
+                    )
+                ) {
+
+                    hideMessage();
+
+                }
+
+            },
+            2000
+        );
+
+
+        return db;
+
+    } catch (error) {
+
+        console.error(
+            "EDU TECH Supabase connection error:",
+            error
+        );
+
+
+        showMessage(
+            "The system could not connect to Supabase. Please check your Supabase configuration.",
+            "error"
+        );
+
+
+        return null;
+
+    }
 
 }
 
@@ -1567,10 +1461,14 @@ if (loginForm) {
             setLoginLoading(true);
 
 
+            const emailInput =
+                document.getElementById(
+                    "email"
+                );
+
+
             const email =
-                document
-                    .getElementById("email")
-                    .value
+                emailInput.value
                     .trim()
                     .toLowerCase();
 
@@ -1605,29 +1503,30 @@ if (loginForm) {
             }
 
 
-            const db =
-                window.supabaseClient;
-
-
-            if (!db) {
-
-                showMessage(
-                    "Supabase is not connected. Please check your internet connection and configuration."
-                );
-
-                setLoginLoading(false);
-
-                return;
-
-            }
-
-
             try {
 
+                /* =========================================
+                   WAIT FOR SUPABASE
+                ========================================= */
 
-                /* =================================================
+                const db =
+                    await waitForSupabaseClient();
+
+
+                if (
+                    !isValidSupabaseClient(db)
+                ) {
+
+                    throw new Error(
+                        "Supabase client is not available."
+                    );
+
+                }
+
+
+                /* =========================================
                    STEP 1 — AUTHENTICATE
-                ================================================= */
+                ========================================= */
 
                 const {
                     data: authData,
@@ -1649,10 +1548,12 @@ if (loginForm) {
                         authError
                     );
 
+
                     showMessage(
                         authError.message ||
                         "Unable to sign in. Please check your email and password."
                     );
+
 
                     setLoginLoading(false);
 
@@ -1681,9 +1582,9 @@ if (loginForm) {
                 }
 
 
-                /* =================================================
+                /* =========================================
                    STEP 2 — LOAD PROFILE
-                ================================================= */
+                ========================================= */
 
                 const {
                     data: profile,
@@ -1708,11 +1609,14 @@ if (loginForm) {
                         profileError
                     );
 
+
                     await db.auth.signOut();
+
 
                     showMessage(
                         "Your account was authenticated, but your system profile could not be loaded."
                     );
+
 
                     setLoginLoading(false);
 
@@ -1725,9 +1629,11 @@ if (loginForm) {
 
                     await db.auth.signOut();
 
+
                     showMessage(
                         "Your account does not have a system profile. Please contact the System Owner."
                     );
+
 
                     setLoginLoading(false);
 
@@ -1736,18 +1642,22 @@ if (loginForm) {
                 }
 
 
-                /* =================================================
+                /* =========================================
                    STEP 3 — ACTIVE USER
-                ================================================= */
+                ========================================= */
 
-                if (profile.is_active === false) {
+                if (
+                    profile.is_active === false
+                ) {
 
                     await db.auth.signOut();
+
 
                     showMessage(
                         "Access denied. Your user account is inactive."
                     );
 
+
                     setLoginLoading(false);
 
                     return;
@@ -1755,14 +1665,13 @@ if (loginForm) {
                 }
 
 
-                /* =================================================
+                /* =========================================
                    STEP 4 — NORMALIZE ROLE
-                ================================================= */
+                ========================================= */
 
                 const role =
                     String(
-                        profile.role ||
-                        ""
+                        profile.role || ""
                     )
                         .trim()
                         .toLowerCase();
@@ -1771,8 +1680,11 @@ if (loginForm) {
                 const allowedRoles = [
 
                     "system_owner",
+
                     "hotel_owner",
+
                     "manager",
+
                     "receptionist"
 
                 ];
@@ -1786,9 +1698,11 @@ if (loginForm) {
 
                     await db.auth.signOut();
 
+
                     showMessage(
                         "Your account role is not recognized by the hotel management system."
                     );
+
 
                     setLoginLoading(false);
 
@@ -1797,9 +1711,9 @@ if (loginForm) {
                 }
 
 
-                /* =================================================
+                /* =========================================
                    STEP 5 — SYSTEM OWNER
-                ================================================= */
+                ========================================= */
 
                 if (
                     role ===
@@ -1846,9 +1760,9 @@ if (loginForm) {
                 }
 
 
-                /* =================================================
+                /* =========================================
                    STEP 6 — HOTEL ID
-                ================================================= */
+                ========================================= */
 
                 const hotelId =
                     profile.hotel_id;
@@ -1862,9 +1776,11 @@ if (loginForm) {
 
                     await db.auth.signOut();
 
+
                     showMessage(
                         "Your account is not assigned to a hotel. Please contact the System Owner."
                     );
+
 
                     setLoginLoading(false);
 
@@ -1873,9 +1789,9 @@ if (loginForm) {
                 }
 
 
-                /* =================================================
+                /* =========================================
                    STEP 7 — LOAD HOTEL
-                ================================================= */
+                ========================================= */
 
                 const {
                     data: hotel,
@@ -1900,11 +1816,14 @@ if (loginForm) {
                         hotelError
                     );
 
+
                     await db.auth.signOut();
+
 
                     showMessage(
                         "Your assigned hotel could not be loaded. Please contact the System Owner."
                     );
+
 
                     setLoginLoading(false);
 
@@ -1917,9 +1836,11 @@ if (loginForm) {
 
                     await db.auth.signOut();
 
+
                     showMessage(
                         "Your assigned hotel could not be found. Please contact the System Owner."
                     );
+
 
                     setLoginLoading(false);
 
@@ -1928,9 +1849,9 @@ if (loginForm) {
                 }
 
 
-                /* =================================================
+                /* =========================================
                    STEP 8 — HOTEL STATUS
-                ================================================= */
+                ========================================= */
 
                 const hotelStatus =
                     String(
@@ -1950,11 +1871,13 @@ if (loginForm) {
 
                     await db.auth.signOut();
 
+
                     showMessage(
                         "Access denied. Your hotel account is currently " +
                         hotelStatus +
                         "."
                     );
+
 
                     setLoginLoading(false);
 
@@ -1963,9 +1886,9 @@ if (loginForm) {
                 }
 
 
-                /* =================================================
+                /* =========================================
                    STEP 9 — SUBSCRIPTION
-                ================================================= */
+                ========================================= */
 
                 if (
                     hotel.subscription_end
@@ -1994,9 +1917,11 @@ if (loginForm) {
 
                             await db.auth.signOut();
 
+
                             showMessage(
                                 "Your hotel's subscription has expired. Please contact the System Owner."
                             );
+
 
                             setLoginLoading(false);
 
@@ -2009,9 +1934,9 @@ if (loginForm) {
                 }
 
 
-                /* =================================================
+                /* =========================================
                    STEP 10 — SAVE SESSION
-                ================================================= */
+                ========================================= */
 
                 sessionStorage.setItem(
                     "authenticatedUserId",
@@ -2042,20 +1967,18 @@ if (loginForm) {
 
                 sessionStorage.setItem(
                     "hotelName",
-                    hotel.hotel_name ||
-                    ""
+                    hotel.hotel_name || ""
                 );
 
                 sessionStorage.setItem(
                     "hotel_name",
-                    hotel.hotel_name ||
-                    ""
+                    hotel.hotel_name || ""
                 );
 
 
-                /* =================================================
+                /* =========================================
                    STEP 11 — VERIFY SESSION
-                ================================================= */
+                ========================================= */
 
                 const {
                     data: sessionData,
@@ -2072,9 +1995,11 @@ if (loginForm) {
 
                     await db.auth.signOut();
 
+
                     showMessage(
                         "Login session could not be verified. Please try again."
                     );
+
 
                     setLoginLoading(false);
 
@@ -2083,9 +2008,9 @@ if (loginForm) {
                 }
 
 
-                /* =================================================
+                /* =========================================
                    SUCCESS
-                ================================================= */
+                ========================================= */
 
                 showMessage(
                     "Login successful. Opening the hotel management system...",
@@ -2114,7 +2039,19 @@ if (loginForm) {
 
                 try {
 
-                    await db.auth.signOut();
+                    const db =
+                        window.supabaseClient;
+
+
+                    if (
+                        isValidSupabaseClient(
+                            db
+                        )
+                    ) {
+
+                        await db.auth.signOut();
+
+                    }
 
                 } catch (signOutError) {
 
@@ -2143,8 +2080,17 @@ if (loginForm) {
 
 }
 
+
+/* =========================================================
+   START LOGIN PAGE
+========================================================= */
+
+clearOldSessionData();
+
+initializeLoginPage();
+
 </script>
 
 </body>
-
 </html>
+```

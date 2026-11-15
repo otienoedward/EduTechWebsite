@@ -1,14 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Check-out | EDU TECH Hotel Management System</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet" href="./style.css?v=20261113-24">
+    <title>
+        Check-out | EDU TECH Hotel Management System
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="./style.css?v=20261113-24"
+    >
 
     <style>
+
         * {
             box-sizing: border-box;
         }
@@ -21,11 +32,42 @@
         }
 
         body {
-            font-family: Arial, Helvetica, sans-serif;
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
         }
 
         .checkout-page {
-            padding: 20px;
+            margin-left: 180px;
+            width: calc(100% - 180px);
+            min-height: 100vh;
+            padding: 70px 20px 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .checkout-back-button {
+            position: fixed;
+            top: 15px;
+            left: 195px;
+            z-index: 9000;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 14px;
+            border: 0;
+            border-radius: 8px;
+            background: #1e293b;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+        }
+
+        .checkout-back-button:hover {
+            background: #0f172a;
         }
 
         .page-header {
@@ -79,7 +121,8 @@
 
         .summary-grid {
             display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
             gap: 15px;
             margin-bottom: 25px;
         }
@@ -88,7 +131,8 @@
             background: rgba(255,255,255,0.94);
             border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            box-shadow:
+                0 5px 20px rgba(0,0,0,0.08);
         }
 
         .summary-card h3 {
@@ -107,7 +151,8 @@
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 25px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            box-shadow:
+                0 5px 20px rgba(0,0,0,0.08);
             overflow-x: auto;
         }
 
@@ -230,7 +275,8 @@
             background: white;
             border-radius: 15px;
             padding: 25px;
-            box-shadow: 0 25px 80px rgba(0,0,0,0.35);
+            box-shadow:
+                0 25px 80px rgba(0,0,0,0.35);
         }
 
         .modal h2 {
@@ -239,7 +285,8 @@
 
         .details-grid {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
             gap: 12px;
             margin-bottom: 20px;
         }
@@ -302,14 +349,24 @@
         }
 
         @media (max-width: 1000px) {
+
             .summary-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns:
+                    repeat(2, 1fr);
             }
         }
 
         @media (max-width: 650px) {
+
             .checkout-page {
-                padding: 10px;
+                margin-left: 0;
+                width: 100%;
+                padding: 65px 10px 20px;
+            }
+
+            .checkout-back-button {
+                left: 10px;
+                top: 10px;
             }
 
             .summary-grid {
@@ -329,10 +386,20 @@
                 padding: 18px;
             }
         }
+
     </style>
+
 </head>
 
 <body>
+
+<button
+    id="checkoutBackButton"
+    class="checkout-back-button"
+    type="button"
+>
+    ← Back
+</button>
 
 <div class="checkout-page">
 
@@ -346,8 +413,9 @@
 
         <div
             id="hotelStatus"
-            class="hotel-status">
-            Connecting to Supabase...
+            class="hotel-status"
+        >
+            Connecting to EDU TECH HMS...
         </div>
 
     </div>
@@ -355,13 +423,9 @@
 
     <div
         id="messageArea"
-        class="message-area">
-    </div>
+        class="message-area"
+    ></div>
 
-
-    <!-- =====================================================
-         SUMMARY
-    ====================================================== -->
 
     <div class="summary-grid">
 
@@ -373,7 +437,8 @@
 
             <div
                 id="todayCheckouts"
-                class="value">
+                class="value"
+            >
                 0
             </div>
 
@@ -388,7 +453,8 @@
 
             <div
                 id="pendingCheckouts"
-                class="value">
+                class="value"
+            >
                 0
             </div>
 
@@ -403,7 +469,8 @@
 
             <div
                 id="todayRevenue"
-                class="value">
+                class="value"
+            >
                 KES 0.00
             </div>
 
@@ -418,7 +485,8 @@
 
             <div
                 id="outstandingBalance"
-                class="value">
+                class="value"
+            >
                 KES 0.00
             </div>
 
@@ -426,10 +494,6 @@
 
     </div>
 
-
-    <!-- =====================================================
-         PENDING CHECK-OUTS
-    ====================================================== -->
 
     <div class="section">
 
@@ -451,10 +515,9 @@
             <button
                 id="refreshBtn"
                 type="button"
-                class="btn-primary">
-
+                class="btn-primary"
+            >
                 🔄 Refresh
-
             </button>
 
         </div>
@@ -466,41 +529,15 @@
 
                 <tr>
 
-                    <th>
-                        Reservation
-                    </th>
-
-                    <th>
-                        Guest
-                    </th>
-
-                    <th>
-                        Room
-                    </th>
-
-                    <th>
-                        Check-in
-                    </th>
-
-                    <th>
-                        Check-out
-                    </th>
-
-                    <th>
-                        Total
-                    </th>
-
-                    <th>
-                        Paid
-                    </th>
-
-                    <th>
-                        Balance
-                    </th>
-
-                    <th>
-                        Action
-                    </th>
+                    <th>Reservation</th>
+                    <th>Guest</th>
+                    <th>Room</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                    <th>Total</th>
+                    <th>Paid</th>
+                    <th>Balance</th>
+                    <th>Action</th>
 
                 </tr>
 
@@ -513,10 +550,9 @@
 
                     <td
                         colspan="9"
-                        class="loading-message">
-
+                        class="loading-message"
+                    >
                         Loading check-outs...
-
                     </td>
 
                 </tr>
@@ -527,10 +563,6 @@
 
     </div>
 
-
-    <!-- =====================================================
-         CHECK-OUT HISTORY
-    ====================================================== -->
 
     <div class="section">
 
@@ -557,37 +589,14 @@
 
                 <tr>
 
-                    <th>
-                        Reservation
-                    </th>
-
-                    <th>
-                        Guest
-                    </th>
-
-                    <th>
-                        Room
-                    </th>
-
-                    <th>
-                        Total
-                    </th>
-
-                    <th>
-                        Paid
-                    </th>
-
-                    <th>
-                        Balance
-                    </th>
-
-                    <th>
-                        Status
-                    </th>
-
-                    <th>
-                        Completed
-                    </th>
+                    <th>Reservation</th>
+                    <th>Guest</th>
+                    <th>Room</th>
+                    <th>Total</th>
+                    <th>Paid</th>
+                    <th>Balance</th>
+                    <th>Status</th>
+                    <th>Completed</th>
 
                 </tr>
 
@@ -600,10 +609,9 @@
 
                     <td
                         colspan="8"
-                        class="loading-message">
-
+                        class="loading-message"
+                    >
                         Loading history...
-
                     </td>
 
                 </tr>
@@ -617,13 +625,10 @@
 </div>
 
 
-<!-- =========================================================
-     CHECK-OUT MODAL
-========================================================= -->
-
 <div
     id="checkoutModal"
-    class="modal-overlay">
+    class="modal-overlay"
+>
 
     <div class="modal">
 
@@ -632,9 +637,7 @@
         </h2>
 
 
-        <div
-            id="checkoutMessage">
-        </div>
+        <div id="checkoutMessage"></div>
 
 
         <div class="details-grid">
@@ -721,9 +724,10 @@
 
         <div class="payment-note">
 
-            The payment below will be recorded in the
-            <strong>payments</strong> table and posted through
-            the EDU TECH Financial Engine.
+            The payment will be recorded in the
+            <strong>payments</strong>
+            table and posted through the
+            <strong>EDU TECH Financial Engine</strong>.
 
         </div>
 
@@ -739,7 +743,8 @@
                 type="number"
                 min="0"
                 step="0.01"
-                value="0">
+                value="0"
+            >
 
         </div>
 
@@ -782,7 +787,8 @@
             <input
                 id="paymentReference"
                 type="text"
-                placeholder="Optional — e.g. M-Pesa receipt number">
+                placeholder="Optional — e.g. M-Pesa receipt number"
+            >
 
         </div>
 
@@ -792,20 +798,18 @@
             <button
                 id="cancelCheckoutBtn"
                 type="button"
-                class="btn-secondary">
-
+                class="btn-secondary"
+            >
                 Cancel
-
             </button>
 
 
             <button
                 id="completeCheckoutBtn"
                 type="button"
-                class="btn-success">
-
+                class="btn-success"
+            >
                 Complete Check-out
-
             </button>
 
         </div>
@@ -815,24 +819,24 @@
 </div>
 
 
-<!-- =========================================================
-     SUPABASE CONFIGURATION
-========================================================= -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script src="./supabase.js?v=20261113-24"></script>
+<script src="./supabase.js?v=20261113.31"></script>
+
+<script src="./financial-engine.js?v=20261114.02"></script>
+
+<script src="./access-control.js?v=20261114.01"></script>
+
+<script src="./sidebar.js?v=20261114.01"></script>
 
 
 <script>
-
-/* =========================================================
-   EDU TECH CHECKOUT
-   VERSION: 2026.11.13.24
-========================================================= */
 
 "use strict";
 
 
 (function () {
+
 
     let supabaseClient = null;
 
@@ -852,10 +856,68 @@
 
     let selectedReservation = null;
 
+    let checkoutProcessing = false;
 
-    /* =====================================================
-       ELEMENT HELPER
-    ===================================================== */
+
+    async function getCheckoutSupabaseClient() {
+
+        if (window.supabaseClient) {
+            return window.supabaseClient;
+        }
+
+        if (window.EDUTECH_SUPABASE) {
+            return window.EDUTECH_SUPABASE;
+        }
+
+        if (
+            typeof window.waitForEDUTechSupabase ===
+            "function"
+        ) {
+
+            const client =
+                await window.waitForEDUTechSupabase(
+                    15000
+                );
+
+            if (client) {
+                return client;
+            }
+
+        }
+
+        const started =
+            Date.now();
+
+
+        while (
+            Date.now() - started < 15000
+        ) {
+
+            if (window.supabaseClient) {
+                return window.supabaseClient;
+            }
+
+            if (window.EDUTECH_SUPABASE) {
+                return window.EDUTECH_SUPABASE;
+            }
+
+            await new Promise(
+                resolve =>
+                    setTimeout(
+                        resolve,
+                        250
+                    )
+            );
+
+        }
+
+
+        throw new Error(
+            "Supabase client is not ready. Please check supabase.js."
+        );
+
+    }
+
 
     function el(id) {
 
@@ -863,10 +925,6 @@
 
     }
 
-
-    /* =====================================================
-       ESCAPE HTML
-    ===================================================== */
 
     function escapeHtml(value) {
 
@@ -879,47 +937,46 @@
 
         }
 
-
         return String(value)
-
             .replace(/&/g, "&amp;")
-
             .replace(/</g, "&lt;")
-
             .replace(/>/g, "&gt;")
-
             .replace(/"/g, "&quot;")
-
             .replace(/'/g, "&#039;");
 
     }
 
 
-    /* =====================================================
-       NUMBER
-    ===================================================== */
-
     function numberValue(value) {
 
-        const n =
+        const number =
             Number(value);
 
-        return Number.isFinite(n)
-            ? n
+        return Number.isFinite(number)
+            ? number
             : 0;
 
     }
 
 
-    /* =====================================================
-       MONEY
-    ===================================================== */
+    function roundMoney(value) {
+
+        return Math.round(
+            (
+                numberValue(value) +
+                Number.EPSILON
+            ) *
+            100
+        ) / 100;
+
+    }
+
 
     function money(value) {
 
         return (
             "KES " +
-            numberValue(value)
+            roundMoney(value)
                 .toLocaleString(
                     "en-KE",
                     {
@@ -932,10 +989,6 @@
     }
 
 
-    /* =====================================================
-       FIELD READER
-    ===================================================== */
-
     function field(
         row,
         possibleNames,
@@ -943,28 +996,29 @@
     ) {
 
         if (!row) {
-
             return fallback;
-
         }
-
 
         for (
             const name of possibleNames
         ) {
 
             if (
-                Object.prototype
-                    .hasOwnProperty
-                    .call(row, name)
+                Object.prototype.hasOwnProperty.call(
+                    row,
+                    name
+                )
             ) {
 
+                const value =
+                    row[name];
+
                 if (
-                    row[name] !== null &&
-                    row[name] !== undefined
+                    value !== null &&
+                    value !== undefined
                 ) {
 
-                    return row[name];
+                    return value;
 
                 }
 
@@ -972,21 +1026,51 @@
 
         }
 
-
         return fallback;
 
     }
 
 
-    /* =====================================================
-       NORMALIZE STATUS
-    ===================================================== */
+    function getReservationGuestId(
+        reservation
+    ) {
+
+        return field(
+            reservation,
+            [
+                "guest   id",
+                "guest id",
+                "guest_id",
+                "guestId",
+                "guest"
+            ],
+            null
+        );
+
+    }
+
+
+    function getReservationRoomId(
+        reservation
+    ) {
+
+        return field(
+            reservation,
+            [
+                "room id",
+                "room_id",
+                "roomId",
+                "room"
+            ],
+            null
+        );
+
+    }
+
 
     function normalizeStatus(value) {
 
-        return String(
-            value || ""
-        )
+        return String(value || "")
             .trim()
             .toLowerCase()
             .replace(/_/g, "-");
@@ -994,22 +1078,14 @@
     }
 
 
-    /* =====================================================
-       HOTEL ID
-    ===================================================== */
-
     function getHotelId() {
 
         const keys = [
 
             "hotelId",
-
             "roomHotel",
-
             "currentHotelId",
-
             "selectedHotelId",
-
             "hotel_id"
 
         ];
@@ -1022,21 +1098,70 @@
             const sessionValue =
                 sessionStorage.getItem(key);
 
-
             if (sessionValue) {
-
                 return sessionValue;
-
             }
 
 
             const localValue =
                 localStorage.getItem(key);
 
-
             if (localValue) {
-
                 return localValue;
+            }
+
+        }
+
+
+        const profileKeys = [
+            "EDUTECH_ACCESS_PROFILE",
+            "EDUTECH_PROFILE",
+            "EDUTECH_SESSION"
+        ];
+
+
+        for (
+            const key of profileKeys
+        ) {
+
+            const values = [
+                sessionStorage.getItem(key),
+                localStorage.getItem(key)
+            ];
+
+
+            for (
+                const raw of values
+            ) {
+
+                if (!raw) {
+                    continue;
+                }
+
+
+                try {
+
+                    const parsed =
+                        JSON.parse(raw);
+
+
+                    if (
+                        parsed &&
+                        parsed.hotel_id !== undefined &&
+                        parsed.hotel_id !== null &&
+                        parsed.hotel_id !== ""
+                    ) {
+
+                        return String(
+                            parsed.hotel_id
+                        );
+
+                    }
+
+                }
+                catch (error) {
+
+                }
 
             }
 
@@ -1048,10 +1173,6 @@
     }
 
 
-    /* =====================================================
-       MESSAGES
-    ===================================================== */
-
     function showMessage(
         message,
         type = "error"
@@ -1062,9 +1183,7 @@
 
 
         if (!area) {
-
             return;
-
         }
 
 
@@ -1086,7 +1205,6 @@
 
 
         area.innerHTML =
-
             `<div class="${className}">
                 ${escapeHtml(message)}
             </div>`;
@@ -1104,9 +1222,7 @@
 
 
         if (!area) {
-
             return;
-
         }
 
 
@@ -1128,7 +1244,6 @@
 
 
         area.innerHTML =
-
             `<div class="${className}">
                 ${escapeHtml(message)}
             </div>`;
@@ -1136,16 +1251,12 @@
     }
 
 
-    /* =====================================================
-       SUPABASE CLIENT
-    ===================================================== */
-
     async function getSupabaseClient() {
 
         if (
             window.supabaseClient &&
             typeof window.supabaseClient.from ===
-                "function"
+            "function"
         ) {
 
             return window.supabaseClient;
@@ -1156,7 +1267,7 @@
         if (
             window.EDUTECH_SUPABASE &&
             typeof window.EDUTECH_SUPABASE.from ===
-                "function"
+            "function"
         ) {
 
             return window.EDUTECH_SUPABASE;
@@ -1166,7 +1277,7 @@
 
         if (
             typeof window.waitForEDUTechSupabase ===
-                "function"
+            "function"
         ) {
 
             try {
@@ -1180,7 +1291,7 @@
                 if (
                     client &&
                     typeof client.from ===
-                        "function"
+                    "function"
                 ) {
 
                     return client;
@@ -1188,11 +1299,11 @@
                 }
 
             }
-            catch (error) {
+            catch (waitError) {
 
-                console.error(
-                    "EDU TECH: waitForEDUTechSupabase failed.",
-                    error
+                console.warn(
+                    "EDU TECH Supabase wait failed:",
+                    waitError
                 );
 
             }
@@ -1200,67 +1311,302 @@
         }
 
 
-        /* -------------------------------------------------
-           LAST FALLBACK
-        ------------------------------------------------- */
-
         if (
             window.supabase &&
             typeof window.supabase.createClient ===
-                "function"
+            "function"
         ) {
 
-            const client =
+            const fallbackClient =
                 window.supabase.createClient(
-
                     "https://zrgbovyuivgiyyzwerng.supabase.co",
-
-                    "sb_publishable_2REtQBmtGpaLYIP1Y_8FGg_MJPtapMk",
-
-                    {
-                        auth: {
-
-                            persistSession: true,
-
-                            autoRefreshToken: true,
-
-                            detectSessionInUrl: true,
-
-                            storageKey:
-                                "edutech-supabase-auth"
-
-                        }
-                    }
-
+                    "sb_publishable_2REtQBmtGpaLYIP1Y_8FGg_MJPtapMk"
                 );
 
 
-            window.supabaseClient =
-                client;
+            if (
+                fallbackClient &&
+                typeof fallbackClient.from ===
+                "function"
+            ) {
 
+                window.supabaseClient =
+                    fallbackClient;
 
-            window.EDUTECH_SUPABASE =
-                client;
+                window.EDUTECH_SUPABASE =
+                    fallbackClient;
 
+                return fallbackClient;
 
-            window.EDUTECH_SUPABASE_READY =
-                true;
-
-
-            return client;
+            }
 
         }
 
 
         throw new Error(
-            "Supabase client is not available. Please make sure supabase.js is loading correctly."
+            "EDU TECH Supabase client is not ready. Please check supabase.js."
         );
 
     }
 
 
     /* =====================================================
+       FINANCIAL ENGINE SAFE LOADER
+    ===================================================== */
+
+    let financialEngineLoadPromise = null;
+
+
+    function currentFinancialEngine() {
+
+        const engine =
+            window.EDUTECH_FINANCIAL_ENGINE ||
+            window.FinancialEngine;
+
+
+        if (
+            engine &&
+            typeof engine.postPayment ===
+            "function" &&
+            typeof engine.postAccommodationCharge ===
+            "function"
+        ) {
+
+            return engine;
+
+        }
+
+
+        return null;
+
+    }
+
+
+    async function loadFinancialEngineIfNeeded() {
+
+        const readyEngine =
+            currentFinancialEngine();
+
+
+        if (readyEngine) {
+
+            return readyEngine;
+
+        }
+
+
+        if (financialEngineLoadPromise) {
+
+            return financialEngineLoadPromise;
+
+        }
+
+
+        financialEngineLoadPromise =
+            new Promise(
+                function (
+                    resolve,
+                    reject
+                ) {
+
+                    let finished =
+                        false;
+
+                    let timer =
+                        null;
+
+                    let timeout =
+                        null;
+
+
+                    function cleanup() {
+
+                        if (timer) {
+
+                            clearInterval(
+                                timer
+                            );
+
+                            timer = null;
+
+                        }
+
+
+                        if (timeout) {
+
+                            clearTimeout(
+                                timeout
+                            );
+
+                            timeout = null;
+
+                        }
+
+
+                        window.removeEventListener(
+                            "edutech-financial-engine-ready",
+                            readyHandler
+                        );
+
+
+                        window.removeEventListener(
+                            "edutech:financial-engine-ready",
+                            readyHandler
+                        );
+
+                    }
+
+
+                    function succeed() {
+
+                        if (finished) {
+                            return;
+                        }
+
+
+                        const engine =
+                            currentFinancialEngine();
+
+
+                        if (!engine) {
+                            return;
+                        }
+
+
+                        finished =
+                            true;
+
+
+                        cleanup();
+
+
+                        resolve(
+                            engine
+                        );
+
+                    }
+
+
+                    function fail(message) {
+
+                        if (finished) {
+                            return;
+                        }
+
+
+                        finished =
+                            true;
+
+
+                        cleanup();
+
+
+                        reject(
+                            new Error(message)
+                        );
+
+                    }
+
+
+                    function readyHandler() {
+
+                        succeed();
+
+                    }
+
+
+                    window.addEventListener(
+                        "edutech-financial-engine-ready",
+                        readyHandler
+                    );
+
+
+                    window.addEventListener(
+                        "edutech:financial-engine-ready",
+                        readyHandler
+                    );
+
+
+                    if (
+                        window.EDUTECH_FINANCIAL_ENGINE_READY ===
+                        true
+                    ) {
+
+                        succeed();
+
+                    }
+
+
+                    timer =
+                        setInterval(
+                            function () {
+
+                                if (
+                                    window.EDUTECH_FINANCIAL_ENGINE_READY ===
+                                    true
+                                ) {
+
+                                    succeed();
+
+                                    return;
+
+                                }
+
+
+                                succeed();
+
+                            },
+                            250
+                        );
+
+
+                    timeout =
+                        setTimeout(
+                            function () {
+
+                                fail(
+                                    "Financial Engine could not be loaded. Please make sure financial-engine.js is present and has no runtime error."
+                                );
+
+                            },
+                            15000
+                        );
+
+                }
+            );
+
+
+        try {
+
+            return await financialEngineLoadPromise;
+
+        }
+        catch (error) {
+
+            financialEngineLoadPromise =
+                null;
+
+            throw error;
+
+        }
+
+    }
+
+
+    async function getFinancialEngine() {
+
+        return await loadFinancialEngineIfNeeded();
+
+    }
+
+
+    /* =====================================================
        INITIALIZE
+       
+       IMPORTANT:
+       Financial Engine is NOT required here.
+       
+       Checkout page must load its data normally.
     ===================================================== */
 
     async function initialize() {
@@ -1268,26 +1614,11 @@
         try {
 
             el("hotelStatus").textContent =
-                "Connecting to Supabase...";
+                "Connecting to EDU TECH HMS...";
 
 
             supabaseClient =
                 await getSupabaseClient();
-
-
-            if (!supabaseClient) {
-
-                throw new Error(
-                    "Supabase client is not available."
-                );
-
-            }
-
-
-            console.log(
-                "EDU TECH CHECKOUT: Supabase client ready.",
-                supabaseClient
-            );
 
 
             hotelId =
@@ -1297,16 +1628,10 @@
             if (!hotelId) {
 
                 throw new Error(
-                    "No hotel is selected. Please select a hotel and log in again."
+                    "No hotel is selected. Please log in again."
                 );
 
             }
-
-
-            console.log(
-                "EDU TECH CHECKOUT: Hotel ID:",
-                hotelId
-            );
 
 
             await loadData();
@@ -1321,7 +1646,7 @@
 
 
             el("hotelStatus").textContent =
-                "Supabase connection failed.";
+                "Checkout initialization failed.";
 
 
             showMessage(
@@ -1332,9 +1657,11 @@
 
 
             el("pendingTableBody").innerHTML =
-
                 `<tr>
-                    <td colspan="9" class="empty-message">
+                    <td
+                        colspan="9"
+                        class="empty-message"
+                    >
                         ${escapeHtml(
                             error.message ||
                             "Unable to load check-outs."
@@ -1344,9 +1671,11 @@
 
 
             el("historyTableBody").innerHTML =
-
                 `<tr>
-                    <td colspan="8" class="empty-message">
+                    <td
+                        colspan="8"
+                        class="empty-message"
+                    >
                         Unable to load check-out history.
                     </td>
                 </tr>`;
@@ -1355,10 +1684,6 @@
 
     }
 
-
-    /* =====================================================
-       LOAD DATA
-    ===================================================== */
 
     async function loadData() {
 
@@ -1369,261 +1694,266 @@
             "Loading hotel and guest information...";
 
 
+        const hotelResult =
+            await supabaseClient
+                .from("hotels")
+                .select("*")
+                .eq(
+                    "id",
+                    hotelId
+                )
+                .maybeSingle();
+
+
+        if (hotelResult.error) {
+
+            throw new Error(
+                "Unable to load hotel: " +
+                hotelResult.error.message
+            );
+
+        }
+
+
+        hotel =
+            hotelResult.data ||
+            null;
+
+
+        const reservationsResult =
+            await supabaseClient
+                .from("reservations")
+                .select("*")
+                .eq(
+                    "hotel_id",
+                    hotelId
+                )
+                .order(
+                    "check_in",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (reservationsResult.error) {
+
+            throw new Error(
+                "Unable to load reservations: " +
+                reservationsResult.error.message
+            );
+
+        }
+
+
+        reservations =
+            reservationsResult.data ||
+            [];
+
+
+        const guestsResult =
+            await supabaseClient
+                .from("guests")
+                .select("*")
+                .eq(
+                    "hotel_id",
+                    hotelId
+                );
+
+
+        if (guestsResult.error) {
+
+            throw new Error(
+                "Unable to load guests: " +
+                guestsResult.error.message
+            );
+
+        }
+
+
+        guests =
+            guestsResult.data ||
+            [];
+
+
+        const roomsResult =
+            await supabaseClient
+                .from("rooms")
+                .select("*")
+                .eq(
+                    "hotel_id",
+                    hotelId
+                );
+
+
+        if (roomsResult.error) {
+
+            throw new Error(
+                "Unable to load rooms: " +
+                roomsResult.error.message
+            );
+
+        }
+
+
+        rooms =
+            roomsResult.data ||
+            [];
+
+
+        const paymentsResult =
+            await supabaseClient
+                .from("payments")
+                .select("*")
+                .eq(
+                    "hotel_id",
+                    hotelId
+                );
+
+
+        if (paymentsResult.error) {
+
+            throw new Error(
+                "Unable to load payments: " +
+                paymentsResult.error.message
+            );
+
+        }
+
+
+        payments =
+            paymentsResult.data ||
+            [];
+
+
         try {
 
-            const hotelResult =
+            const restaurantResult =
                 await supabaseClient
-                    .from("hotels")
+                    .from("restaurant_orders")
                     .select("*")
-                    .eq("id", hotelId)
-                    .maybeSingle();
-
-
-            if (hotelResult.error) {
-
-                throw new Error(
-                    "Unable to load hotel: " +
-                    hotelResult.error.message
-                );
-
-            }
-
-
-            hotel =
-                hotelResult.data || null;
-
-
-            const reservationsResult =
-                await supabaseClient
-                    .from("reservations")
-                    .select("*")
-                    .eq("hotel_id", hotelId)
-                    .order(
-                        "created_at",
-                        {
-                            ascending: false
-                        }
+                    .eq(
+                        "hotel_id",
+                        hotelId
                     );
 
 
-            if (reservationsResult.error) {
-
-                throw new Error(
-                    "Unable to load reservations: " +
-                    reservationsResult.error.message
-                );
-
-            }
-
-
-            reservations =
-                reservationsResult.data || [];
-
-
-            const guestsResult =
-                await supabaseClient
-                    .from("guests")
-                    .select("*")
-                    .eq("hotel_id", hotelId);
-
-
-            if (guestsResult.error) {
-
-                throw new Error(
-                    "Unable to load guests: " +
-                    guestsResult.error.message
-                );
-
-            }
-
-
-            guests =
-                guestsResult.data || [];
-
-
-            const roomsResult =
-                await supabaseClient
-                    .from("rooms")
-                    .select("*")
-                    .eq("hotel_id", hotelId);
-
-
-            if (roomsResult.error) {
-
-                throw new Error(
-                    "Unable to load rooms: " +
-                    roomsResult.error.message
-                );
-
-            }
-
-
-            rooms =
-                roomsResult.data || [];
-
-
-            const paymentsResult =
-                await supabaseClient
-                    .from("payments")
-                    .select("*")
-                    .eq("hotel_id", hotelId);
-
-
-            if (paymentsResult.error) {
-
-                throw new Error(
-                    "Unable to load payments: " +
-                    paymentsResult.error.message
-                );
-
-            }
-
-
-            payments =
-                paymentsResult.data || [];
-
-
-            /* -------------------------------------------------
-               RESTAURANT ORDERS ARE OPTIONAL
-            ------------------------------------------------- */
-
-            try {
-
-                const restaurantResult =
-                    await supabaseClient
-                        .from("restaurant_orders")
-                        .select("*")
-                        .eq("hotel_id", hotelId);
-
-
-                if (
-                    restaurantResult.error
-                ) {
-
-                    console.warn(
-                        "Restaurant orders unavailable:",
-                        restaurantResult.error.message
-                    );
-
-
-                    restaurantOrders = [];
-
-                }
-                else {
-
-                    restaurantOrders =
-                        restaurantResult.data || [];
-
-                }
-
-            }
-            catch (restaurantError) {
+            if (restaurantResult.error) {
 
                 console.warn(
-                    "Restaurant loading skipped:",
-                    restaurantError
+                    "Restaurant orders unavailable:",
+                    restaurantResult.error.message
                 );
 
 
-                restaurantOrders = [];
+                restaurantOrders =
+                    [];
+
+            }
+            else {
+
+                restaurantOrders =
+                    restaurantResult.data ||
+                    [];
 
             }
 
-
-            /* -------------------------------------------------
-               HOTEL DISPLAY
-            ------------------------------------------------- */
-
-            const hotelName =
-                field(
-                    hotel,
-                    [
-                        "name",
-                        "hotel_name",
-                        "hotelName"
-                    ],
-                    "EDU TECH Hotel"
-                );
-
-
-            const location =
-                field(
-                    hotel,
-                    [
-                        "location",
-                        "address"
-                    ],
-                    ""
-                );
-
-
-            el("hotelStatus").textContent =
-
-                location
-                    ? hotelName +
-                      " — " +
-                      location
-                    : hotelName;
-
-
-            renderPending();
-
-            renderHistory();
-
-            updateSummary();
-
-
-            console.log(
-                "EDU TECH CHECKOUT: All checkout data loaded.",
-                {
-                    reservations:
-                        reservations.length,
-
-                    guests:
-                        guests.length,
-
-                    rooms:
-                        rooms.length,
-
-                    payments:
-                        payments.length,
-
-                    restaurantOrders:
-                        restaurantOrders.length
-                }
-            );
-
         }
-        catch (error) {
+        catch (restaurantError) {
 
-            console.error(
-                "EDU TECH CHECKOUT LOAD ERROR:",
-                error
+            console.warn(
+                "Restaurant loading skipped:",
+                restaurantError
             );
 
 
-            throw error;
+            restaurantOrders =
+                [];
 
         }
+
+
+        const hotelName =
+            field(
+                hotel,
+                [
+                    "name",
+                    "hotel_name",
+                    "hotelName"
+                ],
+                "EDU TECH Hotel"
+            );
+
+
+        const location =
+            field(
+                hotel,
+                [
+                    "location",
+                    "address"
+                ],
+                ""
+            );
+
+
+        el("hotelStatus").textContent =
+            location
+                ? `${hotelName} — ${location}`
+                : hotelName;
+
+
+        renderPending();
+
+        renderHistory();
+
+        updateSummary();
+
+
+        console.log(
+            "EDU TECH CHECKOUT DATA LOADED",
+            {
+                hotelId:
+                    hotelId,
+
+                reservations:
+                    reservations.length,
+
+                guests:
+                    guests.length,
+
+                rooms:
+                    rooms.length,
+
+                payments:
+                    payments.length,
+
+                restaurantOrders:
+                    restaurantOrders.length
+            }
+        );
 
     }
 
 
-    /* =====================================================
-       FIND GUEST
-    ===================================================== */
-
-    function findGuest(reservation) {
+    function findGuest(
+        reservation
+    ) {
 
         const guestId =
-            field(
-                reservation,
-                [
-                    "guest_id",
-                    "guest   id",
-                    "guestId"
-                ]
+            getReservationGuestId(
+                reservation
             );
+
+
+        if (
+            guestId === null ||
+            guestId === undefined ||
+            guestId === ""
+        ) {
+
+            return null;
+
+        }
 
 
         return guests.find(
@@ -1635,21 +1965,25 @@
     }
 
 
-    /* =====================================================
-       FIND ROOM
-    ===================================================== */
-
-    function findRoom(reservation) {
+    function findRoom(
+        reservation
+    ) {
 
         const roomId =
-            field(
-                reservation,
-                [
-                    "room_id",
-                    "room id",
-                    "roomId"
-                ]
+            getReservationRoomId(
+                reservation
             );
+
+
+        if (
+            roomId === null ||
+            roomId === undefined ||
+            roomId === ""
+        ) {
+
+            return null;
+
+        }
 
 
         return rooms.find(
@@ -1661,13 +1995,11 @@
     }
 
 
-    /* =====================================================
-       RESERVATION AMOUNT
-    ===================================================== */
+    function reservationAmount(
+        reservation
+    ) {
 
-    function reservationAmount(reservation) {
-
-        return numberValue(
+        return roundMoney(
             field(
                 reservation,
                 [
@@ -1683,117 +2015,111 @@
     }
 
 
-    /* =====================================================
-       RESTAURANT CHARGES
-    ===================================================== */
-
     function restaurantCharges(
         reservationId
     ) {
 
-        return restaurantOrders
-            .filter(
-                order => {
+        return roundMoney(
 
-                    const orderReservationId =
-                        field(
-                            order,
-                            [
-                                "reservation_id",
-                                "reservationId"
-                            ]
-                        );
+            restaurantOrders
+                .filter(
+                    order => {
 
-
-                    return String(
-                        orderReservationId
-                    ) === String(
-                        reservationId
-                    );
-
-                }
-            )
-            .reduce(
-                (
-                    total,
-                    order
-                ) => {
-
-                    return (
-                        total +
-                        numberValue(
+                        const orderReservationId =
                             field(
                                 order,
                                 [
-                                    "total",
-                                    "amount"
-                                ],
-                                0
+                                    "reservation_id",
+                                    "reservationId"
+                                ]
+                            );
+
+
+                        return (
+                            String(
+                                orderReservationId
+                            ) ===
+                            String(
+                                reservationId
                             )
-                        )
-                    );
+                        );
 
-                },
-                0
-            );
+                    }
+                )
+                .reduce(
+                    (
+                        total,
+                        order
+                    ) => {
 
-    }
+                        return (
+                            total +
+                            numberValue(
+                                field(
+                                    order,
+                                    [
+                                        "total",
+                                        "amount"
+                                    ],
+                                    0
+                                )
+                            )
+                        );
 
+                    },
+                    0
+                )
 
-    /* =====================================================
-       TOTAL
-    ===================================================== */
-
-    function reservationTotal(
-        reservation
-    ) {
-
-        return (
-            reservationAmount(
-                reservation
-            ) +
-            restaurantCharges(
-                reservation.id
-            )
         );
 
     }
 
 
-    /* =====================================================
-       PAYMENTS FOR RESERVATION
-    ===================================================== */
+    function reservationTotal(
+        reservation
+    ) {
+
+        return roundMoney(
+
+            reservationAmount(
+                reservation
+            ) +
+
+            restaurantCharges(
+                reservation.id
+            )
+
+        );
+
+    }
+
 
     function reservationPayments(
         reservationId
     ) {
 
         return payments.filter(
-            payment => {
-
-                return String(
+            payment =>
+                String(
                     payment.reservation_id
-                ) === String(
+                ) ===
+                String(
                     reservationId
-                );
-
-            }
+                )
         );
 
     }
 
 
-    /* =====================================================
-       PAID
-    ===================================================== */
-
     function paidAmount(
         reservationId
     ) {
 
-        return reservationPayments(
-            reservationId
-        )
+        return roundMoney(
+
+            reservationPayments(
+                reservationId
+            )
             .reduce(
                 (
                     total,
@@ -1809,14 +2135,12 @@
 
                 },
                 0
-            );
+            )
+
+        );
 
     }
 
-
-    /* =====================================================
-       BALANCE
-    ===================================================== */
 
     function balanceAmount(
         reservation
@@ -1834,17 +2158,15 @@
             );
 
 
-        return Math.max(
-            0,
-            total - paid
+        return roundMoney(
+            Math.max(
+                0,
+                total - paid
+            )
         );
 
     }
 
-
-    /* =====================================================
-       PENDING
-    ===================================================== */
 
     function isPending(
         reservation
@@ -1861,25 +2183,17 @@
 
 
         return [
-
             "checked-in",
-
             "checked in",
-
+            "checked_in",
             "active",
-
             "occupied"
-
         ].includes(
             status
         );
 
     }
 
-
-    /* =====================================================
-       COMPLETED
-    ===================================================== */
 
     function isCompleted(
         reservation
@@ -1896,15 +2210,10 @@
 
 
         return [
-
             "checked-out",
-
             "completed",
-
             "cancelled",
-
             "canceled"
-
         ].includes(
             status
         );
@@ -1912,9 +2221,56 @@
     }
 
 
-    /* =====================================================
-       RENDER PENDING
-    ===================================================== */
+    function reservationDisplayNumber(
+        reservation
+    ) {
+
+        return field(
+            reservation,
+            [
+                "reservation_number",
+                "booking_number",
+                "reference_number",
+                "id"
+            ],
+            reservation.id
+        );
+
+    }
+
+
+    function guestDisplayName(
+        guest
+    ) {
+
+        return field(
+            guest,
+            [
+                "full name",
+                "full_name",
+                "name"
+            ],
+            "Guest"
+        );
+
+    }
+
+
+    function roomDisplayNumber(
+        room
+    ) {
+
+        return field(
+            room,
+            [
+                "room_number",
+                "room"
+            ],
+            "-"
+        );
+
+    }
+
 
     function renderPending() {
 
@@ -1935,16 +2291,15 @@
         if (!pending.length) {
 
             tbody.innerHTML =
-
                 `<tr>
                     <td
                         colspan="9"
-                        class="empty-message">
-
+                        class="empty-message"
+                    >
                         No pending check-outs.
-
                     </td>
                 </tr>`;
+
 
             return;
 
@@ -1953,7 +2308,7 @@
 
         tbody.innerHTML =
             pending.map(
-                function (reservation) {
+                reservation => {
 
                     const guest =
                         findGuest(
@@ -1987,38 +2342,20 @@
 
 
                     const reservationNumber =
-                        field(
-                            reservation,
-                            [
-                                "reservation_number",
-                                "booking_number",
-                                "reference_number",
-                                "id"
-                            ],
-                            reservation.id
+                        reservationDisplayNumber(
+                            reservation
                         );
 
 
                     const guestName =
-                        field(
-                            guest,
-                            [
-                                "full name",
-                                "full_name",
-                                "name"
-                            ],
-                            "Guest"
+                        guestDisplayName(
+                            guest
                         );
 
 
                     const roomNumber =
-                        field(
-                            room,
-                            [
-                                "room_number",
-                                "room"
-                            ],
-                            "-"
+                        roomDisplayNumber(
+                            room
                         );
 
 
@@ -2097,10 +2434,9 @@
                                     class="btn-success checkout-button"
                                     data-id="${escapeHtml(
                                         reservation.id
-                                    )}">
-
+                                    )}"
+                                >
                                     Check-out
-
                                 </button>
 
                             </td>
@@ -2119,7 +2455,7 @@
                 ".checkout-button"
             )
             .forEach(
-                function (button) {
+                button => {
 
                     button.addEventListener(
                         "click",
@@ -2138,10 +2474,6 @@
     }
 
 
-    /* =====================================================
-       RENDER HISTORY
-    ===================================================== */
-
     function renderHistory() {
 
         const tbody =
@@ -2157,16 +2489,15 @@
         if (!history.length) {
 
             tbody.innerHTML =
-
                 `<tr>
                     <td
                         colspan="8"
-                        class="empty-message">
-
+                        class="empty-message"
+                    >
                         No completed check-outs yet.
-
                     </td>
                 </tr>`;
+
 
             return;
 
@@ -2175,7 +2506,7 @@
 
         tbody.innerHTML =
             history.map(
-                function (reservation) {
+                reservation => {
 
                     const guest =
                         findGuest(
@@ -2209,38 +2540,20 @@
 
 
                     const reservationNumber =
-                        field(
-                            reservation,
-                            [
-                                "reservation_number",
-                                "booking_number",
-                                "reference_number",
-                                "id"
-                            ],
-                            reservation.id
+                        reservationDisplayNumber(
+                            reservation
                         );
 
 
                     const guestName =
-                        field(
-                            guest,
-                            [
-                                "full name",
-                                "full_name",
-                                "name"
-                            ],
-                            "Guest"
+                        guestDisplayName(
+                            guest
                         );
 
 
                     const roomNumber =
-                        field(
-                            room,
-                            [
-                                "room_number",
-                                "room"
-                            ],
-                            "-"
+                        roomDisplayNumber(
+                            room
                         );
 
 
@@ -2318,10 +2631,6 @@
     }
 
 
-    /* =====================================================
-       SUMMARY
-    ===================================================== */
-
     function updateSummary() {
 
         const today =
@@ -2335,7 +2644,7 @@
 
         const completedToday =
             reservations.filter(
-                function (reservation) {
+                reservation => {
 
                     if (
                         !isCompleted(
@@ -2378,10 +2687,10 @@
 
         const revenue =
             completedToday.reduce(
-                function (
+                (
                     total,
                     reservation
-                ) {
+                ) => {
 
                     return (
                         total +
@@ -2396,7 +2705,9 @@
 
 
         el("todayRevenue").textContent =
-            money(revenue);
+            money(
+                revenue
+            );
 
 
         const outstanding =
@@ -2405,10 +2716,10 @@
                     isPending
                 )
                 .reduce(
-                    function (
+                    (
                         total,
                         reservation
-                    ) {
+                    ) => {
 
                         return (
                             total +
@@ -2430,25 +2741,24 @@
     }
 
 
-    /* =====================================================
-       OPEN CHECKOUT
-    ===================================================== */
-
     function openCheckout(
         reservationId
     ) {
 
+        if (checkoutProcessing) {
+            return;
+        }
+
+
         selectedReservation =
             reservations.find(
-                function (reservation) {
-
-                    return String(
+                reservation =>
+                    String(
                         reservation.id
-                    ) === String(
+                    ) ===
+                    String(
                         reservationId
-                    );
-
-                }
+                    )
             );
 
 
@@ -2456,6 +2766,21 @@
 
             alert(
                 "Reservation could not be found."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !isPending(
+                selectedReservation
+            )
+        ) {
+
+            alert(
+                "This reservation is no longer pending checkout."
             );
 
             return;
@@ -2495,29 +2820,20 @@
 
 
         el("modalReservation").textContent =
-            selectedReservation.id;
+            reservationDisplayNumber(
+                selectedReservation
+            );
 
 
         el("modalGuest").textContent =
-            field(
-                guest,
-                [
-                    "full name",
-                    "full_name",
-                    "name"
-                ],
-                "Guest"
+            guestDisplayName(
+                guest
             );
 
 
         el("modalRoom").textContent =
-            field(
-                room,
-                [
-                    "room_number",
-                    "room"
-                ],
-                "-"
+            roomDisplayNumber(
+                room
             );
 
 
@@ -2540,7 +2856,9 @@
 
 
         el("paymentAmount").value =
-            balance.toFixed(2);
+            balance.toFixed(
+                2
+            );
 
 
         el("paymentReference").value =
@@ -2551,9 +2869,7 @@
             "Cash";
 
 
-        showCheckoutMessage(
-            ""
-        );
+        showCheckoutMessage("");
 
 
         el("checkoutModal")
@@ -2563,11 +2879,12 @@
     }
 
 
-    /* =====================================================
-       CLOSE CHECKOUT
-    ===================================================== */
-
     function closeCheckout() {
+
+        if (checkoutProcessing) {
+            return;
+        }
+
 
         el("checkoutModal")
             .classList
@@ -2577,12 +2894,11 @@
         selectedReservation =
             null;
 
+
+        showCheckoutMessage("");
+
     }
 
-
-    /* =====================================================
-       FINANCIAL ENGINE
-    ===================================================== */
 
     async function postFinancialPayment(
         amount,
@@ -2591,55 +2907,13 @@
         reservation
     ) {
 
-        if (
-            amount <= 0
-        ) {
-
+        if (amount <= 0) {
             return null;
-
         }
 
 
         const engine =
-            window.FinancialEngine ||
-            window.EDUTECH_FINANCIAL_ENGINE;
-
-
-        if (!engine) {
-
-            throw new Error(
-                "Financial Engine is not loaded. Please make sure financial-engine.js is loaded before checking out."
-            );
-
-        }
-
-
-        if (
-            typeof engine.postPayment !==
-                "function"
-        ) {
-
-            throw new Error(
-                "Financial Engine does not provide postPayment()."
-            );
-
-        }
-
-
-        /*
-         * IMPORTANT:
-         *
-         * We deliberately do NOT send:
-         *
-         * guest_id
-         * payment_method
-         * reservation_id
-         *
-         * to financial_transactions.
-         *
-         * Those fields are not present in the confirmed
-         * financial_transactions schema.
-         */
+            await getFinancialEngine();
 
 
         return await engine.postPayment({
@@ -2657,7 +2931,8 @@
                 paymentMethod,
 
             referenceNumber:
-                paymentReference,
+                paymentReference ||
+                `PAYMENT-${reservation.id}-${Date.now()}`,
 
             description:
                 "Guest check-out payment - Reservation " +
@@ -2668,23 +2943,14 @@
     }
 
 
-    /* =====================================================
-       RECORD PAYMENT
-    ===================================================== */
-
     async function recordPayment(
         amount,
         paymentMethod,
-        paymentReference,
         reservation
     ) {
 
-        if (
-            amount <= 0
-        ) {
-
+        if (amount <= 0) {
             return null;
-
         }
 
 
@@ -2697,7 +2963,9 @@
                         reservation.id,
 
                     amount:
-                        amount,
+                        roundMoney(
+                            amount
+                        ),
 
                     payment_method:
                         paymentMethod,
@@ -2729,30 +2997,35 @@
     }
 
 
-    /* =====================================================
-       DELETE PAYMENT ROLLBACK
-    ===================================================== */
-
     async function rollbackPayment(
         paymentId
     ) {
 
         if (!paymentId) {
-
             return;
-
         }
 
 
         try {
 
-            await supabaseClient
-                .from("payments")
-                .delete()
-                .eq(
-                    "id",
-                    paymentId
+            const result =
+                await supabaseClient
+                    .from("payments")
+                    .delete()
+                    .eq(
+                        "id",
+                        paymentId
+                    );
+
+
+            if (result.error) {
+
+                console.error(
+                    "Payment rollback error:",
+                    result.error
                 );
+
+            }
 
         }
         catch (error) {
@@ -2767,18 +3040,235 @@
     }
 
 
-    /* =====================================================
-       COMPLETE CHECKOUT
-    ===================================================== */
+    async function accommodationLedgerAlreadyPosted(
+        reservationId
+    ) {
+
+        const revenueReference =
+            `ACCOM-${reservationId}-REV`;
+
+
+        const vatReference =
+            `ACCOM-${reservationId}-VAT`;
+
+
+        const result =
+            await supabaseClient
+                .from("financial_transactions")
+                .select(
+                    "id,reference_number,transaction_type,amount,is_reversal"
+                )
+                .eq(
+                    "hotel_id",
+                    hotelId
+                )
+                .in(
+                    "reference_number",
+                    [
+                        revenueReference,
+                        vatReference
+                    ]
+                )
+                .eq(
+                    "is_reversal",
+                    false
+                );
+
+
+        if (result.error) {
+
+            throw new Error(
+                "Unable to verify accommodation ledger: " +
+                result.error.message
+            );
+
+        }
+
+
+        const rows =
+            result.data ||
+            [];
+
+
+        const revenue =
+            rows.some(
+                row =>
+                    row.reference_number ===
+                    revenueReference
+            );
+
+
+        const vat =
+            rows.some(
+                row =>
+                    row.reference_number ===
+                    vatReference
+            );
+
+
+        return {
+
+            revenue:
+                revenue,
+
+            vat:
+                vat,
+
+            complete:
+                revenue &&
+                vat
+
+        };
+
+    }
+
+
+    async function postCheckoutAccommodationToLedger(
+        reservation
+    ) {
+
+        const engine =
+            await getFinancialEngine();
+
+
+        if (
+            typeof engine.postAccommodationCharge !==
+            "function"
+        ) {
+
+            throw new Error(
+                "Financial Engine does not support accommodation posting."
+            );
+
+        }
+
+
+        const reservationId =
+            reservation.id;
+
+
+        const roomRevenue =
+            reservationAmount(
+                reservation
+            );
+
+
+        if (
+            roomRevenue <= 0
+        ) {
+
+            return {
+
+                success:
+                    true,
+
+                skipped:
+                    true
+
+            };
+
+        }
+
+
+        const ledgerStatus =
+            await accommodationLedgerAlreadyPosted(
+                reservationId
+            );
+
+
+        if (
+            ledgerStatus.complete
+        ) {
+
+            console.log(
+                "Accommodation ledger already posted:",
+                reservationId
+            );
+
+
+            return {
+
+                success:
+                    true,
+
+                alreadyPosted:
+                    true,
+
+                ledgerVerified:
+                    true
+
+            };
+
+        }
+
+
+        if (
+            ledgerStatus.revenue !==
+            ledgerStatus.vat
+        ) {
+
+            throw new Error(
+                "An incomplete accommodation ledger posting already exists for reservation " +
+                reservationId +
+                ". No duplicate transaction was created."
+            );
+
+        }
+
+
+        const result =
+            await engine.postAccommodationCharge({
+
+                supabase:
+                    supabaseClient,
+
+                hotelId:
+                    hotelId,
+
+                reservationId:
+                    reservationId,
+
+                roomRevenue:
+                    roomRevenue,
+
+                vatAmount:
+                    0,
+
+                referenceNumber:
+                    `ACCOM-${reservationId}`,
+
+                description:
+                    "Accommodation charge - Reservation " +
+                    reservationId
+
+            });
+
+
+        return {
+
+            success:
+                true,
+
+            result:
+                result
+
+        };
+
+    }
+
 
     async function completeCheckout() {
 
-        if (
-            !selectedReservation
-        ) {
+        if (checkoutProcessing) {
+            return;
+        }
+
+
+        if (!selectedReservation) {
 
             showCheckoutMessage(
-                "No reservation is selected."
+                "No reservation is selected.",
+                "error"
             );
 
             return;
@@ -2793,7 +3283,7 @@
 
 
         const paymentAmount =
-            numberValue(
+            roundMoney(
                 el(
                     "paymentAmount"
                 ).value
@@ -2813,35 +3303,53 @@
                 .trim();
 
 
+        const reservation =
+            selectedReservation;
+
+
         const total =
             reservationTotal(
-                selectedReservation
+                reservation
             );
 
 
         const alreadyPaid =
             paidAmount(
-                selectedReservation.id
+                reservation.id
             );
 
 
         const currentBalance =
-            Math.max(
-                0,
-                total - alreadyPaid
+            roundMoney(
+                Math.max(
+                    0,
+                    total -
+                    alreadyPaid
+                )
             );
 
 
-        /* -------------------------------------------------
-           VALIDATE PAYMENT
-        ------------------------------------------------- */
-
         if (
-            paymentAmount < 0
+            !isPending(
+                reservation
+            )
         ) {
 
             showCheckoutMessage(
-                "Payment amount cannot be negative."
+                "This reservation is no longer pending checkout.",
+                "warning"
+            );
+
+            return;
+
+        }
+
+
+        if (paymentAmount < 0) {
+
+            showCheckoutMessage(
+                "Payment amount cannot be negative.",
+                "error"
             );
 
             return;
@@ -2851,7 +3359,8 @@
 
         if (
             paymentAmount >
-            currentBalance + 0.01
+            currentBalance +
+            0.01
         ) {
 
             showCheckoutMessage(
@@ -2859,7 +3368,8 @@
                 money(
                     currentBalance
                 ) +
-                "."
+                ".",
+                "error"
             );
 
             return;
@@ -2867,29 +3377,35 @@
         }
 
 
-        /*
-         * The system requires the reservation to be fully
-         * settled before checkout.
-         */
+        const remainingAfterPayment =
+            roundMoney(
+                total -
+                alreadyPaid -
+                paymentAmount
+            );
+
 
         if (
-            paymentAmount + alreadyPaid <
-            total - 0.01
+            remainingAfterPayment >
+            0.01
         ) {
 
             showCheckoutMessage(
                 "The guest still has an outstanding balance of " +
                 money(
-                    total -
-                    alreadyPaid -
-                    paymentAmount
+                    remainingAfterPayment
                 ) +
-                ". Please collect the full balance before completing check-out."
+                ". Please collect the full balance before completing check-out.",
+                "error"
             );
 
             return;
 
         }
+
+
+        checkoutProcessing =
+            true;
 
 
         button.disabled =
@@ -2900,42 +3416,15 @@
             "Processing...";
 
 
-        let paymentRecord = null;
+        let paymentRecord =
+            null;
 
 
         try {
 
-            /* =============================================
-               STEP 1
-               POST TO FINANCIAL ENGINE
-            ============================================= */
-
             if (
-                paymentAmount > 0
-            ) {
-
-                await postFinancialPayment(
-
-                    paymentAmount,
-
-                    paymentMethod,
-
-                    paymentReference,
-
-                    selectedReservation
-
-                );
-
-            }
-
-
-            /* =============================================
-               STEP 2
-               RECORD PAYMENT
-            ============================================= */
-
-            if (
-                paymentAmount > 0
+                paymentAmount >
+                0
             ) {
 
                 paymentRecord =
@@ -2945,19 +3434,50 @@
 
                         paymentMethod,
 
-                        paymentReference,
-
-                        selectedReservation
+                        reservation
 
                     );
 
             }
 
 
-            /* =============================================
-               STEP 3
-               UPDATE RESERVATION
-            ============================================= */
+            if (
+                paymentAmount >
+                0
+            ) {
+
+                try {
+
+                    await postFinancialPayment(
+
+                        paymentAmount,
+
+                        paymentMethod,
+
+                        paymentReference,
+
+                        reservation
+
+                    );
+
+                }
+                catch (financialError) {
+
+                    await rollbackPayment(
+                        paymentRecord &&
+                        paymentRecord.id
+                    );
+
+
+                    throw new Error(
+                        "Financial payment posting failed: " +
+                        financialError.message
+                    );
+
+                }
+
+            }
+
 
             const reservationUpdate =
                 await supabaseClient
@@ -2974,19 +3494,17 @@
                     })
                     .eq(
                         "id",
-                        selectedReservation.id
+                        reservation.id
+                    )
+                    .eq(
+                        "hotel_id",
+                        hotelId
                     );
 
 
             if (
                 reservationUpdate.error
             ) {
-
-                await rollbackPayment(
-                    paymentRecord &&
-                    paymentRecord.id
-                );
-
 
                 throw new Error(
                     "Unable to complete reservation check-out: " +
@@ -2996,14 +3514,9 @@
             }
 
 
-            /* =============================================
-               STEP 4
-               RELEASE ROOM
-            ============================================= */
-
             const room =
                 findRoom(
-                    selectedReservation
+                    reservation
                 );
 
 
@@ -3024,6 +3537,10 @@
                         .eq(
                             "id",
                             room.id
+                        )
+                        .eq(
+                            "hotel_id",
+                            hotelId
                         );
 
 
@@ -3031,9 +3548,23 @@
                     roomUpdate.error
                 ) {
 
-                    throw new Error(
-                        "Check-out was completed, but the room could not be released: " +
-                        roomUpdate.error.message
+                    console.error(
+                        "Room release failed:",
+                        roomUpdate.error
+                    );
+
+
+                    showCheckoutMessage(
+                        "Guest check-out was completed, but the room could not be released automatically. Please update room " +
+                        roomDisplayNumber(room) +
+                        " manually.",
+                        "warning"
+                    );
+
+
+                    showMessage(
+                        "Guest check-out completed. Room release requires attention.",
+                        "warning"
                     );
 
                 }
@@ -3041,9 +3572,81 @@
             }
 
 
-            /* =============================================
-               SUCCESS
-            ============================================= */
+            let accommodationLedgerResult =
+                null;
+
+
+            try {
+
+                accommodationLedgerResult =
+                    await postCheckoutAccommodationToLedger(
+                        reservation
+                    );
+
+            }
+            catch (ledgerError) {
+
+                console.error(
+                    "Accommodation ledger posting failed:",
+                    ledgerError
+                );
+
+
+                showCheckoutMessage(
+                    "Guest check-out was completed successfully, but the accommodation financial ledger could not be completed. DO NOT repeat the check-out. Please contact the system administrator.",
+                    "warning"
+                );
+
+
+                showMessage(
+                    "Guest check-out completed. Financial ledger requires administrator attention.",
+                    "warning"
+                );
+
+
+                setTimeout(
+                    async function () {
+
+                        closeCheckout();
+
+                        await loadData();
+
+                        checkoutProcessing =
+                            false;
+
+                        button.disabled =
+                            false;
+
+                        button.textContent =
+                            "Complete Check-out";
+
+                    },
+                    1800
+                );
+
+
+                return;
+
+            }
+
+
+            console.log(
+                "EDU TECH CHECKOUT COMPLETED",
+                {
+                    reservationId:
+                        reservation.id,
+
+                    payment:
+                        paymentAmount,
+
+                    paymentMethod:
+                        paymentMethod,
+
+                    accommodationLedger:
+                        accommodationLedgerResult
+                }
+            );
+
 
             showCheckoutMessage(
                 "Guest check-out completed successfully.",
@@ -3068,6 +3671,9 @@
 
                     await loadData();
 
+                    checkoutProcessing =
+                        false;
+
                     button.disabled =
                         false;
 
@@ -3082,19 +3688,8 @@
         catch (error) {
 
             console.error(
-                "================================================="
-            );
-
-            console.error(
-                "EDU TECH CHECKOUT FAILED"
-            );
-
-            console.error(
+                "EDU TECH CHECKOUT FAILED",
                 error
-            );
-
-            console.error(
-                "================================================="
             );
 
 
@@ -3103,8 +3698,13 @@
                 (
                     error.message ||
                     "Unknown error."
-                )
+                ),
+                "error"
             );
+
+
+            checkoutProcessing =
+                false;
 
 
             button.disabled =
@@ -3118,10 +3718,6 @@
 
     }
 
-
-    /* =====================================================
-       EVENTS
-    ===================================================== */
 
     el("refreshBtn")
         .addEventListener(
@@ -3147,6 +3743,12 @@
                 }
                 catch (error) {
 
+                    console.error(
+                        "Checkout refresh error:",
+                        error
+                    );
+
+
                     showMessage(
                         error.message ||
                         "Unable to refresh checkout data.",
@@ -3158,6 +3760,7 @@
 
                     button.disabled =
                         false;
+
 
                     button.textContent =
                         "🔄 Refresh";
@@ -3171,7 +3774,17 @@
     el("cancelCheckoutBtn")
         .addEventListener(
             "click",
-            closeCheckout
+            function () {
+
+                if (
+                    !checkoutProcessing
+                ) {
+
+                    closeCheckout();
+
+                }
+
+            }
         );
 
 
@@ -3189,7 +3802,8 @@
 
                 if (
                     event.target ===
-                    this
+                    this &&
+                    !checkoutProcessing
                 ) {
 
                     closeCheckout();
@@ -3200,17 +3814,14 @@
         );
 
 
-    /* =====================================================
-       ESC KEY
-    ===================================================== */
-
     document.addEventListener(
         "keydown",
         function (event) {
 
             if (
                 event.key ===
-                "Escape"
+                "Escape" &&
+                !checkoutProcessing
             ) {
 
                 closeCheckout();
@@ -3221,11 +3832,39 @@
     );
 
 
-    /* =====================================================
-       START
-    ===================================================== */
-
     initialize();
+
+
+    const checkoutBackButton =
+        el("checkoutBackButton");
+
+
+    if (checkoutBackButton) {
+
+        checkoutBackButton.addEventListener(
+            "click",
+            function () {
+
+                if (
+                    window.history.length >
+                    1
+                ) {
+
+                    window.history.back();
+
+                }
+                else {
+
+                    window.location.href =
+                        "./index.html";
+
+                }
+
+            }
+        );
+
+    }
+
 
 })();
 

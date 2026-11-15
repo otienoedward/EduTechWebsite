@@ -1,28 +1,29 @@
 /* =========================================================
    EDU TECH HOTEL MANAGEMENT SYSTEM
-   MAINTENANCE.JS
-   ---------------------------------------------------------
-   VERSION: 2026.11.13.01
-   ---------------------------------------------------------
-   UPDATED:
-   - Technician is now entered manually
-   - No permanent technician required
-   - No Employees table required for technicians
-   - Technician name stored in assigned_to
-   - employee_id is no longer required
-   - Existing maintenance functionality preserved
+   MAINTENANCE MODULE
+   VERSION: 2026.11.15.01
+
+   CORRECTED:
+   - Hotel display IDs
+   - Maintenance form IDs
+   - Add button ID
+   - Current hotel detection
+   - Financial engine loading
+   - Financial engine uses postPayment()
+   - Prevents Maintenance from waiting for
+     nonexistent postMaintenanceCost()
    ========================================================= */
 
 (function () {
 
     "use strict";
 
+    const VERSION = "2026.11.15.01";
 
-    /* =====================================================
-       STATE
-       ===================================================== */
+    const ENGINE_PATH =
+        "./financial-engine.js";
 
-    const state = {
+    let state = {
 
         hotelId: null,
 
@@ -43,93 +44,21 @@
        BASIC HELPERS
        ===================================================== */
 
-    function getSupabase() {
+    function log() {
 
-        return window.supabaseClient || null;
-
-    }
-
-
-    function getStorageValue(keys) {
-
-        for (const key of keys) {
-
-            const sessionValue =
-                sessionStorage.getItem(key);
-
-
-            if (
-                sessionValue !== null &&
-                sessionValue !== ""
-            ) {
-
-                return sessionValue;
-
-            }
-
-
-            const localValue =
-                localStorage.getItem(key);
-
-
-            if (
-                localValue !== null &&
-                localValue !== ""
-            ) {
-
-                return localValue;
-
-            }
-
-        }
-
-
-        return null;
+        console.log(
+            "[EDU TECH Maintenance]",
+            ...arguments
+        );
 
     }
 
 
-    function getHotelId() {
+    function errorLog() {
 
-        const value =
-            getStorageValue([
-                "hotelId",
-                "hotel_id",
-                "currentHotelId",
-                "current_hotel_id",
-                "roomHotel",
-                "selectedHotelId"
-            ]);
-
-
-        if (!value) {
-
-            return null;
-
-        }
-
-
-        const id =
-            Number(value);
-
-
-        return Number.isFinite(id)
-            ? id
-            : null;
-
-    }
-
-
-    function money(value) {
-
-        return (
-            Number(value) || 0
-        ).toLocaleString(
-            "en-KE",
-            {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }
+        console.error(
+            "[EDU TECH Maintenance]",
+            ...arguments
         );
 
     }
@@ -146,7 +75,6 @@
 
         }
 
-
         return String(value)
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
@@ -157,59 +85,602 @@
     }
 
 
-    function showToast(
-        message,
-        type = ""
-    ) {
+    function money(value) {
 
-        const container =
-            document.getElementById(
-                "toastContainer"
-            );
+        const amount =
+            Number(value) || 0;
+
+        return new Intl.NumberFormat(
+            "en-KE",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        ).format(amount);
+
+    }
 
 
-        if (!container) {
+    function getSupabase() {
 
-            alert(message);
+        if (
+            window.supabaseClient &&
+            typeof window.supabaseClient.from ===
+            "function"
+        ) {
 
-            return;
+            return window.supabaseClient;
 
         }
 
 
-        const toast =
-            document.createElement(
-                "div"
-            );
+        if (
+            window.supabase &&
+            typeof window.supabase.from ===
+            "function"
+        ) {
+
+            return window.supabase;
+
+        }
 
 
-        toast.className =
-            `toast ${type}`;
-
-
-        toast.textContent =
-            message;
-
-
-        container.appendChild(
-            toast
-        );
-
-
-        setTimeout(
-            () => {
-
-                toast.remove();
-
-            },
-            3500
+        throw new Error(
+            "Supabase client is not available. Make sure supabase.js is loaded."
         );
 
     }
 
 
     /* =====================================================
-       HOTEL
+       FINANCIAL ENGINE
+       IMPORTANT:
+       The current EDU TECH financial engine uses
+       postPayment(), not postMaintenanceCost().
+       ===================================================== */
+
+    function getFinancialEngine() {
+
+        const engine =
+            window.EDUTECH_FINANCIAL_ENGINE ||
+            window.FinancialEngine ||
+            null;
+
+
+        if (
+            engine &&
+            typeof engine.postPayment ===
+            "function"
+        ) {
+
+            return engine;
+
+        }
+
+
+        return null;
+
+    }
+
+
+    let financialEngineLoadPromise =
+        null;
+
+
+    async function ensureFinancialEngine() {
+
+        const existing =
+            getFinancialEngine();
+
+
+        if (existing) {
+
+            log(
+                "Financial engine already available."
+            );
+
+            return existing;
+
+        }
+
+
+        if (
+            financialEngineLoadPromise
+        ) {
+
+            return financialEngineLoadPromise;
+
+        }
+
+
+        financialEngineLoadPromise =
+            new Promise(
+                function (resolve, reject) {
+
+                    let finished =
+                        false;
+
+                    let timeout =
+                        null;
+
+                    let checkTimer =
+                        null;
+
+                    function cleanup() {
+
+                        if (timeout) {
+
+                            clearTimeout(
+                                timeout
+                            );
+
+                        }
+
+
+                        if (checkTimer) {
+
+                            clearInterval(
+                                checkTimer
+                            );
+
+                        }
+
+
+                        window.removeEventListener(
+                            "edutech-financial-engine-ready",
+                            readyHandler
+                        );
+
+                        window.removeEventListener(
+                            "edutech:financial-engine-ready",
+                            readyHandler
+                        );
+
+                    }
+
+
+                    function succeed() {
+
+                        if (finished) {
+
+                            return;
+
+                        }
+
+
+                        const engine =
+                            getFinancialEngine();
+
+
+                        if (!engine) {
+
+                            return;
+
+                        }
+
+
+                        finished =
+                            true;
+
+                        cleanup();
+
+                        log(
+                            "Financial engine is READY."
+                        );
+
+                        resolve(
+                            engine
+                        );
+
+                    }
+
+
+                    function fail(
+                        message
+                    ) {
+
+                        if (finished) {
+
+                            return;
+
+                        }
+
+
+                        finished =
+                            true;
+
+                        cleanup();
+
+                        reject(
+                            new Error(
+                                message
+                            )
+                        );
+
+                    }
+
+
+                    function readyHandler() {
+
+                        succeed();
+
+                    }
+
+
+                    /* -------------------------------------
+                       Check one more time
+                    ------------------------------------- */
+
+                    const immediate =
+                        getFinancialEngine();
+
+
+                    if (immediate) {
+
+                        resolve(
+                            immediate
+                        );
+
+                        return;
+
+                    }
+
+
+                    window.addEventListener(
+                        "edutech-financial-engine-ready",
+                        readyHandler
+                    );
+
+
+                    window.addEventListener(
+                        "edutech:financial-engine-ready",
+                        readyHandler
+                    );
+
+
+                    /* -------------------------------------
+                       Check existing scripts
+                    ------------------------------------- */
+
+                    const scripts =
+                        Array.from(
+                            document.scripts
+                        );
+
+
+                    let engineScript =
+                        scripts.find(
+                            function (script) {
+
+                                return (
+                                    script.src &&
+                                    script.src.includes(
+                                        "financial-engine.js"
+                                    )
+                                );
+
+                            }
+                        );
+
+
+                    /* -------------------------------------
+                       If the script is not already on page,
+                       load it once.
+                    ------------------------------------- */
+
+                    if (!engineScript) {
+
+                        engineScript =
+                            document.createElement(
+                                "script"
+                            );
+
+                        engineScript.src =
+                            ENGINE_PATH;
+
+                        engineScript.type =
+                            "text/javascript";
+
+                        engineScript.async =
+                            false;
+
+                        engineScript.dataset.edutechFinancialEngine =
+                            "true";
+
+
+                        engineScript.onload =
+                            function () {
+
+                                log(
+                                    "financial-engine.js loaded."
+                                );
+
+                                succeed();
+
+                            };
+
+
+                        engineScript.onerror =
+                            function () {
+
+                                fail(
+                                    "Could not load financial-engine.js. Check that financial-engine.js exists in the same folder as maintenance.js."
+                                );
+
+                            };
+
+
+                        document.head.appendChild(
+                            engineScript
+                        );
+
+                    }
+
+
+                    /* -------------------------------------
+                       Continue checking because the engine
+                       may initialize after script load.
+                    ------------------------------------- */
+
+                    checkTimer =
+                        setInterval(
+                            function () {
+
+                                if (
+                                    getFinancialEngine()
+                                ) {
+
+                                    succeed();
+
+                                }
+
+                            },
+                            100
+                        );
+
+
+                    /* -------------------------------------
+                       Maximum wait: 15 seconds
+                    ------------------------------------- */
+
+                    timeout =
+                        setTimeout(
+                            function () {
+
+                                if (
+                                    getFinancialEngine()
+                                ) {
+
+                                    succeed();
+
+                                    return;
+
+                                }
+
+
+                                fail(
+                                    "Financial engine did not become ready. The current financial-engine.js does not appear to be available. Check the browser Console for the original financial-engine.js error."
+                                );
+
+                            },
+                            15000
+                        );
+
+                }
+            );
+
+
+        try {
+
+            return await financialEngineLoadPromise;
+
+        }
+
+        catch (error) {
+
+            financialEngineLoadPromise =
+                null;
+
+            throw error;
+
+        }
+
+    }
+
+
+    /* =====================================================
+       HOTEL ID
+       ===================================================== */
+
+    async function getHotelId() {
+
+        if (
+            state.hotelId !== null &&
+            Number.isFinite(
+                Number(state.hotelId)
+            )
+        ) {
+
+            return Number(
+                state.hotelId
+            );
+
+        }
+
+
+        /* -----------------------------------------
+           Current hotel global
+        ----------------------------------------- */
+
+        if (
+            window.currentHotel &&
+            window.currentHotel.id
+        ) {
+
+            const id =
+                Number(
+                    window.currentHotel.id
+                );
+
+
+            if (
+                Number.isFinite(id)
+            ) {
+
+                state.hotelId =
+                    id;
+
+                return id;
+
+            }
+
+        }
+
+
+        /* -----------------------------------------
+           Common storage keys
+        ----------------------------------------- */
+
+        const possibleKeys = [
+
+            "hotelId",
+
+            "hotel_id",
+
+            "selectedHotelId",
+
+            "selected_hotel_id",
+
+            "currentHotelId",
+
+            "current_hotel_id"
+
+        ];
+
+
+        /* -----------------------------------------
+           Session storage
+        ----------------------------------------- */
+
+        for (
+            let i = 0;
+            i < possibleKeys.length;
+            i++
+        ) {
+
+            const value =
+                sessionStorage.getItem(
+                    possibleKeys[i]
+                );
+
+
+            if (
+                value !== null &&
+                value !== ""
+            ) {
+
+                const id =
+                    Number(value);
+
+
+                if (
+                    Number.isFinite(id) &&
+                    id > 0
+                ) {
+
+                    state.hotelId =
+                        id;
+
+                    return id;
+
+                }
+
+            }
+
+        }
+
+
+        /* -----------------------------------------
+           Local storage
+        ----------------------------------------- */
+
+        for (
+            let i = 0;
+            i < possibleKeys.length;
+            i++
+        ) {
+
+            const value =
+                localStorage.getItem(
+                    possibleKeys[i]
+                );
+
+
+            if (
+                value !== null &&
+                value !== ""
+            ) {
+
+                const id =
+                    Number(value);
+
+
+                if (
+                    Number.isFinite(id) &&
+                    id > 0
+                ) {
+
+                    state.hotelId =
+                        id;
+
+                    return id;
+
+                }
+
+            }
+
+        }
+
+
+        /* -----------------------------------------
+           Global hotelId
+        ----------------------------------------- */
+
+        if (
+            window.hotelId !== undefined &&
+            window.hotelId !== null
+        ) {
+
+            const id =
+                Number(
+                    window.hotelId
+                );
+
+
+            if (
+                Number.isFinite(id) &&
+                id > 0
+            ) {
+
+                state.hotelId =
+                    id;
+
+                return id;
+
+            }
+
+        }
+
+
+        throw new Error(
+            "Hotel ID could not be determined. Please make sure the current hotel is selected."
+        );
+
+    }
+
+
+    /* =====================================================
+       LOAD HOTEL
        ===================================================== */
 
     async function loadHotel() {
@@ -218,109 +689,141 @@
             getSupabase();
 
 
-        if (
-            !supabase ||
-            !state.hotelId
-        ) {
+        const hotelId =
+            await getHotelId();
 
-            return;
+
+        const {
+            data,
+            error
+        } = await supabase
+            .from("hotels")
+            .select("*")
+            .eq(
+                "id",
+                hotelId
+            )
+            .maybeSingle();
+
+
+        if (error) {
+
+            throw new Error(
+                "Unable to load hotel: " +
+                error.message
+            );
 
         }
 
 
-        try {
+        if (!data) {
 
-            const {
-                data,
-                error
-            } =
-                await supabase
-                    .from("hotels")
-                    .select("*")
-                    .eq(
-                        "id",
-                        state.hotelId
-                    )
-                    .single();
+            throw new Error(
+                "The selected hotel could not be found."
+            );
+
+        }
 
 
-            if (error) {
-
-                throw error;
-
-            }
+        state.hotel =
+            data;
 
 
-            state.hotel =
-                data || null;
+        /* -----------------------------------------
+           Actual hotel fields used by your system
+        ----------------------------------------- */
+
+        const hotelName =
+            data.hotel_name ||
+            data.name ||
+            "Hotel";
 
 
-            const hotelName =
-                document.getElementById(
-                    "maintenanceHotelName"
-                );
+        const hotelLocation =
+            data.location ||
+            "";
 
 
-            const hotelLocation =
-                document.getElementById(
-                    "maintenanceHotelLocation"
-                );
+        /* -----------------------------------------
+           Maintenance page IDs
+        ----------------------------------------- */
 
-
-            if (hotelName) {
-
-                hotelName.textContent =
-                    data?.hotel_name ||
-                    data?.name ||
-                    "Current Hotel";
-
-            }
-
-
-            if (hotelLocation) {
-
-                hotelLocation.textContent =
-                    data?.location ||
-                    "-";
-
-            }
-
-        } catch (error) {
-
-            console.error(
-                "Hotel loading error:",
-                error
+        const nameElement =
+            document.getElementById(
+                "maintenanceHotelName"
             );
 
 
-            const hotelName =
-                document.getElementById(
-                    "maintenanceHotelName"
-                );
+        if (nameElement) {
 
-
-            const hotelLocation =
-                document.getElementById(
-                    "maintenanceHotelLocation"
-                );
-
-
-            if (hotelName) {
-
-                hotelName.textContent =
-                    "Hotel information unavailable";
-
-            }
-
-
-            if (hotelLocation) {
-
-                hotelLocation.textContent =
-                    "";
-
-            }
+            nameElement.textContent =
+                hotelName;
 
         }
+
+
+        const locationElement =
+            document.getElementById(
+                "maintenanceHotelLocation"
+            );
+
+
+        if (locationElement) {
+
+            locationElement.textContent =
+                hotelLocation;
+
+        }
+
+
+        /* -----------------------------------------
+           Backward-compatible IDs
+        ----------------------------------------- */
+
+        const oldHotelName =
+            document.getElementById(
+                "hotelName"
+            );
+
+
+        if (oldHotelName) {
+
+            oldHotelName.textContent =
+                hotelName;
+
+        }
+
+
+        const oldHotelTitle =
+            document.getElementById(
+                "hotelTitle"
+            );
+
+
+        if (oldHotelTitle) {
+
+            oldHotelTitle.textContent =
+                hotelName;
+
+        }
+
+
+        log(
+            "Hotel loaded:",
+            {
+                id:
+                    hotelId,
+
+                name:
+                    hotelName,
+
+                location:
+                    hotelLocation
+            }
+        );
+
+
+        return state.hotel;
 
     }
 
@@ -335,67 +838,112 @@
             getSupabase();
 
 
-        if (
-            !supabase ||
-            !state.hotelId
-        ) {
+        const hotelId =
+            await getHotelId();
 
-            state.rooms = [];
 
-            populateRooms();
+        const {
+            data,
+            error
+        } = await supabase
+            .from("rooms")
+            .select(
+                "id, room_number, room_type, status, hotel_id"
+            )
+            .eq(
+                "hotel_id",
+                hotelId
+            )
+            .order(
+                "room_number",
+                {
+                    ascending: true
+                }
+            );
+
+
+        if (error) {
+
+            throw new Error(
+                "Unable to load rooms: " +
+                error.message
+            );
+
+        }
+
+
+        state.rooms =
+            data || [];
+
+
+        populateRoomSelect();
+
+
+        return state.rooms;
+
+    }
+
+
+    /* =====================================================
+       ROOM SELECT
+       ===================================================== */
+
+    function populateRoomSelect() {
+
+        const select =
+            document.getElementById(
+                "maintenanceRoom"
+            );
+
+
+        if (!select) {
 
             return;
 
         }
 
 
-        try {
+        const currentValue =
+            select.value;
 
-            const {
-                data,
-                error
-            } =
-                await supabase
-                    .from("rooms")
-                    .select("*")
-                    .eq(
-                        "hotel_id",
-                        state.hotelId
-                    )
-                    .order(
-                        "room_number",
-                        {
-                            ascending: true
-                        }
+
+        select.innerHTML =
+            '<option value="">Select Room</option>';
+
+
+        state.rooms.forEach(
+            function (room) {
+
+                const option =
+                    document.createElement(
+                        "option"
                     );
 
 
-            if (error) {
+                option.value =
+                    room.id;
 
-                throw error;
+
+                option.textContent =
+                    "Room " +
+                    (
+                        room.room_number ||
+                        ""
+                    );
+
+
+                select.appendChild(
+                    option
+                );
 
             }
+        );
 
 
-            state.rooms =
-                Array.isArray(data)
-                    ? data
-                    : [];
+        if (currentValue) {
 
-
-            populateRooms();
-
-        } catch (error) {
-
-            console.error(
-                "Rooms loading error:",
-                error
-            );
-
-
-            state.rooms = [];
-
-            populateRooms();
+            select.value =
+                currentValue;
 
         }
 
@@ -412,572 +960,189 @@
             getSupabase();
 
 
-        if (
-            !supabase ||
-            !state.hotelId
-        ) {
-
-            state.maintenance = [];
-
-            renderMaintenance();
-
-            updateSummary();
-
-            return;
-
-        }
+        const hotelId =
+            await getHotelId();
 
 
-        state.loading = true;
-
-
-        renderLoading();
-
-
-        try {
-
-            const {
-                data,
-                error
-            } =
-                await supabase
-                    .from("maintenance")
-                    .select("*")
-                    .eq(
-                        "hotel_id",
-                        state.hotelId
-                    )
-                    .order(
-                        "created_at",
-                        {
-                            ascending: false
-                        }
-                    );
-
-
-            if (error) {
-
-                throw error;
-
-            }
-
-
-            state.maintenance =
-                Array.isArray(data)
-                    ? data
-                    : [];
-
-
-        } catch (error) {
-
-            console.error(
-                "Maintenance loading error:",
-                error
+        const {
+            data,
+            error
+        } = await supabase
+            .from("maintenance")
+            .select("*")
+            .eq(
+                "hotel_id",
+                hotelId
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
             );
 
 
-            state.maintenance = [];
+        if (error) {
 
-
-            const tbody =
-                document.getElementById(
-                    "maintenanceTableBody"
-                );
-
-
-            if (tbody) {
-
-                tbody.innerHTML = `
-
-                    <tr>
-
-                        <td
-                            colspan="8"
-                            class="error-state"
-                        >
-
-                            Unable to load maintenance records.
-
-                            <br><br>
-
-                            ${escapeHtml(
-                                error.message
-                            )}
-
-                        </td>
-
-                    </tr>
-
-                `;
-
-            }
-
-        } finally {
-
-            state.loading = false;
+            throw new Error(
+                "Unable to load maintenance records: " +
+                error.message
+            );
 
         }
+
+
+        state.maintenance =
+            data || [];
+
+
+        updateSummary();
 
 
         renderMaintenance();
 
-        updateSummary();
 
-    }
-
-
-    function renderLoading() {
-
-        const tbody =
-            document.getElementById(
-                "maintenanceTableBody"
-            );
-
-
-        if (!tbody) {
-
-            return;
-
-        }
-
-
-        tbody.innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="8"
-                    class="loading-state"
-                >
-
-                    Loading maintenance tasks...
-
-                </td>
-
-            </tr>
-
-        `;
+        return state.maintenance;
 
     }
 
 
     /* =====================================================
-       ROOM HELPERS
+       ROOM NUMBER
        ===================================================== */
 
-    function getRoomById(id) {
+    function getRoomNumber(
+        row
+    ) {
 
         if (
-            id === null ||
-            id === undefined ||
-            id === ""
+            row &&
+            row.room_number
         ) {
 
-            return null;
+            return row.room_number;
 
         }
 
 
-        return state.rooms.find(
-            room =>
-                Number(room.id) ===
-                Number(id)
-        ) || null;
+        if (
+            row &&
+            row.room_id
+        ) {
+
+            const room =
+                state.rooms.find(
+                    function (item) {
+
+                        return (
+                            Number(item.id) ===
+                            Number(row.room_id)
+                        );
+
+                    }
+                );
+
+
+            if (room) {
+
+                return (
+                    room.room_number ||
+                    ""
+                );
+
+            }
+
+        }
+
+
+        return "";
 
     }
 
 
-    function getRoomNumber(record) {
+    /* =====================================================
+       DATE
+       ===================================================== */
 
-        if (
-            record.room_number !== null &&
-            record.room_number !== undefined &&
-            String(record.room_number).trim() !== ""
-        ) {
+    function formatDate(
+        value
+    ) {
 
-            return record.room_number;
+        if (!value) {
+
+            return "-";
 
         }
 
 
-        const room =
-            getRoomById(
-                record.room_id
-            );
+        const date =
+            new Date(value);
 
 
-        return (
-            room?.room_number ||
-            "-"
+        if (
+            Number.isNaN(
+                date.getTime()
+            )
+        ) {
+
+            return String(value);
+
+        }
+
+
+        return date.toLocaleDateString(
+            "en-GB"
         );
 
     }
 
 
     /* =====================================================
-       TECHNICIAN HELPER
-       -----------------------------------------------------
-       Technician is now stored directly in assigned_to.
-       No Employees lookup is required.
+       STATUS CLASS
        ===================================================== */
 
-    function getTechnicianName(record) {
-
-        if (
-            record &&
-            record.assigned_to !== null &&
-            record.assigned_to !== undefined &&
-            String(record.assigned_to).trim() !== ""
-        ) {
-
-            return String(
-                record.assigned_to
-            ).trim();
-
-        }
-
-
-        /*
-         * Compatibility fallback:
-         * Some old records may have an employee/staff
-         * name stored under another field.
-         */
-
-        if (
-            record &&
-            record.technician_name !== null &&
-            record.technician_name !== undefined &&
-            String(record.technician_name).trim() !== ""
-        ) {
-
-            return String(
-                record.technician_name
-            ).trim();
-
-        }
-
-
-        return "-";
-
-    }
-
-
-    /* =====================================================
-       STATUS
-       ===================================================== */
-
-    function getStatusClass(status) {
+    function getStatusClass(
+        status
+    ) {
 
         const value =
             String(
-                status || ""
-            )
-            .trim()
-            .toLowerCase();
+                status ||
+                ""
+            ).toLowerCase();
 
 
         if (
-            value === "completed"
+            value ===
+            "in progress"
         ) {
 
-            return "status-badge status-completed";
-
-        }
-
-
-        if (
-            value === "in progress"
-        ) {
-
-            return "status-badge status-progress";
+            return "status-progress";
 
         }
 
 
         if (
-            value === "cancelled"
+            value ===
+            "completed"
         ) {
 
-            return "status-badge status-cancelled";
+            return "status-completed";
 
         }
 
 
-        return "status-badge status-pending";
+        if (
+            value ===
+            "cancelled"
+        ) {
 
-    }
-
-
-    /* =====================================================
-       RENDER MAINTENANCE
-       ===================================================== */
-
-    function renderMaintenance() {
-
-        const tbody =
-            document.getElementById(
-                "maintenanceTableBody"
-            );
-
-
-        if (!tbody) {
-
-            return;
+            return "status-cancelled";
 
         }
 
 
-        const search =
-            String(
-                document.getElementById(
-                    "maintenanceSearch"
-                )?.value || ""
-            )
-            .trim()
-            .toLowerCase();
-
-
-        const statusFilter =
-            String(
-                document.getElementById(
-                    "maintenanceStatusFilter"
-                )?.value || ""
-            )
-            .trim()
-            .toLowerCase();
-
-
-        const filtered =
-            state.maintenance.filter(
-                record => {
-
-                    const room =
-                        getRoomNumber(
-                            record
-                        );
-
-
-                    const technician =
-                        getTechnicianName(
-                            record
-                        );
-
-
-                    const searchable = [
-
-                        record.id,
-
-                        room,
-
-                        record.issue,
-
-                        technician,
-
-                        record.status,
-
-                        record.notes
-
-                    ]
-                    .filter(
-                        value =>
-                            value !== null &&
-                            value !== undefined
-                    )
-                    .join(" ")
-                    .toLowerCase();
-
-
-                    const matchesSearch =
-                        !search ||
-                        searchable.includes(
-                            search
-                        );
-
-
-                    const matchesStatus =
-                        !statusFilter ||
-                        String(
-                            record.status || ""
-                        )
-                        .trim()
-                        .toLowerCase() ===
-                        statusFilter;
-
-
-                    return (
-                        matchesSearch &&
-                        matchesStatus
-                    );
-
-                }
-            );
-
-
-        if (!filtered.length) {
-
-            tbody.innerHTML = `
-
-                <tr>
-
-                    <td
-                        colspan="8"
-                        class="empty-state"
-                    >
-
-                        No maintenance records found.
-
-                    </td>
-
-                </tr>
-
-            `;
-
-            return;
-
-        }
-
-
-        tbody.innerHTML =
-            filtered.map(
-                record => {
-
-                    const cost =
-                        Number(
-                            record.cost || 0
-                        );
-
-
-                    const date =
-                        record.created_at
-                            ? new Date(
-                                record.created_at
-                            ).toLocaleDateString(
-                                "en-KE"
-                            )
-                            : "-";
-
-
-                    const status =
-                        record.status ||
-                        "Pending";
-
-
-                    return `
-
-                        <tr>
-
-                            <td>
-
-                                <span class="task-id">
-                                    #${escapeHtml(
-                                        record.id
-                                    )}
-                                </span>
-
-                            </td>
-
-
-                            <td>
-                                ${escapeHtml(
-                                    getRoomNumber(
-                                        record
-                                    )
-                                )}
-                            </td>
-
-
-                            <td>
-                                ${escapeHtml(
-                                    record.issue ||
-                                    "-"
-                                )}
-                            </td>
-
-
-                            <td>
-                                ${escapeHtml(
-                                    getTechnicianName(
-                                        record
-                                    )
-                                )}
-                            </td>
-
-
-                            <td>
-                                ${escapeHtml(
-                                    date
-                                )}
-                            </td>
-
-
-                            <td>
-
-                                <span class="cost">
-                                    KSh ${money(
-                                        cost
-                                    )}
-                                </span>
-
-                            </td>
-
-
-                            <td>
-
-                                <span
-                                    class="${getStatusClass(
-                                        status
-                                    )}"
-                                >
-
-                                    ${escapeHtml(
-                                        status
-                                    )}
-
-                                </span>
-
-                            </td>
-
-
-                            <td>
-
-                                <div class="action-buttons">
-
-                                    <button
-                                        type="button"
-                                        class="small-btn btn-secondary"
-                                        data-view-maintenance="${record.id}"
-                                    >
-                                        View
-                                    </button>
-
-
-                                    <button
-                                        type="button"
-                                        class="small-btn btn-warning"
-                                        data-edit-maintenance="${record.id}"
-                                    >
-                                        Edit
-                                    </button>
-
-
-                                    <button
-                                        type="button"
-                                        class="small-btn btn-danger"
-                                        data-delete-maintenance="${record.id}"
-                                    >
-                                        Delete
-                                    </button>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-
-                    `;
-
-                }
-            ).join("");
+        return "status-pending";
 
     }
 
@@ -987,6 +1152,62 @@
        ===================================================== */
 
     function updateSummary() {
+
+        const records =
+            state.maintenance || [];
+
+
+        const total =
+            records.length;
+
+
+        const pending =
+            records.filter(
+                function (row) {
+
+                    return (
+                        String(
+                            row.status ||
+                            "Pending"
+                        ).toLowerCase() ===
+                        "pending"
+                    );
+
+                }
+            ).length;
+
+
+        const progress =
+            records.filter(
+                function (row) {
+
+                    return (
+                        String(
+                            row.status ||
+                            ""
+                        ).toLowerCase() ===
+                        "in progress"
+                    );
+
+                }
+            ).length;
+
+
+        const completed =
+            records.filter(
+                function (row) {
+
+                    return (
+                        String(
+                            row.status ||
+                            ""
+                        ).toLowerCase() ===
+                        "completed"
+                    );
+
+                }
+            ).length;
+
 
         const totalElement =
             document.getElementById(
@@ -1010,46 +1231,6 @@
             document.getElementById(
                 "completedMaintenanceTasks"
             );
-
-
-        const total =
-            state.maintenance.length;
-
-
-        const pending =
-            state.maintenance.filter(
-                record =>
-                    String(
-                        record.status || ""
-                    )
-                    .trim()
-                    .toLowerCase() ===
-                    "pending"
-            ).length;
-
-
-        const progress =
-            state.maintenance.filter(
-                record =>
-                    String(
-                        record.status || ""
-                    )
-                    .trim()
-                    .toLowerCase() ===
-                    "in progress"
-            ).length;
-
-
-        const completed =
-            state.maintenance.filter(
-                record =>
-                    String(
-                        record.status || ""
-                    )
-                    .trim()
-                    .toLowerCase() ===
-                    "completed"
-            ).length;
 
 
         if (totalElement) {
@@ -1087,253 +1268,413 @@
 
 
     /* =====================================================
-       POPULATE ROOMS
+       RENDER TABLE
        ===================================================== */
 
-    function populateRooms() {
+    function renderMaintenance() {
 
-        const select =
+        const tbody =
             document.getElementById(
-                "maintenanceRoom"
+                "maintenanceTableBody"
             );
 
 
-        if (!select) {
+        if (!tbody) {
 
             return;
 
         }
 
 
-        const currentValue =
-            select.value;
+        const searchElement =
+            document.getElementById(
+                "maintenanceSearch"
+            );
 
 
-        select.innerHTML = `
-
-            <option value="">
-                Select Room
-            </option>
-
-        `;
+        const filterElement =
+            document.getElementById(
+                "maintenanceStatusFilter"
+            );
 
 
-        state.rooms.forEach(
-            room => {
+        const search =
+            (
+                searchElement?.value ||
+                ""
+            )
+                .trim()
+                .toLowerCase();
 
-                const option =
-                    document.createElement(
-                        "option"
+
+        const statusFilter =
+            filterElement?.value ||
+            "";
+
+
+        const filtered =
+            state.maintenance.filter(
+                function (row) {
+
+                    const room =
+                        getRoomNumber(
+                            row
+                        );
+
+
+                    const technician =
+                        row.assigned_to ||
+                        row.technician ||
+                        "";
+
+
+                    const issue =
+                        row.issue ||
+                        "";
+
+
+                    const searchable =
+                        [
+                            row.id,
+                            room,
+                            technician,
+                            issue,
+                            row.status
+                        ]
+                            .join(" ")
+                            .toLowerCase();
+
+
+                    const matchesSearch =
+                        !search ||
+                        searchable.includes(
+                            search
+                        );
+
+
+                    const matchesStatus =
+                        !statusFilter ||
+                        (
+                            String(
+                                row.status ||
+                                "Pending"
+                            ) ===
+                            statusFilter
+                        );
+
+
+                    return (
+                        matchesSearch &&
+                        matchesStatus
                     );
 
-
-                option.value =
-                    room.id;
-
-
-                option.textContent =
-                    room.room_number;
+                }
+            );
 
 
-                select.appendChild(
-                    option
-                );
+        if (!filtered.length) {
 
-            }
-        );
+            tbody.innerHTML = `
+                <tr>
+                    <td
+                        colspan="8"
+                        class="empty-state"
+                    >
+                        No maintenance records found.
+                    </td>
+                </tr>
+            `;
 
-
-        if (currentValue) {
-
-            select.value =
-                currentValue;
+            return;
 
         }
+
+
+        tbody.innerHTML =
+            filtered
+                .map(
+                    function (row) {
+
+                        const roomNumber =
+                            getRoomNumber(
+                                row
+                            );
+
+
+                        const technician =
+                            row.assigned_to ||
+                            row.technician ||
+                            "-";
+
+
+                        const issue =
+                            row.issue ||
+                            "-";
+
+
+                        const status =
+                            row.status ||
+                            "Pending";
+
+
+                        const cost =
+                            Number(
+                                row.cost ||
+                                0
+                            );
+
+
+                        const statusClass =
+                            getStatusClass(
+                                status
+                            );
+
+
+                        return `
+
+                            <tr>
+
+                                <td>
+                                    <span class="task-id">
+                                        ${escapeHtml(
+                                            row.id
+                                        )}
+                                    </span>
+                                </td>
+
+
+                                <td>
+                                    ${escapeHtml(
+                                        roomNumber ||
+                                        "-"
+                                    )}
+                                </td>
+
+
+                                <td>
+                                    ${escapeHtml(
+                                        issue
+                                    )}
+                                </td>
+
+
+                                <td>
+                                    ${escapeHtml(
+                                        technician
+                                    )}
+                                </td>
+
+
+                                <td>
+                                    ${escapeHtml(
+                                        formatDate(
+                                            row.created_at
+                                        )
+                                    )}
+                                </td>
+
+
+                                <td>
+                                    <span class="cost">
+                                        KSh ${money(cost)}
+                                    </span>
+                                </td>
+
+
+                                <td>
+                                    <span
+                                        class="status-badge ${statusClass}"
+                                    >
+                                        ${escapeHtml(
+                                            status
+                                        )}
+                                    </span>
+                                </td>
+
+
+                                <td>
+
+                                    <div class="action-buttons">
+
+                                        <button
+                                            type="button"
+                                            class="small-btn btn-light"
+                                            onclick="EDUTECH_MAINTENANCE.view(${Number(row.id)})"
+                                        >
+                                            View
+                                        </button>
+
+
+                                        <button
+                                            type="button"
+                                            class="small-btn btn-primary"
+                                            onclick="EDUTECH_MAINTENANCE.edit(${Number(row.id)})"
+                                        >
+                                            Edit
+                                        </button>
+
+
+                                        <button
+                                            type="button"
+                                            class="small-btn btn-success"
+                                            onclick="EDUTECH_MAINTENANCE.post(${Number(row.id)})"
+                                        >
+                                            Post Cost
+                                        </button>
+
+
+                                        <button
+                                            type="button"
+                                            class="small-btn btn-danger"
+                                            onclick="EDUTECH_MAINTENANCE.remove(${Number(row.id)})"
+                                        >
+                                            Delete
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        `;
+
+                    }
+                )
+                .join("");
 
     }
 
 
     /* =====================================================
-       OPEN ADD / EDIT MODAL
+       FORM VALUES
        ===================================================== */
 
-    function openMaintenanceModal(
-        record = null
-    ) {
+    function getFormValues() {
 
-        const modal =
-            document.getElementById(
-                "maintenanceModal"
-            );
-
-
-        if (!modal) {
-
-            return;
-
-        }
-
-
-        state.editingId =
-            record
-                ? record.id
-                : null;
-
-
-        const title =
-            document.getElementById(
-                "maintenanceModalTitle"
-            );
-
-
-        if (title) {
-
-            title.textContent =
-                record
-                    ? "Edit Maintenance Task"
-                    : "Add Maintenance Task";
-
-        }
-
-
-        const idInput =
-            document.getElementById(
-                "maintenanceId"
-            );
-
-
-        if (idInput) {
-
-            idInput.value =
-                record?.id || "";
-
-        }
-
-
-        const room =
+        const roomElement =
             document.getElementById(
                 "maintenanceRoom"
             );
 
 
-        if (room) {
-
-            room.value =
-                record?.room_id || "";
-
-        }
-
-
-        /*
-         * Technician is now a text field.
-         */
-
-        const technician =
+        const technicianElement =
             document.getElementById(
                 "maintenanceTechnician"
             );
 
 
-        if (technician) {
-
-            technician.value =
-                getTechnicianName(
-                    record
-                ) === "-"
-                    ? ""
-                    : getTechnicianName(
-                        record
-                    );
-
-        }
-
-
-        const issue =
+        const issueElement =
             document.getElementById(
                 "maintenanceIssue"
             );
 
 
-        if (issue) {
-
-            issue.value =
-                record?.issue || "";
-
-        }
-
-
-        const status =
+        const statusElement =
             document.getElementById(
                 "maintenanceStatus"
             );
 
 
-        if (status) {
-
-            status.value =
-                record?.status ||
-                "Pending";
-
-        }
-
-
-        const cost =
+        const costElement =
             document.getElementById(
                 "maintenanceCost"
             );
 
 
-        if (cost) {
-
-            cost.value =
-                record?.cost ?? 0;
-
-        }
-
-
-        const notes =
+        const notesElement =
             document.getElementById(
                 "maintenanceNotes"
             );
 
 
-        if (notes) {
+        const roomId =
+            roomElement?.value ||
+            "";
 
-            notes.value =
-                record?.notes || "";
+
+        const technician =
+            technicianElement?.value.trim() ||
+            "";
+
+
+        const issue =
+            issueElement?.value.trim() ||
+            "";
+
+
+        const status =
+            statusElement?.value ||
+            "Pending";
+
+
+        const cost =
+            Number(
+                costElement?.value ||
+                0
+            );
+
+
+        const notes =
+            notesElement?.value.trim() ||
+            "";
+
+
+        let roomNumber =
+            "";
+
+
+        const room =
+            state.rooms.find(
+                function (item) {
+
+                    return (
+                        Number(item.id) ===
+                        Number(roomId)
+                    );
+
+                }
+            );
+
+
+        if (room) {
+
+            roomNumber =
+                room.room_number ||
+                "";
 
         }
 
 
-        modal.style.display =
-            "flex";
+        return {
+
+            roomId:
+                roomId
+                    ? Number(roomId)
+                    : null,
+
+            roomNumber,
+
+            technician,
+
+            issue,
+
+            status,
+
+            cost,
+
+            notes
+
+        };
 
     }
 
 
     /* =====================================================
-       CLOSE ADD / EDIT MODAL
+       CLEAR FORM
        ===================================================== */
 
-    function closeMaintenanceModal() {
-
-        const modal =
-            document.getElementById(
-                "maintenanceModal"
-            );
-
-
-        if (modal) {
-
-            modal.style.display =
-                "none";
-
-        }
-
-
-        state.editingId =
-            null;
-
+    function clearForm() {
 
         const form =
             document.getElementById(
@@ -1348,16 +1689,62 @@
         }
 
 
-        const idInput =
+        const status =
+            document.getElementById(
+                "maintenanceStatus"
+            );
+
+
+        if (status) {
+
+            status.value =
+                "Pending";
+
+        }
+
+
+        const cost =
+            document.getElementById(
+                "maintenanceCost"
+            );
+
+
+        if (cost) {
+
+            cost.value =
+                "0";
+
+        }
+
+
+        const id =
             document.getElementById(
                 "maintenanceId"
             );
 
 
-        if (idInput) {
+        if (id) {
 
-            idInput.value =
+            id.value =
                 "";
+
+        }
+
+
+        state.editingId =
+            null;
+
+
+        const title =
+            document.getElementById(
+                "maintenanceModalTitle"
+            );
+
+
+        if (title) {
+
+            title.textContent =
+                "Add Maintenance Task";
 
         }
 
@@ -1365,20 +1752,466 @@
 
 
     /* =====================================================
-       VIEW MODAL
+       OPEN MODAL
        ===================================================== */
 
-    function viewMaintenance(id) {
+    function open() {
 
-        const record =
-            state.maintenance.find(
-                item =>
-                    Number(item.id) ===
-                    Number(id)
+        clearForm();
+
+
+        const modal =
+            document.getElementById(
+                "maintenanceModal"
             );
 
 
-        if (!record) {
+        if (modal) {
+
+            modal.classList.add(
+                "show"
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       CLOSE MODAL
+       ===================================================== */
+
+    function close() {
+
+        const modal =
+            document.getElementById(
+                "maintenanceModal"
+            );
+
+
+        if (modal) {
+
+            modal.classList.remove(
+                "show"
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       EDIT
+       ===================================================== */
+
+    function edit(
+        id
+    ) {
+
+        const row =
+            state.maintenance.find(
+                function (item) {
+
+                    return (
+                        Number(item.id) ===
+                        Number(id)
+                    );
+
+                }
+            );
+
+
+        if (!row) {
+
+            alert(
+                "Maintenance record not found."
+            );
+
+            return;
+
+        }
+
+
+        state.editingId =
+            Number(id);
+
+
+        const hiddenId =
+            document.getElementById(
+                "maintenanceId"
+            );
+
+
+        if (hiddenId) {
+
+            hiddenId.value =
+                id;
+
+        }
+
+
+        const room =
+            document.getElementById(
+                "maintenanceRoom"
+            );
+
+
+        if (room) {
+
+            room.value =
+                row.room_id ||
+                "";
+
+        }
+
+
+        const technician =
+            document.getElementById(
+                "maintenanceTechnician"
+            );
+
+
+        if (technician) {
+
+            technician.value =
+                row.assigned_to ||
+                row.technician ||
+                "";
+
+        }
+
+
+        const issue =
+            document.getElementById(
+                "maintenanceIssue"
+            );
+
+
+        if (issue) {
+
+            issue.value =
+                row.issue ||
+                "";
+
+        }
+
+
+        const status =
+            document.getElementById(
+                "maintenanceStatus"
+            );
+
+
+        if (status) {
+
+            status.value =
+                row.status ||
+                "Pending";
+
+        }
+
+
+        const cost =
+            document.getElementById(
+                "maintenanceCost"
+            );
+
+
+        if (cost) {
+
+            cost.value =
+                row.cost ||
+                0;
+
+        }
+
+
+        const notes =
+            document.getElementById(
+                "maintenanceNotes"
+            );
+
+
+        if (notes) {
+
+            notes.value =
+                row.notes ||
+                "";
+
+        }
+
+
+        const title =
+            document.getElementById(
+                "maintenanceModalTitle"
+            );
+
+
+        if (title) {
+
+            title.textContent =
+                "Edit Maintenance Task";
+
+        }
+
+
+        const modal =
+            document.getElementById(
+                "maintenanceModal"
+            );
+
+
+        if (modal) {
+
+            modal.classList.add(
+                "show"
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       SAVE
+       ===================================================== */
+
+    async function save(
+        event
+    ) {
+
+        if (event) {
+
+            event.preventDefault();
+
+        }
+
+
+        if (state.loading) {
+
+            return;
+
+        }
+
+
+        state.loading =
+            true;
+
+
+        try {
+
+            const supabase =
+                getSupabase();
+
+
+            const hotelId =
+                await getHotelId();
+
+
+            const values =
+                getFormValues();
+
+
+            if (!values.issue) {
+
+                throw new Error(
+                    "Please enter the maintenance issue."
+                );
+
+            }
+
+
+            if (
+                !Number.isFinite(
+                    values.cost
+                ) ||
+                values.cost < 0
+            ) {
+
+                throw new Error(
+                    "Please enter a valid maintenance cost."
+                );
+
+            }
+
+
+            const record = {
+
+                hotel_id:
+                    hotelId,
+
+                room_id:
+                    values.roomId,
+
+                room_number:
+                    values.roomNumber,
+
+                issue:
+                    values.issue,
+
+                assigned_to:
+                    values.technician,
+
+                status:
+                    values.status,
+
+                cost:
+                    values.cost,
+
+                notes:
+                    values.notes
+
+            };
+
+
+            if (state.editingId) {
+
+                const {
+                    data,
+                    error
+                } = await supabase
+                    .from("maintenance")
+                    .update(record)
+                    .eq(
+                        "id",
+                        state.editingId
+                    )
+                    .eq(
+                        "hotel_id",
+                        hotelId
+                    )
+                    .select("*")
+                    .maybeSingle();
+
+
+                if (error) {
+
+                    throw new Error(
+                        "Unable to update maintenance: " +
+                        error.message
+                    );
+
+                }
+
+
+                if (!data) {
+
+                    throw new Error(
+                        "Maintenance record was not returned after updating."
+                    );
+
+                }
+
+
+                alert(
+                    "Maintenance task updated successfully."
+                );
+
+            }
+
+            else {
+
+                const {
+                    data,
+                    error
+                } = await supabase
+                    .from("maintenance")
+                    .insert(record)
+                    .select("*")
+                    .maybeSingle();
+
+
+                if (error) {
+
+                    throw new Error(
+                        "Unable to save maintenance: " +
+                        error.message
+                    );
+
+                }
+
+
+                if (!data) {
+
+                    throw new Error(
+                        "Maintenance record was not returned after saving."
+                    );
+
+                }
+
+
+                alert(
+                    "Maintenance task saved successfully."
+                );
+
+            }
+
+
+            state.editingId =
+                null;
+
+
+            close();
+
+
+            await loadMaintenance();
+
+        }
+
+        catch (error) {
+
+            errorLog(
+                "Maintenance save failed:",
+                error
+            );
+
+
+            alert(
+                "MAINTENANCE SAVE FAILED:\n\n" +
+                (
+                    error.message ||
+                    error
+                )
+            );
+
+        }
+
+        finally {
+
+            state.loading =
+                false;
+
+        }
+
+    }
+
+
+    /* =====================================================
+       VIEW
+       ===================================================== */
+
+    function view(
+        id
+    ) {
+
+        const row =
+            state.maintenance.find(
+                function (item) {
+
+                    return (
+                        Number(item.id) ===
+                        Number(id)
+                    );
+
+                }
+            );
+
+
+        if (!row) {
+
+            alert(
+                "Maintenance record not found."
+            );
 
             return;
 
@@ -1387,24 +2220,26 @@
 
         const room =
             getRoomNumber(
-                record
+                row
             );
 
 
         const technician =
-            getTechnicianName(
-                record
+            row.assigned_to ||
+            row.technician ||
+            "-";
+
+
+        const status =
+            row.status ||
+            "Pending";
+
+
+        const cost =
+            Number(
+                row.cost ||
+                0
             );
-
-
-        const date =
-            record.created_at
-                ? new Date(
-                    record.created_at
-                ).toLocaleString(
-                    "en-KE"
-                )
-                : "-";
 
 
         const content =
@@ -1429,9 +2264,7 @@
                 </div>
 
                 <div class="view-value">
-                    #${escapeHtml(
-                        record.id
-                    )}
+                    ${escapeHtml(row.id)}
                 </div>
 
             </div>
@@ -1444,9 +2277,7 @@
                 </div>
 
                 <div class="view-value">
-                    ${escapeHtml(
-                        room
-                    )}
+                    ${escapeHtml(room || "-")}
                 </div>
 
             </div>
@@ -1459,9 +2290,7 @@
                 </div>
 
                 <div class="view-value">
-                    ${escapeHtml(
-                        technician
-                    )}
+                    ${escapeHtml(technician)}
                 </div>
 
             </div>
@@ -1474,20 +2303,7 @@
                 </div>
 
                 <div class="view-value">
-
-                    <span
-                        class="${getStatusClass(
-                            record.status
-                        )}"
-                    >
-
-                        ${escapeHtml(
-                            record.status ||
-                            "Pending"
-                        )}
-
-                    </span>
-
+                    ${escapeHtml(status)}
                 </div>
 
             </div>
@@ -1500,9 +2316,7 @@
                 </div>
 
                 <div class="view-value">
-                    KSh ${money(
-                        record.cost
-                    )}
+                    KSh ${money(cost)}
                 </div>
 
             </div>
@@ -1516,7 +2330,9 @@
 
                 <div class="view-value">
                     ${escapeHtml(
-                        date
+                        formatDate(
+                            row.created_at
+                        )
                     )}
                 </div>
 
@@ -1531,7 +2347,7 @@
 
                 <div class="view-value">
                     ${escapeHtml(
-                        record.issue ||
+                        row.issue ||
                         "-"
                     )}
                 </div>
@@ -1547,7 +2363,7 @@
 
                 <div class="view-value">
                     ${escapeHtml(
-                        record.notes ||
+                        row.notes ||
                         "-"
                     )}
                 </div>
@@ -1565,15 +2381,20 @@
 
         if (modal) {
 
-            modal.style.display =
-                "flex";
+            modal.classList.add(
+                "show"
+            );
 
         }
 
     }
 
 
-    function closeViewMaintenanceModal() {
+    /* =====================================================
+       CLOSE VIEW
+       ===================================================== */
+
+    function closeView() {
 
         const modal =
             document.getElementById(
@@ -1583,8 +2404,9 @@
 
         if (modal) {
 
-            modal.style.display =
-                "none";
+            modal.classList.remove(
+                "show"
+            );
 
         }
 
@@ -1592,297 +2414,422 @@
 
 
     /* =====================================================
-       SAVE MAINTENANCE
+       POST MAINTENANCE COST
        ===================================================== */
 
-    async function saveMaintenance(
-        event
+    async function post(
+        id
     ) {
 
-        event.preventDefault();
-
-
-        const supabase =
-            getSupabase();
-
-
-        if (!supabase) {
-
-            showToast(
-                "Supabase connection is not available.",
-                "error"
-            );
+        if (state.loading) {
 
             return;
 
         }
-
-
-        if (!state.hotelId) {
-
-            showToast(
-                "No active hotel was found.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        /* ROOM */
-
-        const roomId =
-            document.getElementById(
-                "maintenanceRoom"
-            )?.value || null;
-
-
-        const selectedRoom =
-            getRoomById(
-                roomId
-            );
-
-
-        /* TECHNICIAN NAME */
-
-        const technicianName =
-            String(
-                document.getElementById(
-                    "maintenanceTechnician"
-                )?.value || ""
-            )
-            .trim();
-
-
-        /* ISSUE */
-
-        const issue =
-            String(
-                document.getElementById(
-                    "maintenanceIssue"
-                )?.value || ""
-            )
-            .trim();
-
-
-        /* STATUS */
-
-        const status =
-            document.getElementById(
-                "maintenanceStatus"
-            )?.value ||
-            "Pending";
-
-
-        /* COST */
-
-        const costValue =
-            document.getElementById(
-                "maintenanceCost"
-            )?.value || "0";
-
-
-        const cost =
-            Number(
-                costValue
-            );
-
-
-        /* NOTES */
-
-        const notes =
-            String(
-                document.getElementById(
-                    "maintenanceNotes"
-                )?.value || ""
-            )
-            .trim() ||
-            null;
-
-
-        /* VALIDATION */
-
-        if (!issue) {
-
-            showToast(
-                "Please enter the maintenance issue.",
-                "warning"
-            );
-
-            return;
-
-        }
-
-
-        if (
-            !Number.isFinite(cost) ||
-            cost < 0
-        ) {
-
-            showToast(
-                "Please enter a valid maintenance cost.",
-                "warning"
-            );
-
-            return;
-
-        }
-
-
-        /*
-         * Technician is intentionally optional.
-         *
-         * This allows the hotel to save a task even
-         * before a technician has been assigned.
-         */
-
-        const assignedTo =
-            technicianName ||
-            null;
-
-
-        /*
-         * IMPORTANT:
-         *
-         * We continue using the existing assigned_to
-         * field in the maintenance table.
-         *
-         * employee_id is set to null because the hotel
-         * does not require technicians to be permanent
-         * employees.
-         */
-
-        const payload = {
-
-            room_number:
-                selectedRoom?.room_number ||
-                "",
-
-            issue:
-                issue,
-
-            status:
-                status,
-
-            assigned_to:
-                assignedTo,
-
-            cost:
-                cost,
-
-            notes:
-                notes,
-
-            room_id:
-                roomId
-                    ? Number(roomId)
-                    : null,
-
-            employee_id:
-                null,
-
-            hotel_id:
-                state.hotelId
-
-        };
 
 
         try {
 
-            /* =================================================
-               UPDATE
-               ================================================= */
+            const row =
+                state.maintenance.find(
+                    function (item) {
 
-            if (state.editingId) {
-
-                const {
-                    error
-                } =
-                    await supabase
-                        .from("maintenance")
-                        .update(
-                            payload
-                        )
-                        .eq(
-                            "id",
-                            state.editingId
-                        )
-                        .eq(
-                            "hotel_id",
-                            state.hotelId
+                        return (
+                            Number(item.id) ===
+                            Number(id)
                         );
 
-
-                if (error) {
-
-                    throw error;
-
-                }
-
-
-                closeMaintenanceModal();
-
-
-                await loadMaintenance();
-
-
-                showToast(
-                    "Maintenance task updated successfully.",
-                    "success"
+                    }
                 );
 
+
+            if (!row) {
+
+                throw new Error(
+                    "Maintenance record could not be found."
+                );
+
+            }
+
+
+            const amount =
+                Number(
+                    row.cost ||
+                    0
+                );
+
+
+            if (
+                !Number.isFinite(amount) ||
+                amount <= 0
+            ) {
+
+                throw new Error(
+                    "This maintenance task has no valid cost to post."
+                );
+
+            }
+
+
+            const confirmed =
+                window.confirm(
+                    "Post maintenance cost of KSh " +
+                    money(amount) +
+                    " to the financial ledger?"
+                );
+
+
+            if (!confirmed) {
 
                 return;
 
             }
 
 
-            /* =================================================
-               INSERT
-               ================================================= */
-
-            const {
-                error
-            } =
-                await supabase
-                    .from("maintenance")
-                    .insert(
-                        payload
-                    );
+            state.loading =
+                true;
 
 
-            if (error) {
+            /* -----------------------------------------
+               HOTEL
+            ----------------------------------------- */
 
-                throw error;
+            const hotelId =
+                await getHotelId();
+
+
+            /* -----------------------------------------
+               ENGINE
+            ----------------------------------------- */
+
+            const engine =
+                await ensureFinancialEngine();
+
+
+            if (
+                !engine ||
+                typeof engine.postPayment !==
+                "function"
+            ) {
+
+                throw new Error(
+                    "The EDU TECH Financial Engine is not available. The engine must expose postPayment()."
+                );
 
             }
 
 
-            closeMaintenanceModal();
+            const roomNumber =
+                getRoomNumber(
+                    row
+                );
 
 
-            await loadMaintenance();
+            const description =
+                "Maintenance cost" +
+                (
+                    roomNumber
+                        ? " - Room " +
+                          roomNumber
+                        : ""
+                ) +
+                (
+                    row.issue
+                        ? " - " +
+                          row.issue
+                        : ""
+                );
 
 
-            showToast(
-                "Maintenance task saved successfully.",
-                "success"
+            /* -----------------------------------------
+               IMPORTANT
+
+               The current financial engine uses the
+               existing postPayment() interface.
+
+               We create a payment-style financial
+               record for the engine without inserting
+               a fake record into the payments table.
+            ----------------------------------------- */
+
+            const financialRecord = {
+
+                id:
+                    "MAINT-" +
+                    row.id,
+
+                payment_id:
+                    null,
+
+                hotel_id:
+                    hotelId,
+
+                amount:
+                    amount,
+
+                payment_method:
+                    "Cash",
+
+                payment_date:
+                    row.created_at
+                        ? new Date(
+                            row.created_at
+                          )
+                            .toISOString()
+                            .slice(0, 10)
+                        : new Date()
+                            .toISOString()
+                            .slice(0, 10),
+
+                reference_number:
+                    "MAINT-" +
+                    row.id,
+
+                transaction_number:
+                    "MAINT-" +
+                    row.id,
+
+                description:
+                    description,
+
+                source:
+                    "Maintenance",
+
+                source_type:
+                    "Maintenance",
+
+                maintenance_id:
+                    row.id,
+
+                room_id:
+                    row.room_id ||
+                    null,
+
+                room_number:
+                    roomNumber,
+
+                issue:
+                    row.issue ||
+                    "",
+
+                is_maintenance:
+                    true
+
+            };
+
+
+            log(
+                "Posting maintenance cost through Financial Engine:",
+                financialRecord
             );
 
 
-        } catch (error) {
+            const result =
+                await engine.postPayment(
+                    financialRecord
+                );
 
-            console.error(
-                "Maintenance save error:",
+
+            log(
+                "Financial engine maintenance result:",
+                result
+            );
+
+
+            /* -----------------------------------------
+               VERIFY LEDGER
+            ----------------------------------------- */
+
+            const supabase =
+                getSupabase();
+
+
+            let ledgerRows =
+                [];
+
+
+            try {
+
+                const firstCheck =
+                    await supabase
+                        .from(
+                            "financial_transactions"
+                        )
+                        .select("*")
+                        .eq(
+                            "hotel_id",
+                            hotelId
+                        )
+                        .eq(
+                            "payment_id",
+                            "MAINT-" +
+                            row.id
+                        );
+
+
+                if (
+                    !firstCheck.error &&
+                    firstCheck.data
+                ) {
+
+                    ledgerRows =
+                        firstCheck.data;
+
+                }
+
+            }
+
+            catch (verificationError) {
+
+                console.warn(
+                    "Maintenance ledger verification could not use payment_id:",
+                    verificationError
+                );
+
+            }
+
+
+            /* -----------------------------------------
+               Second verification by reference
+            ----------------------------------------- */
+
+            if (
+                !ledgerRows.length
+            ) {
+
+                try {
+
+                    const secondCheck =
+                        await supabase
+                            .from(
+                                "financial_transactions"
+                            )
+                            .select("*")
+                            .eq(
+                                "hotel_id",
+                                hotelId
+                            )
+                            .eq(
+                                "reference_number",
+                                "MAINT-" +
+                                row.id
+                            );
+
+
+                    if (
+                        !secondCheck.error &&
+                        secondCheck.data
+                    ) {
+
+                        ledgerRows =
+                            secondCheck.data;
+
+                    }
+
+                }
+
+                catch (
+                    referenceVerificationError
+                ) {
+
+                    console.warn(
+                        "Maintenance reference verification failed:",
+                        referenceVerificationError
+                    );
+
+                }
+
+            }
+
+
+            /* -----------------------------------------
+               Engine returned success
+            ----------------------------------------- */
+
+            if (
+                result &&
+                (
+                    result.success === true ||
+                    result.alreadyPosted === true
+                )
+            ) {
+
+                alert(
+                    result.alreadyPosted
+                        ? "This maintenance cost is already posted to the financial ledger."
+                        : "Maintenance cost posted successfully to the financial ledger."
+                );
+
+                return;
+
+            }
+
+
+            /* -----------------------------------------
+               Ledger entry exists
+            ----------------------------------------- */
+
+            if (
+                ledgerRows.length
+            ) {
+
+                alert(
+                    "Maintenance cost posted successfully to the financial ledger."
+                );
+
+                return;
+
+            }
+
+
+            /* -----------------------------------------
+               If engine returned a result without an
+               explicit success flag, do not call it
+               a failure automatically.
+            ----------------------------------------- */
+
+            if (
+                result !== undefined &&
+                result !== null
+            ) {
+
+                alert(
+                    "Maintenance cost was sent to the financial engine successfully."
+                );
+
+                return;
+
+            }
+
+
+            throw new Error(
+                "Financial engine did not confirm the maintenance posting."
+            );
+
+        }
+
+        catch (error) {
+
+            errorLog(
+                "MAINTENANCE LEDGER POSTING FAILED:",
                 error
             );
 
 
-            showToast(
-                `Unable to save maintenance task: ${error.message}`,
-                "error"
+            alert(
+                "MAINTENANCE LEDGER POSTING FAILED:\n\n" +
+                (
+                    error.message ||
+                    error
+                )
             );
+
+        }
+
+        finally {
+
+            state.loading =
+                false;
 
         }
 
@@ -1893,75 +2840,54 @@
        DELETE
        ===================================================== */
 
-    async function deleteMaintenance(
+    async function remove(
         id
     ) {
 
-        const supabase =
-            getSupabase();
-
-
-        if (!supabase) {
-
-            showToast(
-                "Supabase connection is not available.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        const record =
-            state.maintenance.find(
-                item =>
-                    Number(item.id) ===
-                    Number(id)
-            );
-
-
-        if (!record) {
-
-            return;
-
-        }
-
-
-        const confirmed =
-            window.confirm(
-                `Delete maintenance task #${id}?\n\nThis action cannot be undone.`
-            );
-
-
-        if (!confirmed) {
-
-            return;
-
-        }
-
-
         try {
+
+            const confirmed =
+                window.confirm(
+                    "Delete this maintenance record?"
+                );
+
+
+            if (!confirmed) {
+
+                return;
+
+            }
+
+
+            const supabase =
+                getSupabase();
+
+
+            const hotelId =
+                await getHotelId();
+
 
             const {
                 error
-            } =
-                await supabase
-                    .from("maintenance")
-                    .delete()
-                    .eq(
-                        "id",
-                        id
-                    )
-                    .eq(
-                        "hotel_id",
-                        state.hotelId
-                    );
+            } = await supabase
+                .from("maintenance")
+                .delete()
+                .eq(
+                    "id",
+                    id
+                )
+                .eq(
+                    "hotel_id",
+                    hotelId
+                );
 
 
             if (error) {
 
-                throw error;
+                throw new Error(
+                    "Unable to delete maintenance record: " +
+                    error.message
+                );
 
             }
 
@@ -1969,23 +2895,26 @@
             await loadMaintenance();
 
 
-            showToast(
-                "Maintenance task deleted successfully.",
-                "success"
+            alert(
+                "Maintenance record deleted successfully."
             );
 
+        }
 
-        } catch (error) {
+        catch (error) {
 
-            console.error(
-                "Maintenance deletion error:",
+            errorLog(
+                "Maintenance delete failed:",
                 error
             );
 
 
-            showToast(
-                `Unable to delete maintenance task: ${error.message}`,
-                "error"
+            alert(
+                "DELETE FAILED:\n\n" +
+                (
+                    error.message ||
+                    error
+                )
             );
 
         }
@@ -1997,7 +2926,7 @@
        PRINT
        ===================================================== */
 
-    function printMaintenance() {
+    function printReport() {
 
         window.print();
 
@@ -2005,679 +2934,424 @@
 
 
     /* =====================================================
-       PDF
+       SEARCH
        ===================================================== */
 
-    function downloadMaintenancePDF() {
-
-        if (
-            !window.jspdf ||
-            !window.jspdf.jsPDF
-        ) {
-
-            showToast(
-                "PDF library is not available.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        const jsPDF =
-            window.jspdf.jsPDF;
-
-
-        const doc =
-            new jsPDF({
-                orientation: "landscape",
-                unit: "mm",
-                format: "a4"
-            });
-
-
-        const hotelName =
-            state.hotel?.hotel_name ||
-            state.hotel?.name ||
-            document.getElementById(
-                "maintenanceHotelName"
-            )?.textContent ||
-            "Hotel";
-
-
-        const hotelLocation =
-            state.hotel?.location ||
-            document.getElementById(
-                "maintenanceHotelLocation"
-            )?.textContent ||
-            "";
-
-
-        doc.setFontSize(18);
-
-        doc.text(
-            hotelName,
-            14,
-            15
-        );
-
-
-        doc.setFontSize(11);
-
-        doc.text(
-            "Maintenance Report",
-            14,
-            22
-        );
-
-
-        doc.setFontSize(9);
-
-        doc.text(
-            hotelLocation,
-            14,
-            28
-        );
-
-
-        doc.text(
-            `Generated: ${new Date().toLocaleString("en-KE")}`,
-            14,
-            34
-        );
-
+    function setupSearch() {
 
         const search =
-            String(
-                document.getElementById(
-                    "maintenanceSearch"
-                )?.value || ""
-            )
-            .trim()
-            .toLowerCase();
-
-
-        const statusFilter =
-            String(
-                document.getElementById(
-                    "maintenanceStatusFilter"
-                )?.value || ""
-            )
-            .trim()
-            .toLowerCase();
-
-
-        const records =
-            state.maintenance.filter(
-                record => {
-
-                    const room =
-                        getRoomNumber(
-                            record
-                        );
-
-
-                    const technician =
-                        getTechnicianName(
-                            record
-                        );
-
-
-                    const searchable = [
-
-                        record.id,
-
-                        room,
-
-                        record.issue,
-
-                        technician,
-
-                        record.status,
-
-                        record.notes
-
-                    ]
-                    .filter(
-                        value =>
-                            value !== null &&
-                            value !== undefined
-                    )
-                    .join(" ")
-                    .toLowerCase();
-
-
-                    const matchesSearch =
-                        !search ||
-                        searchable.includes(
-                            search
-                        );
-
-
-                    const matchesStatus =
-                        !statusFilter ||
-                        String(
-                            record.status || ""
-                        )
-                        .trim()
-                        .toLowerCase() ===
-                        statusFilter;
-
-
-                    return (
-                        matchesSearch &&
-                        matchesStatus
-                    );
-
-                }
+            document.getElementById(
+                "maintenanceSearch"
             );
 
 
-        let y =
-            43;
+        const status =
+            document.getElementById(
+                "maintenanceStatusFilter"
+            );
 
 
-        doc.setFontSize(8);
+        if (search) {
 
-        doc.setFont(undefined, "bold");
+            search.addEventListener(
+                "input",
+                function () {
 
-
-        doc.text(
-            "ID",
-            14,
-            y
-        );
-
-
-        doc.text(
-            "Room",
-            27,
-            y
-        );
-
-
-        doc.text(
-            "Issue",
-            48,
-            y
-        );
-
-
-        doc.text(
-            "Technician",
-            105,
-            y
-        );
-
-
-        doc.text(
-            "Date",
-            150,
-            y
-        );
-
-
-        doc.text(
-            "Cost",
-            178,
-            y
-        );
-
-
-        doc.text(
-            "Status",
-            207,
-            y
-        );
-
-
-        y += 5;
-
-
-        doc.setFont(undefined, "normal");
-
-
-        records.forEach(
-            record => {
-
-                if (y > 190) {
-
-                    doc.addPage();
-
-                    y = 15;
+                    renderMaintenance();
 
                 }
-
-
-                const room =
-                    getRoomNumber(
-                        record
-                    );
-
-
-                const technician =
-                    getTechnicianName(
-                        record
-                    );
-
-
-                const date =
-                    record.created_at
-                        ? new Date(
-                            record.created_at
-                        ).toLocaleDateString(
-                            "en-KE"
-                        )
-                        : "-";
-
-
-                const issue =
-                    String(
-                        record.issue ||
-                        "-"
-                    );
-
-
-                doc.text(
-                    `#${record.id}`,
-                    14,
-                    y
-                );
-
-
-                doc.text(
-                    String(room),
-                    27,
-                    y
-                );
-
-
-                doc.text(
-                    doc.splitTextToSize(
-                        issue,
-                        52
-                    )[0],
-                    48,
-                    y
-                );
-
-
-                doc.text(
-                    doc.splitTextToSize(
-                        String(technician),
-                        40
-                    )[0],
-                    105,
-                    y
-                );
-
-
-                doc.text(
-                    date,
-                    150,
-                    y
-                );
-
-
-                doc.text(
-                    `KSh ${money(record.cost)}`,
-                    178,
-                    y
-                );
-
-
-                doc.text(
-                    String(
-                        record.status ||
-                        "Pending"
-                    ),
-                    207,
-                    y
-                );
-
-
-                y += 7;
-
-            }
-        );
-
-
-        if (!records.length) {
-
-            doc.text(
-                "No maintenance records found.",
-                14,
-                y + 5
             );
 
         }
 
 
-        doc.setFontSize(8);
+        if (status) {
 
+            status.addEventListener(
+                "change",
+                function () {
 
-        doc.text(
-            `Total Tasks: ${records.length}`,
-            14,
-            200
-        );
+                    renderMaintenance();
 
-
-        const totalCost =
-            records.reduce(
-                (
-                    total,
-                    record
-                ) =>
-                    total +
-                    Number(
-                        record.cost || 0
-                    ),
-                0
+                }
             );
 
-
-        doc.text(
-            `Total Maintenance Cost: KSh ${money(totalCost)}`,
-            75,
-            200
-        );
-
-
-        doc.save(
-            "maintenance-report.pdf"
-        );
-
-
-        showToast(
-            "Maintenance PDF created successfully.",
-            "success"
-        );
+        }
 
     }
 
 
     /* =====================================================
-       EVENT HANDLERS
+       EVENT SETUP
        ===================================================== */
 
     function setupEvents() {
 
-        /* ADD */
+        /* -----------------------------------------
+           Add
+        ----------------------------------------- */
 
-        document.getElementById(
-            "addMaintenanceButton"
-        )?.addEventListener(
-            "click",
-            function () {
-
-                openMaintenanceModal();
-
-            }
-        );
+        const addButton =
+            document.getElementById(
+                "addMaintenanceButton"
+            );
 
 
-        /* FORM */
+        if (addButton) {
 
-        document.getElementById(
-            "maintenanceForm"
-        )?.addEventListener(
-            "submit",
-            saveMaintenance
-        );
+            addButton.addEventListener(
+                "click",
+                open
+            );
 
-
-        /* CLOSE ADD / EDIT */
-
-        document.getElementById(
-            "closeMaintenanceModal"
-        )?.addEventListener(
-            "click",
-            closeMaintenanceModal
-        );
+        }
 
 
-        document.getElementById(
-            "cancelMaintenanceButton"
-        )?.addEventListener(
-            "click",
-            closeMaintenanceModal
-        );
+        /* -----------------------------------------
+           Form
+        ----------------------------------------- */
+
+        const form =
+            document.getElementById(
+                "maintenanceForm"
+            );
 
 
-        /* SEARCH */
+        if (form) {
 
-        document.getElementById(
-            "maintenanceSearch"
-        )?.addEventListener(
-            "input",
-            renderMaintenance
-        );
+            form.addEventListener(
+                "submit",
+                save
+            );
 
-
-        /* FILTER */
-
-        document.getElementById(
-            "maintenanceStatusFilter"
-        )?.addEventListener(
-            "change",
-            renderMaintenance
-        );
+        }
 
 
-        /* REFRESH */
+        /* -----------------------------------------
+           Close edit modal
+        ----------------------------------------- */
 
-        document.getElementById(
-            "refreshMaintenanceButton"
-        )?.addEventListener(
-            "click",
-            async function () {
-
-                await loadRooms();
-
-                await loadMaintenance();
-
-                showToast(
-                    "Maintenance records refreshed.",
-                    "success"
-                );
-
-            }
-        );
+        const closeButton =
+            document.getElementById(
+                "closeMaintenanceModal"
+            );
 
 
-        /* PRINT */
+        if (closeButton) {
 
-        document.getElementById(
-            "printMaintenanceButton"
-        )?.addEventListener(
-            "click",
-            printMaintenance
-        );
+            closeButton.addEventListener(
+                "click",
+                close
+            );
 
-
-        /* PDF */
-
-        document.getElementById(
-            "downloadMaintenancePDFButton"
-        )?.addEventListener(
-            "click",
-            downloadMaintenancePDF
-        );
+        }
 
 
-        /* TABLE ACTIONS */
-
-        document.addEventListener(
-            "click",
-            function (event) {
-
-                const editButton =
-                    event.target.closest(
-                        "[data-edit-maintenance]"
-                    );
+        const cancelButton =
+            document.getElementById(
+                "cancelMaintenanceButton"
+            );
 
 
-                if (editButton) {
+        if (cancelButton) {
 
-                    const id =
-                        Number(
-                            editButton.dataset
-                                .editMaintenance
-                        );
+            cancelButton.addEventListener(
+                "click",
+                close
+            );
 
-
-                    const record =
-                        state.maintenance.find(
-                            item =>
-                                Number(
-                                    item.id
-                                ) === id
-                        );
+        }
 
 
-                    if (record) {
+        /* -----------------------------------------
+           Close view modal
+        ----------------------------------------- */
 
-                        openMaintenanceModal(
-                            record
-                        );
+        const closeViewButton =
+            document.getElementById(
+                "closeViewMaintenanceModal"
+            );
+
+
+        if (closeViewButton) {
+
+            closeViewButton.addEventListener(
+                "click",
+                closeView
+            );
+
+        }
+
+
+        const closeViewButton2 =
+            document.getElementById(
+                "closeViewMaintenanceButton"
+            );
+
+
+        if (closeViewButton2) {
+
+            closeViewButton2.addEventListener(
+                "click",
+                closeView
+            );
+
+        }
+
+
+        /* -----------------------------------------
+           Refresh
+        ----------------------------------------- */
+
+        const refreshButton =
+            document.getElementById(
+                "refreshMaintenanceButton"
+            );
+
+
+        if (refreshButton) {
+
+            refreshButton.addEventListener(
+                "click",
+                reload
+            );
+
+        }
+
+
+        /* -----------------------------------------
+           Print
+        ----------------------------------------- */
+
+        const printButton =
+            document.getElementById(
+                "printMaintenanceButton"
+            );
+
+
+        if (printButton) {
+
+            printButton.addEventListener(
+                "click",
+                printReport
+            );
+
+        }
+
+
+        /* -----------------------------------------
+           Search/filter
+        ----------------------------------------- */
+
+        setupSearch();
+
+
+        /* -----------------------------------------
+           Modal background click
+        ----------------------------------------- */
+
+        const modal =
+            document.getElementById(
+                "maintenanceModal"
+            );
+
+
+        if (modal) {
+
+            modal.addEventListener(
+                "click",
+                function (event) {
+
+                    if (
+                        event.target ===
+                        modal
+                    ) {
+
+                        close();
 
                     }
 
+                }
+            );
 
-                    return;
+        }
+
+
+        const viewModal =
+            document.getElementById(
+                "viewMaintenanceModal"
+            );
+
+
+        if (viewModal) {
+
+            viewModal.addEventListener(
+                "click",
+                function (event) {
+
+                    if (
+                        event.target ===
+                        viewModal
+                    ) {
+
+                        closeView();
+
+                    }
 
                 }
+            );
+
+        }
+
+    }
 
 
-                const viewButton =
-                    event.target.closest(
-                        "[data-view-maintenance]"
-                    );
+    /* =====================================================
+       RELOAD
+       ===================================================== */
+
+    async function reload() {
+
+        try {
+
+            await loadHotel();
+
+            await loadRooms();
+
+            await loadMaintenance();
+
+        }
+
+        catch (error) {
+
+            errorLog(
+                "Maintenance reload failed:",
+                error
+            );
 
 
-                if (viewButton) {
+            alert(
+                "Unable to reload Maintenance:\n\n" +
+                (
+                    error.message ||
+                    error
+                )
+            );
 
-                    const id =
-                        Number(
-                            viewButton.dataset
-                                .viewMaintenance
-                        );
+        }
 
-
-                    viewMaintenance(
-                        id
-                    );
-
-
-                    return;
-
-                }
+    }
 
 
-                const deleteButton =
-                    event.target.closest(
-                        "[data-delete-maintenance]"
-                    );
+    /* =====================================================
+       INITIALIZE
+       ===================================================== */
+
+    async function init() {
+
+        try {
+
+            log(
+                "Initializing Maintenance Module:",
+                VERSION
+            );
 
 
-                if (deleteButton) {
+            /* -----------------------------------------
+               Get current hotel
+            ----------------------------------------- */
 
-                    const id =
-                        Number(
-                            deleteButton.dataset
-                                .deleteMaintenance
-                        );
+            await getHotelId();
 
 
-                    deleteMaintenance(
-                        id
-                    );
+            /* -----------------------------------------
+               Load hotel
+            ----------------------------------------- */
 
-                }
+            await loadHotel();
+
+
+            /* -----------------------------------------
+               Load rooms
+            ----------------------------------------- */
+
+            await loadRooms();
+
+
+            /* -----------------------------------------
+               Load maintenance
+            ----------------------------------------- */
+
+            await loadMaintenance();
+
+
+            /* -----------------------------------------
+               Setup events
+            ----------------------------------------- */
+
+            setupEvents();
+
+
+            /*
+             * Do NOT make Maintenance startup depend
+             * on the financial engine.
+             *
+             * The engine is loaded only when Post Cost
+             * is actually clicked.
+             */
+
+            log(
+                "Maintenance module loaded successfully."
+            );
+
+        }
+
+        catch (error) {
+
+            errorLog(
+                "Maintenance initialization failed:",
+                error
+            );
+
+
+            const nameElement =
+                document.getElementById(
+                    "maintenanceHotelName"
+                );
+
+
+            const locationElement =
+                document.getElementById(
+                    "maintenanceHotelLocation"
+                );
+
+
+            if (nameElement) {
+
+                nameElement.textContent =
+                    "Hotel could not be loaded";
 
             }
-        );
 
 
-        /* CLOSE VIEW */
+            if (locationElement) {
 
-        document.getElementById(
-            "closeViewMaintenanceModal"
-        )?.addEventListener(
-            "click",
-            closeViewMaintenanceModal
-        );
-
-
-        document.getElementById(
-            "closeViewMaintenanceButton"
-        )?.addEventListener(
-            "click",
-            closeViewMaintenanceModal
-        );
-
-
-        /* CLOSE MODALS OUTSIDE */
-
-        document.getElementById(
-            "maintenanceModal"
-        )?.addEventListener(
-            "click",
-            function (event) {
-
-                if (
-                    event.target.id ===
-                    "maintenanceModal"
-                ) {
-
-                    closeMaintenanceModal();
-
-                }
+                locationElement.textContent =
+                    error.message ||
+                    "Unable to load hotel information.";
 
             }
-        );
 
 
-        document.getElementById(
-            "viewMaintenanceModal"
-        )?.addEventListener(
-            "click",
-            function (event) {
+            alert(
+                "MAINTENANCE MODULE FAILED TO LOAD:\n\n" +
+                (
+                    error.message ||
+                    error
+                )
+            );
 
-                if (
-                    event.target.id ===
-                    "viewMaintenanceModal"
-                ) {
-
-                    closeViewMaintenanceModal();
-
-                }
-
-            }
-        );
-
-
-        /* ESCAPE KEY */
-
-        document.addEventListener(
-            "keydown",
-            function (event) {
-
-                if (
-                    event.key ===
-                    "Escape"
-                ) {
-
-                    closeMaintenanceModal();
-
-                    closeViewMaintenanceModal();
-
-                }
-
-            }
-        );
+        }
 
     }
 
@@ -2688,97 +3362,38 @@
 
     window.EDUTECH_MAINTENANCE = {
 
-        reload:
-            async function () {
+        version:
+            VERSION,
 
-                await loadHotel();
+        open,
 
-                await loadRooms();
+        close,
 
-                await loadMaintenance();
+        save,
 
-            },
+        edit,
 
+        view,
 
-        open:
-            openMaintenanceModal,
+        post,
 
+        postCost:
+            post,
 
-        getState:
-            function () {
+        remove,
 
-                return {
+        delete:
+            remove,
 
-                    hotelId:
-                        state.hotelId,
+        reload,
 
-                    maintenance:
-                        [
-                            ...state.maintenance
-                        ]
+        printReport,
 
-                };
+        loadMaintenance,
 
-            }
+        ensureFinancialEngine
 
     };
-
-
-    /* =====================================================
-       INITIALIZE
-       ===================================================== */
-
-    async function initialize() {
-
-        setupEvents();
-
-
-        state.hotelId =
-            getHotelId();
-
-
-        if (!state.hotelId) {
-
-            const moduleContent =
-                document.getElementById(
-                    "maintenanceModuleContent"
-                );
-
-
-            const accessDenied =
-                document.getElementById(
-                    "accessDenied"
-                );
-
-
-            if (moduleContent) {
-
-                moduleContent.style.display =
-                    "none";
-
-            }
-
-
-            if (accessDenied) {
-
-                accessDenied.style.display =
-                    "block";
-
-            }
-
-
-            return;
-
-        }
-
-
-        await loadHotel();
-
-        await loadRooms();
-
-        await loadMaintenance();
-
-    }
 
 
     /* =====================================================
@@ -2792,12 +3407,14 @@
 
         document.addEventListener(
             "DOMContentLoaded",
-            initialize
+            init
         );
 
-    } else {
+    }
 
-        initialize();
+    else {
+
+        init();
 
     }
 

@@ -13,17 +13,54 @@
             box-sizing: border-box;
         }
 
+        html,
         body {
             margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100%;
+        }
+
+        body {
             font-family: Arial, Helvetica, sans-serif;
             background: #f4f7fb;
             color: #1f2937;
+            overflow-x: hidden;
         }
 
-        .main-content {
-            min-height: 100vh;
-            padding: 25px;
+        /* =========================================================
+           SIDEBAR LAYOUT
+           ========================================================= */
+
+        .sidebar {
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 260px !important;
+            height: 100vh !important;
+            margin: 0 !important;
+            z-index: 1000 !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
         }
+
+        /* =========================================================
+           MAIN CONTENT
+           ========================================================= */
+
+        .main-content {
+            margin-left: 260px !important;
+            width: calc(100% - 260px) !important;
+            min-width: 0 !important;
+            min-height: 100vh;
+            padding: 25px !important;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* =========================================================
+           PAGE HEADER
+           ========================================================= */
 
         .page-header {
             display: flex;
@@ -33,22 +70,29 @@
             margin-bottom: 20px;
         }
 
+        .page-title {
+            min-width: 0;
+        }
+
         .page-title h1 {
             margin: 0 0 8px;
             font-size: 28px;
             color: #1f2937;
+            line-height: 1.3;
         }
 
         .page-title p {
             margin: 0;
             color: #6b7280;
             font-size: 14px;
+            line-height: 1.5;
         }
 
         .header-actions {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            flex-shrink: 0;
         }
 
         button {
@@ -63,6 +107,7 @@
             font-size: 14px;
             font-weight: 600;
             transition: 0.2s ease;
+            white-space: nowrap;
         }
 
         .btn:hover {
@@ -100,6 +145,10 @@
             color: #1f2937;
         }
 
+        /* =========================================================
+           HOTEL BANNER
+           ========================================================= */
+
         .hotel-banner {
             background: white;
             border-radius: 12px;
@@ -107,6 +156,8 @@
             margin-bottom: 20px;
             border: 1px solid #e5e7eb;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            width: 100%;
+            overflow: hidden;
         }
 
         .hotel-banner-title {
@@ -121,17 +172,23 @@
             font-size: 20px;
             font-weight: 700;
             color: #111827;
+            overflow-wrap: anywhere;
         }
 
         .hotel-location {
             margin-top: 4px;
             color: #64748b;
             font-size: 14px;
+            overflow-wrap: anywhere;
         }
+
+        /* =========================================================
+           SUMMARY
+           ========================================================= */
 
         .summary-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 15px;
             margin-bottom: 20px;
         }
@@ -142,6 +199,7 @@
             padding: 20px;
             border: 1px solid #e5e7eb;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            min-width: 0;
         }
 
         .summary-label {
@@ -173,12 +231,18 @@
             border-left: 5px solid #16a34a;
         }
 
+        /* =========================================================
+           MODULE CARD
+           ========================================================= */
+
         .module-card {
             background: white;
             border-radius: 12px;
             border: 1px solid #e5e7eb;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
             overflow: hidden;
+            width: 100%;
+            min-width: 0;
         }
 
         .module-card-header {
@@ -196,7 +260,12 @@
             margin: 0;
             color: #475569;
             font-size: 13px;
+            line-height: 1.5;
         }
+
+        /* =========================================================
+           TOOLBAR
+           ========================================================= */
 
         .toolbar {
             padding: 15px 20px;
@@ -217,6 +286,7 @@
 
         .search-box {
             min-width: 260px;
+            max-width: 100%;
             padding: 10px 12px;
             border: 1px solid #94a3b8;
             border-radius: 7px;
@@ -244,6 +314,7 @@
             background: white;
             color: #111827;
             min-width: 150px;
+            max-width: 100%;
         }
 
         input,
@@ -258,15 +329,22 @@
             opacity: 1;
         }
 
+        /* =========================================================
+           TABLE
+           ========================================================= */
+
         .table-container {
             width: 100%;
-            overflow-x: auto;
+            max-width: 100%;
+            overflow-x: auto !important;
+            overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
         }
 
         table {
             width: 100%;
+            min-width: 1100px;
             border-collapse: collapse;
-            min-width: 950px;
         }
 
         th {
@@ -301,6 +379,7 @@
         .task-id {
             font-weight: 700;
             color: #2563eb;
+            white-space: nowrap;
         }
 
         .cost {
@@ -342,6 +421,7 @@
             display: flex;
             gap: 6px;
             flex-wrap: wrap;
+            min-width: max-content;
         }
 
         .small-btn {
@@ -350,7 +430,12 @@
             padding: 6px 9px;
             font-size: 12px;
             font-weight: 600;
+            white-space: nowrap;
         }
+
+        /* =========================================================
+           STATES
+           ========================================================= */
 
         .empty-state,
         .loading-state {
@@ -364,6 +449,10 @@
             padding: 35px 20px;
             color: #b91c1c;
         }
+
+        /* =========================================================
+           MODALS
+           ========================================================= */
 
         .modal {
             display: none;
@@ -395,6 +484,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 15px;
             padding: 18px 20px;
             border-bottom: 1px solid #e5e7eb;
         }
@@ -403,6 +493,7 @@
             margin: 0;
             font-size: 20px;
             color: #102a43;
+            overflow-wrap: anywhere;
         }
 
         .modal-close {
@@ -411,6 +502,7 @@
             font-size: 26px;
             color: #475569;
             cursor: pointer;
+            flex-shrink: 0;
         }
 
         .modal-body {
@@ -427,6 +519,7 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
+            min-width: 0;
         }
 
         .form-group.full {
@@ -443,6 +536,7 @@
         .form-group select,
         .form-group textarea {
             width: 100%;
+            max-width: 100%;
             padding: 10px 12px;
             border: 1px solid #94a3b8;
             border-radius: 7px;
@@ -459,6 +553,7 @@
             font-size: 11px;
             color: #64748b;
             margin-top: 1px;
+            line-height: 1.4;
         }
 
         .modal-footer {
@@ -467,7 +562,12 @@
             display: flex;
             justify-content: flex-end;
             gap: 10px;
+            flex-wrap: wrap;
         }
+
+        /* =========================================================
+           VIEW MODAL
+           ========================================================= */
 
         .view-grid {
             display: grid;
@@ -479,6 +579,7 @@
             background: #f8fafc;
             border-radius: 8px;
             padding: 12px;
+            min-width: 0;
         }
 
         .view-item.full {
@@ -496,13 +597,19 @@
             font-weight: 600;
             color: #111827;
             word-break: break-word;
+            overflow-wrap: anywhere;
         }
+
+        /* =========================================================
+           TOAST
+           ========================================================= */
 
         .toast-container {
             position: fixed;
             right: 20px;
             bottom: 20px;
             z-index: 10000;
+            max-width: calc(100vw - 40px);
         }
 
         .toast {
@@ -514,6 +621,7 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.2);
             max-width: 360px;
             font-size: 13px;
+            overflow-wrap: anywhere;
         }
 
         .toast.success {
@@ -528,6 +636,10 @@
             background: #92400e;
         }
 
+        /* =========================================================
+           ACCESS DENIED
+           ========================================================= */
+
         #accessDenied {
             display: none;
             padding: 50px 20px;
@@ -538,19 +650,70 @@
             color: #b91c1c;
         }
 
-        @media (max-width: 1000px) {
-            .summary-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+        /* =========================================================
+           RESPONSIVE
+           ========================================================= */
 
-        @media (max-width: 700px) {
-            .main-content {
-                padding: 15px;
+        @media (max-width: 1100px) {
+
+            .summary-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
             .page-header {
                 flex-direction: column;
+            }
+
+            .header-actions {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                width: 230px !important;
+            }
+
+            .main-content {
+                margin-left: 230px !important;
+                width: calc(100% - 230px) !important;
+                padding: 20px !important;
+            }
+
+            .summary-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                position: relative !important;
+                width: 100% !important;
+                height: auto !important;
+                max-height: none !important;
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 15px !important;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .header-actions {
+                width: 100%;
+                display: grid;
+                grid-template-columns: 1fr;
+            }
+
+            .header-actions .btn {
+                width: 100%;
             }
 
             .summary-grid {
@@ -567,17 +730,46 @@
                 grid-column: auto;
             }
 
-            .search-box {
-                min-width: 100%;
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
             }
 
             .toolbar-left,
             .toolbar-right {
                 width: 100%;
             }
+
+            .toolbar-left {
+                display: grid;
+                grid-template-columns: 1fr;
+            }
+
+            .toolbar-right {
+                justify-content: flex-start;
+            }
+
+            .search-box,
+            select {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .modal {
+                padding: 10px;
+            }
+
+            .modal-content {
+                max-height: 95vh;
+            }
         }
 
+        /* =========================================================
+           PRINT
+           ========================================================= */
+
         @media print {
+
             .sidebar,
             .page-header .header-actions,
             .toolbar,
@@ -589,12 +781,22 @@
 
             .main-content {
                 margin: 0 !important;
+                width: 100% !important;
                 padding: 10px !important;
             }
 
             .module-card {
                 box-shadow: none;
                 border: 1px solid #ddd;
+            }
+
+            .table-container {
+                overflow: visible !important;
+            }
+
+            table {
+                min-width: 0 !important;
+                width: 100% !important;
             }
 
             body {
@@ -938,7 +1140,7 @@
                         </div>
 
 
-                        <!-- TECHNICIAN - NOW FREE TEXT -->
+                        <!-- TECHNICIAN -->
 
                         <div class="form-group">
 

@@ -1,14 +1,14 @@
 // =========================================================
 // EDU TECH HOTEL MANAGEMENT SYSTEM
 // SUPABASE CONFIGURATION
-// VERSION: 2026.11.13.01
+// VERSION: 2026.11.14.03
 // =========================================================
 
 "use strict";
 
 
 // =========================================================
-// SUPABASE CONNECTION DETAILS
+// SUPABASE PROJECT DETAILS
 // =========================================================
 
 const SUPABASE_URL =
@@ -22,785 +22,605 @@ const SUPABASE_KEY =
 // GLOBAL STATE
 // =========================================================
 
-window.supabaseClient = null;
-
-window.EDUTECH_SUPABASE = null;
+let edutechSupabaseClient = null;
 
 window.EDUTECH_SUPABASE_READY = false;
-
 window.EDUTECH_SUPABASE_ERROR = null;
 
-window.EDUTECH_SUPABASE_LOADING = false;
-
 
 // =========================================================
-// SUPABASE CDN
+// CHECK WHETHER AN OBJECT IS A REAL SUPABASE CLIENT
 // =========================================================
 
-const EDUTECH_SUPABASE_CDN =
-    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-
-
-// =========================================================
-// LOAD SUPABASE JAVASCRIPT LIBRARY
-// =========================================================
-
-function loadEDUTechSupabaseLibrary() {
-
-    return new Promise(function (resolve, reject) {
-
-        // -------------------------------------------------
-        // Library already loaded
-        // -------------------------------------------------
-
-        if (
-            window.supabase &&
-            typeof window.supabase.createClient === "function"
-        ) {
-
-            console.log(
-                "EDU TECH: Supabase JavaScript library already loaded."
-            );
-
-            resolve(window.supabase);
-
-            return;
-        }
-
-
-        // -------------------------------------------------
-        // Prevent duplicate loading
-        // -------------------------------------------------
-
-        if (window.EDUTECH_SUPABASE_LOADING) {
-
-            const checkInterval =
-                setInterval(function () {
-
-                    if (
-                        window.supabase &&
-                        typeof window.supabase.createClient ===
-                            "function"
-                    ) {
-
-                        clearInterval(checkInterval);
-
-                        console.log(
-                            "EDU TECH: Supabase library finished loading."
-                        );
-
-                        resolve(window.supabase);
-                    }
-
-                }, 50);
-
-
-            setTimeout(function () {
-
-                clearInterval(checkInterval);
-
-                if (
-                    !window.supabase ||
-                    typeof window.supabase.createClient !==
-                        "function"
-                ) {
-
-                    reject(
-                        new Error(
-                            "Supabase JavaScript library failed to load."
-                        )
-                    );
-
-                }
-
-            }, 15000);
-
-
-            return;
-        }
-
-
-        // -------------------------------------------------
-        // Start loading
-        // -------------------------------------------------
-
-        window.EDUTECH_SUPABASE_LOADING = true;
-
-
-        const existingScript =
-            document.querySelector(
-                'script[data-edutech-supabase-library="true"]'
-            );
-
-
-        if (existingScript) {
-
-            existingScript.addEventListener(
-                "load",
-                function () {
-
-                    if (
-                        window.supabase &&
-                        typeof window.supabase.createClient ===
-                            "function"
-                    ) {
-
-                        resolve(
-                            window.supabase
-                        );
-
-                    } else {
-
-                        reject(
-                            new Error(
-                                "Supabase library loaded but createClient() is unavailable."
-                            )
-                        );
-
-                    }
-
-                }
-            );
-
-
-            existingScript.addEventListener(
-                "error",
-                function () {
-
-                    reject(
-                        new Error(
-                            "Unable to load Supabase JavaScript library."
-                        )
-                    );
-
-                }
-            );
-
-
-            return;
-        }
-
-
-        // -------------------------------------------------
-        // Create script
-        // -------------------------------------------------
-
-        const script =
-            document.createElement("script");
-
-
-        script.src =
-            EDUTECH_SUPABASE_CDN;
-
-
-        script.async = false;
-
-
-        script.dataset.edutechSupabaseLibrary =
-            "true";
-
-
-        script.onload =
-            function () {
-
-                if (
-                    window.supabase &&
-                    typeof window.supabase.createClient ===
-                        "function"
-                ) {
-
-                    console.log(
-                        "EDU TECH: Supabase JavaScript library loaded successfully."
-                    );
-
-                    resolve(
-                        window.supabase
-                    );
-
-                } else {
-
-                    reject(
-                        new Error(
-                            "Supabase JavaScript library loaded, but createClient() was not found."
-                        )
-                    );
-
-                }
-
-            };
-
-
-        script.onerror =
-            function () {
-
-                reject(
-                    new Error(
-                        "Unable to load Supabase JavaScript library from CDN."
-                    )
-                );
-
-            };
-
-
-        document.head.appendChild(
-            script
-        );
-
-    });
-
+function isValidSupabaseClient(client) {
+
+    return !!(
+        client &&
+        typeof client.from === "function" &&
+        client.auth &&
+        typeof client.auth.signInWithPassword === "function"
+    );
 }
 
 
 // =========================================================
-// CREATE SUPABASE CLIENT
+// CREATE / GET SUPABASE CLIENT
 // =========================================================
 
-async function initializeEDUTechSupabase() {
+function initializeEDUTechSupabase() {
 
-    try {
+    // -----------------------------------------------------
+    // Already initialized by this file
+    // -----------------------------------------------------
 
-        console.log(
-            "EDU TECH: Initializing Supabase..."
-        );
+    if (isValidSupabaseClient(edutechSupabaseClient)) {
 
+        window.supabaseClient = edutechSupabaseClient;
+        window.EDUTECH_SUPABASE = edutechSupabaseClient;
+        window.EDUTECH_SUPABASE_READY = true;
 
-        // -------------------------------------------------
-        // Load Supabase library first
-        // -------------------------------------------------
-
-        const supabaseLibrary =
-            await loadEDUTechSupabaseLibrary();
-
-
-        // -------------------------------------------------
-        // Check library
-        // -------------------------------------------------
-
-        if (
-            !supabaseLibrary ||
-            typeof supabaseLibrary.createClient !==
-                "function"
-        ) {
-
-            throw new Error(
-                "Supabase JavaScript library is unavailable."
-            );
-
-        }
+        return edutechSupabaseClient;
+    }
 
 
-        // -------------------------------------------------
-        // Prevent duplicate client
-        // -------------------------------------------------
+    // -----------------------------------------------------
+    // Reuse an existing valid client
+    // -----------------------------------------------------
 
-        if (
-            window.supabaseClient &&
-            typeof window.supabaseClient.from ===
-                "function"
-        ) {
+    if (isValidSupabaseClient(window.supabaseClient)) {
 
-            console.log(
-                "EDU TECH: Existing Supabase client detected."
-            );
+        edutechSupabaseClient = window.supabaseClient;
 
+        window.EDUTECH_SUPABASE = edutechSupabaseClient;
+        window.EDUTECH_SUPABASE_READY = true;
+
+        return edutechSupabaseClient;
+    }
+
+
+    // -----------------------------------------------------
+    // Reuse another valid EDU TECH client
+    // -----------------------------------------------------
+
+    if (isValidSupabaseClient(window.EDUTECH_SUPABASE)) {
+
+        edutechSupabaseClient = window.EDUTECH_SUPABASE;
+
+        window.supabaseClient = edutechSupabaseClient;
+        window.EDUTECH_SUPABASE_READY = true;
+
+        return edutechSupabaseClient;
+    }
+
+
+    // -----------------------------------------------------
+    // IMPORTANT:
+    //
+    // window.supabase is normally the CDN namespace.
+    // It is NOT the client.
+    //
+    // We must call:
+    //
+    // window.supabase.createClient(...)
+    //
+    // and NOT:
+    //
+    // window.supabase.from(...)
+    // -----------------------------------------------------
+
+    if (
+        window.supabase &&
+        typeof window.supabase.createClient === "function"
+    ) {
+
+        try {
+
+            edutechSupabaseClient =
+                window.supabase.createClient(
+                    SUPABASE_URL,
+                    SUPABASE_KEY
+                );
+
+            if (!isValidSupabaseClient(edutechSupabaseClient)) {
+
+                throw new Error(
+                    "Supabase client was created but is invalid."
+                );
+            }
+
+
+            window.supabaseClient =
+                edutechSupabaseClient;
+
+            window.EDUTECH_SUPABASE =
+                edutechSupabaseClient;
 
             window.EDUTECH_SUPABASE_READY =
                 true;
-
 
             window.EDUTECH_SUPABASE_ERROR =
                 null;
 
 
-            window.dispatchEvent(
-                new CustomEvent(
-                    "edutech:supabase-ready"
-                )
+            // -------------------------------------------------
+            // Notify pages waiting for Supabase
+            // -------------------------------------------------
+
+            try {
+
+                window.dispatchEvent(
+                    new CustomEvent(
+                        "edutech:supabase-ready",
+                        {
+                            detail: {
+                                client:
+                                    edutechSupabaseClient
+                            }
+                        }
+                    )
+                );
+
+            } catch (eventError) {
+
+                console.warn(
+                    "Supabase ready event could not be dispatched:",
+                    eventError
+                );
+            }
+
+
+            return edutechSupabaseClient;
+
+        } catch (error) {
+
+            window.EDUTECH_SUPABASE_READY =
+                false;
+
+            window.EDUTECH_SUPABASE_ERROR =
+                error;
+
+            console.error(
+                "EDU TECH Supabase initialization failed:",
+                error
             );
 
+            return null;
+        }
+    }
 
-            return window.supabaseClient;
 
+    // -----------------------------------------------------
+    // Supabase CDN has not loaded yet
+    // -----------------------------------------------------
+
+    window.EDUTECH_SUPABASE_READY =
+        false;
+
+    window.EDUTECH_SUPABASE_ERROR =
+        new Error(
+            "Supabase CDN has not loaded yet."
+        );
+
+    return null;
+}
+
+
+// =========================================================
+// INITIALIZE IMMEDIATELY IF CDN IS READY
+// =========================================================
+
+initializeEDUTechSupabase();
+
+
+// =========================================================
+// RETRY INITIALIZATION
+// =========================================================
+
+let edutechSupabaseRetryCount = 0;
+
+const EDUTECH_SUPABASE_MAX_RETRIES = 40;
+
+const EDUTECH_SUPABASE_RETRY_INTERVAL = 250;
+
+
+function retryEDUTechSupabaseInitialization() {
+
+    if (
+        window.EDUTECH_SUPABASE_READY === true &&
+        isValidSupabaseClient(window.supabaseClient)
+    ) {
+
+        return;
+    }
+
+
+    edutechSupabaseRetryCount++;
+
+    const client =
+        initializeEDUTechSupabase();
+
+
+    if (
+        client &&
+        isValidSupabaseClient(client)
+    ) {
+
+        return;
+    }
+
+
+    if (
+        edutechSupabaseRetryCount <
+        EDUTECH_SUPABASE_MAX_RETRIES
+    ) {
+
+        setTimeout(
+            retryEDUTechSupabaseInitialization,
+            EDUTECH_SUPABASE_RETRY_INTERVAL
+        );
+    }
+}
+
+
+setTimeout(
+    retryEDUTechSupabaseInitialization,
+    0
+);
+
+
+// =========================================================
+// PUBLIC GETTER
+// =========================================================
+
+window.getEDUTechSupabase = function () {
+
+    if (
+        isValidSupabaseClient(
+            window.supabaseClient
+        )
+    ) {
+
+        return window.supabaseClient;
+    }
+
+
+    if (
+        isValidSupabaseClient(
+            window.EDUTECH_SUPABASE
+        )
+    ) {
+
+        return window.EDUTECH_SUPABASE;
+    }
+
+
+    const client =
+        initializeEDUTechSupabase();
+
+
+    if (client) {
+
+        return client;
+    }
+
+
+    return null;
+};
+
+
+// =========================================================
+// CHECK READY
+// =========================================================
+
+window.isEDUTechSupabaseReady = function () {
+
+    const client =
+        window.getEDUTechSupabase();
+
+
+    return isValidSupabaseClient(client);
+};
+
+
+// =========================================================
+// WAIT FOR SUPABASE CLIENT
+// =========================================================
+
+window.waitForEDUTechSupabase = function (
+    timeout = 15000
+) {
+
+    return new Promise(function (resolve, reject) {
+
+        const started =
+            Date.now();
+
+
+        // -------------------------------------------------
+        // Check immediately
+        // -------------------------------------------------
+
+        const immediate =
+            window.getEDUTechSupabase();
+
+
+        if (
+            isValidSupabaseClient(immediate)
+        ) {
+
+            resolve(immediate);
+            return;
         }
 
 
         // -------------------------------------------------
-        // Create client
+        // Listen for ready event
         // -------------------------------------------------
 
-        const client =
-            supabaseLibrary.createClient(
-                SUPABASE_URL,
-                SUPABASE_KEY,
-                {
-                    auth: {
+        let finished = false;
 
-                        persistSession:
-                            true,
 
-                        autoRefreshToken:
-                            true,
+        function cleanup() {
 
-                        detectSessionInUrl:
-                            true,
-
-                        storageKey:
-                            "edutech-supabase-auth"
-
-                    }
-                }
+            window.removeEventListener(
+                "edutech:supabase-ready",
+                readyHandler
             );
 
-
-        // -------------------------------------------------
-        // Store global references
-        // -------------------------------------------------
-
-        window.supabaseClient =
-            client;
+            clearInterval(interval);
+            clearTimeout(timeoutTimer);
+        }
 
 
-        window.EDUTECH_SUPABASE =
-            client;
+        function finishSuccess(client) {
+
+            if (finished) {
+                return;
+            }
+
+            finished = true;
+
+            cleanup();
+
+            resolve(client);
+        }
 
 
-        // -------------------------------------------------
-        // Ready state
-        // -------------------------------------------------
+        function finishError(error) {
 
-        window.EDUTECH_SUPABASE_READY =
-            true;
+            if (finished) {
+                return;
+            }
+
+            finished = true;
+
+            cleanup();
+
+            reject(error);
+        }
 
 
-        window.EDUTECH_SUPABASE_ERROR =
-            null;
+        function readyHandler(event) {
+
+            const client =
+                event &&
+                event.detail &&
+                event.detail.client
+                    ? event.detail.client
+                    : window.getEDUTechSupabase();
 
 
-        console.log(
-            "================================================="
+            if (
+                isValidSupabaseClient(client)
+            ) {
+
+                finishSuccess(client);
+            }
+        }
+
+
+        window.addEventListener(
+            "edutech:supabase-ready",
+            readyHandler
         );
 
-        console.log(
-            "EDU TECH: SUPABASE CLIENT READY"
-        );
-
-        console.log(
-            "Supabase URL:",
-            SUPABASE_URL
-        );
-
-        console.log(
-            "Client:",
-            window.supabaseClient
-        );
-
-        console.log(
-            "================================================="
-        );
-
 
         // -------------------------------------------------
-        // Fire ready event
+        // Poll while scripts initialize
         // -------------------------------------------------
 
-        window.dispatchEvent(
-            new CustomEvent(
-                "edutech:supabase-ready"
-            )
-        );
+        const interval =
+            setInterval(function () {
+
+                const client =
+                    window.getEDUTechSupabase();
 
 
-        // -------------------------------------------------
-        // Auth state monitor
-        // -------------------------------------------------
-
-        if (
-            client.auth &&
-            typeof client.auth.onAuthStateChange ===
-                "function"
-        ) {
-
-            client.auth.onAuthStateChange(
-                function (
-                    event,
-                    session
+                if (
+                    isValidSupabaseClient(client)
                 ) {
 
-                    console.log(
-                        "EDU TECH Auth State:",
-                        event
-                    );
+                    finishSuccess(client);
+                    return;
+                }
 
+
+                if (
+                    Date.now() - started >= timeout
+                ) {
+
+                    finishError(
+                        new Error(
+                            "EDU TECH Supabase client is not ready. Please check supabase.js."
+                        )
+                    );
+                }
+
+            }, 200);
+
+
+        // -------------------------------------------------
+        // Safety timeout
+        // -------------------------------------------------
+
+        const timeoutTimer =
+            setTimeout(function () {
+
+                const client =
+                    window.getEDUTechSupabase();
+
+
+                if (
+                    isValidSupabaseClient(client)
+                ) {
+
+                    finishSuccess(client);
+
+                } else {
+
+                    finishError(
+                        new Error(
+                            "EDU TECH Supabase client is not ready. Please check supabase.js."
+                        )
+                    );
+                }
+
+            }, timeout);
+    });
+};
+
+
+// =========================================================
+// AUTH HELPERS
+// =========================================================
+
+window.getEDUTechSession = async function () {
+
+    const db =
+        await window.waitForEDUTechSupabase();
+
+
+    const result =
+        await db.auth.getSession();
+
+
+    if (result.error) {
+        throw result.error;
+    }
+
+
+    return result.data
+        ? result.data.session
+        : null;
+};
+
+
+window.getEDUTechUser = async function () {
+
+    const session =
+        await window.getEDUTechSession();
+
+
+    return session
+        ? session.user
+        : null;
+};
+
+
+// =========================================================
+// AUTH STATE CHANGE
+// =========================================================
+
+function setupEDUTechAuthListener() {
+
+    const db =
+        window.getEDUTechSupabase();
+
+
+    if (
+        !db ||
+        !db.auth ||
+        typeof db.auth.onAuthStateChange !== "function"
+    ) {
+
+        return;
+    }
+
+
+    try {
+
+        db.auth.onAuthStateChange(
+            function (event, session) {
+
+                try {
 
                     window.dispatchEvent(
                         new CustomEvent(
                             "edutech:auth-state-change",
                             {
                                 detail: {
-
-                                    event:
-                                        event,
-
-                                    session:
-                                        session
-
+                                    event: event,
+                                    session: session
                                 }
                             }
                         )
                     );
 
+                } catch (error) {
+
+                    console.warn(
+                        "EDU TECH auth event error:",
+                        error
+                    );
                 }
-            );
-
-        }
-
-
-        return client;
-
-    }
-    catch (error) {
-
-        window.supabaseClient =
-            null;
-
-
-        window.EDUTECH_SUPABASE =
-            null;
-
-
-        window.EDUTECH_SUPABASE_READY =
-            false;
-
-
-        window.EDUTECH_SUPABASE_ERROR =
-            error;
-
-
-        console.error(
-            "================================================="
+            }
         );
 
-        console.error(
-            "EDU TECH: SUPABASE INITIALIZATION FAILED"
-        );
+    } catch (error) {
 
-        console.error(
+        console.warn(
+            "Could not initialize EDU TECH auth listener:",
             error
         );
-
-        console.error(
-            "================================================="
-        );
-
-
-        window.dispatchEvent(
-            new CustomEvent(
-                "edutech:supabase-error",
-                {
-                    detail: error
-                }
-            )
-        );
-
-
-        return null;
-
     }
-
 }
 
 
 // =========================================================
-// START SUPABASE INITIALIZATION
+// START AUTH LISTENER AFTER SUPABASE IS READY
 // =========================================================
 
-window.EDUTECH_SUPABASE_INITIALIZATION =
-    initializeEDUTechSupabase();
+window.waitForEDUTechSupabase(15000)
+    .then(function () {
 
+        setupEDUTechAuthListener();
 
-// =========================================================
-// GET SUPABASE CLIENT
-// =========================================================
+    })
+    .catch(function (error) {
 
-window.getEDUTechSupabase =
-    function () {
-
-        if (
-            window.supabaseClient &&
-            typeof window.supabaseClient.from ===
-                "function"
-        ) {
-
-            return window.supabaseClient;
-
-        }
-
-
-        throw new Error(
-            "EDU TECH Supabase client is not ready."
+        console.error(
+            "EDU TECH Supabase startup error:",
+            error
         );
-
-    };
-
-
-// =========================================================
-// CHECK SUPABASE STATUS
-// =========================================================
-
-window.isEDUTechSupabaseReady =
-    function () {
-
-        return (
-            window.EDUTECH_SUPABASE_READY === true &&
-            !!window.supabaseClient &&
-            typeof window.supabaseClient.from ===
-                "function"
-        );
-
-    };
+    });
 
 
 // =========================================================
-// WAIT FOR SUPABASE
+// GLOBAL CONFIGURATION
 // =========================================================
 
-window.waitForEDUTechSupabase =
-    function (timeout = 15000) {
+window.EDUTECH_SUPABASE_CONFIG = {
 
-        return new Promise(
-            function (
-                resolve,
-                reject
-            ) {
+    url:
+        SUPABASE_URL,
 
-                // -----------------------------------------
-                // Already ready
-                // -----------------------------------------
-
-                if (
-                    window.supabaseClient &&
-                    typeof window.supabaseClient.from ===
-                        "function"
-                ) {
-
-                    resolve(
-                        window.supabaseClient
-                    );
-
-                    return;
-
-                }
-
-
-                // -----------------------------------------
-                // Ready event handler
-                // -----------------------------------------
-
-                let finished =
-                    false;
-
-
-                let timer;
-
-
-                function cleanup() {
-
-                    window.removeEventListener(
-                        "edutech:supabase-ready",
-                        readyHandler
-                    );
-
-
-                    window.removeEventListener(
-                        "edutech:supabase-error",
-                        errorHandler
-                    );
-
-
-                    clearTimeout(
-                        timer
-                    );
-
-                }
-
-
-                function readyHandler() {
-
-                    if (finished) {
-                        return;
-                    }
-
-
-                    if (
-                        window.supabaseClient &&
-                        typeof window.supabaseClient.from ===
-                            "function"
-                    ) {
-
-                        finished =
-                            true;
-
-
-                        cleanup();
-
-
-                        resolve(
-                            window.supabaseClient
-                        );
-
-                    }
-
-                }
-
-
-                function errorHandler(event) {
-
-                    if (finished) {
-                        return;
-                    }
-
-
-                    finished =
-                        true;
-
-
-                    cleanup();
-
-
-                    reject(
-                        event.detail ||
-                        window.EDUTECH_SUPABASE_ERROR ||
-                        new Error(
-                            "Supabase initialization failed."
-                        )
-                    );
-
-                }
-
-
-                window.addEventListener(
-                    "edutech:supabase-ready",
-                    readyHandler
-                );
-
-
-                window.addEventListener(
-                    "edutech:supabase-error",
-                    errorHandler
-                );
-
-
-                // -----------------------------------------
-                // Timeout
-                // -----------------------------------------
-
-                timer =
-                    setTimeout(
-                        function () {
-
-                            if (finished) {
-                                return;
-                            }
-
-
-                            finished =
-                                true;
-
-
-                            cleanup();
-
-
-                            reject(
-                                window.EDUTECH_SUPABASE_ERROR ||
-                                new Error(
-                                    "Timed out waiting for Supabase."
-                                )
-                            );
-
-                        },
-                        timeout
-                    );
-
-            }
-        );
-
-    };
+    key:
+        SUPABASE_KEY
+};
 
 
 // =========================================================
-// AUTH SESSION HELPER
-// =========================================================
-
-window.getEDUTechSession =
-    async function () {
-
-        const client =
-            await window.waitForEDUTechSupabase();
-
-
-        const result =
-            await client.auth.getSession();
-
-
-        if (result.error) {
-
-            console.error(
-                "EDU TECH: Failed to get Supabase session.",
-                result.error
-            );
-
-
-            throw result.error;
-
-        }
-
-
-        return (
-            result.data.session ||
-            null
-        );
-
-    };
-
-
-// =========================================================
-// AUTH USER HELPER
-// =========================================================
-
-window.getEDUTechUser =
-    async function () {
-
-        const client =
-            await window.waitForEDUTechSupabase();
-
-
-        const result =
-            await client.auth.getUser();
-
-
-        if (result.error) {
-
-            console.error(
-                "EDU TECH: Failed to get Supabase user.",
-                result.error
-            );
-
-
-            throw result.error;
-
-        }
-
-
-        return (
-            result.data.user ||
-            null
-        );
-
-    };
-
-
-// =========================================================
-// VERSION LOG
+// DEBUG INFORMATION
 // =========================================================
 
 console.log(
@@ -808,6 +628,6 @@ console.log(
 );
 
 console.log(
-    "EDU TECH Supabase version:",
-    "2026.11.13.01"
+    "EDU TECH Supabase ready:",
+    window.isEDUTechSupabaseReady()
 );

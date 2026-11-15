@@ -8,633 +8,1140 @@
 
     <link rel="stylesheet" href="./style.css">
 
-    <!-- =========================================================
-         SUPABASE
-    ========================================================== -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase.js"></script>
-
-    <!-- =========================================================
-         CENTRAL ACCESS CONTROL
-    ========================================================== -->
     <script src="./access-control.js"></script>
-
-    <!-- =========================================================
-         CENTRAL SIDEBAR
-    ========================================================== -->
     <script src="./sidebar.js"></script>
 
     <style>
+        /* =========================================================
+           ROOMS PAGE - LAYOUT FIX
+           ========================================================= */
 
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
         body {
             margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
+            padding: 0;
+            width: 100%;
+            min-height: 100%;
         }
 
-        .page-content {
-            padding: 25px;
+        body {
+            background: #f5f7fb;
+            overflow-x: hidden;
         }
 
-        .page-header {
+        /*
+         * IMPORTANT:
+         * sidebar.js/global CSS may position the sidebar as fixed.
+         * Therefore the Rooms content is deliberately given a
+         * left margin so it can NEVER sit underneath the sidebar.
+         */
+
+        #appSidebar {
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            bottom: 0 !important;
+
+            width: 250px !important;
+            min-width: 250px !important;
+
+            height: 100vh !important;
+            min-height: 100vh !important;
+
+            z-index: 10000 !important;
+
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .rooms-main-content {
+            position: relative;
+
+            display: block;
+
+            width: calc(100% - 250px) !important;
+            min-width: 0;
+
+            margin-left: 250px !important;
+
+            padding: 24px;
+
+            overflow-x: hidden;
+
+            min-height: 100vh;
+
+            z-index: 1;
+        }
+
+
+        /* =========================================================
+           PAGE HEADER
+           ========================================================= */
+
+        .rooms-page-header {
+            width: 100%;
+
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            margin: 0 0 20px 0;
+
+            padding: 0;
+
             flex-wrap: wrap;
         }
 
-        .page-header h1 {
+        .rooms-page-title-area {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .rooms-page-title {
+            display: block;
+
             margin: 0;
-            font-size: 28px;
+            padding: 0;
+
+            color: #172033;
+
+            font-size: 30px;
+            line-height: 1.3;
+
+            font-weight: 700;
+
+            visibility: visible;
+            opacity: 1;
+
+            word-break: break-word;
         }
 
-        .page-header p {
-            margin: 6px 0 0;
-            color: #666;
+        .rooms-page-subtitle {
+            display: block;
+
+            margin: 7px 0 0 0;
+            padding: 0;
+
+            color: #667085;
+
+            font-size: 14px;
+            line-height: 1.5;
+
+            visibility: visible;
+            opacity: 1;
         }
 
-        .btn {
+        .rooms-add-button {
+            flex-shrink: 0;
+
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
+
+            background: #0d6efd;
+            color: #ffffff;
+
             padding: 11px 18px;
+
+            font-size: 14px;
+            font-weight: 600;
+
             cursor: pointer;
+
+            white-space: nowrap;
+        }
+
+        .rooms-add-button:hover {
+            background: #0b5ed7;
+        }
+
+
+        /* =========================================================
+           HOTEL CONTEXT
+           ========================================================= */
+
+        .hotel-context-card {
+            width: 100%;
+
+            background: #ffffff;
+
+            border: 1px solid #e4e7ec;
+            border-radius: 10px;
+
+            padding: 16px 18px;
+
+            margin-bottom: 20px;
+
+            box-shadow: 0 2px 8px rgba(16, 24, 40, 0.04);
+        }
+
+        .hotel-context-title {
+            margin: 0 0 5px 0;
+
+            color: #667085;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        #hotelContext {
+            margin: 0;
+
+            color: #172033;
+
+            font-size: 16px;
+            font-weight: 600;
+
+            word-break: break-word;
+        }
+
+
+        /* =========================================================
+           MESSAGE
+           ========================================================= */
+
+        #roomsMessage {
+            display: none;
+
+            width: 100%;
+
+            margin: 0 0 20px 0;
+
+            padding: 12px 15px;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+            line-height: 1.5;
+
+            word-break: break-word;
+        }
+
+        #roomsMessage.success {
+            display: block;
+
+            background: #ecfdf3;
+            color: #027a48;
+
+            border: 1px solid #abefc6;
+        }
+
+        #roomsMessage.error {
+            display: block;
+
+            background: #fef3f2;
+            color: #b42318;
+
+            border: 1px solid #fecdca;
+        }
+
+        #roomsMessage.info {
+            display: block;
+
+            background: #eff8ff;
+            color: #175cd3;
+
+            border: 1px solid #b2ddff;
+        }
+
+
+        /* =========================================================
+           SUMMARY CARDS
+           ========================================================= */
+
+        .rooms-summary-grid {
+            width: 100%;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 16px;
+
+            margin-bottom: 22px;
+        }
+
+        .rooms-summary-card {
+            min-width: 0;
+
+            background: #ffffff;
+
+            border: 1px solid #e4e7ec;
+            border-radius: 10px;
+
+            padding: 18px;
+
+            box-shadow:
+                0 2px 8px rgba(16, 24, 40, 0.04);
+        }
+
+        .rooms-summary-label {
+            margin: 0 0 8px 0;
+
+            color: #667085;
+
+            font-size: 13px;
             font-weight: 600;
         }
 
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
+        .rooms-summary-value {
+            margin: 0;
+
+            color: #172033;
+
+            font-size: 27px;
+            line-height: 1.2;
+
+            font-weight: 700;
         }
 
-        .btn-primary {
-            background: #0d6efd;
-            color: white;
-        }
 
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
+        /* =========================================================
+           ROOMS TABLE CARD
+           ========================================================= */
 
-        .btn-success {
-            background: #198754;
-            color: white;
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn-warning {
-            background: #ffc107;
-            color: #000;
-        }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .summary-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .summary-card h3 {
-            margin: 0 0 10px;
-            font-size: 15px;
-            color: #666;
-        }
-
-        .summary-card .number {
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .table-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            overflow-x: auto;
-        }
-
-        table {
+        .rooms-table-card {
             width: 100%;
+
+            background: #ffffff;
+
+            border: 1px solid #e4e7ec;
+            border-radius: 10px;
+
+            box-shadow:
+                0 2px 8px rgba(16, 24, 40, 0.04);
+
+            overflow: hidden;
+        }
+
+        .rooms-table-header {
+            width: 100%;
+
+            padding: 18px 20px;
+
+            border-bottom: 1px solid #eaecf0;
+        }
+
+        .rooms-table-title {
+            margin: 0;
+
+            color: #172033;
+
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .rooms-table-description {
+            margin: 5px 0 0 0;
+
+            color: #667085;
+
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .rooms-table-wrapper {
+            width: 100%;
+
+            overflow-x: auto;
+
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .rooms-table {
+            width: 100%;
+
+            min-width: 760px;
+
             border-collapse: collapse;
         }
 
-        th,
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
+        .rooms-table th {
+            padding: 13px 16px;
+
             text-align: left;
-        }
 
-        th {
-            background: #f8f9fa;
-        }
+            background: #f8fafc;
 
-        .status {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 20px;
+            color: #475467;
+
             font-size: 12px;
-            font-weight: bold;
+            font-weight: 700;
+
+            white-space: nowrap;
+
+            border-bottom: 1px solid #eaecf0;
         }
 
-        .status-available {
-            background: #d1e7dd;
-            color: #0f5132;
+        .rooms-table td {
+            padding: 14px 16px;
+
+            color: #344054;
+
+            font-size: 14px;
+
+            border-bottom: 1px solid #f0f2f5;
+
+            vertical-align: middle;
         }
 
-        .status-occupied {
-            background: #f8d7da;
-            color: #842029;
+        .rooms-table tbody tr:hover {
+            background: #f9fafb;
         }
 
-        .status-cleaning {
-            background: #fff3cd;
-            color: #664d03;
+        .rooms-table tbody tr:last-child td {
+            border-bottom: none;
         }
 
-        .status-maintenance {
-            background: #e2e3e5;
-            color: #41464b;
+        .room-name-cell {
+            color: #172033;
+
+            font-weight: 600;
+
+            max-width: 220px;
+
+            word-break: break-word;
         }
 
-        .action-buttons {
+        .room-price-cell {
+            white-space: nowrap;
+
+            font-weight: 600;
+        }
+
+
+        /* =========================================================
+           STATUS
+           ========================================================= */
+
+        .room-status {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            min-width: 85px;
+
+            padding: 5px 9px;
+
+            border-radius: 999px;
+
+            font-size: 12px;
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+        .room-status.available {
+            background: #ecfdf3;
+            color: #027a48;
+        }
+
+        .room-status.occupied {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .room-status.cleaning {
+            background: #eff8ff;
+            color: #175cd3;
+        }
+
+        .room-status.maintenance {
+            background: #fef3f2;
+            color: #b42318;
+        }
+
+
+        /* =========================================================
+           ACTION BUTTONS
+           ========================================================= */
+
+        .room-action-group {
             display: flex;
+
+            align-items: center;
+
             gap: 7px;
+
             flex-wrap: wrap;
         }
 
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.55);
-            z-index: 99999;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+        .room-action-button {
+            border: 1px solid #d0d5dd;
+
+            background: #ffffff;
+            color: #344054;
+
+            border-radius: 6px;
+
+            padding: 7px 10px;
+
+            font-size: 12px;
+            font-weight: 600;
+
+            cursor: pointer;
+
+            white-space: nowrap;
         }
 
-        .modal {
-            background: white;
-            width: 100%;
-            max-width: 550px;
-            border-radius: 10px;
-            padding: 25px;
-            max-height: 90vh;
+        .room-action-button:hover {
+            background: #f8fafc;
+        }
+
+        .room-action-button.delete {
+            border-color: #fecdca;
+
+            color: #b42318;
+        }
+
+        .room-action-button.delete:hover {
+            background: #fef3f2;
+        }
+
+
+        /* =========================================================
+           EMPTY STATE
+           ========================================================= */
+
+        .rooms-empty-state {
+            padding: 45px 20px;
+
+            text-align: center;
+
+            color: #667085;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================================================
+           MODAL
+           ========================================================= */
+
+        .rooms-modal-overlay {
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 50000;
+
+            background: rgba(16, 24, 40, 0.55);
+
+            padding: 20px;
+
             overflow-y: auto;
         }
 
-        .modal h2 {
-            margin-top: 0;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 11px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
-
-        .form-help {
-            display: block;
-            margin-top: 5px;
-            color: #666;
-            font-size: 13px;
-        }
-
-        .modal-actions {
+        .rooms-modal-overlay.show {
             display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
+
+            align-items: center;
+            justify-content: center;
         }
 
-        .message {
-            display: none;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 15px;
+        .rooms-modal {
+            width: 100%;
+
+            max-width: 520px;
+
+            background: #ffffff;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 20px 50px rgba(16, 24, 40, 0.2);
+
+            overflow: hidden;
         }
 
-        .message.success {
-            background: #d1e7dd;
-            color: #0f5132;
+        .rooms-modal-header {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+
+            padding: 18px 20px;
+
+            border-bottom: 1px solid #eaecf0;
         }
 
-        .message.error {
-            background: #f8d7da;
-            color: #842029;
+        .rooms-modal-title {
+            margin: 0;
+
+            color: #172033;
+
+            font-size: 19px;
+            font-weight: 700;
         }
 
-        .hotel-context {
-            background: #eef5ff;
-            padding: 12px 15px;
-            border-radius: 7px;
-            margin-bottom: 20px;
-            color: #174a8b;
+        .rooms-modal-close {
+            border: none;
+
+            background: transparent;
+
+            color: #667085;
+
+            font-size: 25px;
+
+            line-height: 1;
+
+            cursor: pointer;
+
+            padding: 2px 6px;
+        }
+
+        .rooms-modal-body {
+            padding: 20px;
+        }
+
+        .rooms-form-group {
+            margin-bottom: 17px;
+        }
+
+        .rooms-form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .rooms-form-label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: #344054;
+
+            font-size: 13px;
             font-weight: 600;
         }
 
-        #appSidebar {
-            display: block;
+        .rooms-form-input,
+        .rooms-form-select {
+            width: 100%;
+
+            min-height: 42px;
+
+            padding: 9px 11px;
+
+            border: 1px solid #d0d5dd;
+
+            border-radius: 7px;
+
+            background: #ffffff;
+
+            color: #101828;
+
+            font-size: 14px;
+
+            outline: none;
         }
+
+        .rooms-form-input:focus,
+        .rooms-form-select:focus {
+            border-color: #0d6efd;
+
+            box-shadow:
+                0 0 0 3px rgba(13, 110, 253, 0.10);
+        }
+
+        .rooms-form-help {
+            margin: 6px 0 0 0;
+
+            color: #667085;
+
+            font-size: 12px;
+
+            line-height: 1.45;
+        }
+
+        .rooms-modal-footer {
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 10px;
+
+            padding: 16px 20px;
+
+            border-top: 1px solid #eaecf0;
+        }
+
+        .rooms-cancel-button,
+        .rooms-save-button {
+            border-radius: 7px;
+
+            padding: 10px 16px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+        .rooms-cancel-button {
+            border: 1px solid #d0d5dd;
+
+            background: #ffffff;
+
+            color: #344054;
+        }
+
+        .rooms-save-button {
+            border: 1px solid #0d6efd;
+
+            background: #0d6efd;
+
+            color: #ffffff;
+        }
+
+        .rooms-save-button:hover {
+            background: #0b5ed7;
+        }
+
+
+        /* =========================================================
+           TABLET
+           ========================================================= */
+
+        @media (max-width: 1100px) {
+
+            .rooms-summary-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+        }
+
+
+        /* =========================================================
+           MOBILE
+           ========================================================= */
 
         @media (max-width: 900px) {
 
-            .summary-grid {
-                grid-template-columns: repeat(2, 1fr);
+            #appSidebar {
+                position: relative !important;
+
+                width: 100% !important;
+                min-width: 0 !important;
+
+                height: auto !important;
+                min-height: auto !important;
             }
 
+            .rooms-main-content {
+                width: 100% !important;
+
+                margin-left: 0 !important;
+
+                padding: 20px;
+            }
         }
 
-        @media (max-width: 600px) {
 
-            .summary-grid {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 650px) {
 
-            .page-content {
+            .rooms-main-content {
                 padding: 15px;
             }
 
-        }
+            .rooms-page-header {
+                flex-direction: column;
 
+                align-items: stretch;
+            }
+
+            .rooms-add-button {
+                width: 100%;
+            }
+
+            .rooms-summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rooms-table-card {
+                border-radius: 8px;
+            }
+
+            .rooms-table-header {
+                padding: 15px;
+            }
+
+            .rooms-modal-overlay {
+                padding: 10px;
+            }
+
+            .rooms-modal-footer {
+                flex-direction: column;
+            }
+
+            .rooms-cancel-button,
+            .rooms-save-button {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 
 <body>
 
     <!-- =========================================================
-         CENTRAL SIDEBAR
-    ========================================================== -->
-    <aside
-        id="appSidebar"
-        class="sidebar">
-    </aside>
+         SIDEBAR
+         ========================================================= -->
+
+    <aside id="appSidebar" class="sidebar"></aside>
 
 
     <!-- =========================================================
-         MAIN CONTENT
-    ========================================================== -->
-    <main class="page-content">
+         MAIN ROOMS CONTENT
+         ========================================================= -->
 
-        <div class="page-header">
+    <main class="rooms-main-content">
 
-            <div>
+        <!-- PAGE HEADER -->
 
-                <h1>Rooms</h1>
+        <div class="rooms-page-header">
 
-                <p>
-                    Manage hotel rooms and room availability.
+            <div class="rooms-page-title-area">
+
+                <h1 class="rooms-page-title">
+                    Rooms
+                </h1>
+
+                <p class="rooms-page-subtitle">
+                    Manage hotel rooms, room prices and room availability.
                 </p>
 
             </div>
 
             <button
-                id="addRoomBtn"
-                class="btn btn-primary"
-                type="button">
-
+                type="button"
+                class="rooms-add-button"
+                id="addRoomButton">
                 + Add Room
-
             </button>
 
         </div>
 
 
         <!-- HOTEL -->
-        <div
-            id="hotelContext"
-            class="hotel-context">
 
-            Loading hotel...
+        <section class="hotel-context-card">
 
-        </div>
+            <p class="hotel-context-title">
+                Current Hotel
+            </p>
+
+            <p id="hotelContext">
+                Loading hotel...
+            </p>
+
+        </section>
 
 
         <!-- MESSAGE -->
-        <div
-            id="message"
-            class="message">
-        </div>
+
+        <div id="roomsMessage"></div>
 
 
-        <!-- =====================================================
-             SUMMARY
-        ====================================================== -->
-        <div class="summary-grid">
+        <!-- SUMMARY -->
 
-            <div class="summary-card">
+        <section class="rooms-summary-grid">
 
-                <h3>Total Rooms</h3>
+            <div class="rooms-summary-card">
 
-                <div
-                    id="totalRooms"
-                    class="number">
+                <p class="rooms-summary-label">
+                    Total Rooms
+                </p>
 
+                <p
+                    class="rooms-summary-value"
+                    id="totalRooms">
                     0
-
-                </div>
+                </p>
 
             </div>
 
 
-            <div class="summary-card">
+            <div class="rooms-summary-card">
 
-                <h3>Available</h3>
+                <p class="rooms-summary-label">
+                    Available
+                </p>
 
-                <div
-                    id="availableRooms"
-                    class="number">
-
+                <p
+                    class="rooms-summary-value"
+                    id="availableRooms">
                     0
-
-                </div>
+                </p>
 
             </div>
 
 
-            <div class="summary-card">
+            <div class="rooms-summary-card">
 
-                <h3>Occupied</h3>
+                <p class="rooms-summary-label">
+                    Occupied
+                </p>
 
-                <div
-                    id="occupiedRooms"
-                    class="number">
-
+                <p
+                    class="rooms-summary-value"
+                    id="occupiedRooms">
                     0
-
-                </div>
+                </p>
 
             </div>
 
 
-            <div class="summary-card">
+            <div class="rooms-summary-card">
 
-                <h3>Maintenance</h3>
+                <p class="rooms-summary-label">
+                    Maintenance
+                </p>
 
-                <div
-                    id="maintenanceRooms"
-                    class="number">
-
+                <p
+                    class="rooms-summary-value"
+                    id="maintenanceRooms">
                     0
-
-                </div>
+                </p>
 
             </div>
 
-        </div>
+        </section>
 
 
-        <!-- =====================================================
-             ROOMS TABLE
-        ====================================================== -->
-        <div class="table-card">
+        <!-- ROOMS TABLE -->
 
-            <div style="margin-bottom:15px;">
+        <section class="rooms-table-card">
 
-                <button
-                    id="refreshBtn"
-                    class="btn btn-secondary"
-                    type="button">
+            <div class="rooms-table-header">
 
-                    Refresh
+                <h2 class="rooms-table-title">
+                    Hotel Rooms
+                </h2>
 
-                </button>
+                <p class="rooms-table-description">
+                    View and manage all rooms belonging to the selected hotel.
+                </p>
 
             </div>
 
 
-            <table>
+            <div class="rooms-table-wrapper">
 
-                <thead>
+                <table class="rooms-table">
 
-                    <tr>
-                        <th>ID</th>
-                        <th>Room Name / Identifier</th>
-                        <th>Room Type</th>
-                        <th>Price</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
+                    <thead>
 
-                </thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Room Name / Identifier</th>
+                            <th>Room Type</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
 
-                <tbody id="roomsTableBody">
+                    </thead>
 
-                    <tr>
-                        <td colspan="6">
-                            Loading rooms...
-                        </td>
-                    </tr>
+                    <tbody id="roomsTableBody">
 
-                </tbody>
+                        <tr>
 
-            </table>
+                            <td colspan="6">
 
-        </div>
+                                <div class="rooms-empty-state">
+                                    Loading rooms...
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
 
     </main>
 
 
     <!-- =========================================================
          ROOM MODAL
-    ========================================================== -->
+         ========================================================= -->
+
     <div
         id="roomModal"
-        class="modal-overlay">
+        class="rooms-modal-overlay"
+        aria-hidden="true">
 
-        <div class="modal">
+        <div class="rooms-modal">
 
-            <h2 id="modalTitle">
-                Add Room
-            </h2>
+            <div class="rooms-modal-header">
+
+                <h2
+                    class="rooms-modal-title"
+                    id="roomModalTitle">
+                    Add Room
+                </h2>
+
+                <button
+                    type="button"
+                    class="rooms-modal-close"
+                    id="closeRoomModalButton"
+                    aria-label="Close">
+                    &times;
+                </button>
+
+            </div>
 
 
             <form id="roomForm">
 
-                <!-- =================================================
-                     OPTIONAL ROOM NAME / IDENTIFIER
-                ================================================== -->
-
-                <div class="form-group">
-
-                    <label for="roomNumber">
-                        Room Name / Identifier
-                        <span style="font-weight:normal;color:#777;">
-                            (Optional)
-                        </span>
-                    </label>
+                <div class="rooms-modal-body">
 
                     <input
-                        type="text"
-                        id="roomNumber"
-                        placeholder="Example: Room A, Single 1, Ground Floor">
-
-                    <span class="form-help">
-                        Fanana can leave this blank because the hotel does not use room numbers.
-                    </span>
-
-                </div>
+                        type="hidden"
+                        id="roomId">
 
 
-                <!-- =================================================
-                     ROOM TYPE
-                ================================================== -->
+                    <!-- ROOM NUMBER -->
 
-                <div class="form-group">
+                    <div class="rooms-form-group">
 
-                    <label for="roomType">
-                        Room Type
-                    </label>
+                        <label
+                            class="rooms-form-label"
+                            for="roomNumber">
+                            Room Number / Identifier
+                        </label>
 
-                    <select
-                        id="roomType"
-                        required>
+                        <input
+                            type="text"
+                            id="roomNumber"
+                            class="rooms-form-input"
+                            placeholder="Example: 101">
 
-                        <option value="">
-                            Select Room Type
-                        </option>
+                        <p class="rooms-form-help">
+                            Optional. Fanana can leave this blank because the hotel does not use room numbers.
+                        </p>
 
-                        <option value="Single">
-                            Single
-                        </option>
-
-                        <option value="Double">
-                            Double
-                        </option>
-
-                        <option value="Twin">
-                            Twin
-                        </option>
-
-                        <option value="Deluxe">
-                            Deluxe
-                        </option>
-
-                        <option value="Executive">
-                            Executive
-                        </option>
-
-                        <option value="Suite">
-                            Suite
-                        </option>
-
-                    </select>
-
-                </div>
+                    </div>
 
 
-                <!-- =================================================
-                     PRICE
-                ================================================== -->
+                    <!-- ROOM TYPE -->
 
-                <div class="form-group">
+                    <div class="rooms-form-group">
 
-                    <label for="roomPrice">
-                        Default Price
-                        <span style="font-weight:normal;color:#777;">
-                            (Optional)
-                        </span>
-                    </label>
+                        <label
+                            class="rooms-form-label"
+                            for="roomType">
+                            Room Type
+                        </label>
 
-                    <input
-                        type="number"
-                        id="roomPrice"
-                        min="0"
-                        step="0.01"
-                        placeholder="Example: 1000">
+                        <input
+                            type="text"
+                            id="roomType"
+                            class="rooms-form-input"
+                            placeholder="Example: Single, Double, Deluxe"
+                            required>
 
-                    <span class="form-help">
-                        Single rooms normally use KSh 1,000 and Double rooms KSh 1,600.
-                        The final guest rate can be adjusted during booking.
-                    </span>
-
-                </div>
+                    </div>
 
 
-                <!-- =================================================
-                     STATUS
-                ================================================== -->
+                    <!-- PRICE -->
 
-                <div class="form-group">
+                    <div class="rooms-form-group">
 
-                    <label for="roomStatus">
-                        Status
-                    </label>
+                        <label
+                            class="rooms-form-label"
+                            for="roomPrice">
+                            Price
+                        </label>
 
-                    <select
-                        id="roomStatus"
-                        required>
+                        <input
+                            type="number"
+                            id="roomPrice"
+                            class="rooms-form-input"
+                            min="0"
+                            step="0.01"
+                            placeholder="Example: 1000">
 
-                        <option value="Available">
-                            Available
-                        </option>
+                        <p class="rooms-form-help">
+                            Optional room price.
+                        </p>
 
-                        <option value="Occupied">
-                            Occupied
-                        </option>
+                    </div>
 
-                        <option value="Cleaning">
-                            Cleaning
-                        </option>
 
-                        <option value="Maintenance">
-                            Maintenance
-                        </option>
+                    <!-- STATUS -->
 
-                    </select>
+                    <div class="rooms-form-group">
+
+                        <label
+                            class="rooms-form-label"
+                            for="roomStatus">
+                            Status
+                        </label>
+
+                        <select
+                            id="roomStatus"
+                            class="rooms-form-select"
+                            required>
+
+                            <option value="Available">
+                                Available
+                            </option>
+
+                            <option value="Occupied">
+                                Occupied
+                            </option>
+
+                            <option value="Cleaning">
+                                Cleaning
+                            </option>
+
+                            <option value="Maintenance">
+                                Maintenance
+                            </option>
+
+                        </select>
+
+                    </div>
 
                 </div>
 
 
-                <!-- =================================================
-                     ACTIONS
-                ================================================== -->
-
-                <div class="modal-actions">
+                <div class="rooms-modal-footer">
 
                     <button
                         type="button"
-                        id="cancelRoomBtn"
-                        class="btn btn-secondary">
-
+                        class="rooms-cancel-button"
+                        id="cancelRoomButton">
                         Cancel
-
                     </button>
-
 
                     <button
                         type="submit"
-                        id="saveRoomBtn"
-                        class="btn btn-success">
-
+                        class="rooms-save-button"
+                        id="saveRoomButton">
                         Save Room
-
                     </button>
 
                 </div>
@@ -648,31 +1155,15 @@
 
     <!-- =========================================================
          ROOMS JAVASCRIPT
-    ========================================================== -->
+         ========================================================= -->
+
     <script>
-
-        "use strict";
-
-
-        /* =====================================================
-           VARIABLES
-        ====================================================== */
-
-        let currentUser = null;
-        let currentProfile = null;
-        let currentRole = null;
 
         let currentHotelId = null;
         let currentHotelName = "";
-
+        let currentProfile = null;
         let editingRoomId = null;
 
-        let db = null;
-
-
-        /* =====================================================
-           ROLES ALLOWED TO MANAGE ROOMS
-        ====================================================== */
 
         const allowedRoles = [
             "system_owner",
@@ -682,1157 +1173,941 @@
         ];
 
 
-        /* =====================================================
-           MESSAGE
-        ====================================================== */
-
-        function showMessage(
-            message,
-            type = "success"
-        ) {
-
-            const box =
-                document.getElementById("message");
-
-            box.textContent =
-                message;
-
-            box.className =
-                "message " + type;
-
-            box.style.display =
-                "block";
-
-            setTimeout(
-                function() {
-
-                    box.style.display =
-                        "none";
-
-                },
-                5000
-            );
+        function el(id) {
+            return document.getElementById(id);
         }
 
 
-        /* =====================================================
-           ROOM PERMISSION
-        ====================================================== */
+        function showMessage(message, type = "info") {
 
-        function canManageRooms() {
+            const box = el("roomsMessage");
 
-            return allowedRoles.includes(
-                String(
-                    currentRole || ""
-                ).toLowerCase()
-            );
+            if (!box) {
+                return;
+            }
+
+            box.className = type;
+
+            box.textContent = message;
+
+            box.style.display = "block";
         }
 
 
-        /* =====================================================
-           INITIALIZE
-        ====================================================== */
+        function clearMessage() {
 
-        async function initializeRoomPage() {
+            const box = el("roomsMessage");
 
-            try {
+            if (!box) {
+                return;
+            }
 
-                /* ---------------------------------------------
-                   Wait for Supabase
-                ---------------------------------------------- */
+            box.textContent = "";
 
-                if (
-                    typeof window.waitForEDUTechSupabase ===
-                    "function"
-                ) {
+            box.className = "";
 
-                    db =
-                        await window.waitForEDUTechSupabase();
+            box.style.display = "none";
+        }
 
-                } else if (
-                    typeof window.getEDUTechSupabase ===
-                    "function"
-                ) {
 
-                    db =
-                        window.getEDUTechSupabase();
+        function formatMoney(value) {
 
-                } else {
+            const amount = Number(value || 0);
 
-                    db =
-                        window.supabaseClient;
-                }
+            return new Intl.NumberFormat("en-KE", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
 
 
-                if (
-                    !db ||
-                    !db.auth
-                ) {
+        async function getCurrentProfile() {
 
-                    showMessage(
-                        "Supabase is not initialized. Check supabase.js.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                /* ---------------------------------------------
-                   Wait for central sidebar
-                ---------------------------------------------- */
-
-                if (
-                    window.sidebarReady &&
-                    typeof window.sidebarReady.then ===
-                    "function"
-                ) {
-
-                    await window.sidebarReady;
-                }
-
-
-                /* ---------------------------------------------
-                   Get logged-in user
-                ---------------------------------------------- */
-
-                const {
-                    data: authData,
-                    error: authError
-                } =
-                    await db.auth.getUser();
-
-
-                if (
-                    authError ||
-                    !authData?.user
-                ) {
-
-                    window.location.href =
-                        "login.html";
-
-                    return;
-                }
-
-
-                currentUser =
-                    authData.user;
-
-
-                /* ---------------------------------------------
-                   Load profile
-                ---------------------------------------------- */
-
-                const {
-                    data: profile,
-                    error: profileError
-                } =
-                    await db
-                        .from("profiles")
-                        .select(
-                            "id, full_name, role, hotel_id, is_active"
-                        )
-                        .eq(
-                            "id",
-                            currentUser.id
-                        )
-                        .maybeSingle();
-
-
-                if (profileError) {
-
-                    showMessage(
-                        profileError.message,
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                if (!profile) {
-
-                    showMessage(
-                        "User profile was not found.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                currentProfile =
-                    profile;
-
-                currentRole =
-                    String(
-                        profile.role || ""
-                    ).toLowerCase();
-
-
-                /* ---------------------------------------------
-                   Store session information
-                ---------------------------------------------- */
-
-                try {
-
-                    sessionStorage.setItem(
-                        "userRole",
-                        currentRole
-                    );
-
-                    sessionStorage.setItem(
-                        "role",
-                        currentRole
-                    );
-
-                    sessionStorage.setItem(
-                        "userName",
-                        profile.full_name ||
-                        "User"
-                    );
-
-                    sessionStorage.setItem(
-                        "userId",
-                        currentUser.id
-                    );
-
-                } catch (error) {
-
-                    console.warn(
-                        "Could not save user session:",
-                        error
-                    );
-                }
-
-
-                /* ---------------------------------------------
-                   Verify role
-                ---------------------------------------------- */
-
-                if (
-                    !allowedRoles.includes(
-                        currentRole
-                    )
-                ) {
-
-                    showMessage(
-                        "You do not have permission to manage rooms.",
-                        "error"
-                    );
-
-                    document.getElementById(
-                        "addRoomBtn"
-                    ).style.display =
-                        "none";
-
-                    return;
-                }
-
-
-                /* ---------------------------------------------
-                   SYSTEM OWNER
-                ---------------------------------------------- */
-
-                if (
-                    currentRole ===
-                    "system_owner"
-                ) {
-
-                    currentHotelId =
-                        sessionStorage.getItem(
-                            "activeHotelId"
-                        ) ||
-                        sessionStorage.getItem(
-                            "hotelId"
-                        );
-
-                    currentHotelName =
-                        sessionStorage.getItem(
-                            "activeHotelName"
-                        ) ||
-                        sessionStorage.getItem(
-                            "hotelName"
-                        ) ||
-                        "";
-
-
-                    if (!currentHotelId) {
-
-                        document.getElementById(
-                            "hotelContext"
-                        ).textContent =
-                            "No hotel selected";
-
-                        showMessage(
-                            "Please select a hotel before managing rooms.",
-                            "error"
-                        );
-
-                        return;
-                    }
-
-                }
-
-
-                /* ---------------------------------------------
-                   HOTEL OWNER / MANAGER / RECEPTIONIST
-                   ---------------------------------------------- */
-
-                else {
-
-                    if (!profile.hotel_id) {
-
-                        showMessage(
-                            "This user has no hotel assigned.",
-                            "error"
-                        );
-
-                        return;
-                    }
-
-
-                    currentHotelId =
-                        profile.hotel_id;
-
-
-                    sessionStorage.setItem(
-                        "hotelId",
-                        String(
-                            currentHotelId
-                        )
-                    );
-
-                    sessionStorage.setItem(
-                        "activeHotelId",
-                        String(
-                            currentHotelId
-                        )
-                    );
-
-
-                    /* -----------------------------------------
-                       Load hotel information
-                    ------------------------------------------ */
-
-                    const {
-                        data: hotel,
-                        error: hotelError
-                    } =
-                        await db
-                            .from("hotels")
-                            .select(
-                                "id, hotel_name, location, phone, status"
-                            )
-                            .eq(
-                                "id",
-                                currentHotelId
-                            )
-                            .maybeSingle();
-
-
-                    if (
-                        !hotelError &&
-                        hotel
-                    ) {
-
-                        currentHotelName =
-                            hotel.hotel_name ||
-                            "Assigned Hotel";
-
-
-                        sessionStorage.setItem(
-                            "hotelName",
-                            currentHotelName
-                        );
-
-                        sessionStorage.setItem(
-                            "activeHotelName",
-                            currentHotelName
-                        );
-
-                    } else {
-
-                        currentHotelName =
-                            "Assigned Hotel";
-                    }
-                }
-
-
-                /* ---------------------------------------------
-                   Display hotel
-                ---------------------------------------------- */
-
-                document.getElementById(
-                    "hotelContext"
-                ).textContent =
-                    "Current Hotel: " +
-                    currentHotelName;
-
-
-                /* ---------------------------------------------
-                   Load rooms
-                ---------------------------------------------- */
-
-                await loadRooms();
-
-            } catch (error) {
-
-                console.error(
-                    "Rooms initialization error:",
-                    error
-                );
-
-                showMessage(
-                    "Unable to initialize Rooms page: " +
-                    error.message,
-                    "error"
+            if (
+                typeof supabaseClient === "undefined" ||
+                !supabaseClient
+            ) {
+                throw new Error(
+                    "Supabase client is not available."
                 );
             }
+
+
+            const {
+                data: {
+                    user
+                },
+                error: sessionError
+            } = await supabaseClient.auth.getUser();
+
+
+            if (sessionError) {
+                throw sessionError;
+            }
+
+
+            if (!user) {
+                throw new Error(
+                    "You are not logged in."
+                );
+            }
+
+
+            const {
+                data: profile,
+                error: profileError
+            } = await supabaseClient
+                .from("profiles")
+                .select("*")
+                .eq("id", user.id)
+                .maybeSingle();
+
+
+            if (profileError) {
+                throw profileError;
+            }
+
+
+            if (!profile) {
+                throw new Error(
+                    "User profile could not be found."
+                );
+            }
+
+
+            return profile;
         }
 
 
-        /* =====================================================
-           LOAD ROOMS
-        ====================================================== */
+        async function determineHotel() {
+
+            currentProfile =
+                await getCurrentProfile();
+
+
+            const role =
+                String(
+                    currentProfile.role || ""
+                ).toLowerCase();
+
+
+            if (!allowedRoles.includes(role)) {
+
+                throw new Error(
+                    "You do not have permission to access the Rooms module."
+                );
+
+            }
+
+
+            if (role === "system_owner") {
+
+                const storedHotelId =
+                    sessionStorage.getItem("activeHotelId") ||
+                    sessionStorage.getItem("hotelId");
+
+
+                const storedHotelName =
+                    sessionStorage.getItem("activeHotelName") ||
+                    sessionStorage.getItem("hotelName");
+
+
+                if (!storedHotelId) {
+
+                    throw new Error(
+                        "No active hotel has been selected. Please select a hotel first."
+                    );
+
+                }
+
+
+                currentHotelId =
+                    Number(storedHotelId);
+
+                currentHotelName =
+                    storedHotelName || "";
+
+            } else {
+
+                if (!currentProfile.hotel_id) {
+
+                    throw new Error(
+                        "Your account is not assigned to a hotel."
+                    );
+
+                }
+
+
+                currentHotelId =
+                    Number(currentProfile.hotel_id);
+
+
+                sessionStorage.setItem(
+                    "hotelId",
+                    String(currentHotelId)
+                );
+
+            }
+
+
+            if (
+                !currentHotelId ||
+                Number.isNaN(currentHotelId)
+            ) {
+
+                throw new Error(
+                    "Invalid hotel selected."
+                );
+
+            }
+
+
+            const {
+                data: hotel,
+                error: hotelError
+            } = await supabaseClient
+                .from("hotels")
+                .select(
+                    "id, hotel_name, location, phone, status"
+                )
+                .eq("id", currentHotelId)
+                .maybeSingle();
+
+
+            if (hotelError) {
+                throw hotelError;
+            }
+
+
+            if (!hotel) {
+
+                throw new Error(
+                    "Selected hotel could not be found."
+                );
+
+            }
+
+
+            currentHotelName =
+                hotel.hotel_name ||
+                currentHotelName ||
+                "Hotel";
+
+
+            sessionStorage.setItem(
+                "activeHotelId",
+                String(currentHotelId)
+            );
+
+
+            sessionStorage.setItem(
+                "activeHotelName",
+                currentHotelName
+            );
+
+
+            el("hotelContext").textContent =
+                currentHotelName +
+                (
+                    hotel.location
+                        ? " — " + hotel.location
+                        : ""
+                );
+
+        }
+
 
         async function loadRooms() {
 
             const tbody =
-                document.getElementById(
-                    "roomsTableBody"
-                );
+                el("roomsTableBody");
 
 
-            tbody.innerHTML =
-                `<tr>
+            tbody.innerHTML = `
+                <tr>
                     <td colspan="6">
-                        Loading rooms...
+                        <div class="rooms-empty-state">
+                            Loading rooms...
+                        </div>
                     </td>
-                </tr>`;
-
-
-            if (!currentHotelId) {
-
-                tbody.innerHTML =
-                    `<tr>
-                        <td colspan="6">
-                            No hotel selected.
-                        </td>
-                    </tr>`;
-
-                return;
-            }
+                </tr>
+            `;
 
 
             const {
-                data,
+                data: rooms,
                 error
-            } =
-                await db
-                    .from("rooms")
-                    .select(
-                        "id, created_at, room_number, room_type, status, price, hotel_id"
-                    )
-                    .eq(
-                        "hotel_id",
-                        Number(
-                            currentHotelId
-                        )
-                    )
-                    .order(
-                        "room_number",
-                        {
-                            ascending: true,
-                            nullsFirst: true
-                        }
-                    );
+            } = await supabaseClient
+                .from("rooms")
+                .select(
+                    "id, created_at, room_number, room_type, status, price, hotel_id"
+                )
+                .eq(
+                    "hotel_id",
+                    Number(currentHotelId)
+                )
+                .order(
+                    "room_number",
+                    {
+                        ascending: true,
+                        nullsFirst: true
+                    }
+                );
 
 
             if (error) {
-
-                console.error(
-                    "Rooms loading error:",
-                    error
-                );
-
-                tbody.innerHTML =
-                    `<tr>
-                        <td colspan="6">
-                            ${escapeHtml(
-                                error.message
-                            )}
-                        </td>
-                    </tr>`;
-
-                showMessage(
-                    "Could not load rooms: " +
-                    error.message,
-                    "error"
-                );
-
-                return;
+                throw error;
             }
 
 
-            const rooms =
-                data || [];
-
-
             updateRoomSummary(
-                rooms
+                rooms || []
             );
 
 
-            if (!rooms.length) {
+            if (!rooms || rooms.length === 0) {
 
-                tbody.innerHTML =
-                    `<tr>
+                tbody.innerHTML = `
+                    <tr>
                         <td colspan="6">
-                            No rooms found for this hotel.
+                            <div class="rooms-empty-state">
+                                No rooms have been added for this hotel yet.
+                            </div>
                         </td>
-                    </tr>`;
+                    </tr>
+                `;
 
                 return;
             }
 
 
             tbody.innerHTML =
-                rooms.map(
-                    function(room) {
+                rooms
+                    .map(room => roomRow(room))
+                    .join("");
 
-                        const statusClass =
-                            String(
-                                room.status || ""
-                            )
-                            .toLowerCase();
-
-
-                        const roomIdentifier =
-                            room.room_number
-                                ? room.room_number
-                                : "Not assigned";
-
-
-                        let priceDisplay =
-                            "Negotiable";
-
-
-                        if (
-                            room.price !== null &&
-                            room.price !== undefined &&
-                            room.price !== ""
-                        ) {
-
-                            priceDisplay =
-                                "KSh " +
-                                Number(
-                                    room.price
-                                ).toLocaleString(
-                                    "en-KE",
-                                    {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2
-                                    }
-                                );
-                        }
-
-
-                        return `
-                            <tr>
-
-                                <td>
-                                    ${escapeHtml(
-                                        room.id
-                                    )}
-                                </td>
-
-                                <td>
-                                    ${escapeHtml(
-                                        roomIdentifier
-                                    )}
-                                </td>
-
-                                <td>
-                                    ${escapeHtml(
-                                        room.room_type
-                                    )}
-                                </td>
-
-                                <td>
-                                    ${priceDisplay}
-                                </td>
-
-                                <td>
-
-                                    <span
-                                        class="status status-${statusClass}">
-
-                                        ${escapeHtml(
-                                            room.status
-                                        )}
-
-                                    </span>
-
-                                </td>
-
-                                <td>
-
-                                    <div class="action-buttons">
-
-                                        ${
-                                            canManageRooms()
-                                            ? `
-                                                <button
-                                                    class="btn btn-warning"
-                                                    type="button"
-                                                    onclick="editRoom(${Number(room.id)})">
-
-                                                    Edit
-
-                                                </button>
-                                            `
-                                            : ""
-                                        }
-
-                                        ${
-                                            currentRole ===
-                                            "system_owner"
-                                            ? `
-                                                <button
-                                                    class="btn btn-danger"
-                                                    type="button"
-                                                    onclick="deleteRoom(${Number(room.id)})">
-
-                                                    Delete
-
-                                                </button>
-                                            `
-                                            : ""
-                                        }
-
-                                    </div>
-
-                                </td>
-
-                            </tr>
-                        `;
-                    }
-                ).join("");
         }
 
 
-        /* =====================================================
-           ROOM SUMMARY
-        ====================================================== */
+        function updateRoomSummary(rooms) {
 
-        function updateRoomSummary(
-            rooms
-        ) {
-
-            document.getElementById(
-                "totalRooms"
-            ).textContent =
+            const total =
                 rooms.length;
 
 
-            document.getElementById(
-                "availableRooms"
-            ).textContent =
+            const available =
                 rooms.filter(
-                    function(room) {
-
-                        return String(
-                            room.status || ""
-                        ).toLowerCase() ===
-                        "available";
-
-                    }
+                    room =>
+                        String(room.status)
+                            .toLowerCase() === "available"
                 ).length;
 
 
-            document.getElementById(
-                "occupiedRooms"
-            ).textContent =
+            const occupied =
                 rooms.filter(
-                    function(room) {
-
-                        return String(
-                            room.status || ""
-                        ).toLowerCase() ===
-                        "occupied";
-
-                    }
+                    room =>
+                        String(room.status)
+                            .toLowerCase() === "occupied"
                 ).length;
 
 
-            document.getElementById(
-                "maintenanceRooms"
-            ).textContent =
+            const maintenance =
                 rooms.filter(
-                    function(room) {
-
-                        return String(
-                            room.status || ""
-                        ).toLowerCase() ===
-                        "maintenance";
-
-                    }
+                    room =>
+                        String(room.status)
+                            .toLowerCase() === "maintenance"
                 ).length;
+
+
+            el("totalRooms").textContent =
+                total;
+
+
+            el("availableRooms").textContent =
+                available;
+
+
+            el("occupiedRooms").textContent =
+                occupied;
+
+
+            el("maintenanceRooms").textContent =
+                maintenance;
+
         }
 
 
-        /* =====================================================
-           OPEN ADD ROOM
-        ====================================================== */
+        function escapeHtml(value) {
 
-        function openAddRoom() {
-
-            if (!canManageRooms()) {
-
-                showMessage(
-                    "You do not have permission to add rooms.",
-                    "error"
-                );
-
-                return;
+            if (
+                value === null ||
+                value === undefined
+            ) {
+                return "";
             }
 
 
-            editingRoomId =
-                null;
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
 
-            document.getElementById(
-                "modalTitle"
-            ).textContent =
-                "Add Room";
+        function statusClass(status) {
+
+            const value =
+                String(status || "")
+                    .toLowerCase();
 
 
-            document.getElementById(
-                "roomForm"
-            ).reset();
+            if (value === "available") {
+                return "available";
+            }
 
 
-            document.getElementById(
-                "roomStatus"
-            ).value =
+            if (value === "occupied") {
+                return "occupied";
+            }
+
+
+            if (value === "cleaning") {
+                return "cleaning";
+            }
+
+
+            if (value === "maintenance") {
+                return "maintenance";
+            }
+
+
+            return "";
+        }
+
+
+        function roomRow(room) {
+
+            const roomNumber =
+                room.room_number !== null &&
+                room.room_number !== undefined &&
+                String(room.room_number).trim() !== ""
+                    ? String(room.room_number)
+                    : "No room number";
+
+
+            const roomType =
+                room.room_type ||
+                "Not specified";
+
+
+            const status =
+                room.status ||
                 "Available";
 
 
-            document.getElementById(
-                "roomModal"
-            ).style.display =
-                "flex";
+            const price =
+                room.price !== null &&
+                room.price !== undefined
+                    ? formatMoney(room.price)
+                    : "—";
+
+
+            const role =
+                String(
+                    currentProfile?.role || ""
+                ).toLowerCase();
+
+
+            return `
+                <tr>
+
+                    <td>
+                        ${escapeHtml(room.id)}
+                    </td>
+
+                    <td class="room-name-cell">
+                        ${escapeHtml(roomNumber)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(roomType)}
+                    </td>
+
+                    <td class="room-price-cell">
+                        ${price}
+                    </td>
+
+                    <td>
+
+                        <span class="room-status ${statusClass(status)}">
+                            ${escapeHtml(status)}
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <div class="room-action-group">
+
+                            <button
+                                type="button"
+                                class="room-action-button"
+                                onclick="editRoom(${Number(room.id)})">
+                                Edit
+                            </button>
+
+                            ${
+                                role === "system_owner"
+                                    ? `
+                                        <button
+                                            type="button"
+                                            class="room-action-button delete"
+                                            onclick="deleteRoom(${Number(room.id)})">
+                                            Delete
+                                        </button>
+                                      `
+                                    : ""
+                            }
+
+                        </div>
+
+                    </td>
+
+                </tr>
+            `;
         }
 
 
-        /* =====================================================
-           EDIT ROOM
-        ====================================================== */
+        function openAddRoomModal() {
 
-        async function editRoom(
-            id
-        ) {
+            editingRoomId = null;
 
-            if (!canManageRooms()) {
 
-                showMessage(
-                    "You do not have permission to edit rooms.",
-                    "error"
+            el("roomModalTitle").textContent =
+                "Add Room";
+
+
+            el("roomId").value = "";
+
+            el("roomNumber").value = "";
+
+            el("roomType").value = "";
+
+            el("roomPrice").value = "";
+
+            el("roomStatus").value =
+                "Available";
+
+
+            el("roomModal")
+                .classList.add("show");
+
+
+            el("roomModal")
+                .setAttribute(
+                    "aria-hidden",
+                    "false"
                 );
 
-                return;
-            }
+
+            setTimeout(
+                () => el("roomNumber").focus(),
+                100
+            );
+
+        }
 
 
-            const {
-                data: room,
-                error
-            } =
-                await db
+        function closeRoomModal() {
+
+            el("roomModal")
+                .classList.remove("show");
+
+
+            el("roomModal")
+                .setAttribute(
+                    "aria-hidden",
+                    "true"
+                );
+
+
+            editingRoomId = null;
+
+        }
+
+
+        async function editRoom(roomId) {
+
+            clearMessage();
+
+
+            try {
+
+                const {
+                    data: room,
+                    error
+                } = await supabaseClient
                     .from("rooms")
                     .select(
                         "id, room_number, room_type, price, status, hotel_id"
                     )
                     .eq(
                         "id",
-                        id
+                        Number(roomId)
                     )
                     .eq(
                         "hotel_id",
-                        Number(
-                            currentHotelId
-                        )
+                        Number(currentHotelId)
                     )
                     .maybeSingle();
 
 
-            if (
-                error ||
-                !room
-            ) {
+                if (error) {
+                    throw error;
+                }
+
+
+                if (!room) {
+
+                    throw new Error(
+                        "Room could not be found."
+                    );
+
+                }
+
+
+                editingRoomId =
+                    Number(room.id);
+
+
+                el("roomModalTitle").textContent =
+                    "Edit Room";
+
+
+                el("roomId").value =
+                    room.id;
+
+
+                el("roomNumber").value =
+                    room.room_number ?? "";
+
+
+                el("roomType").value =
+                    room.room_type ?? "";
+
+
+                el("roomPrice").value =
+                    room.price ?? "";
+
+
+                el("roomStatus").value =
+                    room.status ||
+                    "Available";
+
+
+                el("roomModal")
+                    .classList.add("show");
+
+
+                el("roomModal")
+                    .setAttribute(
+                        "aria-hidden",
+                        "false"
+                    );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to edit room:",
+                    error
+                );
+
 
                 showMessage(
-                    error?.message ||
-                    "Room was not found.",
+                    "Unable to load room: " +
+                    (
+                        error.message ||
+                        error
+                    ),
                     "error"
                 );
 
-                return;
             }
 
-
-            editingRoomId =
-                room.id;
-
-
-            document.getElementById(
-                "modalTitle"
-            ).textContent =
-                "Edit Room";
-
-
-            document.getElementById(
-                "roomNumber"
-            ).value =
-                room.room_number || "";
-
-
-            document.getElementById(
-                "roomType"
-            ).value =
-                room.room_type || "";
-
-
-            document.getElementById(
-                "roomPrice"
-            ).value =
-                room.price ?? "";
-
-
-            document.getElementById(
-                "roomStatus"
-            ).value =
-                room.status ||
-                "Available";
-
-
-            document.getElementById(
-                "roomModal"
-            ).style.display =
-                "flex";
         }
 
 
-        /* =====================================================
-           SAVE ROOM
-        ====================================================== */
-
-        async function saveRoom(
-            event
-        ) {
+        async function saveRoom(event) {
 
             event.preventDefault();
 
 
-            if (!canManageRooms()) {
-
-                showMessage(
-                    "You do not have permission to save rooms.",
-                    "error"
-                );
-
-                return;
-            }
-
-
-            if (!currentHotelId) {
-
-                showMessage(
-                    "No hotel is selected.",
-                    "error"
-                );
-
-                return;
-            }
+            clearMessage();
 
 
             const roomNumber =
-                document.getElementById(
-                    "roomNumber"
-                )
-                .value
-                .trim();
+                el("roomNumber")
+                    .value
+                    .trim();
 
 
             const roomType =
-                document.getElementById(
-                    "roomType"
-                ).value;
+                el("roomType")
+                    .value
+                    .trim();
 
 
-            const priceInput =
-                document.getElementById(
-                    "roomPrice"
-                )
-                .value
-                .trim();
+            const roomPriceRaw =
+                el("roomPrice")
+                    .value
+                    .trim();
 
 
-            const status =
-                document.getElementById(
-                    "roomStatus"
-                ).value;
+            const roomStatus =
+                el("roomStatus")
+                    .value;
 
-
-            /* =================================================
-               ROOM TYPE REQUIRED
-            ================================================== */
 
             if (!roomType) {
 
                 showMessage(
-                    "Please select the room type.",
+                    "Please enter the room type.",
                     "error"
                 );
 
                 return;
+
             }
 
 
-            /* =================================================
-               PRICE OPTIONAL
-            ================================================== */
-
-            let price = null;
-
-
-            if (priceInput !== "") {
-
-                price =
-                    Number(
-                        priceInput
-                    );
+            const roomPrice =
+                roomPriceRaw === ""
+                    ? null
+                    : Number(roomPriceRaw);
 
 
-                if (
-                    Number.isNaN(price) ||
-                    price < 0
-                ) {
+            if (
+                roomPrice !== null &&
+                (
+                    Number.isNaN(roomPrice) ||
+                    roomPrice < 0
+                )
+            ) {
 
-                    showMessage(
-                        "Please enter a valid room price.",
-                        "error"
-                    );
+                showMessage(
+                    "Please enter a valid room price.",
+                    "error"
+                );
 
-                    return;
-                }
+                return;
+
             }
 
-
-            /* =================================================
-               DUPLICATE CHECK
-               
-               Only check when a room name/identifier
-               has actually been entered.
-            ================================================== */
-
-            if (roomNumber !== "") {
-
-                let duplicateQuery =
-                    db
-                        .from("rooms")
-                        .select("id, room_number")
-                        .eq(
-                            "hotel_id",
-                            Number(
-                                currentHotelId
-                            )
-                        )
-                        .eq(
-                            "room_number",
-                            roomNumber
-                        );
-
-
-                if (editingRoomId) {
-
-                    duplicateQuery =
-                        duplicateQuery.neq(
-                            "id",
-                            editingRoomId
-                        );
-                }
-
-
-                const {
-                    data: duplicateRooms,
-                    error: duplicateError
-                } =
-                    await duplicateQuery;
-
-
-                if (duplicateError) {
-
-                    showMessage(
-                        "Could not check duplicate room name: " +
-                        duplicateError.message,
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                if (
-                    duplicateRooms &&
-                    duplicateRooms.length > 0
-                ) {
-
-                    showMessage(
-                        "The room name/identifier \"" +
-                        roomNumber +
-                        "\" already exists in this hotel.",
-                        "error"
-                    );
-
-                    return;
-                }
-            }
-
-
-            /* =================================================
-               SAVE
-            ================================================== */
 
             const saveButton =
-                document.getElementById(
-                    "saveRoomBtn"
-                );
+                el("saveRoomButton");
 
 
             saveButton.disabled =
                 true;
 
+
             saveButton.textContent =
                 "Saving...";
 
 
-            const roomRecord = {
+            try {
 
-                room_number:
-                    roomNumber !== ""
-                        ? roomNumber
-                        : null,
+                if (roomNumber) {
 
-                room_type:
-                    roomType,
-
-                price:
-                    price,
-
-                status:
-                    status
-            };
-
-
-            let result;
+                    let duplicateQuery =
+                        supabaseClient
+                            .from("rooms")
+                            .select("id")
+                            .eq(
+                                "hotel_id",
+                                Number(currentHotelId)
+                            )
+                            .eq(
+                                "room_number",
+                                roomNumber
+                            );
 
 
-            if (editingRoomId) {
+                    if (editingRoomId) {
 
-                result =
-                    await db
+                        duplicateQuery =
+                            duplicateQuery.neq(
+                                "id",
+                                Number(editingRoomId)
+                            );
+
+                    }
+
+
+                    const {
+                        data: duplicateRooms,
+                        error: duplicateError
+                    } =
+                        await duplicateQuery;
+
+
+                    if (duplicateError) {
+                        throw duplicateError;
+                    }
+
+
+                    if (
+                        duplicateRooms &&
+                        duplicateRooms.length > 0
+                    ) {
+
+                        throw new Error(
+                            "That room number already exists for this hotel."
+                        );
+
+                    }
+
+                }
+
+
+                const roomData = {
+
+                    room_number:
+                        roomNumber || null,
+
+                    room_type:
+                        roomType,
+
+                    price:
+                        roomPrice,
+
+                    status:
+                        roomStatus,
+
+                    hotel_id:
+                        Number(currentHotelId)
+
+                };
+
+
+                if (editingRoomId) {
+
+                    const {
+                        error
+                    } = await supabaseClient
                         .from("rooms")
-                        .update(
-                            roomRecord
-                        )
+                        .update(roomData)
                         .eq(
                             "id",
-                            editingRoomId
+                            Number(editingRoomId)
                         )
                         .eq(
                             "hotel_id",
-                            Number(
-                                currentHotelId
-                            )
+                            Number(currentHotelId)
                         );
 
-            } else {
 
-                result =
-                    await db
+                    if (error) {
+                        throw error;
+                    }
+
+
+                    showMessage(
+                        "Room updated successfully.",
+                        "success"
+                    );
+
+                } else {
+
+                    const {
+                        error
+                    } = await supabaseClient
                         .from("rooms")
-                        .insert({
-
-                            ...roomRecord,
-
-                            hotel_id:
-                                Number(
-                                    currentHotelId
-                                )
-                        });
-            }
+                        .insert([
+                            roomData
+                        ]);
 
 
-            saveButton.disabled =
-                false;
-
-            saveButton.textContent =
-                "Save Room";
+                    if (error) {
+                        throw error;
+                    }
 
 
-            if (result.error) {
+                    showMessage(
+                        "Room added successfully.",
+                        "success"
+                    );
+
+                }
+
+
+                closeRoomModal();
+
+
+                await loadRooms();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to save room:",
+                    error
+                );
+
 
                 showMessage(
-                    "Could not save room: " +
-                    result.error.message,
+                    "Unable to save room: " +
+                    (
+                        error.message ||
+                        error
+                    ),
                     "error"
                 );
 
-                return;
+
+            } finally {
+
+                saveButton.disabled =
+                    false;
+
+
+                saveButton.textContent =
+                    "Save Room";
+
             }
 
-
-            showMessage(
-                editingRoomId
-                    ? "Room updated successfully."
-                    : "Room added successfully."
-            );
-
-
-            closeRoomModal();
-
-
-            await loadRooms();
         }
 
 
-        /* =====================================================
-           DELETE ROOM
-        ====================================================== */
+        async function deleteRoom(roomId) {
 
-        async function deleteRoom(
-            id
-        ) {
+            clearMessage();
 
-            if (
-                currentRole !==
-                "system_owner"
-            ) {
+
+            const role =
+                String(
+                    currentProfile?.role || ""
+                ).toLowerCase();
+
+
+            if (role !== "system_owner") {
 
                 showMessage(
-                    "Only the System Owner can delete rooms.",
+                    "Only the system owner can delete rooms.",
                     "error"
                 );
 
                 return;
+
             }
 
 
             const confirmed =
-                confirm(
+                window.confirm(
                     "Are you sure you want to delete this room?"
                 );
 
@@ -1842,165 +2117,212 @@
             }
 
 
-            const {
-                error
-            } =
-                await db
+            try {
+
+                const {
+                    error
+                } = await supabaseClient
                     .from("rooms")
                     .delete()
                     .eq(
                         "id",
-                        id
+                        Number(roomId)
                     )
                     .eq(
                         "hotel_id",
-                        Number(
-                            currentHotelId
-                        )
+                        Number(currentHotelId)
                     );
 
 
-            if (error) {
+                if (error) {
+                    throw error;
+                }
+
 
                 showMessage(
-                    "Could not delete room: " +
-                    error.message,
+                    "Room deleted successfully.",
+                    "success"
+                );
+
+
+                await loadRooms();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to delete room:",
+                    error
+                );
+
+
+                showMessage(
+                    "Unable to delete room: " +
+                    (
+                        error.message ||
+                        error
+                    ),
                     "error"
                 );
 
-                return;
             }
 
-
-            showMessage(
-                "Room deleted successfully."
-            );
-
-
-            await loadRooms();
         }
 
 
-        /* =====================================================
-           CLOSE MODAL
-        ====================================================== */
+        async function initializeRoomPage() {
 
-        function closeRoomModal() {
-
-            document.getElementById(
-                "roomModal"
-            ).style.display =
-                "none";
+            clearMessage();
 
 
-            editingRoomId =
-                null;
+            try {
+
+                await determineHotel();
+
+                await loadRooms();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Unable to initialize Rooms page:",
+                    error
+                );
+
+
+                el("roomsTableBody").innerHTML = `
+                    <tr>
+                        <td colspan="6">
+                            <div class="rooms-empty-state">
+                                Unable to load rooms.
+                            </div>
+                        </td>
+                    </tr>
+                `;
+
+
+                showMessage(
+                    error.message ||
+                    "Unable to load Rooms module.",
+                    "error"
+                );
+
+            }
+
         }
 
-
-        /* =====================================================
-           HTML ESCAPE
-        ====================================================== */
-
-        function escapeHtml(
-            value
-        ) {
-
-            return String(
-                value ?? ""
-            )
-            .replace(
-                /&/g,
-                "&amp;"
-            )
-            .replace(
-                /</g,
-                "&lt;"
-            )
-            .replace(
-                />/g,
-                "&gt;"
-            )
-            .replace(
-                /"/g,
-                "&quot;"
-            )
-            .replace(
-                /'/g,
-                "&#039;"
-            );
-        }
-
-
-        /* =====================================================
-           DOM READY
-        ====================================================== */
 
         document.addEventListener(
             "DOMContentLoaded",
-            async function() {
+            function () {
 
-                document.getElementById(
-                    "addRoomBtn"
-                ).addEventListener(
-                    "click",
-                    openAddRoom
-                );
+                const addButton =
+                    el("addRoomButton");
 
 
-                document.getElementById(
-                    "refreshBtn"
-                ).addEventListener(
-                    "click",
-                    loadRooms
-                );
+                const closeButton =
+                    el("closeRoomModalButton");
 
 
-                document.getElementById(
-                    "cancelRoomBtn"
-                ).addEventListener(
-                    "click",
-                    closeRoomModal
-                );
+                const cancelButton =
+                    el("cancelRoomButton");
 
 
-                document.getElementById(
-                    "roomForm"
-                ).addEventListener(
-                    "submit",
-                    saveRoom
-                );
+                const roomForm =
+                    el("roomForm");
 
 
-                document.getElementById(
-                    "roomModal"
-                ).addEventListener(
-                    "click",
-                    function(event) {
+                const modal =
+                    el("roomModal");
+
+
+                if (addButton) {
+
+                    addButton.addEventListener(
+                        "click",
+                        openAddRoomModal
+                    );
+
+                }
+
+
+                if (closeButton) {
+
+                    closeButton.addEventListener(
+                        "click",
+                        closeRoomModal
+                    );
+
+                }
+
+
+                if (cancelButton) {
+
+                    cancelButton.addEventListener(
+                        "click",
+                        closeRoomModal
+                    );
+
+                }
+
+
+                if (roomForm) {
+
+                    roomForm.addEventListener(
+                        "submit",
+                        saveRoom
+                    );
+
+                }
+
+
+                if (modal) {
+
+                    modal.addEventListener(
+                        "click",
+                        function (event) {
+
+                            if (
+                                event.target === modal
+                            ) {
+
+                                closeRoomModal();
+
+                            }
+
+                        }
+                    );
+
+                }
+
+
+                document.addEventListener(
+                    "keydown",
+                    function (event) {
 
                         if (
-                            event.target.id ===
-                            "roomModal"
+                            event.key === "Escape" &&
+                            modal &&
+                            modal.classList.contains("show")
                         ) {
 
                             closeRoomModal();
+
                         }
+
                     }
                 );
 
 
-                await initializeRoomPage();
+                initializeRoomPage();
 
             }
         );
 
 
-        /* =====================================================
-           GLOBAL FUNCTIONS
-        ====================================================== */
-
         window.editRoom =
             editRoom;
+
 
         window.deleteRoom =
             deleteRoom;
