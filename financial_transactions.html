@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,14 +12,14 @@
 
     <link
         rel="stylesheet"
-        href="./style.css?v=20261115-26"
+        href="./style.css?v=20261117-01"
     >
 
     <style>
         /* =========================================================
            EDU TECH HMS
            FINANCIAL TRANSACTIONS
-           ORGANIZED MODULE LAYOUT
+           PAGE-SPECIFIC STYLES
            ========================================================= */
 
         * {
@@ -29,47 +28,20 @@
 
         html,
         body {
+            width: 100%;
+            max-width: 100%;
             margin: 0;
             padding: 0;
-            min-height: 100%;
+            overflow-x: hidden;
         }
 
         body {
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
-            background: #f4f7fb;
-            color: #1f2937;
+            background: #f4f6f9;
         }
 
-        /* =========================================================
-           PAGE LAYOUT
-           ========================================================= */
-
-        .financial-layout {
-            min-height: 100vh;
-            display: flex;
-            width: 100%;
-        }
-
-        /* Sidebar container */
-
-        #sidebar {
-            width: 250px;
-            min-width: 250px;
-            min-height: 100vh;
-            flex-shrink: 0;
-            position: relative;
-            z-index: 1000;
-        }
-
-        /* Main content */
-
-        .financial-main {
-            flex: 1;
-            min-width: 0;
+        .financial-page {
+            width: calc(100% - 280px);
+            margin-left: 280px;
             min-height: 100vh;
             padding: 24px;
             overflow-x: hidden;
@@ -77,25 +49,20 @@
 
         .financial-container {
             width: 100%;
-            max-width: 1600px;
+            max-width: 1800px;
             margin: 0 auto;
         }
 
-        /* =========================================================
-           PAGE HEADER
-           ========================================================= */
-
-        .page-header {
+        .financial-header {
             background: #ffffff;
             border-radius: 14px;
-            padding: 22px;
+            padding: 22px 24px;
             margin-bottom: 20px;
-
-            box-shadow:
-                0 3px 12px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e7eb;
         }
 
-        .header-top {
+        .financial-header-top {
             display: flex;
             align-items: flex-start;
             justify-content: space-between;
@@ -103,114 +70,170 @@
             flex-wrap: wrap;
         }
 
-        .header-title h1 {
-            margin: 0 0 8px;
-            font-size: 26px;
-            color: #111827;
-        }
-
-        .header-title p {
+        .financial-title {
             margin: 0;
-            color: #6b7280;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .hotel-info {
-            margin-top: 12px;
-            color: #4b5563;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .header-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 14px;
-            background: #eff6ff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             font-size: 28px;
-            flex-shrink: 0;
+            font-weight: 800;
+            color: #172033;
         }
 
-        /* =========================================================
-           TOOLBAR
-           ========================================================= */
+        .financial-subtitle {
+            margin: 7px 0 0;
+            color: #667085;
+            font-size: 14px;
+        }
 
-        .toolbar {
+        .hotel-information {
+            margin-top: 18px;
+            padding: 15px 17px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .hotel-information strong {
+            color: #172033;
+        }
+
+        .hotel-information div {
+            margin-top: 4px;
+            color: #475467;
+            overflow-wrap: anywhere;
+        }
+
+        .header-actions {
             display: flex;
+            gap: 8px;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 20px;
         }
 
         button {
-            border: 0;
-            border-radius: 8px;
-            padding: 10px 16px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition:
-                opacity 0.2s ease,
-                transform 0.1s ease;
+            font-family: inherit;
         }
 
-        button:hover {
+        .financial-btn {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-weight: 700;
+            cursor: pointer;
+            background: #1d4ed8;
+            color: #fff;
+            transition: 0.2s ease;
+        }
+
+        .financial-btn:hover {
             opacity: 0.9;
         }
 
-        button:active {
-            transform: translateY(1px);
+        .financial-btn.secondary {
+            background: #475467;
         }
 
-        .btn-primary {
-            background: #2563eb;
-            color: #ffffff;
+        .financial-btn.success {
+            background: #15803d;
         }
 
-        .btn-secondary {
-            background: #e5e7eb;
-            color: #111827;
+        .financial-btn.warning {
+            background: #b45309;
         }
 
-        .btn-danger {
-            background: #dc2626;
-            color: #ffffff;
+        .financial-btn.danger {
+            background: #b91c1c;
         }
 
-        /* =========================================================
-           STATUS MESSAGE
-           ========================================================= */
-
-        .status-message {
-            display: none;
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            font-size: 14px;
-            line-height: 1.5;
+        .financial-btn.light {
+            background: #e2e8f0;
+            color: #172033;
         }
 
-        .status-message.show {
-            display: block;
+        .financial-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
         }
 
-        .status-message.info {
-            background: #dbeafe;
+        .loading-card,
+        .error-card,
+        .info-card {
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+        }
+
+        .loading-card {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
             color: #1e40af;
         }
 
-        .status-message.success {
-            background: #dcfce7;
-            color: #166534;
+        .error-card {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
         }
 
-        .status-message.error {
-            background: #fee2e2;
-            color: #991b1b;
+        .info-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: #475467;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* =========================================================
+           DATE CONTROL
+           ========================================================= */
+
+        .date-control {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .date-control-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #344054;
+            margin-bottom: 10px;
+        }
+
+        .date-control-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .date-input {
+            min-height: 42px;
+            border: 1px solid #d0d5dd;
+            border-radius: 8px;
+            padding: 8px 11px;
+            background: #fff;
+            color: #101828;
+            font-size: 14px;
+        }
+
+        .date-status {
+            margin-top: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #ecfdf3;
+            border: 1px solid #abefc6;
+            color: #067647;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .date-status.closed {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: #1d4ed8;
         }
 
         /* =========================================================
@@ -219,328 +242,441 @@
 
         .summary-grid {
             display: grid;
-
-            grid-template-columns:
-                repeat(
-                    4,
-                    minmax(180px, 1fr)
-                );
-
-            gap: 16px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 22px;
         }
 
         .summary-card {
-            background: #ffffff;
-            border-radius: 12px;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 13px;
             padding: 18px;
-
-            box-shadow:
-                0 3px 12px rgba(0, 0, 0, 0.07);
-
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             min-width: 0;
         }
 
-        .summary-card .label {
+        .summary-label {
+            color: #667085;
             font-size: 13px;
-            color: #6b7280;
-            margin-bottom: 8px;
+            font-weight: 700;
+            margin-bottom: 9px;
         }
 
-        .summary-card .value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #111827;
+        .summary-value {
+            color: #101828;
+            font-size: 23px;
+            font-weight: 800;
+            overflow-wrap: anywhere;
+        }
+
+        /* =========================================================
+           SECTION
+           ========================================================= */
+
+        .financial-section {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 22px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            min-width: 0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            margin: 0;
+            font-size: 19px;
+            font-weight: 800;
+            color: #172033;
+        }
+
+        .section-description {
+            margin: 5px 0 0;
+            color: #667085;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* =========================================================
+           TABLES
+           ========================================================= */
+
+        .table-wrap {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+        }
+
+        .financial-table {
+            width: 100%;
+            min-width: 1050px;
+            border-collapse: collapse;
+            background: #fff;
+        }
+
+        .financial-table th {
+            background: #f8fafc;
+            color: #344054;
+            font-size: 12px;
+            font-weight: 800;
+            text-align: left;
+            padding: 12px 10px;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        .financial-table td {
+            padding: 11px 10px;
+            border-bottom: 1px solid #eef2f6;
+            color: #344054;
+            font-size: 13px;
+            vertical-align: top;
+            white-space: normal;
+            overflow-wrap: anywhere;
             word-break: break-word;
         }
 
-        .summary-card.money-in-card .value {
-            color: #15803d;
+        .financial-table tr:last-child td {
+            border-bottom: none;
         }
 
-        .summary-card.money-out-card .value {
-            color: #b91c1c;
+        .financial-table tbody tr:hover {
+            background: #f8fafc;
         }
 
-        .summary-card.balance-card .value {
-            color: #2563eb;
+        .empty-row {
+            text-align: center !important;
+            color: #667085 !important;
+            padding: 25px !important;
+        }
+
+        .amount-in {
+            color: #067647;
+            font-weight: 800;
+        }
+
+        .amount-out {
+            color: #b42318;
+            font-weight: 800;
+        }
+
+        .balance-cell {
+            font-weight: 800;
+            color: #172033;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 4px 9px;
+            font-size: 11px;
+            font-weight: 800;
+            background: #ecfdf3;
+            color: #067647;
+        }
+
+        .status-badge.closed {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .status-badge.reversal {
+            background: #fef2f2;
+            color: #b42318;
         }
 
         /* =========================================================
-           TRANSACTION TABLE CARD
+           FILTER
            ========================================================= */
 
-        .table-card {
-            background: #ffffff;
-            border-radius: 14px;
-
-            box-shadow:
-                0 3px 12px rgba(0, 0, 0, 0.08);
-
-            overflow: hidden;
-        }
-
-        .table-header {
-            padding: 18px 20px;
-            border-bottom: 1px solid #e5e7eb;
-
+        .filter-row {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-
-            gap: 15px;
+            gap: 10px;
             flex-wrap: wrap;
+            margin-bottom: 15px;
         }
 
-        .table-title-area h2 {
-            margin: 0 0 5px;
-            font-size: 19px;
-            color: #111827;
-        }
-
-        .table-title-area p {
-            margin: 0;
-            font-size: 12px;
-            color: #6b7280;
-        }
-
-        .filters {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .filters input,
-        .filters select {
-            border: 1px solid #d1d5db;
-            border-radius: 7px;
-            padding: 9px 11px;
+        .filter-label {
+            font-weight: 700;
+            color: #344054;
             font-size: 13px;
-            background: #ffffff;
-            color: #111827;
+        }
+
+        .filter-select {
+            min-height: 38px;
+            border: 1px solid #d0d5dd;
+            border-radius: 8px;
+            padding: 7px 10px;
+            background: #fff;
+            color: #101828;
+        }
+
+        /* =========================================================
+           BANK SUMMARY
+           ========================================================= */
+
+        .bank-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 16px;
+            margin-bottom: 20px;
+        }
+
+        .bank-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 11px;
+            padding: 16px;
+            min-width: 0;
+        }
+
+        .bank-card-label {
+            color: #667085;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .bank-card-value {
+            color: #172033;
+            font-size: 21px;
+            font-weight: 800;
+            overflow-wrap: anywhere;
+        }
+
+        .bank-note {
+            padding: 13px 15px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e3a8a;
+            border-radius: 9px;
+            font-size: 13px;
+            line-height: 1.55;
+            margin-bottom: 20px;
+        }
+
+        /* =========================================================
+           BANK FORMS
+           ========================================================= */
+
+        .bank-forms-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .bank-form-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 18px;
+            background: #fff;
+            min-width: 0;
+        }
+
+        .bank-form-card h3 {
+            margin: 0 0 6px;
+            font-size: 16px;
+            color: #172033;
+        }
+
+        .bank-form-card p {
+            margin: 0 0 15px;
+            color: #667085;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 13px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #344054;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .form-control {
+            width: 100%;
+            min-height: 40px;
+            border: 1px solid #d0d5dd;
+            border-radius: 8px;
+            padding: 8px 10px;
+            background: #fff;
+            color: #101828;
+            font-family: inherit;
+            font-size: 13px;
+        }
+
+        textarea.form-control {
+            min-height: 75px;
+            resize: vertical;
+        }
+
+        .form-control:focus,
+        .date-input:focus,
+        .filter-select:focus {
             outline: none;
-        }
-
-        .filters input {
-            min-width: 220px;
-        }
-
-        .filters input:focus,
-        .filters select:focus {
             border-color: #2563eb;
-            box-shadow:
-                0 0 0 2px rgba(
-                    37,
-                    99,
-                    235,
-                    0.10
-                );
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
         /* =========================================================
-           TABLE
+           CLOSING
            ========================================================= */
 
-        .table-wrapper {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+        .closing-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(8, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 1100px;
-        }
-
-        th {
+        .closing-item {
             background: #f8fafc;
-            color: #374151;
-            font-size: 12px;
-            text-align: left;
-
-            padding: 13px 12px;
-
-            border-bottom:
-                1px solid #e5e7eb;
-
-            white-space: nowrap;
-        }
-
-        td {
+            border: 1px solid #e2e8f0;
+            border-radius: 9px;
             padding: 12px;
-
-            border-bottom:
-                1px solid #f1f5f9;
-
-            font-size: 13px;
-            vertical-align: top;
+            min-width: 0;
         }
 
-        tbody tr:hover {
-            background: #f8fafc;
-        }
-
-        .empty-row td {
-            text-align: center;
-            padding: 45px 20px;
-            color: #6b7280;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #6b7280;
-        }
-
-        /* =========================================================
-           TRANSACTION TYPES
-           ========================================================= */
-
-        .transaction-type {
-            display: inline-block;
-            padding: 5px 9px;
-            border-radius: 999px;
-
+        .closing-item-label {
             font-size: 11px;
+            color: #667085;
             font-weight: 700;
-            white-space: nowrap;
+            margin-bottom: 5px;
         }
 
-        .type-income {
-            background: #dcfce7;
-            color: #166534;
+        .closing-item-value {
+            font-size: 16px;
+            font-weight: 800;
+            color: #172033;
+            overflow-wrap: anywhere;
         }
 
-        .type-expense {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .type-transfer {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .type-salary {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .type-advance {
-            background: #ede9fe;
-            color: #5b21b6;
-        }
-
-        .type-other {
-            background: #e5e7eb;
-            color: #374151;
+        .closing-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         /* =========================================================
-           MONEY VALUES
+           TOAST
            ========================================================= */
 
-        .money-in {
-            color: #15803d;
+        .financial-toast {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 99999;
+            max-width: 420px;
+            padding: 14px 17px;
+            border-radius: 10px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            color: #fff;
+            font-size: 13px;
             font-weight: 700;
-            white-space: nowrap;
+            display: none;
         }
 
-        .money-out {
-            color: #b91c1c;
-            font-weight: 700;
-            white-space: nowrap;
+        .financial-toast.show {
+            display: block;
         }
 
-        .balance {
-            font-weight: 700;
-            white-space: nowrap;
+        .financial-toast.success {
+            background: #15803d;
         }
 
-        .reversal {
-            color: #b91c1c;
-            font-weight: 700;
+        .financial-toast.error {
+            background: #b91c1c;
         }
 
-        .normal {
-            color: #15803d;
-            font-weight: 600;
+        .financial-toast.info {
+            background: #1d4ed8;
         }
 
         /* =========================================================
-           MOBILE
+           RESPONSIVE
            ========================================================= */
 
-        @media (max-width: 1100px) {
+        @media (max-width: 1200px) {
+            .summary-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .bank-summary-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .closing-summary-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 900px) {
+            .financial-page {
+                width: 100%;
+                margin-left: 0;
+                padding: 14px;
+            }
 
             .summary-grid {
-                grid-template-columns:
-                    repeat(
-                        2,
-                        minmax(180px, 1fr)
-                    );
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
+            .bank-forms-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
-        @media (max-width: 850px) {
-
-            .financial-layout {
-                display: block;
-            }
-
-            #sidebar {
-                width: 100%;
-                min-width: 100%;
-                min-height: auto;
-            }
-
-            .financial-main {
-                padding: 16px;
-            }
-
-        }
-
-        @media (max-width: 650px) {
-
-            .financial-main {
+        @media (max-width: 600px) {
+            .financial-page {
                 padding: 10px;
             }
 
-            .summary-grid {
+            .financial-header,
+            .financial-section,
+            .date-control {
+                padding: 14px;
+                border-radius: 10px;
+            }
+
+            .financial-title {
+                font-size: 22px;
+            }
+
+            .summary-grid,
+            .bank-summary-grid,
+            .closing-summary-grid {
                 grid-template-columns: 1fr;
             }
 
-            .page-header {
-                padding: 17px;
-            }
-
-            .header-title h1 {
-                font-size: 21px;
-            }
-
-            .header-icon {
-                width: 46px;
-                height: 46px;
-                font-size: 23px;
-            }
-
-            .filters {
+            .header-actions,
+            .date-control-row {
                 width: 100%;
             }
 
-            .filters input,
-            .filters select {
-                width: 100%;
-                min-width: 0;
+            .financial-btn {
+                flex: 1 1 auto;
             }
-
-            .toolbar button {
-                flex: 1;
-                min-width: 110px;
-            }
-
         }
 
         /* =========================================================
@@ -548,1557 +684,3768 @@
            ========================================================= */
 
         @media print {
-
-            #sidebar {
-                display: none !important;
-            }
-
-            .financial-main {
-                padding: 0 !important;
-                width: 100% !important;
-            }
-
-            .financial-layout {
-                display: block !important;
-            }
-
-            .toolbar,
-            .filters,
-            .status-message {
-                display: none !important;
-            }
-
-            .page-header,
-            .summary-card,
-            .table-card {
-                box-shadow: none !important;
-                border: 1px solid #ddd;
-            }
-
-            .financial-main {
-                background: #ffffff !important;
-            }
-
             body {
-                background: #ffffff !important;
+                background: #fff !important;
             }
 
-            table {
+            .financial-page {
+                width: 100% !important;
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+
+            .financial-header,
+            .date-control,
+            .financial-section {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+            }
+
+            .header-actions,
+            .date-control-row,
+            .filter-row,
+            .bank-forms-grid,
+            .closing-actions,
+            #financialError,
+            #financialLoading {
+                display: none !important;
+            }
+
+            .financial-table {
                 min-width: 0 !important;
+                font-size: 9px !important;
             }
 
-            th,
-            td {
-                font-size: 10px;
-                padding: 7px;
+            .financial-table th,
+            .financial-table td {
+                padding: 5px !important;
+                font-size: 9px !important;
             }
 
+            .financial-section {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <!-- =========================================================
-         FULL HMS LAYOUT
-         ========================================================= -->
+    <!-- SIDEBAR -->
+    <script src="./sidebar.js?v=20261115-26"></script>
 
-    <div class="financial-layout">
+    <main class="financial-page">
+        <div class="financial-container">
 
-        <!-- LEFT SIDEBAR -->
-        <aside id="sidebar"></aside>
+            <!-- =====================================================
+                 HEADER
+                 ===================================================== -->
+            <section class="financial-header">
 
+                <div class="financial-header-top">
 
-        <!-- RIGHT MAIN CONTENT -->
-        <main class="financial-main">
+                    <div>
+                        <h1 class="financial-title">
+                            Financial Transactions
+                        </h1>
 
-            <div class="financial-container">
-
-                <!-- =================================================
-                     PAGE HEADER
-                     ================================================= -->
-
-                <section class="page-header">
-
-                    <div class="header-top">
-
-                        <div class="header-title">
-
-                            <h1>
-                                💰 Financial Transactions
-                            </h1>
-
-                            <p>
-                                View financial transactions,
-                                income, expenses, transfers
-                                and running balances for
-                                the current hotel.
-                            </p>
-
-                            <div
-                                id="hotelInfo"
-                                class="hotel-info"
-                            >
-                                Loading hotel information...
-                            </div>
-
-                        </div>
-
-                        <div class="header-icon">
-                            💰
-                        </div>
-
+                        <p class="financial-subtitle">
+                            Daily financial ledger, banking records,
+                            reconciliation and day closing.
+                        </p>
                     </div>
 
-
-                    <!-- TOOLBAR -->
-
-                    <div class="toolbar">
-
+                    <div class="header-actions">
                         <button
                             type="button"
-                            class="btn-primary"
-                            id="refreshButton"
+                            class="financial-btn"
+                            id="refreshFinancialBtn"
                         >
-                            🔄 Refresh
+                            Refresh
                         </button>
 
                         <button
                             type="button"
-                            class="btn-secondary"
-                            id="todayButton"
+                            class="financial-btn secondary"
+                            id="printFinancialBtn"
                         >
-                            📅 Today
+                            Print
                         </button>
-
-                        <button
-                            type="button"
-                            class="btn-secondary"
-                            id="clearFiltersButton"
-                        >
-                            ✖ Clear Filters
-                        </button>
-
                     </div>
 
-                </section>
-
-
-                <!-- =================================================
-                     STATUS
-                     ================================================= -->
+                </div>
 
                 <div
-                    id="statusMessage"
-                    class="status-message"
-                ></div>
+                    id="hotelInformation"
+                    class="hotel-information"
+                >
+                    <strong>Loading hotel...</strong>
+                    <div>Loading hotel information...</div>
+                </div>
 
+            </section>
 
-                <!-- =================================================
-                     SUMMARY
-                     ================================================= -->
+            <!-- =====================================================
+                 ERROR / LOADING
+                 ===================================================== -->
 
-                <section class="summary-grid">
+            <div
+                id="financialLoading"
+                class="loading-card"
+            >
+                Loading financial information...
+            </div>
 
-                    <div class="summary-card">
+            <div
+                id="financialError"
+                class="error-card hidden"
+            ></div>
 
-                        <div class="label">
-                            Total Transactions
+            <!-- =====================================================
+                 DATE CONTROL
+                 ===================================================== -->
+
+            <section class="date-control">
+
+                <div class="date-control-title">
+                    Ledger Date
+                </div>
+
+                <div class="date-control-row">
+
+                    <input
+                        type="date"
+                        id="ledgerDate"
+                        class="date-input"
+                    >
+
+                    <button
+                        type="button"
+                        class="financial-btn"
+                        id="loadDateBtn"
+                    >
+                        Load Date
+                    </button>
+
+                    <button
+                        type="button"
+                        class="financial-btn light"
+                        id="previousDateBtn"
+                    >
+                        Previous
+                    </button>
+
+                    <button
+                        type="button"
+                        class="financial-btn light"
+                        id="nextDateBtn"
+                    >
+                        Next
+                    </button>
+
+                    <button
+                        type="button"
+                        class="financial-btn success"
+                        id="closeDayBtn"
+                    >
+                        Close Day
+                    </button>
+
+                    <button
+                        type="button"
+                        class="financial-btn secondary"
+                        id="openTodayBtn"
+                    >
+                        Open Today
+                    </button>
+
+                </div>
+
+                <div
+                    id="ledgerStatus"
+                    class="date-status"
+                >
+                    Today's ledger is OPEN
+                </div>
+
+            </section>
+
+            <!-- =====================================================
+                 DAILY SUMMARY
+                 ===================================================== -->
+
+            <section class="summary-grid">
+
+                <div class="summary-card">
+                    <div class="summary-label">
+                        Transactions
+                    </div>
+
+                    <div
+                        class="summary-value"
+                        id="summaryTransactions"
+                    >
+                        0
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-label">
+                        Money In
+                    </div>
+
+                    <div
+                        class="summary-value"
+                        id="summaryMoneyIn"
+                    >
+                        KES 0.00
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-label">
+                        Money Out
+                    </div>
+
+                    <div
+                        class="summary-value"
+                        id="summaryMoneyOut"
+                    >
+                        KES 0.00
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-label">
+                        Closing Balance
+                    </div>
+
+                    <div
+                        class="summary-value"
+                        id="summaryClosingBalance"
+                    >
+                        KES 0.00
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-label">
+                        Debit / Credit Difference
+                    </div>
+
+                    <div
+                        class="summary-value"
+                        id="summaryDifference"
+                    >
+                        KES 0.00
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- =====================================================
+                 DAILY LEDGER
+                 ===================================================== -->
+
+            <section class="financial-section">
+
+                <div class="section-header">
+
+                    <div>
+                        <h2 class="section-title">
+                            Daily Ledger
+                        </h2>
+
+                        <p class="section-description">
+                            Financial transactions posted for the selected
+                            hotel and ledger date.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="filter-row">
+
+                    <span class="filter-label">
+                        Transaction Type
+                    </span>
+
+                    <select
+                        id="transactionTypeFilter"
+                        class="filter-select"
+                    >
+                        <option value="">
+                            All Transaction Types
+                        </option>
+
+                        <option value="payment">
+                            Payment
+                        </option>
+
+                        <option value="expense">
+                            Expense
+                        </option>
+
+                        <option value="transfer">
+                            Transfer
+                        </option>
+
+                        <option value="bank_deposit">
+                            Bank Deposit
+                        </option>
+
+                        <option value="bank_withdrawal">
+                            Bank Withdrawal
+                        </option>
+
+                        <option value="reversal">
+                            Reversal
+                        </option>
+                    </select>
+
+                </div>
+
+                <div class="table-wrap">
+
+                    <table class="financial-table">
+
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Time</th>
+                                <th>Transaction No.</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Reference</th>
+                                <th>Debit</th>
+                                <th>Credit</th>
+                                <th>Money In</th>
+                                <th>Money Out</th>
+                                <th>Balance</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="transactionsTableBody">
+
+                            <tr>
+                                <td
+                                    colspan="12"
+                                    class="empty-row"
+                                >
+                                    Loading transactions...
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+            <!-- =====================================================
+                 BANKING
+                 ===================================================== -->
+
+            <section class="financial-section">
+
+                <div class="section-header">
+
+                    <div>
+                        <h2 class="section-title">
+                            Bank Balance &amp; Banking Records
+                        </h2>
+
+                        <p class="section-description">
+                            Track the total money held at the bank.
+                            No bank name or bank account number is required.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="bank-note">
+                    <strong>Banking control:</strong>
+                    This section records only the financial figure held at
+                    the bank. You do not need to enter a bank name, bank
+                    account number, branch or create a bank account record.
+                    The system uses the hotel's financial ledger to calculate
+                    the bank balance.
+                </div>
+
+                <div class="bank-summary-grid">
+
+                    <div class="bank-card">
+                        <div class="bank-card-label">
+                            Opening Bank Balance
                         </div>
 
                         <div
-                            class="value"
-                            id="totalTransactions"
+                            class="bank-card-value"
+                            id="bankOpeningBalance"
+                        >
+                            KES 0.00
+                        </div>
+                    </div>
+
+                    <div class="bank-card">
+                        <div class="bank-card-label">
+                            Money Banked Today
+                        </div>
+
+                        <div
+                            class="bank-card-value"
+                            id="bankMoneyBanked"
+                        >
+                            KES 0.00
+                        </div>
+                    </div>
+
+                    <div class="bank-card">
+                        <div class="bank-card-label">
+                            Bank Withdrawals Today
+                        </div>
+
+                        <div
+                            class="bank-card-value"
+                            id="bankWithdrawals"
+                        >
+                            KES 0.00
+                        </div>
+                    </div>
+
+                    <div class="bank-card">
+                        <div class="bank-card-label">
+                            Current Bank Balance
+                        </div>
+
+                        <div
+                            class="bank-card-value"
+                            id="bankCurrentBalance"
+                        >
+                            KES 0.00
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- =================================================
+                     BANK FORMS
+                     ================================================= -->
+
+                <div class="bank-forms-grid">
+
+                    <!-- BANK DEPOSIT -->
+
+                    <div class="bank-form-card">
+
+                        <h3>
+                            Record Money Banked
+                        </h3>
+
+                        <p>
+                            Record money moved from hotel cash into the bank.
+                            Enter the amount only.
+                        </p>
+
+                        <form id="bankDepositForm">
+
+                            <div class="form-group">
+
+                                <label for="depositAmount">
+                                    Amount
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="depositAmount"
+                                    class="form-control"
+                                    min="0.01"
+                                    step="0.01"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="depositReference">
+                                    Deposit Reference (Optional)
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="depositReference"
+                                    class="form-control"
+                                >
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="depositedBy">
+                                    Deposited By (Optional)
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="depositedBy"
+                                    class="form-control"
+                                >
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="depositNotes">
+                                    Notes (Optional)
+                                </label>
+
+                                <textarea
+                                    id="depositNotes"
+                                    class="form-control"
+                                ></textarea>
+
+                            </div>
+
+                            <button
+                                type="submit"
+                                class="financial-btn success"
+                                id="recordDepositBtn"
+                            >
+                                Record Money Banked
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                    <!-- BANK WITHDRAWAL -->
+
+                    <div class="bank-form-card">
+
+                        <h3>
+                            Record Cheque / Bank Withdrawal
+                        </h3>
+
+                        <p>
+                            Record money withdrawn from the bank.
+                            A cheque number can be entered where applicable.
+                        </p>
+
+                        <form id="bankWithdrawalForm">
+
+                            <div class="form-group">
+
+                                <label for="withdrawalAmount">
+                                    Amount
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="withdrawalAmount"
+                                    class="form-control"
+                                    min="0.01"
+                                    step="0.01"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="chequeNumber">
+                                    Cheque Number
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="chequeNumber"
+                                    class="form-control"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="withdrawalPayee">
+                                    Payee (Optional)
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="withdrawalPayee"
+                                    class="form-control"
+                                >
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="withdrawalPurpose">
+                                    Purpose
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="withdrawalPurpose"
+                                    class="form-control"
+                                    required
+                                >
+
+                            </div>
+
+                            <div class="form-group">
+
+                                <label for="withdrawalNotes">
+                                    Notes (Optional)
+                                </label>
+
+                                <textarea
+                                    id="withdrawalNotes"
+                                    class="form-control"
+                                ></textarea>
+
+                            </div>
+
+                            <button
+                                type="submit"
+                                class="financial-btn warning"
+                                id="recordWithdrawalBtn"
+                            >
+                                Record Withdrawal
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+                <!-- =================================================
+                     BANK MOVEMENT HISTORY
+                     ================================================= -->
+
+                <div class="section-header">
+
+                    <div>
+                        <h2 class="section-title">
+                            Bank Movement History
+                        </h2>
+
+                        <p class="section-description">
+                            Money moved into and out of the hotel's
+                            bank balance.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="table-wrap">
+
+                    <table class="financial-table">
+
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Reference</th>
+                                <th>Money In</th>
+                                <th>Money Out</th>
+                                <th>Bank Balance</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="bankHistoryTableBody">
+
+                            <tr>
+                                <td
+                                    colspan="6"
+                                    class="empty-row"
+                                >
+                                    Loading bank records...
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+            <!-- =====================================================
+                 DAILY CLOSING
+                 ===================================================== -->
+
+            <section class="financial-section">
+
+                <div class="section-header">
+
+                    <div>
+                        <h2 class="section-title">
+                            Daily Closing
+                        </h2>
+
+                        <p class="section-description">
+                            Financial reconciliation for the selected
+                            ledger date.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="closing-summary-grid">
+
+                    <div class="closing-item">
+                        <div class="closing-item-label">
+                            Opening Balance
+                        </div>
+
+                        <div
+                            class="closing-item-value"
+                            id="closingOpeningBalance"
+                        >
+                            KES 0.00
+                        </div>
+                    </div>
+
+                    <div class="closing-item">
+                        <div class="closing-item-label">
+                            Money In
+                        </div>
+
+                        <div
+                            class="closing-item-value"
+                            id="closingMoneyIn"
+                        >
+                            KES 0.00
+                        </div>
+                    </div>
+
+                    <div class="closing-item">
+                        <div class="closing-item-label">
+                            Money Out
+                        </div>
+
+                        <div
+                            class="closing-item-value"
+                            id="closingMoneyOut"
+                        >
+                            KES 0.00
+                        </div>
+                    </div>
+
+                    <div class="closing-item">
+                        <div class="closing-item-label">
+                            Closing Balance
+                        </div>
+
+                        <div
+                            class="closing-item-value"
+                            id="closingClosingBalance"
+                        >
+                            KES 0.00
+                        </div>
+                    </div>
+
+                    <div class="closing-item">
+                        <div class="closing-item-label">
+                            Transactions
+                        </div>
+
+                        <div
+                            class="closing-item-value"
+                            id="closingTransactions"
                         >
                             0
                         </div>
-
                     </div>
 
-
-                    <div
-                        class="summary-card money-in-card"
-                    >
-
-                        <div class="label">
-                            Total Money In
+                    <div class="closing-item">
+                        <div class="closing-item-label">
+                            Debit Total
                         </div>
 
                         <div
-                            class="value"
-                            id="totalMoneyIn"
+                            class="closing-item-value"
+                            id="closingDebitTotal"
                         >
-                            KSh 0.00
+                            KES 0.00
                         </div>
-
                     </div>
 
-
-                    <div
-                        class="summary-card money-out-card"
-                    >
-
-                        <div class="label">
-                            Total Money Out
+                    <div class="closing-item">
+                        <div class="closing-item-label">
+                            Credit Total
                         </div>
 
                         <div
-                            class="value"
-                            id="totalMoneyOut"
+                            class="closing-item-value"
+                            id="closingCreditTotal"
                         >
-                            KSh 0.00
+                            KES 0.00
                         </div>
-
                     </div>
 
-
-                    <div
-                        class="summary-card balance-card"
-                    >
-
-                        <div class="label">
-                            Running Balance
+                    <div class="closing-item">
+                        <div class="closing-item-label">
+                            Difference
                         </div>
 
                         <div
-                            class="value"
-                            id="runningBalance"
+                            class="closing-item-value"
+                            id="closingDifference"
                         >
-                            KSh 0.00
+                            KES 0.00
                         </div>
-
                     </div>
 
-                </section>
+                </div>
 
+                <div class="closing-actions">
 
-                <!-- =================================================
-                     TRANSACTION LEDGER
-                     ================================================= -->
+                    <button
+                        type="button"
+                        class="financial-btn success"
+                        id="closeDayBtnBottom"
+                    >
+                        Close Selected Day
+                    </button>
 
-                <section class="table-card">
+                </div>
 
-                    <div class="table-header">
+            </section>
 
-                        <div class="table-title-area">
+            <!-- =====================================================
+                 DAILY CLOSING RECORD
+                 ===================================================== -->
 
-                            <h2>
-                                Transaction Ledger
-                            </h2>
+            <section class="financial-section">
 
-                            <p>
-                                Financial transactions
-                                recorded for this hotel.
-                            </p>
+                <div class="section-header">
 
-                        </div>
+                    <div>
+                        <h2 class="section-title">
+                            Daily Closing Record
+                        </h2>
 
-
-                        <div class="filters">
-
-                            <input
-                                type="text"
-                                id="searchInput"
-                                placeholder="Search transactions..."
-                            >
-
-
-                            <select
-                                id="typeFilter"
-                            >
-
-                                <option value="">
-                                    All Types
-                                </option>
-
-                                <option value="income">
-                                    Income
-                                </option>
-
-                                <option value="expense">
-                                    Expense
-                                </option>
-
-                                <option value="salary">
-                                    Salary
-                                </option>
-
-                                <option value="salary_advance">
-                                    Salary Advance
-                                </option>
-
-                                <option value="transfer">
-                                    Transfer
-                                </option>
-
-                                <option value="other">
-                                    Other
-                                </option>
-
-                            </select>
-
-                        </div>
-
+                        <p class="section-description">
+                            Stored closing status and reconciliation
+                            record for the selected date.
+                        </p>
                     </div>
 
+                </div>
 
-                    <div class="table-wrapper">
+                <div class="table-wrap">
 
-                        <table>
+                    <table class="financial-table">
 
-                            <thead>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Opening</th>
+                                <th>Money In</th>
+                                <th>Money Out</th>
+                                <th>Closing</th>
+                                <th>Transactions</th>
+                                <th>Debit</th>
+                                <th>Credit</th>
+                                <th>Difference</th>
+                                <th>Status</th>
+                                <th>Closed At</th>
+                            </tr>
+                        </thead>
 
-                                <tr>
+                        <tbody id="closingTableBody">
 
-                                    <th>
-                                        ID
-                                    </th>
+                            <tr>
+                                <td
+                                    colspan="11"
+                                    class="empty-row"
+                                >
+                                    Loading closing record...
+                                </td>
+                            </tr>
 
-                                    <th>
-                                        Date
-                                    </th>
+                        </tbody>
 
-                                    <th>
-                                        Transaction No.
-                                    </th>
+                    </table>
 
-                                    <th>
-                                        Type
-                                    </th>
+                </div>
 
-                                    <th>
-                                        Description
-                                    </th>
+            </section>
 
-                                    <th>
-                                        Reference
-                                    </th>
+        </div>
+    </main>
 
-                                    <th>
-                                        Amount
-                                    </th>
+    <!-- =============================================================
+         TOAST
+         ============================================================= -->
 
-                                    <th>
-                                        Money In
-                                    </th>
+    <div
+        id="financialToast"
+        class="financial-toast"
+    ></div>
 
-                                    <th>
-                                        Money Out
-                                    </th>
+    <!-- =============================================================
+         SUPABASE
+         ============================================================= -->
 
-                                    <th>
-                                        Balance
-                                    </th>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-                                    <th>
-                                        Status
-                                    </th>
+    <script src="./supabase.js?v=20261115.04"></script>
 
-                                </tr>
+    <script src="./access-control.js?v=20261115-26"></script>
 
-                            </thead>
-
-
-                            <tbody
-                                id="transactionsTableBody"
-                            >
-
-                                <tr>
-
-                                    <td
-                                        colspan="11"
-                                        class="loading"
-                                    >
-                                        Loading transactions...
-                                    </td>
-
-                                </tr>
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                </section>
-
-            </div>
-
-        </main>
-
-    </div>
-
-
-    <!-- =========================================================
-         SCRIPTS
-         ========================================================= -->
-
-    <script
-        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-    ></script>
-
-    <script
-        src="./supabase.js?v=20261115.04"
-    ></script>
-
-    <script
-        src="./access-control.js?v=20261115-26"
-    ></script>
-
-    <script
-        src="./sidebar.js?v=20261115-26"
-    ></script>
-
+    <!-- =============================================================
+         FINANCIAL TRANSACTIONS JAVASCRIPT
+         IMPORTANT:
+         DO NOT DECLARE "supabaseClient" HERE.
+         supabase.js may already declare it.
+         ============================================================= -->
 
     <script>
-        "use strict";
+        (() => {
 
+            "use strict";
 
-        /* =====================================================
-           GLOBAL VARIABLES
-           ===================================================== */
+            /* =====================================================
+               PAGE STATE
 
-        let db = null;
+               IMPORTANT:
+               We intentionally use unique names here.
+               This prevents a collision with supabase.js.
+               ===================================================== */
 
-        let hotelId = null;
+            let financialDb = null;
 
-        let hotelName = "";
+            let financialHotel = null;
 
-        let allTransactions = [];
+            let financialHotelId = null;
 
+            let financialAccounts = [];
 
-        /* =====================================================
-           HELPERS
-           ===================================================== */
+            let financialBankAccount = null;
 
-        function money(value) {
+            let financialCashAccount = null;
 
-            const number =
-                Number(value);
+            let financialTransactions = [];
 
-            if (
-                !Number.isFinite(number)
-            ) {
+            let financialBankMovements = [];
 
-                return "KSh 0.00";
+            let financialClosingRecord = null;
+
+            let financialCurrentSummary = null;
+
+            let financialSelectedDate = "";
+
+            let postingBankDeposit = false;
+
+            let postingBankWithdrawal = false;
+
+            /* =====================================================
+               ELEMENT HELPER
+               ===================================================== */
+
+            function financialElement(id) {
+                return document.getElementById(id);
             }
 
-            return (
-                "KSh " +
-                number.toLocaleString(
-                    "en-KE",
-                    {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
+            /* =====================================================
+               SUPABASE RESOLUTION
+
+               This is the important correction.
+
+               We do NOT declare:
+                   let supabaseClient
+               or:
+                   const supabaseClient
+
+               because supabase.js may already have declared it.
+               ===================================================== */
+
+            function getFinancialSupabaseClient() {
+
+                try {
+
+                    if (
+                        typeof supabaseClient !== "undefined" &&
+                        supabaseClient &&
+                        typeof supabaseClient.from === "function"
+                    ) {
+                        return supabaseClient;
                     }
-                )
-            );
-        }
 
-
-        function numberValue(value) {
-
-            const number =
-                Number(value);
-
-            return Number.isFinite(number)
-                ? number
-                : 0;
-        }
-
-
-        function showMessage(
-            message,
-            type
-        ) {
-
-            const element =
-                document.getElementById(
-                    "statusMessage"
-                );
-
-            if (!element) {
-                return;
-            }
-
-            element.textContent =
-                message;
-
-            element.className =
-                "status-message show " +
-                (
-                    type ||
-                    "info"
-                );
-        }
-
-
-        function hideMessage() {
-
-            const element =
-                document.getElementById(
-                    "statusMessage"
-                );
-
-            if (!element) {
-                return;
-            }
-
-            element.className =
-                "status-message";
-        }
-
-
-        function formatDate(value) {
-
-            if (!value) {
-                return "-";
-            }
-
-            const date =
-                new Date(value);
-
-            if (
-                Number.isNaN(
-                    date.getTime()
-                )
-            ) {
-
-                return String(value);
-            }
-
-            return date.toLocaleString(
-                "en-KE",
-                {
-                    year: "numeric",
-                    month: "short",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit"
+                } catch (_) {
+                    /* Ignore and continue */
                 }
-            );
-        }
 
+                try {
 
-        function typeClass(type) {
+                    if (
+                        typeof supabase !== "undefined" &&
+                        supabase &&
+                        typeof supabase.from === "function"
+                    ) {
+                        return supabase;
+                    }
 
-            switch (
-                String(
-                    type || ""
-                ).toLowerCase()
-            ) {
-
-                case "income":
-                    return "type-income";
-
-                case "expense":
-                    return "type-expense";
-
-                case "transfer":
-                    return "type-transfer";
-
-                case "salary":
-                    return "type-salary";
-
-                case "salary_advance":
-                    return "type-advance";
-
-                default:
-                    return "type-other";
-            }
-        }
-
-
-        function typeLabel(type) {
-
-            switch (
-                String(
-                    type || ""
-                ).toLowerCase()
-            ) {
-
-                case "salary_advance":
-                    return "Salary Advance";
-
-                case "income":
-                    return "Income";
-
-                case "expense":
-                    return "Expense";
-
-                case "salary":
-                    return "Salary";
-
-                case "transfer":
-                    return "Transfer";
-
-                case "other":
-                    return "Other";
-
-                default:
-                    return (
-                        type ||
-                        "Other"
-                    );
-            }
-        }
-
-
-        /* =====================================================
-           SUPABASE
-           ===================================================== */
-
-        async function getSupabaseClient() {
-
-            if (
-                window.supabaseClient &&
-                typeof
-                    window.supabaseClient.from ===
-                    "function"
-            ) {
-
-                return window.supabaseClient;
-            }
-
-
-            if (
-                window.EDUTECH_SUPABASE &&
-                typeof
-                    window.EDUTECH_SUPABASE.from ===
-                    "function"
-            ) {
-
-                return window.EDUTECH_SUPABASE;
-            }
-
-
-            if (
-                typeof
-                    window.waitForEDUTechSupabase ===
-                    "function"
-            ) {
-
-                const client =
-                    await window
-                        .waitForEDUTechSupabase();
+                } catch (_) {
+                    /* Ignore and continue */
+                }
 
                 if (
-                    client &&
-                    typeof
-                        client.from ===
-                        "function"
+                    window.supabaseClient &&
+                    typeof window.supabaseClient.from === "function"
                 ) {
+                    return window.supabaseClient;
+                }
 
-                    return client;
+                if (
+                    window.edutechSupabase &&
+                    typeof window.edutechSupabase.from === "function"
+                ) {
+                    return window.edutechSupabase;
+                }
+
+                if (
+                    window.appSupabase &&
+                    typeof window.appSupabase.from === "function"
+                ) {
+                    return window.appSupabase;
+                }
+
+                throw new Error(
+                    "Supabase client was not found. Check supabase.js."
+                );
+            }
+
+            /* =====================================================
+               FORMATTING
+               ===================================================== */
+
+            function formatMoney(value) {
+
+                const number = Number(value || 0);
+
+                return (
+                    "KES " +
+                    number.toLocaleString(
+                        "en-KE",
+                        {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        }
+                    )
+                );
+            }
+
+            function numericValue(value) {
+
+                const number = Number(value);
+
+                return Number.isFinite(number)
+                    ? number
+                    : 0;
+            }
+
+            function escapeHtml(value) {
+
+                if (
+                    value === null ||
+                    value === undefined
+                ) {
+                    return "";
+                }
+
+                return String(value)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            function localDateString(date = new Date()) {
+
+                const year = date.getFullYear();
+
+                const month = String(
+                    date.getMonth() + 1
+                ).padStart(2, "0");
+
+                const day = String(
+                    date.getDate()
+                ).padStart(2, "0");
+
+                return `${year}-${month}-${day}`;
+            }
+
+            function formatDate(value) {
+
+                if (!value) {
+                    return "—";
+                }
+
+                const date = new Date(
+                    String(value).length === 10
+                        ? `${value}T00:00:00`
+                        : value
+                );
+
+                if (Number.isNaN(date.getTime())) {
+                    return escapeHtml(value);
+                }
+
+                return date.toLocaleDateString(
+                    "en-KE",
+                    {
+                        year: "numeric",
+                        month: "short",
+                        day: "2-digit"
+                    }
+                );
+            }
+
+            function formatDateTime(value) {
+
+                if (!value) {
+                    return "—";
+                }
+
+                const date = new Date(value);
+
+                if (Number.isNaN(date.getTime())) {
+                    return escapeHtml(value);
+                }
+
+                return date.toLocaleString(
+                    "en-KE",
+                    {
+                        year: "numeric",
+                        month: "short",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    }
+                );
+            }
+
+            function formatTime(value) {
+
+                if (!value) {
+                    return "—";
+                }
+
+                const date = new Date(value);
+
+                if (Number.isNaN(date.getTime())) {
+                    return "—";
+                }
+
+                return date.toLocaleTimeString(
+                    "en-KE",
+                    {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    }
+                );
+            }
+
+            /* =====================================================
+               TOAST
+               ===================================================== */
+
+            function showFinancialToast(
+                message,
+                type = "info"
+            ) {
+
+                const toast =
+                    financialElement(
+                        "financialToast"
+                    );
+
+                if (!toast) {
+                    return;
+                }
+
+                toast.textContent = message;
+
+                toast.className =
+                    "financial-toast show " +
+                    type;
+
+                window.clearTimeout(
+                    showFinancialToast.timer
+                );
+
+                showFinancialToast.timer =
+                    window.setTimeout(
+                        () => {
+                            toast.className =
+                                "financial-toast";
+                        },
+                        4500
+                    );
+            }
+
+            /* =====================================================
+               ERROR DISPLAY
+               ===================================================== */
+
+            function showFinancialError(error) {
+
+                console.error(
+                    "Financial Transactions Error:",
+                    error
+                );
+
+                const box =
+                    financialElement(
+                        "financialError"
+                    );
+
+                const loading =
+                    financialElement(
+                        "financialLoading"
+                    );
+
+                if (loading) {
+                    loading.classList.add("hidden");
+                }
+
+                if (box) {
+
+                    box.classList.remove(
+                        "hidden"
+                    );
+
+                    box.innerHTML =
+                        "<strong>Financial module could not load.</strong>" +
+                        "<br><br>" +
+                        escapeHtml(
+                            error &&
+                            error.message
+                                ? error.message
+                                : String(error)
+                        );
+                }
+
+                showFinancialToast(
+                    error &&
+                    error.message
+                        ? error.message
+                        : "Financial module error.",
+                    "error"
+                );
+            }
+
+            /* =====================================================
+               HIDE LOADING
+               ===================================================== */
+
+            function finishFinancialLoading() {
+
+                const loading =
+                    financialElement(
+                        "financialLoading"
+                    );
+
+                if (loading) {
+                    loading.classList.add("hidden");
                 }
             }
 
+            /* =====================================================
+               HOTEL ID RESOLUTION
+               ===================================================== */
 
-            throw new Error(
-                "Supabase client is not available."
-            );
-        }
+            function readStoredHotelId() {
 
+                const possibleKeys = [
+                    "hotelId",
+                    "hotel_id",
+                    "currentHotelId",
+                    "current_hotel_id",
+                    "selectedHotelId",
+                    "selected_hotel_id",
+                    "activeHotelId",
+                    "active_hotel_id"
+                ];
 
-        /* =====================================================
-           HOTEL
-           ===================================================== */
+                for (
+                    const key of possibleKeys
+                ) {
 
-        async function loadHotel() {
+                    try {
 
-            const userResult =
-                await db.auth.getUser();
+                        const value =
+                            sessionStorage.getItem(
+                                key
+                            );
 
+                        if (!value) {
+                            continue;
+                        }
 
-            if (
-                userResult.error
-            ) {
+                        let parsed = value;
 
-                throw new Error(
-                    userResult
-                        .error
-                        .message
-                );
+                        try {
+                            parsed = JSON.parse(value);
+                        } catch (_) {
+                            /* Normal string */
+                        }
+
+                        if (
+                            parsed &&
+                            typeof parsed === "object"
+                        ) {
+
+                            const objectId =
+                                parsed.id ||
+                                parsed.hotel_id ||
+                                parsed.hotelId;
+
+                            if (objectId) {
+                                return Number(
+                                    objectId
+                                );
+                            }
+
+                        }
+
+                        const number =
+                            Number(parsed);
+
+                        if (
+                            Number.isFinite(number) &&
+                            number > 0
+                        ) {
+                            return number;
+                        }
+
+                    } catch (_) {
+                        /* Continue */
+                    }
+                }
+
+                return null;
             }
 
+            /* =====================================================
+               LOAD HOTEL
+               ===================================================== */
 
-            if (
-                !userResult.data ||
-                !userResult.data.user
-            ) {
+            async function loadFinancialHotel() {
 
-                throw new Error(
-                    "No logged-in user was found."
-                );
-            }
+                let storedHotelId =
+                    readStoredHotelId();
 
+                let query =
+                    financialDb
+                        .from("hotels")
+                        .select("*");
 
-            const profileResult =
-                await db
-                    .from("profiles")
-                    .select(
-                        "id,full_name,role,hotel_id,is_active"
+                if (
+                    storedHotelId &&
+                    Number.isFinite(
+                        storedHotelId
                     )
-                    .eq(
-                        "id",
-                        userResult.data.user.id
-                    )
-                    .maybeSingle();
+                ) {
 
+                    const result =
+                        await query
+                            .eq(
+                                "id",
+                                storedHotelId
+                            )
+                            .limit(1);
 
-            if (
-                profileResult.error
-            ) {
+                    if (
+                        result.error
+                    ) {
+                        throw result.error;
+                    }
 
-                throw new Error(
-                    profileResult
-                        .error
-                        .message
-                );
+                    if (
+                        result.data &&
+                        result.data.length
+                    ) {
+                        financialHotel =
+                            result.data[0];
+
+                        financialHotelId =
+                            Number(
+                                financialHotel.id
+                            );
+
+                        return;
+                    }
+                }
+
+                const fallback =
+                    await financialDb
+                        .from("hotels")
+                        .select("*")
+                        .eq(
+                            "status",
+                            "active"
+                        )
+                        .order(
+                            "id",
+                            {
+                                ascending: true
+                            }
+                        )
+                        .limit(1);
+
+                if (fallback.error) {
+                    throw fallback.error;
+                }
+
+                if (
+                    !fallback.data ||
+                    !fallback.data.length
+                ) {
+
+                    throw new Error(
+                        "No active hotel was found."
+                    );
+                }
+
+                financialHotel =
+                    fallback.data[0];
+
+                financialHotelId =
+                    Number(
+                        financialHotel.id
+                    );
             }
 
+            /* =====================================================
+               RENDER HOTEL
+               ===================================================== */
 
-            if (
-                !profileResult.data
-            ) {
+            function renderFinancialHotel() {
 
-                throw new Error(
-                    "User profile was not found."
-                );
-            }
+                const box =
+                    financialElement(
+                        "hotelInformation"
+                    );
 
-
-            hotelId =
-                Number(
-                    profileResult
-                        .data
-                        .hotel_id
-                );
-
-
-            if (
-                !Number.isFinite(
-                    hotelId
-                )
-            ) {
-
-                throw new Error(
-                    "No valid hotel is assigned to this user."
-                );
-            }
-
-
-            const hotelResult =
-                await db
-                    .from("hotels")
-                    .select("*")
-                    .eq(
-                        "id",
-                        hotelId
-                    )
-                    .maybeSingle();
-
-
-            if (
-                hotelResult.error
-            ) {
-
-                throw new Error(
-                    hotelResult
-                        .error
-                        .message
-                );
-            }
-
-
-            if (
-                hotelResult.data
-            ) {
+                if (!box) {
+                    return;
+                }
 
                 const hotel =
-                    hotelResult.data;
+                    financialHotel || {};
 
-
-                hotelName =
+                const name =
                     hotel.hotel_name ||
-                    hotel.hotelName ||
-                    hotel.hotel_title ||
-                    hotel.title ||
                     hotel.name ||
+                    hotel.business_name ||
                     hotel.hotel ||
+                    hotel.company_name ||
                     "Hotel";
+
+                const address =
+                    hotel.address ||
+                    hotel.location ||
+                    hotel.physical_address ||
+                    "";
+
+                const phone =
+                    hotel.phone ||
+                    hotel.phone_number ||
+                    hotel.contact ||
+                    "";
+
+                box.innerHTML =
+                    "<strong>" +
+                    escapeHtml(name) +
+                    "</strong>" +
+                    (
+                        address
+                            ? "<div>" +
+                              escapeHtml(address) +
+                              "</div>"
+                            : ""
+                    ) +
+                    (
+                        phone
+                            ? "<div>" +
+                              escapeHtml(phone) +
+                              "</div>"
+                            : ""
+                    ) +
+                    "<div>Hotel ID: " +
+                    escapeHtml(
+                        financialHotelId
+                    ) +
+                    "</div>";
             }
 
+            /* =====================================================
+               LOAD FINANCIAL ACCOUNTS
+               ===================================================== */
 
-            const hotelInfo =
-                document.getElementById(
-                    "hotelInfo"
-                );
+            async function loadFinancialAccounts() {
 
+                const result =
+                    await financialDb
+                        .from("financial_accounts")
+                        .select("*")
+                        .eq(
+                            "hotel_id",
+                            financialHotelId
+                        )
+                        .eq(
+                            "status",
+                            "active"
+                        )
+                        .order(
+                            "id",
+                            {
+                                ascending: true
+                            }
+                        );
 
-            if (hotelInfo) {
+                if (result.error) {
+                    throw result.error;
+                }
 
-                hotelInfo.textContent =
-                    hotelName +
-                    " • Hotel ID " +
-                    hotelId;
+                financialAccounts =
+                    result.data || [];
+
+                financialBankAccount =
+                    financialAccounts.find(
+                        account =>
+                            String(
+                                account.account_code
+                            ) === "1000"
+                    ) || null;
+
+                financialCashAccount =
+                    financialAccounts.find(
+                        account =>
+                            String(
+                                account.account_code
+                            ) === "1010"
+                    ) || null;
+
+                if (
+                    !financialBankAccount
+                ) {
+
+                    throw new Error(
+                        "Financial account 1000 (Bank) was not found for this hotel."
+                    );
+                }
+
+                if (
+                    !financialCashAccount
+                ) {
+
+                    throw new Error(
+                        "Financial account 1010 (Cash) was not found for this hotel."
+                    );
+                }
             }
-        }
 
+            /* =====================================================
+               LOAD DAILY TRANSACTIONS
+               ===================================================== */
 
-        /* =====================================================
-           LOAD TRANSACTIONS
-           ===================================================== */
+            async function loadDailyTransactions() {
 
-        async function loadTransactions() {
+                const result =
+                    await financialDb
+                        .from(
+                            "financial_transactions"
+                        )
+                        .select("*")
+                        .eq(
+                            "hotel_id",
+                            financialHotelId
+                        )
+                        .eq(
+                            "transaction_date",
+                            financialSelectedDate
+                        )
+                        .order(
+                            "id",
+                            {
+                                ascending: true
+                            }
+                        );
 
-            const body =
-                document.getElementById(
-                    "transactionsTableBody"
-                );
+                if (result.error) {
+                    throw result.error;
+                }
 
-
-            if (body) {
-
-                body.innerHTML =
-                    `
-                    <tr>
-                        <td
-                            colspan="11"
-                            class="loading"
-                        >
-                            Loading transactions...
-                        </td>
-                    </tr>
-                    `;
+                financialTransactions =
+                    result.data || [];
             }
 
+            /* =====================================================
+               CALCULATE DAILY SUMMARY
+               ===================================================== */
 
-            const result =
-                await db
-                    .from(
-                        "financial_transactions"
-                    )
-                    .select(
-                        "id,hotel_id,transaction_number,transaction_type,description,reference_number,debit_account_id,credit_account_id,amount,money_in,money_out,balance_after,is_reversal,reversed_transaction_id,created_at"
-                    )
-                    .eq(
-                        "hotel_id",
-                        hotelId
-                    )
-                    .order(
-                        "created_at",
-                        {
-                            ascending:
-                                false
-                        }
-                    )
-                    .order(
-                        "id",
-                        {
-                            ascending:
-                                false
+            function calculateDailySummary() {
+
+                let moneyIn = 0;
+
+                let moneyOut = 0;
+
+                let debitTotal = 0;
+
+                let creditTotal = 0;
+
+                for (
+                    const transaction
+                    of financialTransactions
+                ) {
+
+                    moneyIn +=
+                        numericValue(
+                            transaction.money_in
+                        );
+
+                    moneyOut +=
+                        numericValue(
+                            transaction.money_out
+                        );
+
+                    debitTotal +=
+                        numericValue(
+                            transaction.amount
+                        );
+
+                    creditTotal +=
+                        numericValue(
+                            transaction.amount
+                        );
+                }
+
+                let closingBalance = 0;
+
+                if (
+                    financialTransactions.length
+                ) {
+
+                    const last =
+                        financialTransactions[
+                            financialTransactions.length - 1
+                        ];
+
+                    closingBalance =
+                        numericValue(
+                            last.balance_after
+                        );
+                }
+
+                const difference =
+                    debitTotal -
+                    creditTotal;
+
+                const openingBalance =
+                    closingBalance -
+                    moneyIn +
+                    moneyOut;
+
+                financialCurrentSummary = {
+                    openingBalance,
+                    moneyIn,
+                    moneyOut,
+                    closingBalance,
+                    transactions:
+                        financialTransactions.length,
+                    debitTotal,
+                    creditTotal,
+                    difference
+                };
+
+                return financialCurrentSummary;
+            }
+
+            /* =====================================================
+               RENDER DAILY SUMMARY
+               ===================================================== */
+
+            function renderDailySummary() {
+
+                const summary =
+                    financialCurrentSummary ||
+                    calculateDailySummary();
+
+                financialElement(
+                    "summaryTransactions"
+                ).textContent =
+                    summary.transactions;
+
+                financialElement(
+                    "summaryMoneyIn"
+                ).textContent =
+                    formatMoney(
+                        summary.moneyIn
+                    );
+
+                financialElement(
+                    "summaryMoneyOut"
+                ).textContent =
+                    formatMoney(
+                        summary.moneyOut
+                    );
+
+                financialElement(
+                    "summaryClosingBalance"
+                ).textContent =
+                    formatMoney(
+                        summary.closingBalance
+                    );
+
+                financialElement(
+                    "summaryDifference"
+                ).textContent =
+                    formatMoney(
+                        summary.difference
+                    );
+
+                financialElement(
+                    "closingOpeningBalance"
+                ).textContent =
+                    formatMoney(
+                        summary.openingBalance
+                    );
+
+                financialElement(
+                    "closingMoneyIn"
+                ).textContent =
+                    formatMoney(
+                        summary.moneyIn
+                    );
+
+                financialElement(
+                    "closingMoneyOut"
+                ).textContent =
+                    formatMoney(
+                        summary.moneyOut
+                    );
+
+                financialElement(
+                    "closingClosingBalance"
+                ).textContent =
+                    formatMoney(
+                        summary.closingBalance
+                    );
+
+                financialElement(
+                    "closingTransactions"
+                ).textContent =
+                    summary.transactions;
+
+                financialElement(
+                    "closingDebitTotal"
+                ).textContent =
+                    formatMoney(
+                        summary.debitTotal
+                    );
+
+                financialElement(
+                    "closingCreditTotal"
+                ).textContent =
+                    formatMoney(
+                        summary.creditTotal
+                    );
+
+                financialElement(
+                    "closingDifference"
+                ).textContent =
+                    formatMoney(
+                        summary.difference
+                    );
+            }
+
+            /* =====================================================
+               RENDER DAILY LEDGER
+               ===================================================== */
+
+            function renderDailyLedger() {
+
+                const body =
+                    financialElement(
+                        "transactionsTableBody"
+                    );
+
+                if (!body) {
+                    return;
+                }
+
+                const filter =
+                    financialElement(
+                        "transactionTypeFilter"
+                    );
+
+                const selectedType =
+                    filter
+                        ? filter.value
+                        : "";
+
+                const rows =
+                    financialTransactions.filter(
+                        transaction => {
+
+                            if (!selectedType) {
+                                return true;
+                            }
+
+                            return String(
+                                transaction.transaction_type ||
+                                ""
+                            ).toLowerCase() ===
+                            selectedType.toLowerCase();
                         }
                     );
 
+                if (!rows.length) {
 
-            if (
-                result.error
-            ) {
+                    body.innerHTML =
+                        '<tr>' +
+                        '<td colspan="12" class="empty-row">' +
+                        'No financial transactions found for ' +
+                        escapeHtml(
+                            financialSelectedDate
+                        ) +
+                        "." +
+                        "</td>" +
+                        "</tr>";
 
-                throw new Error(
-                    "Unable to load financial transactions: " +
-                    result.error.message
-                );
-            }
-
-
-            allTransactions =
-                result.data ||
-                [];
-
-
-            renderTransactions(
-                allTransactions
-            );
-
-
-            updateSummary(
-                allTransactions
-            );
-        }
-
-
-        /* =====================================================
-           RENDER TRANSACTIONS
-           ===================================================== */
-
-        function renderTransactions(
-            transactions
-        ) {
-
-            const body =
-                document.getElementById(
-                    "transactionsTableBody"
-                );
-
-
-            if (!body) {
-                return;
-            }
-
-
-            if (
-                !transactions.length
-            ) {
+                    return;
+                }
 
                 body.innerHTML =
-                    `
-                    <tr class="empty-row">
+                    rows.map(
+                        transaction => {
 
-                        <td colspan="11">
+                            const status =
+                                transaction.is_reversal
+                                    ? "Reversal"
+                                    : "Posted";
 
-                            No financial transactions
-                            found for this hotel.
+                            const statusClass =
+                                transaction.is_reversal
+                                    ? "reversal"
+                                    : "";
 
-                        </td>
+                            return (
+                                "<tr>" +
 
-                    </tr>
-                    `;
+                                "<td>" +
+                                escapeHtml(
+                                    transaction.id
+                                ) +
+                                "</td>" +
 
-                return;
-            }
+                                "<td>" +
+                                escapeHtml(
+                                    formatTime(
+                                        transaction.created_at
+                                    )
+                                ) +
+                                "</td>" +
 
+                                "<td>" +
+                                escapeHtml(
+                                    transaction.transaction_number ||
+                                    "—"
+                                ) +
+                                "</td>" +
 
-            body.innerHTML =
-                transactions
-                    .map(
-                        function(transaction) {
+                                "<td>" +
+                                escapeHtml(
+                                    transaction.transaction_type ||
+                                    "—"
+                                ) +
+                                "</td>" +
 
-                            const reversal =
-                                Boolean(
-                                    transaction
-                                        .is_reversal
-                                );
+                                "<td>" +
+                                escapeHtml(
+                                    transaction.description ||
+                                    "—"
+                                ) +
+                                "</td>" +
 
+                                "<td>" +
+                                escapeHtml(
+                                    transaction.reference_number ||
+                                    "—"
+                                ) +
+                                "</td>" +
 
-                            return `
-                                <tr>
+                                "<td>" +
+                                formatMoney(
+                                    transaction.amount
+                                ) +
+                                "</td>" +
 
-                                    <td>
-                                        ${escapeHtml(
-                                            transaction.id
-                                        )}
-                                    </td>
+                                "<td>" +
+                                formatMoney(
+                                    transaction.amount
+                                ) +
+                                "</td>" +
 
-                                    <td>
-                                        ${escapeHtml(
-                                            formatDate(
-                                                transaction.created_at
-                                            )
-                                        )}
-                                    </td>
+                                "<td class=\"amount-in\">" +
+                                formatMoney(
+                                    transaction.money_in
+                                ) +
+                                "</td>" +
 
-                                    <td>
-                                        ${escapeHtml(
-                                            transaction.transaction_number ||
-                                            "-"
-                                        )}
-                                    </td>
+                                "<td class=\"amount-out\">" +
+                                formatMoney(
+                                    transaction.money_out
+                                ) +
+                                "</td>" +
 
-                                    <td>
+                                "<td class=\"balance-cell\">" +
+                                formatMoney(
+                                    transaction.balance_after
+                                ) +
+                                "</td>" +
 
-                                        <span
-                                            class="transaction-type ${typeClass(
-                                                transaction.transaction_type
-                                            )}"
-                                        >
-                                            ${escapeHtml(
-                                                typeLabel(
-                                                    transaction.transaction_type
-                                                )
-                                            )}
-                                        </span>
+                                '<td>' +
+                                '<span class="status-badge ' +
+                                statusClass +
+                                '">' +
+                                escapeHtml(
+                                    status
+                                ) +
+                                "</span>" +
+                                "</td>" +
 
-                                    </td>
-
-                                    <td>
-                                        ${escapeHtml(
-                                            transaction.description ||
-                                            "-"
-                                        )}
-                                    </td>
-
-                                    <td>
-                                        ${escapeHtml(
-                                            transaction.reference_number ||
-                                            "-"
-                                        )}
-                                    </td>
-
-                                    <td>
-                                        ${money(
-                                            transaction.amount
-                                        )}
-                                    </td>
-
-                                    <td
-                                        class="money-in"
-                                    >
-                                        ${money(
-                                            transaction.money_in
-                                        )}
-                                    </td>
-
-                                    <td
-                                        class="money-out"
-                                    >
-                                        ${money(
-                                            transaction.money_out
-                                        )}
-                                    </td>
-
-                                    <td
-                                        class="balance"
-                                    >
-                                        ${money(
-                                            transaction.balance_after
-                                        )}
-                                    </td>
-
-                                    <td>
-
-                                        ${
-                                            reversal
-                                                ? `
-                                                    <span
-                                                        class="reversal"
-                                                    >
-                                                        Reversed
-                                                    </span>
-                                                `
-                                                : `
-                                                    <span
-                                                        class="normal"
-                                                    >
-                                                        Posted
-                                                    </span>
-                                                `
-                                        }
-
-                                    </td>
-
-                                </tr>
-                            `;
+                                "</tr>"
+                            );
                         }
                     )
                     .join("");
-        }
-
-
-        /* =====================================================
-           SUMMARY
-           ===================================================== */
-
-        function updateSummary(
-            transactions
-        ) {
-
-            let moneyIn = 0;
-
-            let moneyOut = 0;
-
-
-            for (
-                const transaction of
-                    transactions
-            ) {
-
-                moneyIn +=
-                    numberValue(
-                        transaction.money_in
-                    );
-
-                moneyOut +=
-                    numberValue(
-                        transaction.money_out
-                    );
             }
 
+            /* =====================================================
+               GET CLOSING RECORD
+               ===================================================== */
 
-            let balance = 0;
+            async function loadDailyClosing() {
 
+                const result =
+                    await financialDb
+                        .from("daily_closings")
+                        .select("*")
+                        .eq(
+                            "hotel_id",
+                            financialHotelId
+                        )
+                        .eq(
+                            "closing_date",
+                            financialSelectedDate
+                        )
+                        .maybeSingle();
 
-            if (
-                transactions.length
-            ) {
+                if (result.error) {
+                    throw result.error;
+                }
 
-                balance =
-                    numberValue(
-                        transactions[0]
-                            .balance_after
-                    );
+                financialClosingRecord =
+                    result.data || null;
+
+                renderClosingRecord();
+
+                updateLedgerStatus();
             }
 
+            /* =====================================================
+               RENDER CLOSING RECORD
 
-            const totalTransactions =
-                document.getElementById(
-                    "totalTransactions"
-                );
+               This prevents the page from staying at:
+               "Loading closing record..."
+               ===================================================== */
 
-            const totalMoneyIn =
-                document.getElementById(
-                    "totalMoneyIn"
-                );
+            function renderClosingRecord() {
 
-            const totalMoneyOut =
-                document.getElementById(
-                    "totalMoneyOut"
-                );
+                const body =
+                    financialElement(
+                        "closingTableBody"
+                    );
 
-            const runningBalance =
-                document.getElementById(
-                    "runningBalance"
-                );
+                if (!body) {
+                    return;
+                }
 
+                const summary =
+                    financialCurrentSummary ||
+                    calculateDailySummary();
 
-            if (totalTransactions) {
+                const record =
+                    financialClosingRecord;
 
-                totalTransactions.textContent =
-                    transactions.length
-                        .toLocaleString(
-                            "en-KE"
+                const opening =
+                    record
+                        ? numericValue(
+                            record.opening_balance
+                        )
+                        : summary.openingBalance;
+
+                const moneyIn =
+                    record
+                        ? numericValue(
+                            record.total_money_in
+                        )
+                        : summary.moneyIn;
+
+                const moneyOut =
+                    record
+                        ? numericValue(
+                            record.total_money_out
+                        )
+                        : summary.moneyOut;
+
+                const closing =
+                    record
+                        ? numericValue(
+                            record.closing_balance
+                        )
+                        : summary.closingBalance;
+
+                const transactions =
+                    record
+                        ? numericValue(
+                            record.total_transactions
+                        )
+                        : summary.transactions;
+
+                const debit =
+                    record
+                        ? numericValue(
+                            record.debit_total
+                        )
+                        : summary.debitTotal;
+
+                const credit =
+                    record
+                        ? numericValue(
+                            record.credit_total
+                        )
+                        : summary.creditTotal;
+
+                const difference =
+                    record
+                        ? numericValue(
+                            record.difference
+                        )
+                        : summary.difference;
+
+                const status =
+                    record &&
+                    record.status
+                        ? record.status
+                        : "open";
+
+                const closedAt =
+                    record &&
+                    record.closed_at
+                        ? formatDateTime(
+                            record.closed_at
+                        )
+                        : "—";
+
+                const statusClass =
+                    status === "closed"
+                        ? "closed"
+                        : "";
+
+                body.innerHTML =
+                    "<tr>" +
+
+                    "<td>" +
+                    escapeHtml(
+                        formatDate(
+                            financialSelectedDate
+                        )
+                    ) +
+                    "</td>" +
+
+                    "<td>" +
+                    formatMoney(opening) +
+                    "</td>" +
+
+                    "<td>" +
+                    formatMoney(moneyIn) +
+                    "</td>" +
+
+                    "<td>" +
+                    formatMoney(moneyOut) +
+                    "</td>" +
+
+                    "<td>" +
+                    formatMoney(closing) +
+                    "</td>" +
+
+                    "<td>" +
+                    escapeHtml(
+                        transactions
+                    ) +
+                    "</td>" +
+
+                    "<td>" +
+                    formatMoney(debit) +
+                    "</td>" +
+
+                    "<td>" +
+                    formatMoney(credit) +
+                    "</td>" +
+
+                    "<td>" +
+                    formatMoney(difference) +
+                    "</td>" +
+
+                    '<td>' +
+                    '<span class="status-badge ' +
+                    statusClass +
+                    '">' +
+                    escapeHtml(
+                        status.toUpperCase()
+                    ) +
+                    "</span>" +
+                    "</td>" +
+
+                    "<td>" +
+                    escapeHtml(
+                        closedAt
+                    ) +
+                    "</td>" +
+
+                    "</tr>";
+            }
+
+            /* =====================================================
+               LEDGER STATUS
+               ===================================================== */
+
+            function updateLedgerStatus() {
+
+                const statusElement =
+                    financialElement(
+                        "ledgerStatus"
+                    );
+
+                const closeTop =
+                    financialElement(
+                        "closeDayBtn"
+                    );
+
+                const closeBottom =
+                    financialElement(
+                        "closeDayBtnBottom"
+                    );
+
+                if (!statusElement) {
+                    return;
+                }
+
+                const isClosed =
+                    financialClosingRecord &&
+                    String(
+                        financialClosingRecord.status
+                    ).toLowerCase() ===
+                    "closed";
+
+                const today =
+                    localDateString();
+
+                const isToday =
+                    financialSelectedDate ===
+                    today;
+
+                if (isClosed) {
+
+                    statusElement.textContent =
+                        "This ledger is CLOSED";
+
+                    statusElement.classList.add(
+                        "closed"
+                    );
+
+                } else {
+
+                    statusElement.textContent =
+                        isToday
+                            ? "Today's ledger is OPEN"
+                            : "Historical ledger is OPEN";
+
+                    statusElement.classList.remove(
+                        "closed"
+                    );
+                }
+
+                if (closeTop) {
+
+                    closeTop.disabled =
+                        !isToday ||
+                        isClosed;
+                }
+
+                if (closeBottom) {
+
+                    closeBottom.disabled =
+                        !isToday ||
+                        isClosed;
+                }
+            }
+
+            /* =====================================================
+               BANK MOVEMENTS
+               ===================================================== */
+
+            async function loadBankMovements() {
+
+                if (
+                    !financialBankAccount ||
+                    !financialBankAccount.id
+                ) {
+                    throw new Error(
+                        "Bank financial account is not available."
+                    );
+                }
+
+                const bankId =
+                    Number(
+                        financialBankAccount.id
+                    );
+
+                const result =
+                    await financialDb
+                        .from(
+                            "financial_transactions"
+                        )
+                        .select("*")
+                        .eq(
+                            "hotel_id",
+                            financialHotelId
+                        )
+                        .lte(
+                            "transaction_date",
+                            financialSelectedDate
+                        )
+                        .or(
+                            `debit_account_id.eq.${bankId},credit_account_id.eq.${bankId}`
+                        )
+                        .order(
+                            "transaction_date",
+                            {
+                                ascending: true
+                            }
+                        )
+                        .order(
+                            "id",
+                            {
+                                ascending: true
+                            }
                         );
+
+                if (result.error) {
+                    throw result.error;
+                }
+
+                financialBankMovements =
+                    result.data || [];
+
+                renderBankHistory();
+                renderBankSummary();
             }
 
+            /* =====================================================
+               BANK SUMMARY
+               ===================================================== */
 
-            if (totalMoneyIn) {
+            function renderBankSummary() {
 
-                totalMoneyIn.textContent =
-                    money(
-                        moneyIn
+                const bankId =
+                    Number(
+                        financialBankAccount.id
                     );
-            }
 
+                const currentDate =
+                    financialSelectedDate;
 
-            if (totalMoneyOut) {
+                let openingBalance = 0;
 
-                totalMoneyOut.textContent =
-                    money(
-                        moneyOut
-                    );
-            }
+                let currentBalance = 0;
 
+                let moneyBankedToday = 0;
 
-            if (runningBalance) {
+                let withdrawalsToday = 0;
 
-                runningBalance.textContent =
-                    money(
-                        balance
-                    );
-            }
-        }
+                for (
+                    const transaction
+                    of financialBankMovements
+                ) {
 
+                    const amount =
+                        numericValue(
+                            transaction.amount
+                        );
 
-        /* =====================================================
-           ESCAPE HTML
-           ===================================================== */
+                    const date =
+                        String(
+                            transaction.transaction_date ||
+                            ""
+                        );
 
-        function escapeHtml(value) {
+                    const debit =
+                        Number(
+                            transaction.debit_account_id
+                        );
 
-            return String(
-                value === null ||
-                value === undefined
-                    ? ""
-                    : value
-            )
-                .replace(
-                    /&/g,
-                    "&amp;"
-                )
-                .replace(
-                    /</g,
-                    "&lt;"
-                )
-                .replace(
-                    />/g,
-                    "&gt;"
-                )
-                .replace(
-                    /"/g,
-                    "&quot;"
-                )
-                .replace(
-                    /'/g,
-                    "&#039;"
-                );
-        }
+                    const credit =
+                        Number(
+                            transaction.credit_account_id
+                        );
 
+                    let movement = 0;
 
-        /* =====================================================
-           FILTERS
-           ===================================================== */
+                    if (debit === bankId) {
+                        movement = amount;
+                    }
 
-        function applyFilters() {
+                    if (credit === bankId) {
+                        movement = -amount;
+                    }
 
-            const searchElement =
-                document.getElementById(
-                    "searchInput"
-                );
+                    if (
+                        date <
+                        currentDate
+                    ) {
+                        openingBalance +=
+                            movement;
+                    }
 
+                    currentBalance +=
+                        movement;
 
-            const typeElement =
-                document.getElementById(
-                    "typeFilter"
-                );
+                    if (
+                        date ===
+                        currentDate
+                    ) {
 
-
-            const search =
-                searchElement
-                    ? searchElement.value
-                        .trim()
-                        .toLowerCase()
-                    : "";
-
-
-            const type =
-                typeElement
-                    ? typeElement.value
-                    : "";
-
-
-            const filtered =
-                allTransactions.filter(
-                    function(transaction) {
-
-                        const searchable =
-                            [
-                                transaction.id,
-                                transaction.transaction_number,
-                                transaction.transaction_type,
-                                transaction.description,
-                                transaction.reference_number
-                            ]
-                                .join(" ")
-                                .toLowerCase();
-
-
-                        const matchesSearch =
-                            !search ||
-                            searchable.includes(
-                                search
-                            );
-
-
-                        const matchesType =
-                            !type ||
+                        if (
                             String(
                                 transaction.transaction_type ||
                                 ""
                             ).toLowerCase() ===
-                                type;
-
-
-                        return (
-                            matchesSearch &&
-                            matchesType
-                        );
-                    }
-                );
-
-
-            renderTransactions(
-                filtered
-            );
-        }
-
-
-        /* =====================================================
-           TODAY FILTER
-           ===================================================== */
-
-        function showToday() {
-
-            const today =
-                new Date();
-
-
-            const year =
-                today.getFullYear();
-
-
-            const month =
-                today.getMonth();
-
-
-            const day =
-                today.getDate();
-
-
-            const filtered =
-                allTransactions.filter(
-                    function(transaction) {
-
-                        if (
-                            !transaction.created_at
+                            "bank_deposit"
                         ) {
 
-                            return false;
+                            moneyBankedToday +=
+                                amount;
                         }
 
+                        if (
+                            String(
+                                transaction.transaction_type ||
+                                ""
+                            ).toLowerCase() ===
+                            "bank_withdrawal"
+                        ) {
 
-                        const date =
-                            new Date(
-                                transaction.created_at
-                            );
-
-
-                        return (
-                            date.getFullYear() ===
-                                year &&
-                            date.getMonth() ===
-                                month &&
-                            date.getDate() ===
-                                day
-                        );
+                            withdrawalsToday +=
+                                amount;
+                        }
                     }
-                );
+                }
 
+                financialElement(
+                    "bankOpeningBalance"
+                ).textContent =
+                    formatMoney(
+                        openingBalance
+                    );
 
-            renderTransactions(
-                filtered
-            );
-        }
+                financialElement(
+                    "bankMoneyBanked"
+                ).textContent =
+                    formatMoney(
+                        moneyBankedToday
+                    );
 
+                financialElement(
+                    "bankWithdrawals"
+                ).textContent =
+                    formatMoney(
+                        withdrawalsToday
+                    );
 
-        /* =====================================================
-           CLEAR FILTERS
-           ===================================================== */
-
-        function clearFilters() {
-
-            const search =
-                document.getElementById(
-                    "searchInput"
-                );
-
-
-            const type =
-                document.getElementById(
-                    "typeFilter"
-                );
-
-
-            if (search) {
-
-                search.value = "";
+                financialElement(
+                    "bankCurrentBalance"
+                ).textContent =
+                    formatMoney(
+                        currentBalance
+                    );
             }
 
+            /* =====================================================
+               RENDER BANK HISTORY
+               ===================================================== */
 
-            if (type) {
-
-                type.value = "";
-            }
-
-
-            renderTransactions(
-                allTransactions
-            );
-        }
-
-
-        /* =====================================================
-           INITIALIZATION
-           ===================================================== */
-
-        async function initializePage() {
-
-            try {
-
-                hideMessage();
-
-
-                db =
-                    await getSupabaseClient();
-
-
-                await loadHotel();
-
-
-                await loadTransactions();
-
-
-            } catch(error) {
-
-                console.error(
-                    "Financial Transactions:",
-                    error
-                );
-
-
-                showMessage(
-                    error.message ||
-                    "Unable to load financial transactions.",
-                    "error"
-                );
-
+            function renderBankHistory() {
 
                 const body =
-                    document.getElementById(
-                        "transactionsTableBody"
+                    financialElement(
+                        "bankHistoryTableBody"
                     );
 
+                if (!body) {
+                    return;
+                }
 
-                if (body) {
+                if (
+                    !financialBankMovements.length
+                ) {
 
                     body.innerHTML =
-                        `
-                        <tr class="empty-row">
+                        '<tr>' +
+                        '<td colspan="6" class="empty-row">' +
+                        'No bank movements found up to ' +
+                        escapeHtml(
+                            financialSelectedDate
+                        ) +
+                        "." +
+                        "</td>" +
+                        "</tr>";
 
-                            <td colspan="11">
+                    return;
+                }
 
-                                Financial transactions
-                                could not be loaded.
+                const bankId =
+                    Number(
+                        financialBankAccount.id
+                    );
 
-                                <br><br>
+                let runningBalance = 0;
 
-                                ${escapeHtml(
-                                    error.message ||
-                                    "Unknown error"
-                                )}
+                body.innerHTML =
+                    financialBankMovements
+                        .map(
+                            transaction => {
 
-                            </td>
+                                const amount =
+                                    numericValue(
+                                        transaction.amount
+                                    );
 
-                        </tr>
-                        `;
+                                const debit =
+                                    Number(
+                                        transaction.debit_account_id
+                                    );
+
+                                const credit =
+                                    Number(
+                                        transaction.credit_account_id
+                                    );
+
+                                let moneyIn = 0;
+
+                                let moneyOut = 0;
+
+                                if (
+                                    debit ===
+                                    bankId
+                                ) {
+                                    moneyIn =
+                                        amount;
+                                }
+
+                                if (
+                                    credit ===
+                                    bankId
+                                ) {
+                                    moneyOut =
+                                        amount;
+                                }
+
+                                runningBalance +=
+                                    moneyIn -
+                                    moneyOut;
+
+                                return (
+                                    "<tr>" +
+
+                                    "<td>" +
+                                    escapeHtml(
+                                        formatDate(
+                                            transaction.transaction_date
+                                        )
+                                    ) +
+                                    "</td>" +
+
+                                    "<td>" +
+                                    escapeHtml(
+                                        transaction.description ||
+                                        "Bank movement"
+                                    ) +
+                                    "</td>" +
+
+                                    "<td>" +
+                                    escapeHtml(
+                                        transaction.reference_number ||
+                                        transaction.transaction_number ||
+                                        "—"
+                                    ) +
+                                    "</td>" +
+
+                                    '<td class="amount-in">' +
+                                    formatMoney(
+                                        moneyIn
+                                    ) +
+                                    "</td>" +
+
+                                    '<td class="amount-out">' +
+                                    formatMoney(
+                                        moneyOut
+                                    ) +
+                                    "</td>" +
+
+                                    '<td class="balance-cell">' +
+                                    formatMoney(
+                                        runningBalance
+                                    ) +
+                                    "</td>" +
+
+                                    "</tr>"
+                                );
+                            }
+                        )
+                        .join("");
+            }
+
+            /* =====================================================
+               GET CURRENT CASH BALANCE
+
+               We use the cash GL account (1010).
+
+               Debit to cash = increase.
+               Credit from cash = decrease.
+               ===================================================== */
+
+            async function getCurrentCashBalance() {
+
+                const cashId =
+                    Number(
+                        financialCashAccount.id
+                    );
+
+                const result =
+                    await financialDb
+                        .from(
+                            "financial_transactions"
+                        )
+                        .select(
+                            "amount,debit_account_id,credit_account_id"
+                        )
+                        .eq(
+                            "hotel_id",
+                            financialHotelId
+                        )
+                        .lte(
+                            "transaction_date",
+                            financialSelectedDate
+                        )
+                        .or(
+                            `debit_account_id.eq.${cashId},credit_account_id.eq.${cashId}`
+                        )
+                        .order(
+                            "id",
+                            {
+                                ascending: true
+                            }
+                        );
+
+                if (result.error) {
+                    throw result.error;
+                }
+
+                let balance = 0;
+
+                for (
+                    const transaction
+                    of result.data || []
+                ) {
+
+                    const amount =
+                        numericValue(
+                            transaction.amount
+                        );
+
+                    if (
+                        Number(
+                            transaction.debit_account_id
+                        ) === cashId
+                    ) {
+                        balance += amount;
+                    }
+
+                    if (
+                        Number(
+                            transaction.credit_account_id
+                        ) === cashId
+                    ) {
+                        balance -= amount;
+                    }
+                }
+
+                return balance;
+            }
+
+            /* =====================================================
+               GENERATE TRANSACTION NUMBER
+               ===================================================== */
+
+            function generateFinancialTransactionNumber(
+                prefix
+            ) {
+
+                const date =
+                    financialSelectedDate.replace(
+                        /-/g,
+                        ""
+                    );
+
+                const timestamp =
+                    Date.now()
+                        .toString()
+                        .slice(-8);
+
+                const random =
+                    Math.floor(
+                        1000 +
+                        Math.random() *
+                        9000
+                    );
+
+                return (
+                    "FIN-" +
+                    financialHotelId +
+                    "-" +
+                    date +
+                    "-" +
+                    prefix +
+                    "-" +
+                    timestamp +
+                    random
+                );
+            }
+
+            /* =====================================================
+               CURRENT USER ID
+               ===================================================== */
+
+            async function getFinancialUserId() {
+
+                try {
+
+                    if (
+                        financialDb.auth &&
+                        typeof financialDb.auth.getUser ===
+                            "function"
+                    ) {
+
+                        const result =
+                            await financialDb.auth.getUser();
+
+                        if (
+                            result &&
+                            result.data &&
+                            result.data.user
+                        ) {
+                            return result.data.user.id;
+                        }
+                    }
+
+                } catch (_) {
+                    /* User is optional */
+                }
+
+                return null;
+            }
+
+            /* =====================================================
+               RECORD BANK DEPOSIT
+               ===================================================== */
+
+            async function recordBankDeposit(
+                event
+            ) {
+
+                event.preventDefault();
+
+                if (postingBankDeposit) {
+                    return;
+                }
+
+                if (
+                    !financialHotelId ||
+                    !financialBankAccount ||
+                    !financialCashAccount
+                ) {
+
+                    showFinancialToast(
+                        "Financial accounts are not ready.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                const amount =
+                    numericValue(
+                        financialElement(
+                            "depositAmount"
+                        ).value
+                    );
+
+                if (
+                    !Number.isFinite(amount) ||
+                    amount <= 0
+                ) {
+
+                    showFinancialToast(
+                        "Enter a valid deposit amount.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                const cashBalance =
+                    await getCurrentCashBalance();
+
+                if (
+                    amount >
+                    cashBalance
+                ) {
+
+                    showFinancialToast(
+                        "The bank deposit cannot exceed the available cash balance.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                postingBankDeposit = true;
+
+                const button =
+                    financialElement(
+                        "recordDepositBtn"
+                    );
+
+                if (button) {
+                    button.disabled = true;
+                    button.textContent =
+                        "Recording...";
+                }
+
+                try {
+
+                    const reference =
+                        financialElement(
+                            "depositReference"
+                        ).value.trim();
+
+                    const depositedBy =
+                        financialElement(
+                            "depositedBy"
+                        ).value.trim();
+
+                    const notes =
+                        financialElement(
+                            "depositNotes"
+                        ).value.trim();
+
+                    const transactionNumber =
+                        generateFinancialTransactionNumber(
+                            "DEP"
+                        );
+
+                    const userId =
+                        await getFinancialUserId();
+
+                    const cashAfter =
+                        cashBalance -
+                        amount;
+
+                    const description =
+                        depositedBy
+                            ? "Bank deposit by " +
+                              depositedBy
+                            : "Money banked";
+
+                    const insertData = {
+                        hotel_id:
+                            financialHotelId,
+
+                        transaction_number:
+                            transactionNumber,
+
+                        transaction_date:
+                            financialSelectedDate,
+
+                        description:
+                            description,
+
+                        reference_number:
+                            reference ||
+                            transactionNumber,
+
+                        transaction_type:
+                            "bank_deposit",
+
+                        bank_account_id:
+                            null,
+
+                        debit_account_id:
+                            financialBankAccount.id,
+
+                        credit_account_id:
+                            financialCashAccount.id,
+
+                        amount:
+                            amount,
+
+                        employee_id:
+                            null,
+
+                        payment_id:
+                            null,
+
+                        expense_id:
+                            null,
+
+                        notes:
+                            notes ||
+                            null,
+
+                        created_by:
+                            userId,
+
+                        money_in:
+                            0,
+
+                        money_out:
+                            amount,
+
+                        balance_after:
+                            cashAfter,
+
+                        is_reversal:
+                            false
+                    };
+
+                    const result =
+                        await financialDb
+                            .from(
+                                "financial_transactions"
+                            )
+                            .insert(
+                                insertData
+                            )
+                            .select("*")
+                            .single();
+
+                    if (result.error) {
+                        throw result.error;
+                    }
+
+                    financialElement(
+                        "bankDepositForm"
+                    ).reset();
+
+                    showFinancialToast(
+                        "Money banked successfully.",
+                        "success"
+                    );
+
+                    await reloadFinancialPage();
+
+                } catch (error) {
+
+                    showFinancialError(
+                        error
+                    );
+
+                } finally {
+
+                    postingBankDeposit =
+                        false;
+
+                    if (button) {
+                        button.disabled = false;
+                        button.textContent =
+                            "Record Money Banked";
+                    }
                 }
             }
-        }
 
+            /* =====================================================
+               RECORD BANK WITHDRAWAL
+               ===================================================== */
 
-        /* =====================================================
-           EVENTS
-           ===================================================== */
+            async function recordBankWithdrawal(
+                event
+            ) {
 
-        document.addEventListener(
-            "DOMContentLoaded",
-            function() {
+                event.preventDefault();
+
+                if (postingBankWithdrawal) {
+                    return;
+                }
+
+                if (
+                    !financialHotelId ||
+                    !financialBankAccount ||
+                    !financialCashAccount
+                ) {
+
+                    showFinancialToast(
+                        "Financial accounts are not ready.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                const amount =
+                    numericValue(
+                        financialElement(
+                            "withdrawalAmount"
+                        ).value
+                    );
+
+                const chequeNumber =
+                    financialElement(
+                        "chequeNumber"
+                    ).value.trim();
+
+                const purpose =
+                    financialElement(
+                        "withdrawalPurpose"
+                    ).value.trim();
+
+                if (
+                    !Number.isFinite(amount) ||
+                    amount <= 0
+                ) {
+
+                    showFinancialToast(
+                        "Enter a valid withdrawal amount.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                if (!chequeNumber) {
+
+                    showFinancialToast(
+                        "Enter the cheque number.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                if (!purpose) {
+
+                    showFinancialToast(
+                        "Enter the withdrawal purpose.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                postingBankWithdrawal =
+                    true;
+
+                const button =
+                    financialElement(
+                        "recordWithdrawalBtn"
+                    );
+
+                if (button) {
+                    button.disabled = true;
+                    button.textContent =
+                        "Recording...";
+                }
+
+                try {
+
+                    const payee =
+                        financialElement(
+                            "withdrawalPayee"
+                        ).value.trim();
+
+                    const notes =
+                        financialElement(
+                            "withdrawalNotes"
+                        ).value.trim();
+
+                    const transactionNumber =
+                        generateFinancialTransactionNumber(
+                            "WDL"
+                        );
+
+                    const userId =
+                        await getFinancialUserId();
+
+                    const cashBalance =
+                        await getCurrentCashBalance();
+
+                    const bankBalance =
+                        calculateCurrentBankBalance();
+
+                    if (
+                        amount >
+                        bankBalance
+                    ) {
+
+                        throw new Error(
+                            "The bank withdrawal cannot exceed the current bank balance."
+                        );
+                    }
+
+                    const cashAfter =
+                        cashBalance +
+                        amount;
+
+                    const description =
+                        payee
+                            ? "Bank withdrawal - " +
+                              purpose +
+                              " - " +
+                              payee
+                            : "Bank withdrawal - " +
+                              purpose;
+
+                    const insertData = {
+                        hotel_id:
+                            financialHotelId,
+
+                        transaction_number:
+                            transactionNumber,
+
+                        transaction_date:
+                            financialSelectedDate,
+
+                        description:
+                            description,
+
+                        reference_number:
+                            chequeNumber,
+
+                        transaction_type:
+                            "bank_withdrawal",
+
+                        bank_account_id:
+                            null,
+
+                        debit_account_id:
+                            financialCashAccount.id,
+
+                        credit_account_id:
+                            financialBankAccount.id,
+
+                        amount:
+                            amount,
+
+                        employee_id:
+                            null,
+
+                        payment_id:
+                            null,
+
+                        expense_id:
+                            null,
+
+                        notes:
+                            notes ||
+                            null,
+
+                        created_by:
+                            userId,
+
+                        money_in:
+                            amount,
+
+                        money_out:
+                            0,
+
+                        balance_after:
+                            cashAfter,
+
+                        is_reversal:
+                            false
+                    };
+
+                    const result =
+                        await financialDb
+                            .from(
+                                "financial_transactions"
+                            )
+                            .insert(
+                                insertData
+                            )
+                            .select("*")
+                            .single();
+
+                    if (result.error) {
+                        throw result.error;
+                    }
+
+                    financialElement(
+                        "bankWithdrawalForm"
+                    ).reset();
+
+                    showFinancialToast(
+                        "Bank withdrawal recorded successfully.",
+                        "success"
+                    );
+
+                    await reloadFinancialPage();
+
+                } catch (error) {
+
+                    showFinancialError(
+                        error
+                    );
+
+                } finally {
+
+                    postingBankWithdrawal =
+                        false;
+
+                    if (button) {
+                        button.disabled = false;
+                        button.textContent =
+                            "Record Withdrawal";
+                    }
+                }
+            }
+
+            /* =====================================================
+               CALCULATE CURRENT BANK BALANCE
+               ===================================================== */
+
+            function calculateCurrentBankBalance() {
+
+                if (
+                    !financialBankAccount
+                ) {
+                    return 0;
+                }
+
+                const bankId =
+                    Number(
+                        financialBankAccount.id
+                    );
+
+                let balance = 0;
+
+                for (
+                    const transaction
+                    of financialBankMovements
+                ) {
+
+                    const amount =
+                        numericValue(
+                            transaction.amount
+                        );
+
+                    if (
+                        Number(
+                            transaction.debit_account_id
+                        ) === bankId
+                    ) {
+                        balance += amount;
+                    }
+
+                    if (
+                        Number(
+                            transaction.credit_account_id
+                        ) === bankId
+                    ) {
+                        balance -= amount;
+                    }
+                }
+
+                return balance;
+            }
+
+            /* =====================================================
+               SAVE DAILY CLOSING
+               ===================================================== */
+
+            async function closeSelectedDay() {
+
+                const today =
+                    localDateString();
+
+                if (
+                    financialSelectedDate !==
+                    today
+                ) {
+
+                    showFinancialToast(
+                        "Only today's ledger can be closed.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                if (
+                    financialClosingRecord &&
+                    String(
+                        financialClosingRecord.status
+                    ).toLowerCase() ===
+                    "closed"
+                ) {
+
+                    showFinancialToast(
+                        "This day is already closed.",
+                        "info"
+                    );
+
+                    return;
+                }
+
+                const summary =
+                    financialCurrentSummary ||
+                    calculateDailySummary();
+
+                if (
+                    Math.abs(
+                        summary.difference
+                    ) > 0.01
+                ) {
+
+                    showFinancialToast(
+                        "Daily closing cannot be completed because Debit and Credit do not balance.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                const confirmation =
+                    window.confirm(
+                        "Close the financial ledger for " +
+                        financialSelectedDate +
+                        "?"
+                    );
+
+                if (!confirmation) {
+                    return;
+                }
+
+                const topButton =
+                    financialElement(
+                        "closeDayBtn"
+                    );
+
+                const bottomButton =
+                    financialElement(
+                        "closeDayBtnBottom"
+                    );
+
+                if (topButton) {
+                    topButton.disabled = true;
+                    topButton.textContent =
+                        "Closing...";
+                }
+
+                if (bottomButton) {
+                    bottomButton.disabled = true;
+                    bottomButton.textContent =
+                        "Closing...";
+                }
+
+                try {
+
+                    const userId =
+                        await getFinancialUserId();
+
+                    const record = {
+
+                        hotel_id:
+                            financialHotelId,
+
+                        closing_date:
+                            financialSelectedDate,
+
+                        opening_balance:
+                            summary.openingBalance,
+
+                        total_money_in:
+                            summary.moneyIn,
+
+                        total_money_out:
+                            summary.moneyOut,
+
+                        closing_balance:
+                            summary.closingBalance,
+
+                        total_transactions:
+                            summary.transactions,
+
+                        debit_total:
+                            summary.debitTotal,
+
+                        credit_total:
+                            summary.creditTotal,
+
+                        difference:
+                            summary.difference,
+
+                        status:
+                            "closed",
+
+                        closed_by:
+                            userId,
+
+                        closed_at:
+                            new Date().toISOString(),
+
+                        notes:
+                            "Daily financial ledger closed from Financial Transactions.",
+
+                        updated_at:
+                            new Date().toISOString()
+                    };
+
+                    const result =
+                        await financialDb
+                            .from("daily_closings")
+                            .upsert(
+                                record,
+                                {
+                                    onConflict:
+                                        "hotel_id,closing_date"
+                                }
+                            )
+                            .select("*")
+                            .single();
+
+                    if (result.error) {
+                        throw result.error;
+                    }
+
+                    financialClosingRecord =
+                        result.data;
+
+                    renderClosingRecord();
+
+                    updateLedgerStatus();
+
+                    showFinancialToast(
+                        "Daily ledger closed successfully.",
+                        "success"
+                    );
+
+                } catch (error) {
+
+                    showFinancialError(
+                        error
+                    );
+
+                } finally {
+
+                    updateLedgerStatus();
+                }
+            }
+
+            /* =====================================================
+               DATE LOAD
+               ===================================================== */
+
+            async function loadSelectedDate() {
+
+                const dateInput =
+                    financialElement(
+                        "ledgerDate"
+                    );
+
+                const value =
+                    dateInput
+                        ? dateInput.value
+                        : "";
+
+                if (!value) {
+
+                    showFinancialToast(
+                        "Select a ledger date.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                financialSelectedDate =
+                    value;
+
+                await reloadFinancialPage();
+            }
+
+            /* =====================================================
+               MOVE DATE
+               ===================================================== */
+
+            async function changeLedgerDate(
+                numberOfDays
+            ) {
+
+                const current =
+                    new Date(
+                        financialSelectedDate +
+                        "T00:00:00"
+                    );
+
+                current.setDate(
+                    current.getDate() +
+                    numberOfDays
+                );
+
+                financialSelectedDate =
+                    localDateString(
+                        current
+                    );
+
+                financialElement(
+                    "ledgerDate"
+                ).value =
+                    financialSelectedDate;
+
+                await reloadFinancialPage();
+            }
+
+            /* =====================================================
+               SET TODAY
+               ===================================================== */
+
+            async function openToday() {
+
+                financialSelectedDate =
+                    localDateString();
+
+                financialElement(
+                    "ledgerDate"
+                ).value =
+                    financialSelectedDate;
+
+                await reloadFinancialPage();
+            }
+
+            /* =====================================================
+               RELOAD ALL FINANCIAL DATA
+               ===================================================== */
+
+            async function reloadFinancialPage() {
+
+                try {
+
+                    financialElement(
+                        "financialError"
+                    ).classList.add(
+                        "hidden"
+                    );
+
+                    await loadDailyTransactions();
+
+                    calculateDailySummary();
+
+                    renderDailySummary();
+
+                    renderDailyLedger();
+
+                    await loadDailyClosing();
+
+                    await loadBankMovements();
+
+                    finishFinancialLoading();
+
+                } catch (error) {
+
+                    showFinancialError(
+                        error
+                    );
+                }
+            }
+
+            /* =====================================================
+               INITIALIZATION
+               ===================================================== */
+
+            async function initializeFinancialPage() {
+
+                try {
+
+                    financialElement(
+                        "financialLoading"
+                    ).classList.remove(
+                        "hidden"
+                    );
+
+                    financialDb =
+                        getFinancialSupabaseClient();
+
+                    await loadFinancialHotel();
+
+                    renderFinancialHotel();
+
+                    await loadFinancialAccounts();
+
+                    financialSelectedDate =
+                        localDateString();
+
+                    financialElement(
+                        "ledgerDate"
+                    ).value =
+                        financialSelectedDate;
+
+                    await reloadFinancialPage();
+
+                } catch (error) {
+
+                    showFinancialError(
+                        error
+                    );
+                }
+            }
+
+            /* =====================================================
+               EVENT LISTENERS
+               ===================================================== */
+
+            function bindFinancialEvents() {
 
                 const refreshButton =
-                    document.getElementById(
-                        "refreshButton"
+                    financialElement(
+                        "refreshFinancialBtn"
                     );
-
-
-                const todayButton =
-                    document.getElementById(
-                        "todayButton"
-                    );
-
-
-                const clearFiltersButton =
-                    document.getElementById(
-                        "clearFiltersButton"
-                    );
-
-
-                const searchInput =
-                    document.getElementById(
-                        "searchInput"
-                    );
-
-
-                const typeFilter =
-                    document.getElementById(
-                        "typeFilter"
-                    );
-
 
                 if (refreshButton) {
 
                     refreshButton.addEventListener(
                         "click",
-                        async function() {
+                        async () => {
 
-                            try {
+                            await reloadFinancialPage();
 
-                                showMessage(
-                                    "Refreshing financial transactions...",
-                                    "info"
-                                );
-
-
-                                await loadTransactions();
-
-
-                                showMessage(
-                                    "Financial transactions refreshed.",
-                                    "success"
-                                );
-
-
-                                setTimeout(
-                                    hideMessage,
-                                    2000
-                                );
-
-
-                            } catch(error) {
-
-                                showMessage(
-                                    error.message ||
-                                    "Refresh failed.",
-                                    "error"
-                                );
-                            }
                         }
                     );
                 }
 
+                const printButton =
+                    financialElement(
+                        "printFinancialBtn"
+                    );
+
+                if (printButton) {
+
+                    printButton.addEventListener(
+                        "click",
+                        () => {
+                            window.print();
+                        }
+                    );
+                }
+
+                const loadDateButton =
+                    financialElement(
+                        "loadDateBtn"
+                    );
+
+                if (loadDateButton) {
+
+                    loadDateButton.addEventListener(
+                        "click",
+                        async () => {
+                            await loadSelectedDate();
+                        }
+                    );
+                }
+
+                const previousButton =
+                    financialElement(
+                        "previousDateBtn"
+                    );
+
+                if (previousButton) {
+
+                    previousButton.addEventListener(
+                        "click",
+                        async () => {
+                            await changeLedgerDate(
+                                -1
+                            );
+                        }
+                    );
+                }
+
+                const nextButton =
+                    financialElement(
+                        "nextDateBtn"
+                    );
+
+                if (nextButton) {
+
+                    nextButton.addEventListener(
+                        "click",
+                        async () => {
+                            await changeLedgerDate(
+                                1
+                            );
+                        }
+                    );
+                }
+
+                const todayButton =
+                    financialElement(
+                        "openTodayBtn"
+                    );
 
                 if (todayButton) {
 
                     todayButton.addEventListener(
                         "click",
-                        showToday
+                        async () => {
+                            await openToday();
+                        }
                     );
                 }
 
+                const closeTop =
+                    financialElement(
+                        "closeDayBtn"
+                    );
 
-                if (clearFiltersButton) {
+                if (closeTop) {
 
-                    clearFiltersButton.addEventListener(
+                    closeTop.addEventListener(
                         "click",
-                        clearFilters
+                        async () => {
+                            await closeSelectedDay();
+                        }
                     );
                 }
 
+                const closeBottom =
+                    financialElement(
+                        "closeDayBtnBottom"
+                    );
 
-                if (searchInput) {
+                if (closeBottom) {
 
-                    searchInput.addEventListener(
-                        "input",
-                        applyFilters
+                    closeBottom.addEventListener(
+                        "click",
+                        async () => {
+                            await closeSelectedDay();
+                        }
                     );
                 }
 
+                const depositForm =
+                    financialElement(
+                        "bankDepositForm"
+                    );
 
-                if (typeFilter) {
+                if (depositForm) {
 
-                    typeFilter.addEventListener(
+                    depositForm.addEventListener(
+                        "submit",
+                        recordBankDeposit
+                    );
+                }
+
+                const withdrawalForm =
+                    financialElement(
+                        "bankWithdrawalForm"
+                    );
+
+                if (withdrawalForm) {
+
+                    withdrawalForm.addEventListener(
+                        "submit",
+                        recordBankWithdrawal
+                    );
+                }
+
+                const transactionFilter =
+                    financialElement(
+                        "transactionTypeFilter"
+                    );
+
+                if (transactionFilter) {
+
+                    transactionFilter.addEventListener(
                         "change",
-                        applyFilters
+                        renderDailyLedger
                     );
                 }
 
+                const dateInput =
+                    financialElement(
+                        "ledgerDate"
+                    );
 
-                initializePage();
+                if (dateInput) {
 
+                    dateInput.addEventListener(
+                        "change",
+                        async () => {
+                            financialSelectedDate =
+                                dateInput.value;
+
+                            await reloadFinancialPage();
+                        }
+                    );
+                }
             }
-        );
 
+            /* =====================================================
+               START PAGE
+
+               DOMContentLoaded ensures all page elements exist.
+               ===================================================== */
+
+            document.addEventListener(
+                "DOMContentLoaded",
+                () => {
+
+                    bindFinancialEvents();
+
+                    initializeFinancialPage();
+
+                }
+            );
+
+        })();
     </script>
 
 </body>
 </html>
-```

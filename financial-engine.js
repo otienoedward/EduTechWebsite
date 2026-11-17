@@ -1,7 +1,7 @@
 /* =========================================================
    EDU TECH HOTEL MANAGEMENT SYSTEM
    CENTRAL FINANCIAL ENGINE
-   VERSION: 2026.11.15.02
+   VERSION: 2026.11.17.03
 
    PURPOSE
    ---------------------------------------------------------
@@ -21,46 +21,26 @@
    - Bank deposits
    - Cash movement history
 
-   IMPORTANT CASHIER SCHEMA NOTES
+   CRITICAL PAYMENT PROTECTION
    ---------------------------------------------------------
-   cashier_handovers DOES NOT contain:
+   Guest payments MUST use:
 
-      created_by
-      difference
+       PAY-[payment.id]
 
-   bank_deposits DOES NOT contain:
+   as the financial reference.
 
-      created_by
+   The engine accepts both:
 
-   Therefore those fields are NOT inserted into
-   cashier_handovers.
+       options.paymentId
+       options.id
 
-   HANDOVER CONFIRMATION
-   ---------------------------------------------------------
-   The database has a CHECK constraint on the
-   cashier_handovers.status column.
+   This is important because payments.js normally
+   passes the complete payment record.
 
-   The values "confirmed" and "completed" are not
-   accepted by that constraint.
+   A payment can therefore NEVER receive a new random
+   reference simply because Ledger was clicked again.
 
-   Therefore confirmation DOES NOT change status.
-
-   Confirmation is recorded using:
-
-      confirmed_at
-
-   Difference is calculated by JavaScript and returned
-   to the cashier page. It is NOT stored in
-   cashier_handovers.
-
-   IMPORTANT LEDGER RULE
-   ---------------------------------------------------------
-   Guest payments and expenses are financial transactions
-   and are posted to financial_transactions.
-
-   A cashier handover is an operational confirmation of
-   physical cash. It is NOT posted again as a guest
-   payment, otherwise the same money would be duplicated.
+   ONE PAYMENT = ONE FINANCIAL POSTING.
 
 ========================================================= */
 
@@ -73,7 +53,7 @@
        VERSION
     ===================================================== */
 
-    const VERSION = "2026.11.15.02";
+    const VERSION = "2026.11.17.03";
 
 
     /* =====================================================
@@ -81,6 +61,15 @@
     ===================================================== */
 
     window.EDUTECH_FINANCIAL_ENGINE_READY = false;
+
+
+    /* =====================================================
+       GLOBAL POSTING LOCKS
+       -----------------------------------------------------
+       Prevents two simultaneous calls for the same payment.
+    ===================================================== */
+
+    const paymentPostingLocks = new Set();
 
 
     /* =====================================================
@@ -960,7 +949,7 @@
                 )
                 .eq(
                     "reference_number",
-                    referenceNumber
+                    String(referenceNumber)
                 )
                 .eq(
                     "is_reversal",
@@ -1043,9 +1032,19 @@
 
 
         const referenceNumber =
-            options.referenceNumber ||
-            null;
+            options.referenceNumber
+                ? String(
+                    options.referenceNumber
+                )
+                : null;
 
+
+        /*
+         * FIRST DUPLICATE CHECK
+         *
+         * This must happen before creating a new
+         * financial transaction.
+         */
 
         const existing =
             await findTransactionByReference(
@@ -1199,6 +1198,44 @@
 
 
         if (result.error) {
+
+            /*
+             * A concurrent request may have inserted the
+             * same reference between the first check and
+             * this insert.
+             *
+             * Re-check the reference before reporting a
+             * failure.
+             */
+
+            if (referenceNumber) {
+
+                const concurrentExisting =
+                    await findTransactionByReference(
+                        hotelId,
+                        referenceNumber
+                    );
+
+
+                if (concurrentExisting) {
+
+                    return {
+
+                        success:
+                            true,
+
+                        alreadyPosted:
+                            true,
+
+                        transaction:
+                            concurrentExisting
+
+                    };
+
+                }
+
+            }
+
 
             throw makeError(
                 "Unable to post financial transaction: " +
@@ -1536,6 +1573,18 @@
 
     /* =====================================================
        PAYMENT
+       -----------------------------------------------------
+       CRITICAL FIX:
+       Accept both:
+           options.paymentId
+           options.id
+
+       The permanent reference is:
+
+           PAY-[payment.id]
+
+       Never generate a random payment reference when a
+       payment ID exists.
     ===================================================== */
 
     async function postPayment(
@@ -1553,9 +1602,39 @@
             );
 
 
+        /*
+         * IMPORTANT:
+         *
+         * payments.js normally sends the complete payment
+         * object. The ID is therefore often in:
+         *
+         * options.id
+         *
+         * not:
+         *
+         * options.paymentId
+         */
+
+        const paymentId =
+            options.paymentId ??
+            options.id ??
+            options.payment_id ??
+            null;
+
+
+        const normalizedPaymentId =
+            paymentId !== null &&
+            paymentId !== undefined &&
+            String(paymentId).trim() !== ""
+                ? String(paymentId).trim()
+                : null;
+
+
         const amount =
             roundMoney(
-                options.amount
+                options.amount ??
+                options.payment_amount ??
+                options.total_amount
             );
 
 
@@ -1568,113 +1647,230 @@
         }
 
 
-        const paymentId =
-            options.paymentId ||
-            null;
+        /*
+         * A payment MUST have an ID when it is coming from
+         * the payments table.
+         *
+         * Random references are only allowed for callers
+         * creating a completely independent financial
+         * transaction, not for an existing guest payment.
+         */
 
+        if (!normalizedPaymentId) {
 
-        const reference =
-            options.referenceNumber ||
-            (
-                paymentId
-                    ? "PAY-" +
-                      paymentId
-                    : "PAY-" +
-                      createId()
+            throw makeError(
+                "Payment ID is required. The financial engine will not create a random payment reference."
             );
-
-
-        const accounts =
-            await ensureCoreAccounts(
-                hotelId
-            );
-
-
-        let paymentAccount =
-            options.paymentAccountId ||
-            null;
-
-
-        if (!paymentAccount) {
-
-            const method =
-                String(
-                    options.paymentMethod ||
-                    "cash"
-                ).toLowerCase();
-
-
-            if (
-                method === "cash" ||
-                method === "cashier"
-            ) {
-
-                paymentAccount =
-                    accounts.cash.id;
-
-            } else if (
-                method === "mpesa" ||
-                method === "m-pesa"
-            ) {
-
-                paymentAccount =
-                    accounts.mpesa.id;
-
-            } else if (
-                method === "card"
-            ) {
-
-                paymentAccount =
-                    accounts.card.id;
-
-            } else if (
-                method === "bank"
-            ) {
-
-                paymentAccount =
-                    accounts.bank.id;
-
-            } else {
-
-                paymentAccount =
-                    accounts.cash.id;
-
-            }
 
         }
 
 
-        return await postTransaction({
+        const reference =
+            "PAY-" +
+            normalizedPaymentId;
 
-            hotelId:
-                hotelId,
 
-            transactionType:
-                "transfer",
+        /*
+         * SAME-PAYMENT LOCK
+         *
+         * Prevents two Ledger clicks from entering the
+         * posting process simultaneously.
+         */
 
-            amount:
-                amount,
+        if (
+            paymentPostingLocks.has(
+                normalizedPaymentId
+            )
+        ) {
 
-            moneyIn:
-                amount,
+            throw makeError(
+                "This payment is already being posted. Please wait. No additional financial transaction was created."
+            );
 
-            moneyOut:
-                0,
+        }
 
-            description:
-                options.description ||
-                "Guest payment",
 
-            referenceNumber:
-                reference,
+        paymentPostingLocks.add(
+            normalizedPaymentId
+        );
 
-            debitAccountId:
-                paymentAccount,
 
-            creditAccountId:
-                accounts.receivables.id
+        try {
 
-        });
+            /*
+             * FIRST CHECK:
+             *
+             * If PAY-[payment.id] already exists, return it.
+             * Do NOT create another transaction.
+             */
+
+            const existing =
+                await findTransactionByReference(
+                    hotelId,
+                    reference
+                );
+
+
+            if (existing) {
+
+                return {
+
+                    success:
+                        true,
+
+                    alreadyPosted:
+                        true,
+
+                    referenceNumber:
+                        reference,
+
+                    transaction:
+                        existing
+
+                };
+
+            }
+
+
+            const accounts =
+                await ensureCoreAccounts(
+                    hotelId
+                );
+
+
+            let paymentAccount =
+                options.paymentAccountId ||
+                options.debitAccountId ||
+                null;
+
+
+            if (!paymentAccount) {
+
+                const method =
+                    String(
+                        options.paymentMethod ??
+                        options.payment_method ??
+                        options.method ??
+                        "cash"
+                    ).toLowerCase().trim();
+
+
+                if (
+                    method === "cash" ||
+                    method === "cashier"
+                ) {
+
+                    paymentAccount =
+                        accounts.cash.id;
+
+                } else if (
+                    method === "mpesa" ||
+                    method === "m-pesa" ||
+                    method === "m_pesa"
+                ) {
+
+                    paymentAccount =
+                        accounts.mpesa.id;
+
+                } else if (
+                    method === "card"
+                ) {
+
+                    paymentAccount =
+                        accounts.card.id;
+
+                } else if (
+                    method === "bank"
+                ) {
+
+                    paymentAccount =
+                        accounts.bank.id;
+
+                } else {
+
+                    paymentAccount =
+                        accounts.cash.id;
+
+                }
+
+            }
+
+
+            /*
+             * POST EXACTLY ONCE.
+             */
+
+            const result =
+                await postTransaction({
+
+                    hotelId:
+                        hotelId,
+
+                    transactionType:
+                        "transfer",
+
+                    amount:
+                        amount,
+
+                    moneyIn:
+                        amount,
+
+                    moneyOut:
+                        0,
+
+                    transactionDate:
+                        options.paymentDate ??
+                        options.payment_date ??
+                        options.transactionDate ??
+                        options.transaction_date ??
+                        new Date().toISOString(),
+
+                    description:
+                        options.description ||
+                        "Guest payment",
+
+                    referenceNumber:
+                        reference,
+
+                    debitAccountId:
+                        paymentAccount,
+
+                    creditAccountId:
+                        accounts.receivables.id
+
+                });
+
+
+            /*
+             * Return the permanent payment reference so
+             * payments.js can verify the exact transaction.
+             */
+
+            return {
+
+                success:
+                    true,
+
+                alreadyPosted:
+                    Boolean(
+                        result.alreadyPosted
+                    ),
+
+                referenceNumber:
+                    reference,
+
+                transaction:
+                    result.transaction
+
+            };
+
+        } finally {
+
+            paymentPostingLocks.delete(
+                normalizedPaymentId
+            );
+
+        }
 
     }
 
@@ -2503,14 +2699,6 @@
                 );
 
 
-        /*
-         * The database status constraint is currently
-         * unknown/restricted.
-         *
-         * We therefore keep the normal status filtering
-         * for values that the cashier page requests.
-         */
-
         if (options.status) {
 
             query =
@@ -2611,17 +2799,6 @@
             );
 
 
-        /*
-         * IMPORTANT
-         * -------------------------------------------------
-         * cashier_handovers DOES NOT contain:
-         *
-         * created_by
-         * difference
-         *
-         * Therefore neither is inserted.
-         */
-
         const payload = {
 
             hotel_id:
@@ -2708,22 +2885,6 @@
         const db =
             await getDb();
 
-
-        /*
-         * IMPORTANT
-         * -------------------------------------------------
-         * The database rejects both "confirmed" and
-         * "completed" because of the cashier_handovers
-         * status CHECK constraint.
-         *
-         * Therefore we DO NOT change the status here.
-         *
-         * We record the confirmation using confirmed_at.
-         *
-         * This does NOT create another financial transaction.
-         * The original guest payment remains the financial
-         * ledger transaction.
-         */
 
         const confirmationTime =
             new Date().toISOString();
@@ -2933,12 +3094,6 @@
                 Date.now()
             );
 
-
-        /*
-         * IMPORTANT:
-         *
-         * bank_deposits DOES NOT contain created_by.
-         */
 
         const payload = {
 
@@ -3183,12 +3338,6 @@
 
         }
 
-
-        /*
-         * Handover records are operational records.
-         * They are not deducted from the financial ledger
-         * balance.
-         */
 
         return roundMoney(
             balance
@@ -3609,6 +3758,7 @@
                             FinancialEngine
 
                     }
+
                 }
             )
         );

@@ -1,0 +1,1933 @@
+/* =========================================================
+   EDU TECH HOTEL MANAGEMENT SYSTEM
+   DAILY LEDGER
+
+   VERSION: 2026.11.17.04
+
+   PURPOSE
+   ---------------------------------------------------------
+   - Read existing financial transactions
+   - Display transactions by selected date
+   - Calculate daily debit
+   - Calculate daily credit
+   - Verify debit = credit
+   - Show daily movement
+   - Retrieve historical dates
+   - Print / Save PDF
+
+   IMPORTANT
+   ---------------------------------------------------------
+   THIS MODULE DOES NOT CREATE PAYMENTS.
+   THIS MODULE DOES NOT INSERT FINANCIAL TRANSACTIONS.
+   THIS MODULE DOES NOT POST TO THE FINANCIAL ENGINE.
+
+   IT ONLY READS EXISTING FINANCIAL DATA.
+
+   PHASE 2:
+   DAILY LEDGER
+   ========================================================= */
+
+"use strict";
+
+
+/* =========================================================
+   STATE
+   ========================================================= */
+
+const dailyLedgerState = {
+    hotelId: null,
+    hotel: null,
+    profile: null,
+    selectedDate: null,
+    transactions: [],
+    accounts: {},
+    loading: false,
+    initialized: false
+};
+
+
+/* =========================================================
+   SUPABASE
+   ========================================================= */
+
+async function getDailyLedgerSupabase() {
+
+    if (
+        typeof window.getEDUTechSupabase === "function"
+    ) {
+
+        const client =
+            window.getEDUTechSupabase();
+
+        if (
+            client &&
+            typeof client.from === "function"
+        ) {
+            return client;
+        }
+    }
+
+
+    if (
+        typeof window.waitForEDUTechSupabase === "function"
+    ) {
+
+        const client =
+            await window.waitForEDUTechSupabase(15000);
+
+        if (
+            client &&
+            typeof client.from === "function"
+        ) {
+            return client;
+        }
+    }
+
+
+    if (
+        window.supabaseClient &&
+        typeof window.supabaseClient.from === "function"
+    ) {
+
+        return window.supabaseClient;
+    }
+
+
+    throw new Error(
+        "EDU TECH Supabase client is not available."
+    );
+}
+
+
+/* =========================================================
+   GENERAL HELPERS
+   ========================================================= */
+
+function roundMoney(value) {
+
+    return Math.round(
+        (
+            Number(value || 0) +
+            Number.EPSILON
+        ) * 100
+    ) / 100;
+}
+
+
+function formatMoney(value) {
+
+    return (
+        "KSh " +
+        Number(value || 0).toLocaleString(
+            "en-KE",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        )
+    );
+}
+
+
+/* =========================================================
+   HTML ESCAPING
+   ========================================================= */
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* =========================================================
+   DATE DISPLAY
+   ========================================================= */
+
+function formatDateDisplay(dateString) {
+
+    if (!dateString) {
+        return "";
+    }
+
+
+    const parts =
+        String(dateString).split("-");
+
+
+    if (parts.length !== 3) {
+        return dateString;
+    }
+
+
+    return (
+        parts[2] +
+        "/" +
+        parts[1] +
+        "/" +
+        parts[0]
+    );
+}
+
+
+function formatTime(value) {
+
+    if (!value) {
+        return "-";
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+        return "-";
+    }
+
+
+    return date.toLocaleTimeString(
+        "en-KE",
+        {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+        }
+    );
+}
+
+
+/* =========================================================
+   MESSAGES
+   ========================================================= */
+
+function showMessage(
+    message,
+    type = "info"
+) {
+
+    const box =
+        document.getElementById(
+            "messageBox"
+        );
+
+
+    if (!box) {
+        return;
+    }
+
+
+    box.className =
+        "message " + type;
+
+
+    box.textContent =
+        message;
+}
+
+
+function clearMessage() {
+
+    const box =
+        document.getElementById(
+            "messageBox"
+        );
+
+
+    if (!box) {
+        return;
+    }
+
+
+    box.className =
+        "message";
+
+
+    box.textContent =
+        "";
+}
+
+
+/* =========================================================
+   PROFILE
+   ========================================================= */
+
+async function loadCurrentProfile() {
+
+    if (
+        window.EDUTECH_ACCESS &&
+        typeof window.EDUTECH_ACCESS
+            .getCachedProfile === "function"
+    ) {
+
+        const cached =
+            window.EDUTECH_ACCESS
+                .getCachedProfile();
+
+
+        if (cached) {
+
+            dailyLedgerState.profile =
+                cached;
+
+            return cached;
+        }
+    }
+
+
+    if (
+        window.EDUTECH_ACCESS &&
+        typeof window.EDUTECH_ACCESS
+            .loadProfile === "function"
+    ) {
+
+        const profile =
+            await window.EDUTECH_ACCESS
+                .loadProfile();
+
+
+        if (profile) {
+
+            dailyLedgerState.profile =
+                profile;
+
+            return profile;
+        }
+    }
+
+
+    return null;
+}
+
+
+/* =========================================================
+   HOTEL ID RESOLUTION
+   ========================================================= */
+
+async function resolveDailyLedgerHotelId() {
+
+    const sessionKeys = [
+        "roomHotel",
+        "hotelId",
+        "hotel_id",
+        "selectedHotelId",
+        "currentHotelId",
+        "activeHotelId"
+    ];
+
+
+    for (const key of sessionKeys) {
+
+        let value = null;
+
+
+        try {
+
+            value =
+                sessionStorage.getItem(key);
+
+        } catch (error) {
+
+            console.warn(
+                "Session storage read failed:",
+                key,
+                error
+            );
+        }
+
+
+        if (
+            value === null ||
+            value === undefined ||
+            String(value).trim() === ""
+        ) {
+
+            try {
+
+                value =
+                    localStorage.getItem(key);
+
+            } catch (error) {
+
+                console.warn(
+                    "Local storage read failed:",
+                    key,
+                    error
+                );
+            }
+        }
+
+
+        if (
+            value !== null &&
+            value !== undefined &&
+            String(value).trim() !== "" &&
+            !Number.isNaN(
+                Number(value)
+            )
+        ) {
+
+            return Number(value);
+        }
+    }
+
+
+    const profile =
+        dailyLedgerState.profile ||
+        await loadCurrentProfile();
+
+
+    if (
+        profile &&
+        profile.hotel_id !== null &&
+        profile.hotel_id !== undefined &&
+        String(profile.hotel_id).trim() !== "" &&
+        !Number.isNaN(
+            Number(profile.hotel_id)
+        )
+    ) {
+
+        return Number(
+            profile.hotel_id
+        );
+    }
+
+
+    const globalValues = [
+        window.hotelId,
+        window.currentHotelId,
+        window.selectedHotelId,
+        window.activeHotelId
+    ];
+
+
+    for (const value of globalValues) {
+
+        if (
+            value !== null &&
+            value !== undefined &&
+            String(value).trim() !== "" &&
+            !Number.isNaN(
+                Number(value)
+            )
+        ) {
+
+            return Number(value);
+        }
+    }
+
+
+    throw new Error(
+        "No active hotel could be identified. Please select a hotel before opening the Daily Ledger."
+    );
+}
+
+
+/* =========================================================
+   LOAD HOTEL
+   ========================================================= */
+
+async function loadDailyLedgerHotel() {
+
+    const db =
+        await getDailyLedgerSupabase();
+
+
+    const {
+        data,
+        error
+    } = await db
+        .from("hotels")
+        .select("*")
+        .eq(
+            "id",
+            dailyLedgerState.hotelId
+        )
+        .maybeSingle();
+
+
+    if (error) {
+        throw error;
+    }
+
+
+    if (!data) {
+
+        throw new Error(
+            "The selected hotel could not be found."
+        );
+    }
+
+
+    dailyLedgerState.hotel =
+        data;
+
+
+    const hotelName =
+        document.getElementById(
+            "hotelName"
+        );
+
+
+    if (hotelName) {
+
+        hotelName.textContent =
+            data.name ||
+            data.hotel_name ||
+            "Hotel";
+    }
+}
+
+
+/* =========================================================
+   DEFAULT DATE
+   ========================================================= */
+
+function getTodayDate() {
+
+    const now =
+        new Date();
+
+
+    const year =
+        now.getFullYear();
+
+
+    const month =
+        String(
+            now.getMonth() + 1
+        ).padStart(2, "0");
+
+
+    const day =
+        String(
+            now.getDate()
+        ).padStart(2, "0");
+
+
+    return (
+        year +
+        "-" +
+        month +
+        "-" +
+        day
+    );
+}
+
+
+function setDefaultDate() {
+
+    const input =
+        document.getElementById(
+            "ledgerDate"
+        );
+
+
+    if (!input) {
+        return;
+    }
+
+
+    const today =
+        getTodayDate();
+
+
+    input.value =
+        today;
+
+
+    dailyLedgerState.selectedDate =
+        today;
+
+
+    updateDateTitle();
+}
+
+
+/* =========================================================
+   DATE TITLE
+   ========================================================= */
+
+function updateDateTitle() {
+
+    const title =
+        document.getElementById(
+            "ledgerDateTitle"
+        );
+
+
+    if (!title) {
+        return;
+    }
+
+
+    if (
+        !dailyLedgerState.selectedDate
+    ) {
+
+        title.textContent =
+            "Daily Ledger";
+
+        return;
+    }
+
+
+    title.textContent =
+        "Ledger: " +
+        formatDateDisplay(
+            dailyLedgerState.selectedDate
+        );
+}
+
+
+/* =========================================================
+   LOAD ACCOUNTS
+   ========================================================= */
+
+async function loadLedgerAccounts() {
+
+    const db =
+        await getDailyLedgerSupabase();
+
+
+    const {
+        data,
+        error
+    } = await db
+        .from("accounts")
+        .select(`
+            id,
+            hotel_id,
+            account_code,
+            account_name,
+            account_type,
+            status
+        `)
+        .eq(
+            "hotel_id",
+            dailyLedgerState.hotelId
+        );
+
+
+    if (error) {
+
+        console.warn(
+            "Account loading warning:",
+            error
+        );
+
+
+        dailyLedgerState.accounts =
+            {};
+
+
+        return;
+    }
+
+
+    const accountMap =
+        {};
+
+
+    (data || []).forEach(
+        account => {
+
+            accountMap[
+                String(account.id)
+            ] = account;
+        }
+    );
+
+
+    dailyLedgerState.accounts =
+        accountMap;
+}
+
+
+/* =========================================================
+   ACCOUNT DISPLAY
+   ========================================================= */
+
+function getAccountDisplay(
+    accountId
+) {
+
+    if (
+        accountId === null ||
+        accountId === undefined
+    ) {
+
+        return "-";
+    }
+
+
+    const account =
+        dailyLedgerState.accounts[
+            String(accountId)
+        ];
+
+
+    if (!account) {
+
+        return (
+            "Account #" +
+            String(accountId)
+        );
+    }
+
+
+    const code =
+        account.account_code
+            ? String(
+                account.account_code
+            )
+            : "";
+
+
+    const name =
+        account.account_name
+            ? String(
+                account.account_name
+            )
+            : "";
+
+
+    if (code && name) {
+
+        return (
+            code +
+            " - " +
+            name
+        );
+    }
+
+
+    return (
+        code ||
+        name ||
+        "Account #" +
+        String(accountId)
+    );
+}
+
+
+/* =========================================================
+   TRANSACTION AMOUNT
+   ========================================================= */
+
+function getTransactionAmount(
+    transaction
+) {
+
+    return roundMoney(
+        transaction.amount
+    );
+}
+
+
+/* =========================================================
+   LOAD DAILY TRANSACTIONS
+   ========================================================= */
+
+async function loadLedger() {
+
+    if (
+        dailyLedgerState.loading
+    ) {
+        return;
+    }
+
+
+    const dateInput =
+        document.getElementById(
+            "ledgerDate"
+        );
+
+
+    const selectedDate =
+        dateInput
+            ? dateInput.value
+            : null;
+
+
+    if (!selectedDate) {
+
+        showMessage(
+            "Please select a ledger date.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    dailyLedgerState.selectedDate =
+        selectedDate;
+
+
+    updateDateTitle();
+
+
+    dailyLedgerState.loading =
+        true;
+
+
+    const loadButton =
+        document.getElementById(
+            "loadLedgerBtn"
+        );
+
+
+    if (loadButton) {
+
+        loadButton.disabled =
+            true;
+
+        loadButton.textContent =
+            "Loading...";
+    }
+
+
+    try {
+
+        clearMessage();
+
+
+        const db =
+            await getDailyLedgerSupabase();
+
+
+        /*
+         * Selected date starts at midnight.
+         */
+
+        const start =
+            selectedDate +
+            "T00:00:00";
+
+
+        /*
+         * Calculate the following day.
+         */
+
+        const nextDay =
+            new Date(
+                selectedDate +
+                "T00:00:00"
+            );
+
+
+        nextDay.setDate(
+            nextDay.getDate() + 1
+        );
+
+
+        const year =
+            nextDay.getFullYear();
+
+
+        const month =
+            String(
+                nextDay.getMonth() + 1
+            ).padStart(2, "0");
+
+
+        const day =
+            String(
+                nextDay.getDate()
+            ).padStart(2, "0");
+
+
+        const end =
+            year +
+            "-" +
+            month +
+            "-" +
+            day +
+            "T00:00:00";
+
+
+        /*
+         * Read existing financial transactions.
+         */
+
+        const {
+            data,
+            error
+        } = await db
+            .from(
+                "financial_transactions"
+            )
+            .select(`
+                id,
+                hotel_id,
+                transaction_number,
+                transaction_date,
+                transaction_type,
+                description,
+                reference_number,
+                debit_account_id,
+                credit_account_id,
+                amount,
+                money_in,
+                money_out,
+                balance_after,
+                is_reversal,
+                reversed_transaction_id,
+                created_at
+            `)
+            .eq(
+                "hotel_id",
+                dailyLedgerState.hotelId
+            )
+            .gte(
+                "transaction_date",
+                start
+            )
+            .lt(
+                "transaction_date",
+                end
+            )
+            .order(
+                "transaction_date",
+                {
+                    ascending: true
+                }
+            )
+            .order(
+                "id",
+                {
+                    ascending: true
+                }
+            );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        dailyLedgerState.transactions =
+            Array.isArray(data)
+                ? data
+                : [];
+
+
+        await loadLedgerAccounts();
+
+
+        renderLedger();
+
+
+        showMessage(
+            dailyLedgerState.transactions.length +
+            " transaction(s) loaded for " +
+            formatDateDisplay(
+                selectedDate
+            ) +
+            ".",
+            "success"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Daily Ledger loading error:",
+            error
+        );
+
+
+        dailyLedgerState.transactions =
+            [];
+
+
+        renderLedger();
+
+
+        showMessage(
+            "The Daily Ledger could not be loaded: " +
+            (
+                error &&
+                error.message
+                    ? error.message
+                    : "Unknown error"
+            ),
+            "error"
+        );
+
+
+    } finally {
+
+        dailyLedgerState.loading =
+            false;
+
+
+        if (loadButton) {
+
+            loadButton.disabled =
+                false;
+
+            loadButton.textContent =
+                "Load Ledger";
+        }
+    }
+}
+
+
+/* =========================================================
+   CALCULATE TOTALS
+   ========================================================= */
+
+function calculateTotals() {
+
+    let totalDebit =
+        0;
+
+
+    let totalCredit =
+        0;
+
+
+    dailyLedgerState.transactions.forEach(
+        transaction => {
+
+            const amount =
+                getTransactionAmount(
+                    transaction
+                );
+
+
+            totalDebit +=
+                amount;
+
+
+            totalCredit +=
+                amount;
+        }
+    );
+
+
+    totalDebit =
+        roundMoney(
+            totalDebit
+        );
+
+
+    totalCredit =
+        roundMoney(
+            totalCredit
+        );
+
+
+    const difference =
+        roundMoney(
+            totalDebit -
+            totalCredit
+        );
+
+
+    return {
+        totalDebit,
+        totalCredit,
+        difference
+    };
+}
+
+
+/* =========================================================
+   MOVEMENT SUMMARY
+   ========================================================= */
+
+function calculateMovement() {
+
+    const movement = {
+
+        cash: 0,
+
+        mpesa: 0,
+
+        bank: 0,
+
+        card: 0
+    };
+
+
+    dailyLedgerState.transactions.forEach(
+        transaction => {
+
+            const amount =
+                getTransactionAmount(
+                    transaction
+                );
+
+
+            const debitAccount =
+                dailyLedgerState.accounts[
+                    String(
+                        transaction.debit_account_id
+                    )
+                ];
+
+
+            const creditAccount =
+                dailyLedgerState.accounts[
+                    String(
+                        transaction.credit_account_id
+                    )
+                ];
+
+
+            const debitText =
+                (
+                    (debitAccount?.account_name || "") +
+                    " " +
+                    (debitAccount?.account_code || "")
+                ).toLowerCase();
+
+
+            const creditText =
+                (
+                    (creditAccount?.account_name || "") +
+                    " " +
+                    (creditAccount?.account_code || "")
+                ).toLowerCase();
+
+
+            const combined =
+                debitText +
+                " " +
+                creditText;
+
+
+            if (
+                combined.includes("cash") ||
+                combined.includes("1010")
+            ) {
+
+                movement.cash +=
+                    amount;
+            }
+
+
+            if (
+                combined.includes("m-pesa") ||
+                combined.includes("mpesa") ||
+                combined.includes("1020")
+            ) {
+
+                movement.mpesa +=
+                    amount;
+            }
+
+
+            if (
+                combined.includes("bank") ||
+                combined.includes("1000")
+            ) {
+
+                movement.bank +=
+                    amount;
+            }
+
+
+            if (
+                combined.includes("card") ||
+                combined.includes("1040")
+            ) {
+
+                movement.card +=
+                    amount;
+            }
+        }
+    );
+
+
+    movement.cash =
+        roundMoney(
+            movement.cash
+        );
+
+
+    movement.mpesa =
+        roundMoney(
+            movement.mpesa
+        );
+
+
+    movement.bank =
+        roundMoney(
+            movement.bank
+        );
+
+
+    movement.card =
+        roundMoney(
+            movement.card
+        );
+
+
+    return movement;
+}
+
+
+/* =========================================================
+   RENDER LEDGER
+   ========================================================= */
+
+function renderLedger() {
+
+    const body =
+        document.getElementById(
+            "ledgerTableBody"
+        );
+
+
+    if (!body) {
+        return;
+    }
+
+
+    const transactions =
+        dailyLedgerState.transactions;
+
+
+    const {
+        totalDebit,
+        totalCredit,
+        difference
+    } =
+        calculateTotals();
+
+
+    const totalDebitElement =
+        document.getElementById(
+            "totalDebit"
+        );
+
+
+    const totalCreditElement =
+        document.getElementById(
+            "totalCredit"
+        );
+
+
+    const countElement =
+        document.getElementById(
+            "transactionCount"
+        );
+
+
+    const differenceElement =
+        document.getElementById(
+            "balanceDifference"
+        );
+
+
+    const tableDebitElement =
+        document.getElementById(
+            "tableTotalDebit"
+        );
+
+
+    const tableCreditElement =
+        document.getElementById(
+            "tableTotalCredit"
+        );
+
+
+    if (totalDebitElement) {
+
+        totalDebitElement.textContent =
+            formatMoney(
+                totalDebit
+            );
+    }
+
+
+    if (totalCreditElement) {
+
+        totalCreditElement.textContent =
+            formatMoney(
+                totalCredit
+            );
+    }
+
+
+    if (countElement) {
+
+        countElement.textContent =
+            String(
+                transactions.length
+            );
+    }
+
+
+    if (differenceElement) {
+
+        differenceElement.textContent =
+            formatMoney(
+                Math.abs(
+                    difference
+                )
+            );
+    }
+
+
+    if (tableDebitElement) {
+
+        tableDebitElement.textContent =
+            formatMoney(
+                totalDebit
+            );
+    }
+
+
+    if (tableCreditElement) {
+
+        tableCreditElement.textContent =
+            formatMoney(
+                totalCredit
+            );
+    }
+
+
+    /*
+     * No transactions.
+     */
+
+    if (!transactions.length) {
+
+        body.innerHTML = `
+            <tr>
+                <td
+                    colspan="10"
+                    style="
+                        text-align:center;
+                        padding:30px;
+                    "
+                >
+                    No financial transactions found for
+                    ${escapeHtml(
+                        formatDateDisplay(
+                            dailyLedgerState.selectedDate
+                        )
+                    )}.
+                </td>
+            </tr>
+        `;
+
+
+        updateBalanceStatus(
+            0,
+            0
+        );
+
+
+        updateMovementSummary();
+
+
+        return;
+    }
+
+
+    /*
+     * Render transactions.
+     */
+
+    body.innerHTML =
+        transactions
+            .map(
+                (
+                    transaction,
+                    index
+                ) => {
+
+                    const amount =
+                        getTransactionAmount(
+                            transaction
+                        );
+
+
+                    const transactionNumber =
+                        transaction.transaction_number ||
+                        "-";
+
+
+                    const reference =
+                        transaction.reference_number ||
+                        "-";
+
+
+                    const type =
+                        transaction.transaction_type ||
+                        "-";
+
+
+                    const description =
+                        transaction.description ||
+                        "-";
+
+
+                    const debitAccount =
+                        getAccountDisplay(
+                            transaction.debit_account_id
+                        );
+
+
+                    const creditAccount =
+                        getAccountDisplay(
+                            transaction.credit_account_id
+                        );
+
+
+                    const reversalText =
+                        transaction.is_reversal
+                            ? " (REVERSAL)"
+                            : "";
+
+
+                    return `
+                        <tr>
+
+                            <td>
+                                ${index + 1}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    formatTime(
+                                        transaction.transaction_date ||
+                                        transaction.created_at
+                                    )
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    transactionNumber
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    reference
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    type
+                                )}${reversalText}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    description
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    debitAccount
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    creditAccount
+                                )}
+                            </td>
+
+                            <td>
+                                ${formatMoney(
+                                    amount
+                                )}
+                            </td>
+
+                            <td>
+                                ${formatMoney(
+                                    amount
+                                )}
+                            </td>
+
+                        </tr>
+                    `;
+                }
+            )
+            .join("");
+
+
+    updateBalanceStatus(
+        totalDebit,
+        totalCredit
+    );
+
+
+    updateMovementSummary();
+}
+
+
+/* =========================================================
+   BALANCE STATUS
+   ========================================================= */
+
+function updateBalanceStatus(
+    totalDebit,
+    totalCredit
+) {
+
+    const element =
+        document.getElementById(
+            "balanceStatus"
+        );
+
+
+    if (!element) {
+        return;
+    }
+
+
+    element.className =
+        "balance-status";
+
+
+    if (
+        dailyLedgerState.transactions
+            .length === 0
+    ) {
+
+        element.classList.add(
+            "status-empty"
+        );
+
+
+        element.textContent =
+            "No transactions";
+
+
+        return;
+    }
+
+
+    const difference =
+        Math.abs(
+            roundMoney(
+                totalDebit -
+                totalCredit
+            )
+        );
+
+
+    if (difference < 0.01) {
+
+        element.classList.add(
+            "status-balanced"
+        );
+
+
+        element.textContent =
+            "✓ BALANCED";
+
+
+    } else {
+
+        element.classList.add(
+            "status-unbalanced"
+        );
+
+
+        element.textContent =
+            "✕ NOT BALANCED";
+    }
+}
+
+
+/* =========================================================
+   MOVEMENT DISPLAY
+   ========================================================= */
+
+function updateMovementSummary() {
+
+    const movement =
+        calculateMovement();
+
+
+    const cash =
+        document.getElementById(
+            "cashMovement"
+        );
+
+
+    const mpesa =
+        document.getElementById(
+            "mpesaMovement"
+        );
+
+
+    const bank =
+        document.getElementById(
+            "bankMovement"
+        );
+
+
+    const card =
+        document.getElementById(
+            "cardMovement"
+        );
+
+
+    if (cash) {
+
+        cash.textContent =
+            formatMoney(
+                movement.cash
+            );
+    }
+
+
+    if (mpesa) {
+
+        mpesa.textContent =
+            formatMoney(
+                movement.mpesa
+            );
+    }
+
+
+    if (bank) {
+
+        bank.textContent =
+            formatMoney(
+                movement.bank
+            );
+    }
+
+
+    if (card) {
+
+        card.textContent =
+            formatMoney(
+                movement.card
+            );
+    }
+}
+
+
+/* =========================================================
+   TODAY
+   ========================================================= */
+
+function goToToday() {
+
+    setDefaultDate();
+
+    loadLedger();
+}
+
+
+/* =========================================================
+   PRINT / PDF
+   ========================================================= */
+
+function printLedger() {
+
+    if (
+        !dailyLedgerState.selectedDate
+    ) {
+
+        showMessage(
+            "Please select a ledger date before printing.",
+            "error"
+        );
+
+
+        return;
+    }
+
+
+    window.print();
+}
+
+
+/* =========================================================
+   DAILY CLOSING
+   ========================================================= */
+
+function dailyClosing() {
+
+    if (
+        !dailyLedgerState.transactions
+            .length
+    ) {
+
+        showMessage(
+            "There are no transactions to close for this date.",
+            "error"
+        );
+
+
+        return;
+    }
+
+
+    const {
+        totalDebit,
+        totalCredit,
+        difference
+    } =
+        calculateTotals();
+
+
+    if (
+        Math.abs(
+            difference
+        ) >= 0.01
+    ) {
+
+        showMessage(
+            "Daily closing is blocked because Debit does not equal Credit.",
+            "error"
+        );
+
+
+        return;
+    }
+
+
+    /*
+     * At this stage Daily Closing only performs
+     * a safe reconciliation check.
+     *
+     * It does NOT insert a database record.
+     */
+
+    showMessage(
+        "Daily ledger for " +
+        formatDateDisplay(
+            dailyLedgerState.selectedDate
+        ) +
+        " is balanced. Debit " +
+        formatMoney(
+            totalDebit
+        ) +
+        " = Credit " +
+        formatMoney(
+            totalCredit
+        ) +
+        ". Ready for Daily Closing.",
+        "success"
+    );
+}
+
+
+/* =========================================================
+   EVENT LISTENERS
+   ========================================================= */
+
+function setupDailyLedgerEvents() {
+
+    const dateInput =
+        document.getElementById(
+            "ledgerDate"
+        );
+
+
+    if (dateInput) {
+
+        dateInput.addEventListener(
+            "change",
+            function () {
+
+                dailyLedgerState.selectedDate =
+                    dateInput.value;
+
+
+                updateDateTitle();
+            }
+        );
+    }
+
+
+    const loadButton =
+        document.getElementById(
+            "loadLedgerBtn"
+        );
+
+
+    if (loadButton) {
+
+        loadButton.addEventListener(
+            "click",
+            function () {
+
+                loadLedger();
+            }
+        );
+    }
+
+
+    const todayButton =
+        document.getElementById(
+            "todayBtn"
+        );
+
+
+    if (todayButton) {
+
+        todayButton.addEventListener(
+            "click",
+            function () {
+
+                goToToday();
+            }
+        );
+    }
+
+
+    const printButton =
+        document.getElementById(
+            "printBtn"
+        );
+
+
+    if (printButton) {
+
+        printButton.addEventListener(
+            "click",
+            function () {
+
+                printLedger();
+            }
+        );
+    }
+
+
+    const closingButton =
+        document.getElementById(
+            "closeDayBtn"
+        );
+
+
+    if (closingButton) {
+
+        closingButton.addEventListener(
+            "click",
+            function () {
+
+                dailyClosing();
+            }
+        );
+    }
+}
+
+
+/* =========================================================
+   INITIALIZATION
+   ========================================================= */
+
+async function initializeDailyLedger() {
+
+    if (
+        dailyLedgerState.initialized
+    ) {
+        return;
+    }
+
+
+    try {
+
+        setDefaultDate();
+
+
+        setupDailyLedgerEvents();
+
+
+        await loadCurrentProfile();
+
+
+        dailyLedgerState.hotelId =
+            await resolveDailyLedgerHotelId();
+
+
+        await loadDailyLedgerHotel();
+
+
+        dailyLedgerState.initialized =
+            true;
+
+
+        await loadLedger();
+
+
+    } catch (error) {
+
+        console.error(
+            "EDU TECH Daily Ledger initialization error:",
+            error
+        );
+
+
+        showMessage(
+            error && error.message
+                ? error.message
+                : "Daily Ledger could not be initialized.",
+            "error"
+        );
+    }
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+if (
+    document.readyState === "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeDailyLedger,
+        {
+            once: true
+        }
+    );
+
+} else {
+
+    initializeDailyLedger();
+}
+
+
+/* =========================================================
+   PUBLIC API
+   ========================================================= */
+
+window.EDUTECH_DAILY_LEDGER = {
+
+    loadLedger:
+        loadLedger,
+
+    renderLedger:
+        renderLedger,
+
+    calculateTotals:
+        calculateTotals,
+
+    dailyClosing:
+        dailyClosing,
+
+    getState:
+        function () {
+            return dailyLedgerState;
+        }
+};
